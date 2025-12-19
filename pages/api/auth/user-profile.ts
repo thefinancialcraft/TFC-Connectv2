@@ -18,6 +18,8 @@ type Data = {
     approvalStatus: string | null;
     accountStatus: string | null;
     updatedAt: string | null;
+    profile_pic_url: string | null;
+    user_name: string | null;
   };
 };
 
