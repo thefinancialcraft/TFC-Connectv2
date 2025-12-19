@@ -4,6 +4,7 @@ import { supabaseAdmin } from '../../../lib/supabase';
 type Data = {
   success?: boolean;
   error?: string;
+  message?: string;
   session?: {
     access_token: string;
     refresh_token: string;
