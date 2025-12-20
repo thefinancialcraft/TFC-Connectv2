@@ -44,15 +44,6 @@ export default async function handler(
 
     // Check if any active session exists for this user
     const session = sessions && sessions.length > 0 ? sessions[0] : null;
-    
-    // If session exists, verify the token matches (or allow if it's a valid JWT for this user)
-    // We'll check if the session_token in DB is valid by verifying it's for the same user
-    // Since JWTs can change on refresh, we check user_id match and active status
-
-    if (sessionError) {
-      console.error('Error checking session:', sessionError);
-      return res.status(500).json({ error: 'Failed to check session' });
-    }
 
     if (!session) {
       // No active session found for this user

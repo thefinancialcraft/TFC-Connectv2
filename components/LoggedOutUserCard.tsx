@@ -160,53 +160,9 @@ export default function LoggedOutUserCard({ onShowLoginForm, onLoginAnotherAccou
         refreshTokenLength: userData.refresh_token?.length,
       });
       
-      // First verify session exists in database
-      try {
-        console.log('Verifying session in database...');
-        const verifyResponse = await fetch('/api/auth/verify-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            session_token: userData.session_token,
-            user_id: userData.user_id,
-          }),
-        });
-
-        const verifyData = await verifyResponse.json();
-        
-        if (!verifyData.success || !verifyData.isActive) {
-          console.log('Session not found or inactive in database for current user:', userData.user_id);
-          setIsLoading(false);
-          
-          // Only remove the current user's card from localStorage
-          removeStoredUser(userData.user_id);
-          
-          // Update local state - remove only this user
-          const updatedUsers = allUsers.filter((u) => u.user_id !== userData.user_id);
-          
-          if (updatedUsers.length > 0) {
-            // Switch to first remaining user (don't try to login with it, just show the card)
-            setAllUsers(updatedUsers);
-            setCurrentIndex(0);
-            setUserData(updatedUsers[0]);
-            showError(`Session expired for ${userData.user_name || userData.email}. Please use another account.`, 'Session Expired');
-          } else {
-            // No users left, show login form
-            setAllUsers([]);
-            setUserData(null);
-            showError('Your session has expired. Please login again.', 'Session Expired');
-            onShowLoginForm();
-          }
-          return;
-        }
-        console.log('Session verified in database');
-      } catch (verifyError) {
-        console.error('Error verifying session:', verifyError);
-        // Continue with session restoration even if verification fails (for backward compatibility)
-        // But this should ideally fail
-      }
+      // Skip verification - directly try to restore session with stored tokens
+      // If tokens are expired, refreshSession/setSession will fail and we'll handle it below
+      console.log('Attempting to restore session with stored tokens...');
       
       let session = null;
       let sessionError = null;
