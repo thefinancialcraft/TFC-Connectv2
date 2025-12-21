@@ -11,7 +11,7 @@ export default function AppLogo({ size = 'default' }: AppLogoProps) {
     <div className="flex items-center justify-center gap-2">
       {/* Icon */}
       <div 
-        className={`inline-flex items-center justify-center rounded-full shadow-lg ${
+        className={`inline-flex items-center justify-center rounded-full  ${
           isSmall ? 'h-7 w-7' : 'h-[35px] w-[35px] md:h-[30px] md:w-[30px]'
         }`}
         style={{ background: '#4b33e8' }}

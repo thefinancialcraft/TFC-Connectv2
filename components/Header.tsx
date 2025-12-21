@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import AppLogo from "./AppLogo";
+import { getStoredUserData } from "../lib/localStorageUtils";
 
 interface HeaderProps {
   user?: {
     displayName?: string | null;
     email?: string;
     employeeId?: string | null;
+    profilePicUrl?: string | null;
   };
   onLogout?: () => void;
 }
@@ -15,18 +17,71 @@ export default function Header({ user, onLogout }: HeaderProps) {
   const router = useRouter();
   const [serverStatus, setServerStatus] = useState<'online' | 'offline' | 'checking'>('online');
   const [showFullStatus, setShowFullStatus] = useState<boolean>(true);
+  const [mounted, setMounted] = useState(false);
+  
+  // Initialize with cached data, then update with props if different (ghost update)
+  const [cachedUser, setCachedUser] = useState<HeaderProps['user']>(() => {
+    if (typeof window === 'undefined') return undefined; // SSR safety
+    const cached = getStoredUserData();
+    if (cached) {
+      return {
+        displayName: cached.user_name || cached.displayName || null,
+        email: cached.email || '',
+        employeeId: cached.employee_id || null,
+        profilePicUrl: cached.profile_pic_url || null,
+      };
+    }
+    return undefined;
+  });
+
+  // Set mounted to true after component mounts (client-side only)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Ghost update: Only update if props actually changed
+  useEffect(() => {
+    if (user) {
+      setCachedUser(prev => {
+        // If no previous cached data, use props
+        if (!prev) {
+          return user;
+        }
+        
+        // Compare data - only update if changed
+        const hasChanged = 
+          prev.displayName !== user.displayName ||
+          prev.employeeId !== user.employeeId ||
+          prev.email !== user.email ||
+          prev.profilePicUrl !== user.profilePicUrl;
+        
+        // Only update if data has actually changed
+        if (hasChanged) {
+          return user;
+        }
+        
+        // Return previous data to prevent unnecessary re-render
+        return prev;
+      });
+    }
+  }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl]);
+
+  // Use cached user for display (prevents "User / Not assigned" flicker)
+  const displayUser = cachedUser || user;
 
   const getInitials = () => {
-    if (user?.displayName) {
-      return user.displayName.trim().charAt(0).toUpperCase();
+    if (displayUser?.displayName) {
+      return displayUser.displayName.trim().charAt(0).toUpperCase();
     }
-    if (user?.email) {
-      return user.email.slice(0, 2).toUpperCase();
+    if (displayUser?.email) {
+      return displayUser.email.slice(0, 2).toUpperCase();
     }
     return "U";
   };
 
   const initials = getInitials();
+  // Only use profilePicUrl after mount to prevent hydration mismatch
+  const profilePicUrl = mounted ? displayUser?.profilePicUrl : null;
 
   const handleLogout = () => {
     if (onLogout) {
@@ -46,13 +101,21 @@ export default function Header({ user, onLogout }: HeaderProps) {
           {/* Left: User Avatar */}
           <button
             onClick={() => router.push("/settings")}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-base shrink-0 transition-colors cursor-pointer"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-base shrink-0 transition-colors cursor-pointer overflow-hidden"
             style={{
-              background: "#4b33e8",
+              background: profilePicUrl ? "transparent" : "#4b33e8",
             }}
             aria-label="Open Settings"
           >
-            {initials}
+            {profilePicUrl ? (
+              <img
+                src={profilePicUrl}
+                alt={displayUser?.displayName || 'User'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              initials
+            )}
           </button>
 
           {/* Center: Username */}
@@ -61,7 +124,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
               className="text-base font-bold leading-tight"
               style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
             >
-              {user?.displayName || user?.email?.split("@")[0] || "User"}
+              {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
             </h1>
             <p
               className="text-xs leading-tight"
@@ -79,7 +142,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
               style={{ color: "#EF4444" }}
               aria-label="Logout"
             >
-              <i className="fi fi-rr-exit text-lg"></i>
+              <i className="fi flex fi-rr-exit text-lg"></i>
             </button>
           </div>
         </div>
@@ -94,25 +157,33 @@ export default function Header({ user, onLogout }: HeaderProps) {
           {/* Left: User Profile */}
           <div className="flex items-center gap-2.5">
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0 overflow-hidden"
               style={{
-                background: "#4b33e8",
+                background: profilePicUrl ? "transparent" : "#4b33e8",
               }}
             >
-              {initials}
+              {profilePicUrl ? (
+                <img
+                  src={profilePicUrl}
+                  alt={displayUser?.displayName || 'User'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                initials
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p
                 className="text-sm font-semibold truncate"
                 style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
               >
-                {user?.displayName || user?.email?.split("@")[0] || "User"}
+                {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
               </p>
               <p
                 className="text-xs truncate"
                 style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}
               >
-                Employee ID: {user?.employeeId || "Not assigned"}
+                Employee ID: {displayUser?.employeeId || "Not assigned"}
               </p>
             </div>
           </div>
@@ -134,7 +205,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
             >
               {serverStatus === 'online' ? (
                 <>
-                  <i className="fi fi-rr-signal text-base flex-shrink-0"></i>
+                  <i className="fi flex fi-rr-signal text-base flex-shrink-0"></i>
                   <span
                     className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
                       showFullStatus
@@ -148,7 +219,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 </>
               ) : serverStatus === 'offline' ? (
                 <>
-                  <i className="fi fi-rr-signal-slash text-base flex-shrink-0"></i>
+                  <i className="fi flex fi-rr-signal-slash text-base flex-shrink-0"></i>
                   <span
                     className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
                       showFullStatus
@@ -162,7 +233,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 </>
               ) : (
                 <>
-                  <i className="fi fi-rr-signal text-base animate-pulse flex-shrink-0"></i>
+                  <i className="fi flex fi-rr-signal text-base animate-pulse flex-shrink-0"></i>
                   <span
                     className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
                       showFullStatus

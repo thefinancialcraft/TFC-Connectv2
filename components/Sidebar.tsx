@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import AppLogo from "./AppLogo";
 import { supabase } from "../lib/supabase";
+import { getStoredUserData } from "../lib/localStorageUtils";
 
 interface SidebarProps {
   user?: {
@@ -10,6 +11,7 @@ interface SidebarProps {
     email?: string;
     employeeId?: string | null;
     lastSignInAt?: string | null;
+    profilePicUrl?: string | null;
   };
   activeNav?: string;
   onNavChange?: (nav: string) => void;
@@ -18,6 +20,59 @@ interface SidebarProps {
 export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: SidebarProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  // Initialize with cached data, then update with props if different (ghost update)
+  const [cachedUser, setCachedUser] = useState<SidebarProps['user']>(() => {
+    if (typeof window === 'undefined') return undefined; // SSR safety
+    const cached = getStoredUserData();
+    if (cached) {
+      return {
+        displayName: cached.user_name || cached.displayName || null,
+        email: cached.email || '',
+        employeeId: cached.employee_id || null,
+        lastSignInAt: null, // Will be updated from props
+        profilePicUrl: cached.profile_pic_url || null,
+      };
+    }
+    return undefined;
+  });
+
+  // Set mounted to true after component mounts (client-side only)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Ghost update: Only update if props actually changed
+  useEffect(() => {
+    if (user) {
+      setCachedUser(prev => {
+        // If no previous cached data, use props
+        if (!prev) {
+          return user;
+        }
+        
+        // Compare data - only update if changed
+        const hasChanged = 
+          prev.displayName !== user.displayName ||
+          prev.employeeId !== user.employeeId ||
+          prev.email !== user.email ||
+          prev.lastSignInAt !== user.lastSignInAt ||
+          prev.profilePicUrl !== user.profilePicUrl;
+        
+        // Only update if data has actually changed
+        if (hasChanged) {
+          return user;
+        }
+        
+        // Return previous data to prevent unnecessary re-render
+        return prev;
+      });
+    }
+  }, [user?.displayName, user?.employeeId, user?.email, user?.lastSignInAt, user?.profilePicUrl]);
+
+  // Use cached user for display (prevents "User / Not assigned" flicker)
+  const displayUser = cachedUser || user;
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -27,7 +82,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
         console.error("Logout error:", error);
       } else {
         // Clear any cached data
-        if (user?.email) {
+        if (displayUser?.email) {
           localStorage.removeItem("isAuthenticated");
           localStorage.removeItem("userEmail");
           localStorage.removeItem("rememberMe");
@@ -45,16 +100,18 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
   };
 
   const getInitials = () => {
-    if (user?.displayName) {
-      return user.displayName.trim().charAt(0).toUpperCase();
+    if (displayUser?.displayName) {
+      return displayUser.displayName.trim().charAt(0).toUpperCase();
     }
-    if (user?.email) {
-      return user.email.slice(0, 2).toUpperCase();
+    if (displayUser?.email) {
+      return displayUser.email.slice(0, 2).toUpperCase();
     }
     return "U";
   };
 
   const initials = getInitials();
+  // Only use profilePicUrl after mount to prevent hydration mismatch
+  const profilePicUrl = mounted ? displayUser?.profilePicUrl : null;
 
   const formatLastLogin = (dateString?: string | null) => {
     if (!dateString) return "Just now";
@@ -153,25 +210,33 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
         >
           <div className="flex items-start gap-2.5 mb-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0 shadow-md"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0 shadow-md overflow-hidden"
               style={{
-                background: "#4b33e8",
+                background: profilePicUrl ? "transparent" : "#4b33e8",
               }}
             >
-              {initials}
+              {profilePicUrl ? (
+                <img
+                  src={profilePicUrl}
+                  alt={displayUser?.displayName || 'User'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                initials
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p
                 className="text-sm font-semibold truncate mb-0.5"
                 style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
               >
-                {user?.displayName || user?.email?.split("@")[0] || "User"}
+                {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
               </p>
               <p
                 className="text-xs truncate"
                 style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}
               >
-                {user?.email || "user@example.com"}
+                {displayUser?.email || "user@example.com"}
               </p>
             </div>
           </div>
@@ -185,7 +250,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
                 className="font-medium"
                 style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
               >
-                {user?.employeeId || "Not assigned"}
+                {displayUser?.employeeId || "Not assigned"}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
@@ -196,7 +261,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
                 className="font-medium"
                 style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
               >
-                {formatLastLogin(user?.lastSignInAt)}
+                {formatLastLogin(displayUser?.lastSignInAt)}
               </span>
             </div>
           </div>

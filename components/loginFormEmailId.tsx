@@ -120,6 +120,31 @@ export default function LoginFormEmailId({
                   hasRefreshToken: !!userDataToStore.refresh_token 
                 });
                 storeUserData(userDataToStore);
+
+                // Check profile_complete first
+                if (profileData.user.profile_complete === false) {
+                  router.push("/profile-completion");
+                  return;
+                }
+
+                // Redirect based on approval status and account status
+                // Priority order: rejected → pending → suspend/hold (direct or via status) → approved+active
+                if (profileData.user.approvalStatus === 'rejected') {
+                  router.push("/rejected");
+                  return;
+                } else if (profileData.user.approvalStatus === 'pending') {
+                  router.push("/pending");
+                  return;
+                } else if (profileData.user.approvalStatus === 'suspend' || profileData.user.accountStatus === 'suspend') {
+                  router.push("/suspended");
+                  return;
+                } else if (profileData.user.approvalStatus === 'hold' || profileData.user.accountStatus === 'hold') {
+                  router.push("/hold");
+                  return;
+                } else if (profileData.user.approvalStatus === 'approved' && profileData.user.accountStatus === 'active') {
+                  router.push("/dashboard");
+                  return;
+                }
               }
             } else {
               // Even if profile fetch fails, store basic data with tokens
@@ -161,6 +186,49 @@ export default function LoginFormEmailId({
           } catch (fallbackError) {
             console.error('Error in fallback storage:', fallbackError);
           }
+        }
+
+        // Check approval status before redirecting
+        try {
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (currentUser) {
+            const profileResponse = await fetch("/api/auth/user-profile", {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            });
+            
+            if (profileResponse.ok) {
+              const profileData = await profileResponse.json();
+              if (profileData.success && profileData.user) {
+                // Check profile_complete first
+                if (profileData.user.profile_complete === false) {
+                  router.push("/profile-completion");
+                  return;
+                }
+                // Redirect based on approval status and account status
+                // Priority order: rejected → pending → suspend/hold (direct or via status) → approved+active
+                if (profileData.user.approvalStatus === 'rejected') {
+                  router.push("/rejected");
+                  return;
+                } else if (profileData.user.approvalStatus === 'pending') {
+                  router.push("/pending");
+                  return;
+                } else if (profileData.user.approvalStatus === 'suspend' || profileData.user.accountStatus === 'suspend') {
+                  router.push("/suspended");
+                  return;
+                } else if (profileData.user.approvalStatus === 'hold' || profileData.user.accountStatus === 'hold') {
+                  router.push("/hold");
+                  return;
+                } else if (profileData.user.approvalStatus === 'approved' && profileData.user.accountStatus === 'active') {
+                  router.push("/dashboard");
+                  return;
+                }
+              }
+            }
+          }
+        } catch (checkError) {
+          console.error('Error checking approval status:', checkError);
         }
 
         // Redirect to dashboard or home page

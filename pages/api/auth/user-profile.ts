@@ -60,7 +60,7 @@ export default async function handler(
       // Use admin client - bypasses RLS
       const result = await supabaseAdmin
         .from('user_profiles')
-        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url')
+        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete')
         .eq('user_id', authUser.id)
         .maybeSingle();
       profile = result.data;
@@ -76,7 +76,7 @@ export default async function handler(
       if (!sessionError && sessionData.session) {
         const result = await supabase
           .from('user_profiles')
-          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url')
+          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete')
           .eq('user_id', authUser.id)
           .maybeSingle();
         profile = result.data;
@@ -124,6 +124,7 @@ export default async function handler(
         updatedAt: profile?.updated_at || null,
         profile_pic_url: profile?.profile_pic_url || null,
         user_name: profile?.user_name || null,
+        profile_complete: profile?.profile_complete ?? false,
       },
     });
   } catch (error: any) {

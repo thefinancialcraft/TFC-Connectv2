@@ -1,10 +1,14 @@
+import React from "react";
+
 interface SettingsFormFieldsProps {
   formData: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   category: string;
+  onFileUpload?: (fieldName: string, fileUrl: string) => void;
+  userId?: string;
 }
 
-export default function SettingsFormFields({ formData, handleInputChange, category }: SettingsFormFieldsProps) {
+export default function SettingsFormFields({ formData, handleInputChange, category, onFileUpload, userId }: SettingsFormFieldsProps) {
   const renderField = (
     id: string,
     label: string,
@@ -187,18 +191,286 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
   }
 
   if (category === "documents") {
+      const DocumentUploadField = ({ fieldName, label, acceptedTypes = "image/*,.pdf" }: { fieldName: string; label: string; acceptedTypes?: string }) => {
+      const [uploading, setUploading] = React.useState(false);
+      const [deleting, setDeleting] = React.useState(false);
+      const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+      const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file size (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          alert("File size must be less than 10MB");
+          return;
+        }
+
+        setUploading(true);
+
+        try {
+          // Get Supabase client and session
+          const { supabase } = await import("../lib/supabase");
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          
+          if (sessionError || !session) {
+            alert("Please log in to upload files");
+            setUploading(false);
+            return;
+          }
+
+          // Create user-specific file path: {userId}/{documentType}/{timestamp}-{fileName}
+          const timestamp = Date.now();
+          const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const filePath = `${session.user.id}/${fieldName}/${timestamp}-${sanitizedFileName}`;
+
+          // Upload file directly to Supabase Storage
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('user-documents')
+            .upload(filePath, file, {
+              contentType: file.type,
+              upsert: true,
+            });
+
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            alert(uploadError.message || "Failed to upload file");
+            setUploading(false);
+            return;
+          }
+
+          // Get signed URL for the file (valid for 1 year)
+          const { data: urlData, error: urlError } = await supabase.storage
+            .from('user-documents')
+            .createSignedUrl(filePath, 31536000); // 1 year expiry
+
+          if (urlError || !urlData) {
+            console.error("URL generation error:", urlError);
+            alert("File uploaded but failed to generate URL");
+            setUploading(false);
+            return;
+          }
+
+          // Update form data with the signed URL
+          handleInputChange({
+            target: { id: fieldName, value: urlData.signedUrl }
+          } as any);
+
+          // Call onFileUpload callback if provided
+          onFileUpload?.(fieldName, urlData.signedUrl);
+
+          setUploading(false);
+        } catch (error: any) {
+          console.error("Upload error:", error);
+          alert(error.message || "Failed to upload file");
+          setUploading(false);
+        }
+      };
+
+      const fileUrl = formData[fieldName];
+      const isImage = fileUrl && (fileUrl.includes('.jpg') || fileUrl.includes('.jpeg') || fileUrl.includes('.png') || fileUrl.includes('.webp'));
+
+      return (
+        <div className="space-y-2">
+          <label
+            className="text-sm font-medium leading-none"
+            style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
+          >
+            {label}
+          </label>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={acceptedTypes}
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading}
+          />
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                borderColor: "#E0E0E0",
+                color: "#263238",
+                fontFamily: "'Roboto', sans-serif",
+              }}
+            >
+              {uploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <i className="fi flex fi-rr-upload text-base"></i>
+                  <span>{fileUrl ? "Replace File" : "Upload File"}</span>
+                </>
+              )}
+            </button>
+
+            {fileUrl && (
+              <div className="mt-2 p-3 rounded-md border relative" style={{ borderColor: "#E0E0E0", backgroundColor: "#F9FAFB" }}>
+                {/* Delete Button */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm(`Are you sure you want to delete ${label}?`)) {
+                      return;
+                    }
+
+                    setDeleting(true);
+
+                    try {
+                      // Get Supabase client and session
+                      const { supabase } = await import("../lib/supabase");
+                      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                      
+                      if (sessionError || !session) {
+                        alert("Please log in to delete files");
+                        setDeleting(false);
+                        return;
+                      }
+
+                      // List all files in the user's directory for this document type
+                      // Since we use upsert: true, there might be multiple versions, delete all
+                      const pathPrefix = `${session.user.id}/${fieldName}/`;
+                      const { data: files, error: listError } = await supabase.storage
+                        .from('user-documents')
+                        .list(pathPrefix, {
+                          limit: 100,
+                          offset: 0,
+                        });
+
+                      if (listError) {
+                        console.error("List error:", listError);
+                        alert(listError.message || "Failed to list files");
+                        setDeleting(false);
+                        return;
+                      }
+
+                      if (!files || files.length === 0) {
+                        // File might already be deleted, just clear the form
+                        handleInputChange({
+                          target: { id: fieldName, value: "" }
+                        } as any);
+                        setDeleting(false);
+                        return;
+                      }
+
+                      // Delete all files in this directory
+                      const pathsToDelete = files.map(f => `${pathPrefix}${f.name}`);
+                      const { error: deleteError } = await supabase.storage
+                        .from('user-documents')
+                        .remove(pathsToDelete);
+
+                      if (deleteError) {
+                        console.error("Delete error:", deleteError);
+                        alert(deleteError.message || "Failed to delete file");
+                        setDeleting(false);
+                        return;
+                      }
+
+                      // Clear form field
+                      handleInputChange({
+                        target: { id: fieldName, value: "" }
+                      } as any);
+
+                      // Reset file input
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+
+                      setDeleting(false);
+                    } catch (error: any) {
+                      console.error("Delete error:", error);
+                      alert(error.message || "Failed to delete file");
+                      setDeleting(false);
+                    }
+                  }}
+                  disabled={deleting}
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ zIndex: 10 }}
+                  title="Delete file"
+                >
+                  {deleting ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <i className="fi flex fi-rr-cross-small text-sm"></i>
+                  )}
+                </button>
+
+                {isImage ? (
+                  <div className="space-y-2">
+                    <img
+                      src={fileUrl}
+                      alt={label}
+                      className="w-full max-w-xs h-auto rounded border"
+                      style={{ borderColor: "#E0E0E0" }}
+                      onError={(e) => {
+                        // If image fails to load, show as link
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<a href="${fileUrl}" target="_blank" class="text-blue-600 hover:underline">View Document</a>`;
+                        }
+                      }}
+                    />
+                    <a
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                      style={{ fontFamily: "'Roboto', sans-serif" }}
+                    >
+                      <i className="fi flex fi-rr-eye text-base"></i>
+                      <span>View Full Size</span>
+                    </a>
+                  </div>
+                ) : (
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                  >
+                    <i className="fi flex fi-rr-file text-base"></i>
+                    <span>View Document</span>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Hidden input to store URL in form data */}
+          <input
+            type="hidden"
+            id={fieldName}
+            value={fileUrl || ""}
+            onChange={handleInputChange}
+          />
+        </div>
+      );
+    };
+
     return (
       <div className="space-y-4">
         <p className="text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
-          Document uploads will be available soon.
+          Upload your documents. Maximum file size: 10MB. Accepted formats: Images (JPG, PNG, WEBP) and PDF.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {renderField("profile_pic_url", "Profile Picture URL", "url", false, true)}
-          {renderField("pancard_url", "PAN Card URL", "url", false, true)}
-          {renderField("aadhar_front_url", "Aadhar Front URL", "url", false, true)}
-          {renderField("aadhar_back_url", "Aadhar Back URL", "url", false, true)}
-          {renderField("qualification_marksheet_url", "Qualification Marksheet URL", "url", false, true)}
-          {renderField("bank_passbook_url", "Bank Passbook URL", "url", false, true)}
+          <DocumentUploadField fieldName="profile_pic_url" label="Profile Picture" acceptedTypes="image/*" />
+          <DocumentUploadField fieldName="pancard_url" label="PAN Card" acceptedTypes="image/*,.pdf" />
+          <DocumentUploadField fieldName="aadhar_front_url" label="Aadhar Card (Front)" acceptedTypes="image/*,.pdf" />
+          <DocumentUploadField fieldName="aadhar_back_url" label="Aadhar Card (Back)" acceptedTypes="image/*,.pdf" />
+          <DocumentUploadField fieldName="qualification_marksheet_url" label="Qualification Marksheet" acceptedTypes="image/*,.pdf" />
+          <DocumentUploadField fieldName="bank_passbook_url" label="Bank Passbook" acceptedTypes="image/*,.pdf" />
         </div>
       </div>
     );

@@ -64,6 +64,7 @@ export interface UserProfile {
   approvalStatus: string | null;
   accountStatus: string | null;
   updatedAt: string | null;
+  profilePicUrl?: string | null;
 }
 
 export interface AuthResult {
@@ -177,6 +178,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             approval_status: userData.approvalStatus || undefined,
             status: userData.accountStatus || undefined,
             updated_at: userData.updatedAt || undefined,
+            profile_pic_url: userData.profilePicUrl || undefined,
           };
           addUserToStore(profileData);
         }

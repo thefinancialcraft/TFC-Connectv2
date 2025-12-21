@@ -59,6 +59,13 @@ export default async function handler(
       branch_city,
       branch_state,
       branch_pincode,
+      // documents
+      profile_pic_url,
+      pancard_url,
+      aadhar_front_url,
+      aadhar_back_url,
+      qualification_marksheet_url,
+      bank_passbook_url,
     } = req.body;
 
     // Prepare update data (only include provided fields)
@@ -100,6 +107,19 @@ export default async function handler(
     if (branch_city !== undefined) updateData.branch_city = branch_city || null;
     if (branch_state !== undefined) updateData.branch_state = branch_state || null;
     if (branch_pincode !== undefined) updateData.branch_pincode = branch_pincode || null;
+    
+    // documents
+    if (profile_pic_url !== undefined) updateData.profile_pic_url = profile_pic_url || null;
+    if (pancard_url !== undefined) updateData.pancard_url = pancard_url || null;
+    if (aadhar_front_url !== undefined) updateData.aadhar_front_url = aadhar_front_url || null;
+    if (aadhar_back_url !== undefined) updateData.aadhar_back_url = aadhar_back_url || null;
+    if (qualification_marksheet_url !== undefined) updateData.qualification_marksheet_url = qualification_marksheet_url || null;
+    if (bank_passbook_url !== undefined) updateData.bank_passbook_url = bank_passbook_url || null;
+    
+    // profile_complete flag
+    if (req.body.profile_complete !== undefined) {
+      updateData.profile_complete = req.body.profile_complete;
+    }
 
     // Use admin client if available, otherwise use regular client
     const clientToUse = supabaseAdmin || supabase;

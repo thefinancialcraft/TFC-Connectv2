@@ -3,16 +3,39 @@ import { useRouter } from "next/router";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
+import { supabase } from "../lib/supabase";
+import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
 
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  // Initialize with cached data from localStorage to show previous data immediately (ghost update)
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    const cachedData = getStoredUserData();
+    if (cachedData) {
+      return {
+        uid: cachedData.user_id || '',
+        displayName: cachedData.user_name || cachedData.displayName || null,
+        email: cachedData.email || '',
+        phone: null, // Will be updated from API
+        providers: [],
+        providerType: null,
+        createdAt: '',
+        lastSignInAt: null,
+        employeeId: cachedData.employee_id || null,
+        role: cachedData.role || null,
+        approvalStatus: null, // Will be updated from API
+        accountStatus: null, // Will be updated from API
+        updatedAt: null, // Will be updated from API
+        profilePicUrl: cachedData.profile_pic_url || null,
+      };
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false); // Start with false to avoid spinner on page change
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("dashboard");
 
-  useEffect(() => {
     const fetchAuth = async () => {
       const result = await checkAuthAndFetchProfile();
       
@@ -30,11 +53,125 @@ export default function Dashboard() {
       }
 
       if (result.user) {
-        setUser(result.user);
+      // Fetch latest profile data from API to ensure we have the most up-to-date information
+      const { data: { session } } = await supabase.auth.getSession();
+      let latestUserData = result.user;
+      
+      if (session) {
+        try {
+          const profileResponse = await fetch("/api/auth/user-profile", {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+          const profileData = await profileResponse.json();
+          
+          if (profileData.success && profileData.user) {
+            // Use the latest data from API
+            latestUserData = {
+              ...profileData.user,
+              profilePicUrl: profileData.user.profile_pic_url || null,
+            };
+            
+            if (profileData.user.profile_complete === false) {
+              router.push("/profile-completion");
+              return;
       }
-    };
+          }
+        } catch (err) {
+          console.error('Error fetching latest profile:', err);
+          // Continue with result.user if API call fails
+        }
+      }
 
+      // Compare existing data with fetched data - only update if there's a change
+      setUser(prevUser => {
+        // If no previous user, set the new user
+        if (!prevUser) {
+          // Update localStorage with the new user data (including profile_pic_url)
+          if (latestUserData.uid) {
+            const cachedData = getStoredUserData();
+            const userDataToStore = {
+              user_id: latestUserData.uid,
+              email: latestUserData.email || '',
+              user_name: latestUserData.displayName || cachedData?.user_name || '',
+              employee_id: latestUserData.employeeId || cachedData?.employee_id || '',
+              role: latestUserData.role || cachedData?.role || 'user',
+              profile_pic_url: latestUserData.profilePicUrl || null,
+              displayName: latestUserData.displayName || undefined,
+              session_token: cachedData?.session_token,
+              refresh_token: cachedData?.refresh_token,
+            };
+            storeUserData(userDataToStore);
+          }
+          return latestUserData;
+        }
+        
+        // Check if user data has actually changed (compare critical fields)
+        const hasChanged = 
+          prevUser.displayName !== latestUserData.displayName ||
+          prevUser.employeeId !== latestUserData.employeeId ||
+          prevUser.email !== latestUserData.email ||
+          prevUser.approvalStatus !== latestUserData.approvalStatus ||
+          prevUser.accountStatus !== latestUserData.accountStatus ||
+          prevUser.role !== latestUserData.role ||
+          prevUser.phone !== latestUserData.phone ||
+          prevUser.profilePicUrl !== latestUserData.profilePicUrl;
+        
+        // Only update if data has actually changed (prevents unnecessary re-renders and UI flickering)
+        if (hasChanged) {
+          // Update localStorage with the new user data (including profile_pic_url)
+          if (latestUserData.uid) {
+            const cachedData = getStoredUserData();
+            const userDataToStore = {
+              user_id: latestUserData.uid,
+              email: latestUserData.email || '',
+              user_name: latestUserData.displayName || cachedData?.user_name || '',
+              employee_id: latestUserData.employeeId || cachedData?.employee_id || '',
+              role: latestUserData.role || cachedData?.role || 'user',
+              profile_pic_url: latestUserData.profilePicUrl || null,
+              displayName: latestUserData.displayName || undefined,
+              session_token: cachedData?.session_token,
+              refresh_token: cachedData?.refresh_token,
+            };
+            storeUserData(userDataToStore);
+          }
+          return latestUserData;
+        }
+        
+        // Return previous user object to prevent unnecessary re-render and UI update
+        return prevUser;
+      });
+
+      // Redirect based on approval status and account status
+      // Priority order: rejected → pending → suspend/hold (direct or via status) → approved+active
+      if (latestUserData.approvalStatus === 'rejected') {
+        router.push("/rejected");
+        return;
+      } else if (latestUserData.approvalStatus === 'pending') {
+        router.push("/pending");
+        return;
+      } else if (latestUserData.approvalStatus === 'suspend' || latestUserData.accountStatus === 'suspend') {
+        router.push("/suspended");
+        return;
+      } else if (latestUserData.approvalStatus === 'hold' || latestUserData.accountStatus === 'hold') {
+        router.push("/hold");
+        return;
+      }
+      // If approved + active, stay on dashboard (user already set above)
+    }
+  };
+
+  useEffect(() => {
     fetchAuth();
+    
+    // Refresh user data when page comes into focus (in case it was updated)
+    const handleFocus = () => {
+      fetchAuth();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [router]);
 
   const handleLogoutClick = async () => {
@@ -72,7 +209,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#fcfcfc" }}>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
           <div className="text-lg" style={{ color: "#4b33e8" }}>Loading...</div>
@@ -83,7 +220,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#fcfcfc" }}>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
         <div className="text-center">
           <div className="text-lg mb-4 text-red-500">{error}</div>
           <div className="text-sm" style={{ color: "#4b33e8" }}>Redirecting to login...</div>
@@ -93,7 +230,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#fcfcfc", maxWidth: "100vw" }}>
+    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
       {/* Left Sidebar */}
       <Sidebar
         user={{
@@ -101,6 +238,7 @@ export default function Dashboard() {
           email: user?.email || "",
           employeeId: user?.employeeId || null,
           lastSignInAt: user?.lastSignInAt || null,
+          profilePicUrl: user?.profilePicUrl || null,
         }}
         activeNav={activeNav}
         onNavChange={setActiveNav}
@@ -114,12 +252,13 @@ export default function Dashboard() {
             displayName: user?.displayName || null,
             email: user?.email || "",
             employeeId: user?.employeeId || null,
+            profilePicUrl: user?.profilePicUrl || null,
           }}
           onLogout={handleLogoutClick}
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#fcfcfc" }}>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 sm:space-y-6 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             <div className="space-y-6">
               {/* Overview Section with Gradient Background */}
@@ -161,7 +300,7 @@ export default function Dashboard() {
                       {user?.updatedAt && (
                         <div className="flex items-center justify-between text-xs text-white/80">
                           <span className="flex items-center gap-2">
-                            <i className="fi fi-rr-clock text-sm"></i>
+                            <i className="fi flex fi-rr-clock text-sm"></i>
                             <span>Last updated</span>
                           </span>
                           <span>{formatDate(user.updatedAt)}</span>
@@ -173,7 +312,7 @@ export default function Dashboard() {
                       style={{ backgroundColor: "#4b33e8", fontFamily: "'Poppins', sans-serif" }}
                     >
                       Manage workspace
-                      <i className="fi fi-rr-arrow-right"></i>
+                      <i className="fi flex fi-rr-arrow-right"></i>
                     </button>
                     </div>
                   </div>
@@ -194,7 +333,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: "linear-gradient(to bottom right, rgba(147, 51, 234, 0.9), rgba(236, 72, 153, 0.6))" }}>
-                          <i className="fi fi-rr-shield-check text-xl"></i>
+                          <i className="fi flex fi-rr-shield-check text-xl"></i>
                         </div>
                       </div>
                     </div>
@@ -213,7 +352,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: "linear-gradient(to bottom right, rgba(99, 102, 241, 0.9), rgba(59, 130, 246, 0.6))" }}>
-                          <i className="fi fi-rr-check text-xl"></i>
+                          <i className="fi flex fi-rr-check text-xl"></i>
                         </div>
                       </div>
                     </div>
@@ -232,7 +371,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: "linear-gradient(to bottom right, rgba(16, 185, 129, 0.9), rgba(132, 204, 22, 0.6))" }}>
-                          <i className="fi fi-rr-chart-line-up text-xl"></i>
+                          <i className="fi flex fi-rr-chart-line-up text-xl"></i>
                         </div>
                       </div>
                     </div>
@@ -251,7 +390,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ background: "linear-gradient(to bottom right, rgba(14, 165, 233, 0.9), rgba(6, 182, 212, 0.6))" }}>
-                          <i className="fi fi-rr-users text-xl"></i>
+                          <i className="fi flex fi-rr-users text-xl"></i>
                         </div>
                       </div>
                     </div>
@@ -336,7 +475,7 @@ export default function Dashboard() {
                         }}
                         onClick={() => router.push("/users")}
                       >
-                        <i className="fi fi-rr-users text-lg" style={{ color: "#4b33e8" }}></i>
+                        <i className="fi flex fi-rr-users text-lg" style={{ color: "#4b33e8" }}></i>
                         <span>Manage Users</span>
                       </button>
                       <button
@@ -349,7 +488,7 @@ export default function Dashboard() {
                         }}
                         onClick={() => router.push("/contract")}
                       >
-                        <i className="fi fi-rr-document text-lg" style={{ color: "#4b33e8" }}></i>
+                        <i className="fi flex fi-rr-document text-lg" style={{ color: "#4b33e8" }}></i>
                         <span>View Contracts</span>
                       </button>
                       <button
@@ -362,13 +501,13 @@ export default function Dashboard() {
                         }}
                         onClick={() => router.push("/influencer")}
                       >
-                        <i className="fi fi-rr-star text-lg" style={{ color: "#4b33e8" }}></i>
+                        <i className="fi flex fi-rr-star text-lg" style={{ color: "#4b33e8" }}></i>
                         <span>Influencer Hub</span>
                       </button>
                     </div>
                     <div className="rounded-2xl border p-4 space-y-3" style={{ borderColor: "#FEE2E2", backgroundColor: "#FEF2F2" }}>
                       <div className="flex items-center gap-2">
-                        <i className="fi fi-rr-exit text-base" style={{ color: "#EF4444" }}></i>
+                        <i className="fi flex fi-rr-exit text-base" style={{ color: "#EF4444" }}></i>
                         <span className="text-sm font-semibold" style={{ color: "#EF4444", fontFamily: "'Poppins', sans-serif" }}>
                           Need to sign out?
                         </span>

@@ -94,8 +94,6 @@ export default function Settings() {
       }
 
       if (result.user) {
-        setUser(result.user);
-        
         // Fetch full profile data from API
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
@@ -108,6 +106,11 @@ export default function Settings() {
             const profileData = await profileResponse.json();
             
             if (profileData.success && profileData.user) {
+              // Update user state with profile pic URL
+              setUser({
+                ...profileData.user,
+                profilePicUrl: profileData.user.profile_pic_url || null,
+              });
               // Fetch all fields directly from user_profiles
               const { data: fullProfile } = await supabase
                 .from('user_profiles')
@@ -212,6 +215,43 @@ export default function Settings() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleFileUpload = async (fieldName: string, fileUrl: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        showError("You must be logged in to upload files", "Authentication Error");
+        return;
+      }
+
+      // Immediately update the document URL in the database
+      const updatePayload: any = {
+        [fieldName]: fileUrl,
+      };
+
+      const response = await fetch("/api/auth/update-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(updatePayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to update document URL:", data.error);
+        showError(data.error || "Failed to save document URL", "Error");
+      } else {
+        // Success - document URL is now saved in database
+        console.log(`Document URL saved successfully for ${fieldName}`);
+      }
+    } catch (error: any) {
+      console.error("Error saving document URL:", error);
+      showError(error.message || "An error occurred while saving document", "Error");
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -458,7 +498,7 @@ export default function Settings() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#fcfcfc" }}>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
           <div className="text-lg" style={{ color: "#4b33e8" }}>Loading...</div>
@@ -469,7 +509,7 @@ export default function Settings() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#fcfcfc" }}>
+      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
         <div className="text-center">
           <div className="text-lg mb-4 text-red-500">{error}</div>
           <div className="text-sm" style={{ color: "#4b33e8" }}>Redirecting to login...</div>
@@ -479,7 +519,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#fcfcfc", maxWidth: "100vw" }}>
+    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
       {/* Left Sidebar */}
       <Sidebar
         user={{
@@ -487,6 +527,7 @@ export default function Settings() {
           email: user?.email || "",
           employeeId: user?.employeeId || null,
           lastSignInAt: user?.lastSignInAt || null,
+          profilePicUrl: user?.profilePicUrl || null,
         }}
         activeNav={activeNav}
         onNavChange={setActiveNav}
@@ -500,12 +541,13 @@ export default function Settings() {
             displayName: user?.displayName || null,
             email: user?.email || "",
             employeeId: user?.employeeId || null,
+            profilePicUrl: user?.profilePicUrl || null,
           }}
           onLogout={handleLogoutClick}
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#fcfcfc" }}>
+        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 sm:space-y-6 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             {/* Page Header */}
             <div>
@@ -628,6 +670,7 @@ export default function Settings() {
                         formData={formData}
                         handleInputChange={handleInputChange}
                         category={activeCategory}
+                        onFileUpload={handleFileUpload}
                       />
 
                       {/* Save Button */}
