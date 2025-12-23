@@ -27,6 +27,10 @@ export default async function handler(
   }
 
   try {
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Admin client not available' });
+    }
+
     const { users } = req.body as { users: BulkUser[] };
 
     if (!users || !Array.isArray(users) || users.length === 0) {

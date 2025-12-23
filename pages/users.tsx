@@ -234,6 +234,7 @@ function HoldBadgeWithTooltip({
         if (difference <= 0) {
           return 'Expired';
         }
+        
 
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
