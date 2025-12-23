@@ -7,6 +7,7 @@ interface User {
   user_type: string | null;
   role: string | null;
   department: string | null;
+  designation: string | null;
   status: string | null;
 }
 
@@ -19,8 +20,9 @@ interface UserMenuDropdownProps {
   onApprovalStatusChange: (userId: string, status: 'approved' | 'pending' | 'hold' | 'suspend' | 'rejected') => void;
   onWorkTypeChange: (userId: string, workType: 'remote' | 'on_site') => void;
   onUserTypeChange: (userId: string, userType: 'employee' | 'posp_agent') => void;
-  onRoleChange: (userId: string, role: 'user' | 'manager' | 'facility_staff' | 'admin' | 'super_admin') => void;
+  onRoleChange: (userId: string, role: 'user' | 'admin' | 'super_admin') => void;
   onDepartmentChange: (userId: string, department: 'sales' | 'renewal' | 'backend' | 'management' | 'service') => void;
+  onDesignationChange: (userId: string, designation: 'agent' | 'manager' | 'faculty_staff' | 'team_leader' | 'ceo' | 'developer') => void;
   onStatusChange: (userId: string, status: 'active' | 'inactive') => void;
   onDelete: (userId: string) => void;
   // Dropdown states
@@ -29,12 +31,14 @@ interface UserMenuDropdownProps {
   openUserTypeDropdown: string | null;
   openRoleDropdown: string | null;
   openDepartmentDropdown: string | null;
+  openDesignationDropdown: string | null;
   // Dropdown setters
   setOpenApprovalDropdown: (id: string | null) => void;
   setOpenWorkTypeDropdown: (id: string | null) => void;
   setOpenUserTypeDropdown: (id: string | null) => void;
   setOpenRoleDropdown: (id: string | null) => void;
   setOpenDepartmentDropdown: (id: string | null) => void;
+  setOpenDesignationDropdown: (id: string | null) => void;
   menuRef?: (el: HTMLDivElement | null) => void;
   onClose?: () => void;
   onMenuClose?: () => void;
@@ -71,8 +75,6 @@ const getUserTypeLabel = (userType: string | null) => {
 const getRoleLabel = (role: string | null) => {
   switch (role) {
     case 'user': return 'User';
-    case 'manager': return 'Manager';
-    case 'facility_staff': return 'Facility Staff';
     case 'admin': return 'Admin';
     case 'super_admin': return 'Super Admin';
     default: return 'User';
@@ -90,6 +92,18 @@ const getDepartmentLabel = (department: string | null) => {
   }
 };
 
+const getDesignationLabel = (designation: string | null) => {
+  switch (designation) {
+    case 'agent': return 'Agent';
+    case 'manager': return 'Manager';
+    case 'faculty_staff': return 'Faculty Staff';
+    case 'team_leader': return 'Team Leader';
+    case 'ceo': return 'CEO';
+    case 'developer': return 'Developer';
+    default: return 'Agent';
+  }
+};
+
 export default function UserMenuDropdown({
   user,
   isOpen,
@@ -101,6 +115,7 @@ export default function UserMenuDropdown({
   onUserTypeChange,
   onRoleChange,
   onDepartmentChange,
+  onDesignationChange,
   onStatusChange,
   onDelete,
   openApprovalDropdown,
@@ -108,11 +123,13 @@ export default function UserMenuDropdown({
   openUserTypeDropdown,
   openRoleDropdown,
   openDepartmentDropdown,
+  openDesignationDropdown,
   setOpenApprovalDropdown,
   setOpenWorkTypeDropdown,
   setOpenUserTypeDropdown,
   setOpenRoleDropdown,
   setOpenDepartmentDropdown,
+  setOpenDesignationDropdown,
   menuRef,
   onClose,
   onMenuClose
@@ -124,6 +141,7 @@ export default function UserMenuDropdown({
     setOpenUserTypeDropdown(null);
     setOpenRoleDropdown(null);
     setOpenDepartmentDropdown(null);
+    setOpenDesignationDropdown(null);
     onClose?.();
   };
 
@@ -152,6 +170,7 @@ export default function UserMenuDropdown({
             setOpenUserTypeDropdown(null);
             setOpenRoleDropdown(null);
             setOpenDepartmentDropdown(null);
+            setOpenDesignationDropdown(null);
           }}
           className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
         >
@@ -176,15 +195,29 @@ export default function UserMenuDropdown({
         </button>
         {openApprovalDropdown === user.id && (
           <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000] max-h-48 overflow-auto">
-            {['approved', 'pending', 'hold', 'suspend', 'rejected'].map((status) => (
+            {(() => {
+              // Determine which statuses to show based on current status
+              let statusesToShow: string[] = [];
+              
+              if (user.approval_status === 'pending') {
+                // If pending, show: pending, approved, rejected
+                statusesToShow = ['pending', 'approved', 'rejected'];
+              } else if (user.approval_status === 'approved') {
+                // If approved, show: approved, hold, suspend
+                statusesToShow = ['approved', 'hold', 'suspend'];
+              } else {
+                // Otherwise (hold, suspend, rejected, etc.), show: approved, hold, suspend
+                statusesToShow = ['approved', 'hold', 'suspend'];
+              }
+              
+              return statusesToShow;
+            })().map((status) => (
               <div
                 key={status}
                 onClick={(e) => {
                   e.stopPropagation();
                   onApprovalStatusChange(user.id, status as any);
-                  if (viewType === 'list') {
-                    onMenuClose?.();
-                  }
+                  onMenuClose?.();
                 }}
                 className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${
                   user.approval_status === status ? 'bg-purple-50' : ''
@@ -243,6 +276,7 @@ export default function UserMenuDropdown({
             setOpenUserTypeDropdown(null);
             setOpenRoleDropdown(null);
             setOpenDepartmentDropdown(null);
+            setOpenDesignationDropdown(null);
           }}
           className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
         >
@@ -322,6 +356,7 @@ export default function UserMenuDropdown({
             setOpenWorkTypeDropdown(null);
             setOpenRoleDropdown(null);
             setOpenDepartmentDropdown(null);
+            setOpenDesignationDropdown(null);
           }}
           className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
         >
@@ -426,7 +461,7 @@ export default function UserMenuDropdown({
         </button>
         {openRoleDropdown === user.id && (
           <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
-            {['user', 'manager', 'facility_staff', 'admin', 'super_admin'].map((role) => (
+            {['user', 'admin', 'super_admin'].map((role) => (
               <div
                 key={role}
                 onClick={(e) => {
@@ -469,6 +504,7 @@ export default function UserMenuDropdown({
             setOpenWorkTypeDropdown(null);
             setOpenUserTypeDropdown(null);
             setOpenRoleDropdown(null);
+            setOpenDesignationDropdown(null);
           }}
           className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
         >
@@ -515,6 +551,76 @@ export default function UserMenuDropdown({
                   <span className="font-semibold text-gray-700">{getDepartmentLabel(department)}</span>
                 </div>
                 {user.department === department && (
+                  <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Designation Dropdown */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenDesignationDropdown(openDesignationDropdown === user.id ? null : user.id);
+            setOpenApprovalDropdown(null);
+            setOpenWorkTypeDropdown(null);
+            setOpenUserTypeDropdown(null);
+            setOpenRoleDropdown(null);
+            setOpenDepartmentDropdown(null);
+          }}
+          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
+        >
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>{getDesignationLabel(user.designation)}</span>
+          </div>
+          {openDesignationDropdown === user.id ? (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </button>
+        {openDesignationDropdown === user.id && (
+          <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
+            {['agent', 'manager', 'faculty_staff', 'team_leader', 'ceo', 'developer'].map((designation) => (
+              <div
+                key={designation}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDesignationChange(user.id, designation as any);
+                  if (viewType === 'list') {
+                    onMenuClose?.();
+                  }
+                }}
+                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${
+                  user.designation === designation ? 'bg-purple-50' : ''
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  <span className="font-semibold text-gray-700">{getDesignationLabel(designation)}</span>
+                </div>
+                {user.designation === designation && (
                   <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>

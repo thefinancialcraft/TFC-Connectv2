@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import { supabase } from "../lib/supabase";
 import { checkAuthAndFetchProfile } from "../lib/authService";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
 import AppLogo from "../components/AppLogo";
 
-export default function ProfileCompletion() {
+function ProfileCompletion() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
   // Form state - organized by categories
@@ -90,44 +92,58 @@ export default function ProfileCompletion() {
                 .eq('user_id', result.user.uid)
                 .maybeSingle();
               
+              // Format dates for input fields (YYYY-MM-DD format) - client-only, fixed format
+              const formatDateForInput = (dateString: string | null | undefined): string => {
+                if (!dateString || typeof window === 'undefined') return "";
+                try {
+                  // Use UTC to avoid timezone issues
+                  const date = new Date(dateString);
+                  if (isNaN(date.getTime())) return "";
+                  // Use toISOString for consistent YYYY-MM-DD format (UTC)
+                  return date.toISOString().split('T')[0];
+                } catch {
+                  return "";
+                }
+              };
+
               setFormData({
                 // basic_info
-                email: profileData.user.email || fullProfile?.email || "",
-                user_name: fullProfile?.user_name || profileData.user.displayName || "",
-                contact_no: fullProfile?.contact_no || profileData.user.phone || "",
-                employee_id: fullProfile?.employee_id || profileData.user.employeeId || "",
-                role: fullProfile?.role || profileData.user.role || "",
+                email: String(profileData.user.email || fullProfile?.email || ""),
+                user_name: String(fullProfile?.user_name || profileData.user.displayName || ""),
+                contact_no: String(fullProfile?.contact_no || profileData.user.phone || ""),
+                employee_id: String(fullProfile?.employee_id || profileData.user.employeeId || ""),
+                role: String(fullProfile?.role || profileData.user.role || ""),
                 // personal_info
-                father_name: fullProfile?.father_name || "",
-                gender: fullProfile?.gender || "",
-                date_of_birth: fullProfile?.date_of_birth || "",
-                blood_group: fullProfile?.blood_group || "",
-                alternate_contact: fullProfile?.alternate_contact || "",
-                emergency_contact_no: fullProfile?.emergency_contact_no || "",
+                father_name: String(fullProfile?.father_name || ""),
+                gender: String(fullProfile?.gender || ""),
+                date_of_birth: formatDateForInput(fullProfile?.date_of_birth),
+                blood_group: String(fullProfile?.blood_group || ""),
+                alternate_contact: String(fullProfile?.alternate_contact || ""),
+                emergency_contact_no: String(fullProfile?.emergency_contact_no || ""),
                 // employment_info
-                date_of_joining: fullProfile?.date_of_joining || "",
-                in_hand_salary: fullProfile?.in_hand_salary?.toString() || "",
+                date_of_joining: formatDateForInput(fullProfile?.date_of_joining),
+                in_hand_salary: String(fullProfile?.in_hand_salary || ""),
                 // address_info
-                primary_address: fullProfile?.primary_address || "",
-                area_pincode: fullProfile?.area_pincode || "",
+                primary_address: String(fullProfile?.primary_address || ""),
+                area_pincode: String(fullProfile?.area_pincode || ""),
                 // kyc_info
-                pan_number: fullProfile?.pan_number || "",
-                aadhar_card_no: fullProfile?.aadhar_card_no || "",
+                pan_number: String(fullProfile?.pan_number || ""),
+                aadhar_card_no: String(fullProfile?.aadhar_card_no || ""),
                 // bank_info
-                bank_name: fullProfile?.bank_name || "",
-                account_holder_name: fullProfile?.account_holder_name || "",
-                account_number: fullProfile?.account_number || "",
-                ifsc_code: fullProfile?.ifsc_code || "",
-                branch_city: fullProfile?.branch_city || "",
-                branch_state: fullProfile?.branch_state || "",
-                branch_pincode: fullProfile?.branch_pincode || "",
+                bank_name: String(fullProfile?.bank_name || ""),
+                account_holder_name: String(fullProfile?.account_holder_name || ""),
+                account_number: String(fullProfile?.account_number || ""),
+                ifsc_code: String(fullProfile?.ifsc_code || ""),
+                branch_city: String(fullProfile?.branch_city || ""),
+                branch_state: String(fullProfile?.branch_state || ""),
+                branch_pincode: String(fullProfile?.branch_pincode || ""),
                 // documents
-                profile_pic_url: fullProfile?.profile_pic_url || "",
-                pancard_url: fullProfile?.pancard_url || "",
-                aadhar_front_url: fullProfile?.aadhar_front_url || "",
-                aadhar_back_url: fullProfile?.aadhar_back_url || "",
-                qualification_marksheet_url: fullProfile?.qualification_marksheet_url || "",
-                bank_passbook_url: fullProfile?.bank_passbook_url || "",
+                profile_pic_url: String(fullProfile?.profile_pic_url || ""),
+                pancard_url: String(fullProfile?.pancard_url || ""),
+                aadhar_front_url: String(fullProfile?.aadhar_front_url || ""),
+                aadhar_back_url: String(fullProfile?.aadhar_back_url || ""),
+                qualification_marksheet_url: String(fullProfile?.qualification_marksheet_url || ""),
+                bank_passbook_url: String(fullProfile?.bank_passbook_url || ""),
               });
 
               // Check if profile is already complete, redirect if so
@@ -138,13 +154,13 @@ export default function ProfileCompletion() {
             }
           } catch (err) {
             console.error('Error fetching profile:', err);
-            // Fallback to basic data
+            // Fallback to basic data - ensure all values are strings
             setFormData({
-              email: result.user.email || "",
-              user_name: result.user.displayName || "",
-              contact_no: result.user.phone || "",
-              employee_id: result.user.employeeId || "",
-              role: result.user.role || "",
+              email: String(result.user.email || ""),
+              user_name: String(result.user.displayName || ""),
+              contact_no: String(result.user.phone || ""),
+              employee_id: String(result.user.employeeId || ""),
+              role: String(result.user.role || ""),
               father_name: "",
               gender: "",
               date_of_birth: "",
@@ -180,9 +196,55 @@ export default function ProfileCompletion() {
     fetchProfile();
   }, [router]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleFileUpload = async (fieldName: string, fileUrl: string) => {
+    // Update form data immediately
+    setFormData((prev) => ({ ...prev, [fieldName]: fileUrl }));
+    
+    // Immediately save to database
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        showError("You must be logged in to save changes", "Authentication Error");
+        return;
+      }
+
+      // Update only the specific field in database
+      const response = await fetch("/api/auth/update-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          [fieldName]: fileUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Failed to save file URL:', data.error);
+        showError(data.error || "Failed to save file URL", "Error");
+        // Revert form data on error
+        setFormData((prev) => ({ ...prev, [fieldName]: "" }));
+      } else {
+        showSuccess(`${fieldName.replace('_', ' ')} uploaded and saved successfully!`, "Success");
+      }
+    } catch (error: any) {
+      console.error('Error saving file URL:', error);
+      showError(error.message || "An error occurred while saving", "Error");
+      // Revert form data on error
+      setFormData((prev) => ({ ...prev, [fieldName]: "" }));
+    }
   };
 
   const handleSaveAndComplete = async () => {
@@ -234,8 +296,10 @@ export default function ProfileCompletion() {
     }
   };
 
-  // Calculate profile completion percentage
+  // Calculate profile completion percentage - only after mount to avoid hydration issues
   const calculateProfileCompletion = () => {
+    if (!mounted) return 0; // Return 0 during SSR/initial render
+    
     const fieldsToCheck = [
       { key: 'user_name', required: true },
       { key: 'contact_no', required: true },
@@ -261,22 +325,20 @@ export default function ProfileCompletion() {
     ];
 
     let filledCount = 0;
-    let totalFields = fieldsToCheck.length;
+    const totalFields = fieldsToCheck.length;
 
     fieldsToCheck.forEach(field => {
       const value = (formData as any)[field.key];
-      if (value && value.toString().trim() !== '') {
+      if (value && String(value).trim() !== '') {
         filledCount++;
       }
     });
 
-    const percentage = Math.round((filledCount / totalFields) * 100);
-    return percentage;
+    // Use Math.round for deterministic calculation
+    return Math.round((filledCount / totalFields) * 100);
   };
 
-  const profileCompletion = calculateProfileCompletion();
-
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#e7e3ff" }}>
         <div className="text-center">
@@ -286,6 +348,9 @@ export default function ProfileCompletion() {
       </div>
     );
   }
+
+  // Calculate profile completion only after mount (client-side only)
+  const profileCompletion = calculateProfileCompletion();
 
   const categories = [
     { id: "basic_info", label: "Basic Details", icon: "fi-rr-user" },
@@ -315,27 +380,27 @@ export default function ProfileCompletion() {
 
         {/* Progress Card */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-              Profile Completion
-            </h2>
-            <span 
-              className="text-xl font-bold"
-              style={{ 
-                color: profileCompletion === 100 ? "#10B981" : profileCompletion >= 50 ? "#F59E0B" : "#EF4444",
-                fontFamily: "'Poppins', sans-serif"
-              }}
-            >
-              {profileCompletion}%
-            </span>
-          </div>
-          <div className="w-full h-3 rounded-full overflow-hidden bg-gray-200">
-            <div
-              className="h-full transition-all duration-300"
-              style={{
-                width: `${profileCompletion}%`,
-                backgroundColor: profileCompletion === 100 ? "#10B981" : profileCompletion >= 50 ? "#F59E0B" : "#EF4444",
-              }}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
+                Profile Completion
+              </h2>
+              <span 
+                className="text-xl font-bold"
+                style={{ 
+                  color: profileCompletion === 100 ? "#10B981" : profileCompletion >= 50 ? "#F59E0B" : "#EF4444",
+                  fontFamily: "'Poppins', sans-serif"
+                }}
+              >
+                {profileCompletion}%
+              </span>
+            </div>
+            <div className="w-full h-3 rounded-full overflow-hidden bg-gray-200">
+              <div
+                className="h-full transition-all duration-300"
+                style={{
+                  width: `${profileCompletion}%`,
+                  backgroundColor: profileCompletion === 100 ? "#10B981" : profileCompletion >= 50 ? "#F59E0B" : "#EF4444",
+                }}
             />
           </div>
         </div>
@@ -376,6 +441,7 @@ export default function ProfileCompletion() {
               formData={formData}
               handleInputChange={handleInputChange}
               category={activeCategory}
+              onFileUpload={handleFileUpload}
             />
           </div>
         </div>
@@ -415,4 +481,9 @@ export default function ProfileCompletion() {
     </div>
   );
 }
+
+// Disable SSR to prevent hydration errors
+export default dynamic(() => Promise.resolve(ProfileCompletion), {
+  ssr: false,
+});
 

@@ -67,9 +67,11 @@ export default function Header({ user, onLogout }: HeaderProps) {
   }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl]);
 
   // Use cached user for display (prevents "User / Not assigned" flicker)
-  const displayUser = cachedUser || user;
+  // Only use cached user after mount to prevent hydration mismatch
+  const displayUser = mounted ? (cachedUser || user) : user;
 
   const getInitials = () => {
+    if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
     if (displayUser?.displayName) {
       return displayUser.displayName.trim().charAt(0).toUpperCase();
     }
@@ -110,7 +112,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
             {profilePicUrl ? (
               <img
                 src={profilePicUrl}
-                alt={displayUser?.displayName || 'User'}
+                alt={mounted ? (displayUser?.displayName || 'User') : 'User'}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -124,7 +126,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
               className="text-base font-bold leading-tight"
               style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
             >
-              {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
+              {mounted ? (displayUser?.displayName || displayUser?.email?.split("@")[0] || "User") : "User"}
             </h1>
             <p
               className="text-xs leading-tight"
@@ -165,7 +167,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
               {profilePicUrl ? (
                 <img
                   src={profilePicUrl}
-                  alt={displayUser?.displayName || 'User'}
+                  alt={mounted ? (displayUser?.displayName || 'User') : 'User'}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -177,13 +179,13 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 className="text-sm font-semibold truncate"
                 style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
               >
-                {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
+                {mounted ? (displayUser?.displayName || displayUser?.email?.split("@")[0] || "User") : "User"}
               </p>
               <p
                 className="text-xs truncate"
                 style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}
               >
-                Employee ID: {displayUser?.employeeId || "Not assigned"}
+                Employee ID: {mounted ? (displayUser?.employeeId || "Not assigned") : "Not assigned"}
               </p>
             </div>
           </div>

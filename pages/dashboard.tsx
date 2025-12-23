@@ -180,16 +180,17 @@ export default function Dashboard() {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A";
+    try {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${month}/${day}/${year}, ${hours}:${minutes}`;
+    } catch (e) {
+      return "N/A";
+    }
   };
 
   const getLastLoginText = () => {
@@ -242,6 +243,7 @@ export default function Dashboard() {
         }}
         activeNav={activeNav}
         onNavChange={setActiveNav}
+        userRole={user?.role || null}
       />
 
       {/* Main Content Area */}

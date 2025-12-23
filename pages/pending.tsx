@@ -237,11 +237,11 @@ const PendingApproval = () => {
               <i className="fi flex fi-rr-calendar text-base" style={{ color: "#787E9D" }}></i>
               <span className="text-sm font-medium" style={{ fontFamily: "'Roboto', sans-serif", color: "#263238" }}>Account Created:</span>
               <span className="text-sm" style={{ fontFamily: "'Roboto', sans-serif", color: "#787E9D" }}>
-                {new Date(profile.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {(() => {
+                  const date = new Date(profile.created_at);
+                  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                  return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                })()}
               </span>
             </div>
           </div>

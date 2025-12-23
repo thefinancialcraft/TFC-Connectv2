@@ -30,7 +30,8 @@ function setupSupabaseProperties() {
 
   props.setProperties({
     SUPABASE_URL: 'https://dvrxpqqqplgnkfbleoci.supabase.co',
-    SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cnhwcXFxcGxnbmtmYmxlb2NpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MjIxNTE3MSwiZXhwIjoyMDc3NzkxMTcxfQ.3YrBKDWSOyCDmTeXpa9l2r0NMzev0BjDFY3ZbOcd1Qg'
+    SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cnhwcXFxcGxnbmtmYmxlb2NpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MjIxNTE3MSwiZXhwIjoyMDc3NzkxMTcxfQ.3YrBKDWSOyCDmTeXpa9l2r0NMzev0BjDFY3ZbOcd1Qg',
+    SIGNUP_BASE_URL: 'http://localhost:3000' // Update this to your production URL
   }, true); // true = overwrite
 
   Logger.log("✅ Supabase Script Properties saved (forced overwrite)");
@@ -277,7 +278,8 @@ function doPost(e) {
 
     const email = data && data.email;
     const purpose = data && data.purpose;
-    Logger.log('[doPost] Parsed data - email: ' + email + ', purpose: ' + purpose);
+    const name = data && data.name;
+    Logger.log('[doPost] Parsed data - email: ' + email + ', purpose: ' + purpose + ', name: ' + name);
 
     // Validate required fields
     if (!email || !purpose) {
@@ -299,7 +301,7 @@ function doPost(e) {
     }
 
     // Validate purpose
-    const validPurposes = ['forgot_user_id', 'forgot_password', 'email_verification'];
+    const validPurposes = ['forgot_user_id', 'forgot_password', 'email_verification', 'posp_agent_invite'];
     if (validPurposes.indexOf(purpose) === -1) {
       const resp = { success: false, error: 'Invalid purpose' };
       Logger.log('[doPost] Validation failed: ' + JSON.stringify(resp));
@@ -308,7 +310,39 @@ function doPost(e) {
       ).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Step 1: Verify email exists in database
+    // Handle POSP Agent Invite differently - no email verification needed
+    if (purpose === 'posp_agent_invite') {
+      Logger.log('[doPost] Processing POSP Agent invite for: ' + email + ', name: ' + name);
+      
+      // Get signup link from script properties or use default
+      const props = PropertiesService.getScriptProperties();
+      const baseUrl = props.getProperty('SIGNUP_BASE_URL') || 'http://localhost:3000';
+      const signupUrl = baseUrl + '/signup?email=' + encodeURIComponent(email) + '&type=posp_agent';
+      Logger.log('[doPost] Signup URL: ' + signupUrl);
+      
+      // Get email template for invite
+      const emailTemplate = getPosAgentInviteTemplate(signupUrl, name || 'there');
+      const subject = 'Invitation to Join TFC Connect as POSP Agent';
+      
+      Logger.log('[doPost] Sending invite email to: ' + email);
+      
+      MailApp.sendEmail({
+        to: email,
+        subject: subject,
+        htmlBody: emailTemplate,
+      });
+
+      const successResp = { 
+        success: true, 
+        message: 'Invitation email has been sent successfully.'
+      };
+      Logger.log('[doPost] Success response: ' + JSON.stringify(successResp));
+      return ContentService.createTextOutput(
+        JSON.stringify(successResp)
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Step 1: Verify email exists in database (for other purposes)
     const emailCheck = verifyEmailInDatabase(email);
     if (!emailCheck.exists) {
       const resp = { 
@@ -513,6 +547,49 @@ function getEmailVerificationTemplate(otp) {
           </div>
           <p><strong>This OTP will expire in 10 minutes.</strong></p>
           <p>If you didn't create an account, please ignore this email.</p>
+          <p>Best regards,<br>TFC Connect Team</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated email. Please do not reply.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * POSP Agent Invite Email Template
+ */
+function getPosAgentInviteTemplate(signupUrl, name) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FF8C42 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FF8C42 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Join TFC Connect as POSP Agent</h1>
+        </div>
+        <div class="content">
+          <p>Hello ${name},</p>
+          <p>You have been invited to join TFC Connect as a POSP Agent. Click the button below to complete your registration:</p>
+          <div style="text-align: center;">
+            <a href="${signupUrl}" class="button">Complete Registration</a>
+          </div>
+          <p>Or copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; color: #4A32E7;">${signupUrl}</p>
+          <p>This invitation link will remain valid. If you didn't expect this invitation, please ignore this email.</p>
           <p>Best regards,<br>TFC Connect Team</p>
         </div>
         <div class="footer">

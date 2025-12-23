@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 interface SignupFormProps {
   onError?: (error: string) => void;
+  onSuccess?: () => void;
+  fromAdminPanel?: boolean; // Flag to indicate this is from admin panel
 }
 
-export default function SignupForm({ onError }: SignupFormProps) {
+export default function SignupForm({ onError, onSuccess, fromAdminPanel = false }: SignupFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -16,6 +19,7 @@ export default function SignupForm({ onError }: SignupFormProps) {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<'employee' | 'posp_agent'>('employee');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,6 +29,7 @@ export default function SignupForm({ onError }: SignupFormProps) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -71,15 +76,28 @@ export default function SignupForm({ onError }: SignupFormProps) {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API call
+      // Get current session token if from admin panel
+      let authToken = null;
+      if (fromAdminPanel) {
+        const { data: { session } } = await supabase.auth.getSession();
+        authToken = session?.access_token || null;
+      }
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (authToken) {
+        headers["Authorization"] = `Bearer ${authToken}`;
+      }
+
       const response = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
           user_name: formData.name,
           contact_no: formData.contactNo,
+          user_type: userType,
+          from_admin_panel: fromAdminPanel, // Flag to indicate this is from admin panel
         }),
       });
 
@@ -93,14 +111,19 @@ export default function SignupForm({ onError }: SignupFormProps) {
       localStorage.setItem('signup_name', formData.name);
       localStorage.setItem('signup_email', formData.email);
 
-      // Redirect to success page with user details
-      router.push({
-        pathname: "/signup-success",
-        query: {
-          name: formData.name,
-          email: formData.email,
-        },
-      });
+      // If onSuccess callback is provided (modal mode), call it instead of redirecting
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Redirect to success page with user details (normal signup flow)
+        router.push({
+          pathname: "/signup-success",
+          query: {
+            name: formData.name,
+            email: formData.email,
+          },
+        });
+      }
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred during signup";
       setErrors({ submit: errorMessage });
@@ -125,6 +148,41 @@ export default function SignupForm({ onError }: SignupFormProps) {
         Create Account
       </h2>
 
+      {/* User Type Toggle */}
+      <div className="mb-4">
+        <label
+          className="block text-sm font-medium mb-2"
+          style={{ color: "rgb(38, 50, 56)" }}
+        >
+          User Type
+        </label>
+        <div className="flex items-center gap-1 rounded-lg border border-gray-300 bg-white p-1 h-[42px]">
+          <button
+            type="button"
+            onClick={() => setUserType('employee')}
+            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 flex-1 ${
+              userType === 'employee'
+                ? "bg-[#4b33e8] text-white hover:opacity-90"
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            Employee
+          </button>
+          <button
+            type="button"
+            onClick={() => setUserType('posp_agent')}
+            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-8 flex-1 ${
+              userType === 'posp_agent'
+                ? "bg-[#4b33e8] text-white hover:opacity-90"
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+            style={{ fontFamily: "'Poppins', sans-serif" }}
+          >
+            POSP Agent
+          </button>
+        </div>
+      </div>
 
       {/* Name Field */}
       <div className="mb-4">

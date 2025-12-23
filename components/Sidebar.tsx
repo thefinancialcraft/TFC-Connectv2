@@ -15,12 +15,16 @@ interface SidebarProps {
   };
   activeNav?: string;
   onNavChange?: (nav: string) => void;
+  userRole?: string | null;
+  isSuperAdmin?: boolean;
 }
 
-export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: SidebarProps) {
+export default function Sidebar({ user, activeNav = "dashboard", onNavChange, userRole, isSuperAdmin }: SidebarProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(userRole || null);
+  const [currentIsSuperAdmin, setCurrentIsSuperAdmin] = useState<boolean | undefined>(isSuperAdmin);
   
   // Initialize with cached data, then update with props if different (ghost update)
   const [cachedUser, setCachedUser] = useState<SidebarProps['user']>(() => {
@@ -42,6 +46,37 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Fetch user role from database if not provided
+  useEffect(() => {
+    if (mounted && !currentUserRole) {
+      const fetchUserRole = async () => {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const { data: userProfile } = await supabase
+              .from('user_profiles')
+              .select('role, super_admin')
+              .eq('user_id', session.user.id)
+              .single();
+
+            if (userProfile) {
+              setCurrentUserRole(userProfile.role);
+              setCurrentIsSuperAdmin(userProfile.super_admin || false);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching user role in Sidebar:', err);
+        }
+      };
+      fetchUserRole();
+    } else if (userRole) {
+      setCurrentUserRole(userRole);
+    }
+    if (isSuperAdmin !== undefined) {
+      setCurrentIsSuperAdmin(isSuperAdmin);
+    }
+  }, [mounted, userRole, isSuperAdmin, currentUserRole]);
 
   // Ghost update: Only update if props actually changed
   useEffect(() => {
@@ -72,7 +107,8 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
   }, [user?.displayName, user?.employeeId, user?.email, user?.lastSignInAt, user?.profilePicUrl]);
 
   // Use cached user for display (prevents "User / Not assigned" flicker)
-  const displayUser = cachedUser || user;
+  // Only use cached user after mount to prevent hydration mismatch
+  const displayUser = mounted ? (cachedUser || user) : user;
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -100,6 +136,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
   };
 
   const getInitials = () => {
+    if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
     if (displayUser?.displayName) {
       return displayUser.displayName.trim().charAt(0).toUpperCase();
     }
@@ -129,7 +166,11 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
     return date.toLocaleDateString();
   };
 
-  const navItems = [
+  // Check if user is admin or super_admin
+  // Only check after mount to prevent hydration mismatch
+  const isAdmin = mounted && (currentUserRole === 'admin' || currentUserRole === 'super_admin' || currentIsSuperAdmin === true);
+
+  const allNavItems = [
     {
       name: "Dashboard",
       path: "/dashboard",
@@ -140,7 +181,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
       name: "Users",
       path: "/users",
       icon: "fi-rr-users",
-      adminOnly: false,
+      adminOnly: true, // Only show for admin/super_admin
     },
     {
       name: "Attendance",
@@ -149,6 +190,13 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
       adminOnly: false,
     },
   ];
+
+  // Filter nav items based on admin status
+  // During SSR (before mount), show all items to prevent hydration mismatch
+  // After mount, filter based on actual role
+  const navItems = mounted 
+    ? allNavItems.filter(item => !item.adminOnly || isAdmin)
+    : allNavItems; // Show all items during SSR to prevent hydration mismatch
 
   const handleNavClick = (path: string) => {
     if (onNavChange) {
@@ -230,13 +278,13 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
                 className="text-sm font-semibold truncate mb-0.5"
                 style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
               >
-                {displayUser?.displayName || displayUser?.email?.split("@")[0] || "User"}
+                {mounted ? (displayUser?.displayName || displayUser?.email?.split("@")[0] || "User") : "User"}
               </p>
               <p
                 className="text-xs truncate"
                 style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}
               >
-                {displayUser?.email || "user@example.com"}
+                {mounted ? (displayUser?.email || "user@example.com") : "user@example.com"}
               </p>
             </div>
           </div>
@@ -250,7 +298,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange }: 
                 className="font-medium"
                 style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
               >
-                {displayUser?.employeeId || "Not assigned"}
+                {mounted ? (displayUser?.employeeId || "Not assigned") : "Not assigned"}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">

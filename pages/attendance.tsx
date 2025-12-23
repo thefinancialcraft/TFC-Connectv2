@@ -192,6 +192,7 @@ export default function Attendance() {
         }}
         activeNav={activeNav}
         onNavChange={setActiveNav}
+        userRole={user?.role || null}
       />
 
       {/* Main Content Area */}

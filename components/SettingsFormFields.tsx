@@ -6,9 +6,42 @@ interface SettingsFormFieldsProps {
   category: string;
   onFileUpload?: (fieldName: string, fileUrl: string) => void;
   userId?: string;
+  readOnly?: boolean;
 }
 
-export default function SettingsFormFields({ formData, handleInputChange, category, onFileUpload, userId }: SettingsFormFieldsProps) {
+export default function SettingsFormFields({ formData, handleInputChange, category, onFileUpload, userId, readOnly = false }: SettingsFormFieldsProps) {
+  const [copiedField, setCopiedField] = React.useState<string | null>(null);
+
+  const handleCopy = async (fieldId: string, value: string | null | undefined) => {
+    const textToCopy = value?.toString() || '';
+    if (!textToCopy || textToCopy.trim() === '') {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedField(fieldId);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = textToCopy;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopiedField(fieldId);
+        setTimeout(() => setCopiedField(null), 2000);
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr);
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
   const renderField = (
     id: string,
     label: string,
@@ -19,89 +52,113 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
     maxLength?: number,
     rows?: number,
     options?: { value: string; label: string }[]
-  ) => (
-    <div className="space-y-2">
-      <label
-        htmlFor={id}
-        className="text-sm font-medium leading-none"
-        style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
-      >
-        {label} {required && <span style={{ color: "#EF4444" }}>*</span>}
-      </label>
-      {type === "textarea" ? (
-        <textarea
-          id={id}
-          value={formData[id] || ""}
-          onChange={handleInputChange}
-          rows={rows || 3}
-          placeholder={placeholder}
-          className="flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{
-            borderColor: "#E0E0E0",
-            backgroundColor: disabled ? "#F5F5F5" : "#FFFFFF",
-            color: disabled ? "#787E9D" : "#263238",
-            fontFamily: "'Roboto', sans-serif",
-          }}
-          onFocus={(e) => {
-            if (!disabled) e.currentTarget.style.borderColor = "#4b33e8";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#E0E0E0";
-          }}
-        />
-      ) : type === "select" ? (
-        <select
-          id={id}
-          value={formData[id] || ""}
-          onChange={handleInputChange}
-          disabled={disabled}
-          className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{
-            borderColor: "#E0E0E0",
-            backgroundColor: disabled ? "#F5F5F5" : "#FFFFFF",
-            color: disabled ? "#787E9D" : "#263238",
-            fontFamily: "'Roboto', sans-serif",
-          }}
-          onFocus={(e) => {
-            if (!disabled) e.currentTarget.style.borderColor = "#4b33e8";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#E0E0E0";
-          }}
-        >
-          {options?.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type={type}
-          id={id}
-          value={formData[id] || ""}
-          onChange={handleInputChange}
-          required={required}
-          disabled={disabled}
-          placeholder={placeholder}
-          maxLength={maxLength}
-          className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{
-            borderColor: "#E0E0E0",
-            backgroundColor: disabled ? "#F5F5F5" : "#FFFFFF",
-            color: disabled ? "#787E9D" : "#263238",
-            fontFamily: "'Roboto', sans-serif",
-          }}
-          onFocus={(e) => {
-            if (!disabled) e.currentTarget.style.borderColor = "#4b33e8";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#E0E0E0";
-          }}
-        />
-      )}
-    </div>
-  );
+  ) => {
+    // If readOnly is true, make all fields disabled (except those already disabled)
+    const isDisabled = readOnly || disabled;
+    const fieldValue = formData[id] || "";
+    const hasValue = fieldValue && fieldValue.toString().trim() !== '';
+    
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor={id}
+            className="text-sm font-medium leading-none"
+            style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
+          >
+            {label} {required && <span style={{ color: "#EF4444" }}>*</span>}
+          </label>
+          {hasValue && (
+            <button
+              type="button"
+              onClick={() => handleCopy(id, fieldValue)}
+              className="flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 transition-colors"
+              title={copiedField === id ? "Copied!" : "Copy"}
+            >
+              {copiedField === id ? (
+                <i className="fi flex fi-rr-check text-xs text-green-600"></i>
+              ) : (
+                <i className="fi flex fi-rr-copy text-xs text-gray-500"></i>
+              )}
+            </button>
+          )}
+        </div>
+        {type === "textarea" ? (
+          <textarea
+            id={id}
+            value={fieldValue}
+            onChange={handleInputChange}
+            rows={rows || 3}
+            placeholder={placeholder}
+            disabled={isDisabled}
+            className="flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              borderColor: "#E0E0E0",
+              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              color: "#000000",
+              fontFamily: "'Roboto', sans-serif",
+            }}
+            onFocus={(e) => {
+              if (!isDisabled) e.currentTarget.style.borderColor = "#4b33e8";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#E0E0E0";
+            }}
+          />
+        ) : type === "select" ? (
+          <select
+            id={id}
+            value={fieldValue}
+            onChange={handleInputChange}
+            disabled={isDisabled}
+            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              borderColor: "#E0E0E0",
+              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              color: "#000000",
+              fontFamily: "'Roboto', sans-serif",
+            }}
+            onFocus={(e) => {
+              if (!isDisabled) e.currentTarget.style.borderColor = "#4b33e8";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#E0E0E0";
+            }}
+          >
+            {options?.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={type}
+            id={id}
+            value={fieldValue}
+            onChange={handleInputChange}
+            required={required}
+            disabled={isDisabled}
+            placeholder={placeholder}
+            maxLength={maxLength}
+            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              borderColor: "#E0E0E0",
+              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              color: "#000000",
+              fontFamily: "'Roboto', sans-serif",
+            }}
+            onFocus={(e) => {
+              if (!isDisabled) e.currentTarget.style.borderColor = "#4b33e8";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#E0E0E0";
+            }}
+          />
+        )}
+      </div>
+    );
+  };
 
   if (category === "basic_info") {
     return (
@@ -270,14 +327,32 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
       const fileUrl = formData[fieldName];
       const isImage = fileUrl && (fileUrl.includes('.jpg') || fileUrl.includes('.jpeg') || fileUrl.includes('.png') || fileUrl.includes('.webp'));
 
+      const hasValue = fileUrl && fileUrl.toString().trim() !== '';
+      
       return (
         <div className="space-y-2">
-          <label
-            className="text-sm font-medium leading-none"
-            style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
-          >
-            {label}
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              className="text-sm font-medium leading-none"
+              style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}
+            >
+              {label}
+            </label>
+            {hasValue && (
+              <button
+                type="button"
+                onClick={() => handleCopy(fieldName, fileUrl)}
+                className="flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 transition-colors"
+                title={copiedField === fieldName ? "Copied!" : "Copy"}
+              >
+                {copiedField === fieldName ? (
+                  <i className="fi flex fi-rr-check text-xs text-green-600"></i>
+                ) : (
+                  <i className="fi flex fi-rr-copy text-xs text-gray-500"></i>
+                )}
+              </button>
+            )}
+          </div>
           
           <input
             ref={fileInputRef}

@@ -16,7 +16,7 @@ export default async function handler(
   }
 
   try {
-    const { email, password, user_name, contact_no } = req.body;
+    const { email, password, user_name, contact_no, profile_pic_url, user_type, from_admin_panel } = req.body;
 
     // Validate required fields
     if (!email || !password || !user_name || !contact_no) {
@@ -131,8 +131,9 @@ export default async function handler(
     let userId: string;
     let usedAdminClient = false;
 
-    if (isAdmin && supabaseAdmin) {
-      // Admin user creating account - use admin client with email_confirm: true
+    // Use admin client if: from admin panel OR user is admin
+    if ((from_admin_panel || isAdmin) && supabaseAdmin) {
+      // Admin panel or admin user creating account - use admin client with email_confirm: true
       const { data: adminData, error: adminError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -210,6 +211,12 @@ export default async function handler(
           email: email,
           user_name: user_name, // Display Name
           contact_no: contact_no, // Phone number
+          profile_pic_url: profile_pic_url || null, // Profile picture URL
+          user_type: user_type || 'employee', // User type: employee or posp_agent
+          status: 'inactive', // Default status: inactive
+          work_type: 'on_site', // Default work type: on_site
+          department: 'sales', // Default department: sales
+          designation: 'agent', // Default designation: agent
           created_at: new Date().toISOString(),
           profile_complete: false,
           super_admin: false,
@@ -231,6 +238,12 @@ export default async function handler(
             email: email,
             user_name: user_name,
             contact_no: contact_no,
+            profile_pic_url: profile_pic_url || null,
+            user_type: user_type || 'employee',
+            status: 'inactive', // Default status: inactive
+            work_type: 'on_site', // Default work type: on_site
+            department: 'sales', // Default department: sales
+            designation: 'agent', // Default designation: agent
             updated_at: new Date().toISOString(),
           })
           .eq('user_id', userId);
@@ -245,6 +258,28 @@ export default async function handler(
         return res.status(500).json({ 
           error: 'Account created but failed to save profile. Please contact support.' 
         });
+      }
+    }
+
+    // Verify profile was created/updated with profile_pic_url if provided
+    if (profile_pic_url) {
+      const { data: verifyProfile, error: verifyError } = await clientToUse
+        .from('user_profiles')
+        .select('profile_pic_url')
+        .eq('user_id', userId)
+        .single();
+
+      if (verifyError) {
+        console.error('Error verifying profile_pic_url:', verifyError);
+      } else if (verifyProfile && verifyProfile.profile_pic_url !== profile_pic_url) {
+        // If URL doesn't match, update it
+        console.log('Profile pic URL mismatch, updating...');
+        await clientToUse
+          .from('user_profiles')
+          .update({ profile_pic_url: profile_pic_url })
+          .eq('user_id', userId);
+      } else {
+        console.log('Profile picture URL saved successfully:', profile_pic_url);
       }
     }
 

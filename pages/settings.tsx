@@ -443,7 +443,10 @@ export default function Settings() {
     } else if (diffDays < 7) {
       return `${diffDays} ${diffDays === 1 ? "day" : "days"} ago`;
     } else {
-      return date.toLocaleDateString();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month}/${day}/${year}`;
     }
   };
 
@@ -531,6 +534,7 @@ export default function Settings() {
         }}
         activeNav={activeNav}
         onNavChange={setActiveNav}
+        userRole={user?.role || null}
       />
 
       {/* Main Content Area */}

@@ -93,8 +93,9 @@ const Hold = () => {
 
   // Calculate time remaining and auto-update status when expired
   useEffect(() => {
-    if (!profile?.hold_end_time || isUpdatingStatus) {
-      if (!profile?.hold_end_time) {
+    const holdEndDate = profile?.hold_end_date || profile?.hold_end_time;
+    if (!holdEndDate || isUpdatingStatus) {
+      if (!holdEndDate) {
         setTimeRemaining("");
       }
       return;
@@ -102,49 +103,50 @@ const Hold = () => {
 
     const updateTimer = async () => {
       const now = new Date().getTime();
-      const endTime = new Date(profile.hold_end_time!).getTime();
+      const endTime = new Date(holdEndDate).getTime();
       const difference = endTime - now;
 
       if (difference <= 0) {
         setTimeRemaining("Hold period expired");
         
-        // Auto-update status to active if hold period expired (only for role='user')
-        if (profile.status === 'hold' && profile.role === 'user' && !isUpdatingStatus) {
+        // Auto-update status to approved and active if hold period expired
+        if ((profile.approval_status === 'hold' || profile.status === 'hold') && !isUpdatingStatus) {
           setIsUpdatingStatus(true);
-          console.log('Hold period expired, auto-updating status to active');
+          console.log('Hold period expired, auto-updating to approved and active');
+          console.log('Current profile status:', profile.approval_status, profile.status);
           
-          try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-              setIsUpdatingStatus(false);
-              return;
-            }
+          const updateStatus = async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session) {
+                console.error('No session found');
+                setIsUpdatingStatus(false);
+                return;
+              }
 
-            // Get current profile to preserve approval_status
-            const { data: currentProfile } = await supabase
-              .from('user_profiles')
-              .select('approval_status')
-              .eq('user_id', session.user.id)
-              .single();
+              console.log('Updating user profile for user_id:', session.user.id);
+              
+              const { error: updateError, data: updateData } = await supabase
+                .from('user_profiles')
+                .update({
+                  approval_status: 'approved',
+                  status: 'active',
+                  status_reason: 'Hold expired - account automatically approved and activated',
+                  hold_end_date: null,
+                  hold_start_date: null,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('user_id', session.user.id)
+                .select();
 
-            const { error: updateError } = await supabase
-              .from('user_profiles')
-              .update({
-                status: 'active',
-                status_reason: 'Hold expired - account activated by system',
-                hold_end_time: null,
-                hold_duration_days: null,
-                // Explicitly preserve approval_status to prevent constraint violations
-                approval_status: currentProfile?.approval_status || 'approved',
-                updated_at: new Date().toISOString(),
-              })
-              .eq('user_id', session.user.id);
+              if (updateError) {
+                console.error('Error auto-updating status:', updateError);
+                console.error('Update error details:', JSON.stringify(updateError, null, 2));
+                setIsUpdatingStatus(false);
+                return;
+              }
 
-            if (updateError) {
-              console.error('Error auto-updating status:', updateError);
-              setIsUpdatingStatus(false);
-            } else {
-              console.log('Status auto-updated to active');
+              console.log('Status update successful:', updateData);
               
               // Refresh profile to get updated status
               const { data: updatedData, error: fetchError } = await supabase
@@ -153,21 +155,33 @@ const Hold = () => {
                 .eq('user_id', session.user.id)
                 .single();
               
-              if (!fetchError && updatedData) {
+              if (fetchError) {
+                console.error('Error fetching updated profile:', fetchError);
+                setIsUpdatingStatus(false);
+                return;
+              }
+
+              if (updatedData) {
                 const updatedProfile = updatedData as UserProfile;
+                console.log('Updated profile:', updatedProfile);
                 setProfile(updatedProfile);
                 
-                // Redirect if status changed to active
-                if (updatedProfile.status === 'active' && updatedProfile.approval_status === 'approved') {
-                  router.push("/dashboard");
-                }
+                // Redirect to dashboard since user is now approved and active
+                setTimeout(() => {
+                  if (updatedProfile.status === 'active' && updatedProfile.approval_status === 'approved') {
+                    console.log('Redirecting to dashboard...');
+                    router.push("/dashboard");
+                  }
+                }, 1000);
               }
               setIsUpdatingStatus(false);
+            } catch (error) {
+              console.error('Exception auto-updating status:', error);
+              setIsUpdatingStatus(false);
             }
-          } catch (error) {
-            console.error('Exception auto-updating status:', error);
-            setIsUpdatingStatus(false);
-          }
+          };
+
+          updateStatus();
         }
         return;
       }
@@ -191,7 +205,7 @@ const Hold = () => {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [profile?.hold_end_time, profile?.status, profile?.role, isUpdatingStatus, router]);
+  }, [profile?.hold_end_date, profile?.hold_end_time, profile?.status, profile?.role, isUpdatingStatus, router]);
 
   useEffect(() => {
     fetchUserProfile();
@@ -301,19 +315,26 @@ const Hold = () => {
             <p>• Please contact support for assistance</p>
             <p>• Your account will be activated once the hold is lifted</p>
             
-            {profile.hold_end_time && timeRemaining && (
+            {((profile.hold_end_date || profile.hold_end_time) && timeRemaining) && (
               <div className="mt-4 pt-4 border-t border-orange-200">
-                <p className="font-semibold mb-1">Hold will be lifted in:</p>
-                <p className="text-xl font-bold text-orange-800 mt-1">{timeRemaining}</p>
-                {profile.hold_end_time && (
-                  <p className="text-xs mt-2 opacity-75">
-                    Until: {new Date(profile.hold_end_time).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                <div className="flex items-center gap-2 mb-2">
+                  <i className="fi flex fi-rr-clock text-orange-600 text-lg"></i>
+                  <p className="font-semibold text-orange-800" style={{ fontFamily: "'Poppins', sans-serif" }}>Time Remaining:</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border-2 border-orange-300">
+                  <p className="text-2xl sm:text-3xl font-bold text-orange-600 text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    {timeRemaining}
+                  </p>
+                </div>
+                {(profile.hold_end_date || profile.hold_end_time) && (
+                  <p className="text-xs mt-3 text-center opacity-75" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                    Hold will be lifted on: {(() => {
+                      const date = new Date(profile.hold_end_date || profile.hold_end_time!);
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                      const hours = date.getHours().toString().padStart(2, '0');
+                      const minutes = date.getMinutes().toString().padStart(2, '0');
+                      return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()} at ${hours}:${minutes}`;
+                    })()}
                   </p>
                 )}
               </div>
@@ -369,11 +390,11 @@ const Hold = () => {
               <i className="fi flex fi-rr-calendar text-base" style={{ color: "#787E9D" }}></i>
               <span className="text-sm font-medium" style={{ fontFamily: "'Roboto', sans-serif", color: "#263238" }}>Account Created:</span>
               <span className="text-sm" style={{ fontFamily: "'Roboto', sans-serif", color: "#787E9D" }}>
-                {new Date(profile.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {(() => {
+                  const date = new Date(profile.created_at);
+                  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                  return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                })()}
               </span>
             </div>
 
