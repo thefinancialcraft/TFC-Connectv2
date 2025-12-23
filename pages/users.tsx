@@ -3802,9 +3802,9 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
               )}
 
               {/* All Users Section */}
-              <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className={`mt-8 grid grid-cols-1 ${userTypeToggle === 'posp_agent' ? 'lg:grid-cols-1' : 'lg:grid-cols-12'} gap-6`}>
                 {/* All Users Container - Reduced Width */}
-                <div className="lg:col-span-9 bg-white rounded-xl p-6">
+                <div className={`${userTypeToggle === 'posp_agent' ? 'lg:col-span-1' : 'lg:col-span-9'} bg-white rounded-xl p-6`}>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base sm:text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
                     All users
@@ -4668,6 +4668,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                 </div>
 
                 {/* Right Side Tiles - Designation, Work Type, Department */}
+                {userTypeToggle !== 'posp_agent' && (
                 <div className="lg:col-span-3 space-y-4">
                   {/* Designation Tile */}
                   <div className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-200">
@@ -4786,6 +4787,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                     </div>
                   </div>
                 </div>
+                )}
               </div>
             </div>
           </div>
