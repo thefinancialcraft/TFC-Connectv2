@@ -20,6 +20,7 @@ type Data = {
     updatedAt: string | null;
     profile_pic_url: string | null;
     user_name: string | null;
+    profile_complete: boolean | null;
   };
 };
 

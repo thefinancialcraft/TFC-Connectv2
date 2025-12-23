@@ -24,6 +24,10 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Admin client not available' });
+  }
+
   try {
     const { user_name, employee_id, email, contact_no, user_type, password } = req.body as ImportUser;
 
