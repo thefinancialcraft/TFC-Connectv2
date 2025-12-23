@@ -279,7 +279,8 @@ function doPost(e) {
     const email = data && data.email;
     const purpose = data && data.purpose;
     const name = data && data.name;
-    Logger.log('[doPost] Parsed data - email: ' + email + ', purpose: ' + purpose + ', name: ' + name);
+    const baseUrl = data && data.baseUrl; // Optional: URL can be passed from API
+    Logger.log('[doPost] Parsed data - email: ' + email + ', purpose: ' + purpose + ', name: ' + name + ', baseUrl: ' + baseUrl);
 
     // Validate required fields
     if (!email || !purpose) {
@@ -314,10 +315,10 @@ function doPost(e) {
     if (purpose === 'posp_agent_invite') {
       Logger.log('[doPost] Processing POSP Agent invite for: ' + email + ', name: ' + name);
       
-      // Get signup link from script properties or use default
+      // Get signup link: priority: passed from API > script properties > default
       const props = PropertiesService.getScriptProperties();
-      const baseUrl = props.getProperty('SIGNUP_BASE_URL') || 'http://localhost:3000';
-      const signupUrl = baseUrl + '/signup?email=' + encodeURIComponent(email) + '&type=posp_agent';
+      let finalBaseUrl = baseUrl || props.getProperty('SIGNUP_BASE_URL') || 'https://your-production-domain.com';
+      const signupUrl = finalBaseUrl + '/signup?email=' + encodeURIComponent(email) + '&type=posp_agent';
       Logger.log('[doPost] Signup URL: ' + signupUrl);
       
       // Get email template for invite

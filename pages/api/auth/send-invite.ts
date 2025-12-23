@@ -39,6 +39,11 @@ export default async function handler(
       return res.status(500).json({ error: 'Email service not configured' });
     }
 
+    // Get production URL from environment or use current request origin
+    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                         process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
+                         (req.headers.host ? `https://${req.headers.host}` : 'https://your-production-domain.com');
+
     // Call Google Apps Script to send invite email
     const response = await fetch(webAppUrl, {
       method: 'POST',
@@ -49,6 +54,7 @@ export default async function handler(
         email: email,
         name: name,
         purpose: 'posp_agent_invite',
+        baseUrl: productionUrl, // Pass production URL to Google Apps Script
       }),
     });
 
