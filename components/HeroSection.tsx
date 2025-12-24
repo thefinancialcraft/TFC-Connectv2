@@ -23,9 +23,9 @@ const slides: Slide[] = [
     description: "Stay organized and informed with intuitive tracking that keeps you in control!"
   },
   {
-    title: "Instantly Mark Your Attendance",
+    title: "Manage Your Customers",
     image: "https://lh3.googleusercontent.com/d/13JN_m24KBSRqYXACgmQ-zeqVkP_81GqP",
-    description: "Simplify your routine with our user-friendly attendance feature that saves you time!"
+    description: "Simplify customer management with our user-friendly customer feature that saves you time!"
   },
   {
     title: "Celebrate Your Achievements",

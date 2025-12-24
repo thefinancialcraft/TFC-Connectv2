@@ -202,6 +202,48 @@ export default async function handler(
     // Use UPSERT to handle duplicate user_id (unique constraint)
     // Use admin client if available, otherwise use regular client (requires RLS policies)
     const clientToUse = supabaseAdmin || supabase;
+
+    // -----------------------------------------------------------------------
+    // Generate employee_id based on user_type
+    // Employees  → TFC-001, TFC-002, ...
+    // POSP Agent → AGT-001, AGT-002, ...
+    // -----------------------------------------------------------------------
+    const resolvedUserType: 'employee' | 'posp_agent' =
+      user_type === 'posp_agent' ? 'posp_agent' : 'employee';
+
+    let generatedEmployeeId: string | null = null;
+
+    try {
+      const idPrefix = resolvedUserType === 'posp_agent' ? 'AGT' : 'TFC';
+
+      // Find latest employee_id with this prefix
+      const { data: latestIds, error: latestError } = await clientToUse
+        .from('user_profiles')
+        .select('employee_id')
+        .ilike('employee_id', `${idPrefix}-%`)
+        .order('employee_id', { ascending: false })
+        .limit(1);
+
+      if (latestError) {
+        console.error('Error fetching latest employee_id:', latestError);
+      }
+
+      let nextNumber = 1;
+      if (latestIds && latestIds.length > 0 && latestIds[0].employee_id) {
+        const parts = String(latestIds[0].employee_id).split('-');
+        if (parts.length === 2) {
+          const parsed = parseInt(parts[1], 10);
+          if (!isNaN(parsed) && parsed >= 1) {
+            nextNumber = parsed + 1;
+          }
+        }
+      }
+
+      generatedEmployeeId = `${idPrefix}-${String(nextNumber).padStart(3, '0')}`;
+    } catch (genErr) {
+      console.error('Error generating employee_id:', genErr);
+      generatedEmployeeId = null;
+    }
     
     const { error: profileError } = await clientToUse
       .from('user_profiles')
@@ -212,7 +254,9 @@ export default async function handler(
           user_name: user_name, // Display Name
           contact_no: contact_no, // Phone number
           profile_pic_url: profile_pic_url || null, // Profile picture URL
-          user_type: user_type || 'employee', // User type: employee or posp_agent
+          user_type: resolvedUserType, // User type: employee or posp_agent
+          // For a brand new profile, set generated employee_id
+          employee_id: generatedEmployeeId,
           status: 'inactive', // Default status: inactive
           work_type: 'on_site', // Default work type: on_site
           department: 'sales', // Default department: sales

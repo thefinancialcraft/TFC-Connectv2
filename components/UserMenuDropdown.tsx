@@ -711,12 +711,25 @@ export default function UserMenuDropdown({
         </button>
         
         {isOpen && (
-          <div 
-            className="absolute top-full right-0 mt-2 z-[9999] min-w-[224px] rounded-md border border-gray-200 bg-white shadow-md animate-in fade-in-0 zoom-in-95"
-            style={{ fontFamily: "'Roboto', sans-serif" }}
-          >
-            {menuContent}
-          </div>
+          <>
+            {/* Mobile backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998] md:hidden"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMenuClose?.();
+              }}
+            ></div>
+            
+            {/* Menu - centered on mobile, normal position on desktop */}
+            <div 
+              className="fixed md:absolute left-1/2 md:left-auto top-1/2 md:top-full right-auto md:right-0 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 md:translate-y-0 mt-0 md:mt-2 z-[9999] w-[90vw] max-w-[320px] md:w-auto md:min-w-[224px] md:max-w-none rounded-md border border-gray-200 bg-white shadow-md animate-in fade-in-0 zoom-in-95"
+              style={{ fontFamily: "'Roboto', sans-serif" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {menuContent}
+            </div>
+          </>
         )}
       </div>
     );
@@ -739,16 +752,29 @@ export default function UserMenuDropdown({
         </button>
         
         {isOpen && menuPosition && (
-          <div 
-            className="fixed z-[9999] min-w-[224px] rounded-md border border-gray-200 bg-white shadow-md animate-in fade-in-0 zoom-in-95"
-            style={{ 
-              fontFamily: "'Roboto', sans-serif",
-              top: `${menuPosition.top}px`,
-              right: `${menuPosition.right}px`
-            }}
-          >
-            {menuContent}
-          </div>
+          <>
+            {/* Mobile backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998] md:hidden"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMenuClose?.();
+              }}
+            ></div>
+            
+            {/* Menu - centered on mobile, normal position on desktop */}
+            <div 
+              className="fixed left-1/2 md:left-auto top-1/2 md:top-auto right-auto md:right-auto -translate-x-1/2 md:translate-x-0 -translate-y-1/2 md:translate-y-0 z-[9999] w-[90vw] max-w-[320px] md:w-auto md:min-w-[224px] md:max-w-none rounded-md border border-gray-200 bg-white shadow-md animate-in fade-in-0 zoom-in-95"
+              style={{ 
+                fontFamily: "'Roboto', sans-serif",
+                top: window.innerWidth >= 768 ? `${menuPosition.top}px` : '50%',
+                right: window.innerWidth >= 768 ? `${menuPosition.right}px` : 'auto'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {menuContent}
+            </div>
+          </>
         )}
       </div>
     );

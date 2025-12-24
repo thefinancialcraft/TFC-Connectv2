@@ -184,9 +184,21 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       adminOnly: true, // Only show for admin/super_admin
     },
     {
-      name: "Attendance",
-      path: "/attendance",
-      icon: "fi-rr-calendar-check",
+      name: "Customer",
+      path: "/customer",
+      icon: "fi-rr-users",
+      adminOnly: false,
+    },
+    {
+      name: "Campaign",
+      path: "/campaign",
+      icon: "fi-rr-bullhorn",
+      adminOnly: false,
+    },
+    {
+      name: "Activity",
+      path: "/activity",
+      icon: "fi-rr-time-past",
       adminOnly: false,
     },
   ];
@@ -315,27 +327,6 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
           </div>
 
           <div className="flex gap-2">
-            <button
-              onClick={() => router.push("/settings")}
-              className="w-8 h-8 p-0 text-xs border rounded-lg transition-all duration-300 flex items-center justify-center"
-              style={{
-                borderColor: "#DCDEE3",
-                backgroundColor: "#FFFFFF",
-                color: "#263238",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#4b33e8";
-                e.currentTarget.style.backgroundColor = "#f6f5ff";
-                e.currentTarget.style.color = "#4b33e8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#DCDEE3";
-                e.currentTarget.style.backgroundColor = "#FFFFFF";
-                e.currentTarget.style.color = "#263238";
-              }}
-            >
-              <i className="fi flex fi-rr-settings text-sm"></i>
-            </button>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}

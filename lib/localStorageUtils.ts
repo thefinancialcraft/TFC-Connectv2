@@ -8,6 +8,7 @@ export interface StoredUserData {
   user_name: string;
   employee_id: string;
   role: string;
+  super_admin?: boolean;
   profile_pic_url: string | null;
   displayName?: string;
   session_token?: string; // Store session token for quick login

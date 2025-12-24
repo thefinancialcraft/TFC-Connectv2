@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
 import { supabase } from "../lib/supabase";
 import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
+import BottomNav from "../components/BottomNav";
 
 
 export default function Dashboard() {
@@ -532,6 +533,9 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNav activeNav="dashboard" userRole={user?.role || null} />
     </div>
   );
 }

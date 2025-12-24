@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { supabase } from "../../lib/supabase";
 import { checkAuthAndFetchProfile, UserProfile } from "../../lib/authService";
 import UserMenuDropdown from "../../components/UserMenuDropdown";
+import BottomNav from "../../components/BottomNav";
 
 // Dynamically import all components to prevent hydration errors
 const Sidebar = dynamic(() => import("../../components/Sidebar"), { ssr: false });
@@ -526,11 +527,11 @@ function UserProfilePage() {
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Category Panel - Sidebar (Fixed) */}
               <div className="w-full lg:w-56 flex-shrink-0">
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-3 lg:sticky ">
-                  <h3 className="text-xs font-semibold mb-3" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
+                <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-3 lg:sticky overflow-x-auto">
+                  <h3 className="text-xs font-semibold mb-3 hidden lg:block" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
                     Categories
                   </h3>
-                  <div className="space-y-1.5">
+                  <div className="flex flex-row lg:flex-col gap-2 lg:space-y-0 lg:gap-0 lg:[&>*]:mb-1.5 lg:[&>*:last-child]:mb-0">
                     {[
                       { id: "basic_info", label: "Basic Details", icon: "fi-rr-user" },
                       { id: "personal_info", label: "Personal Info", icon: "fi-rr-user-gear" },
@@ -544,7 +545,7 @@ function UserProfilePage() {
                         key={category.id}
                         type="button"
                         onClick={() => setActiveCategory(category.id as any)}
-                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                        className={`w-10 h-10 lg:w-full flex items-center justify-center lg:justify-start gap-2 lg:px-3 lg:py-2 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
                           activeCategory === category.id
                             ? "text-white"
                             : "bg-white text-gray-700 hover:bg-gray-50"
@@ -556,7 +557,7 @@ function UserProfilePage() {
                         }}
                       >
                         <i className={`fi flex ${category.icon} text-sm`}></i>
-                        <span>{category.label}</span>
+                        <span className="hidden lg:inline">{category.label}</span>
                       </button>
                     ))}
                   </div>
@@ -838,13 +839,15 @@ function UserProfilePage() {
                             return;
                           }
 
-                          const response = await fetch("/api/auth/update-profile", {
+                          // Use admin endpoint to update the target user's profile (not current user)
+                          const response = await fetch("/api/auth/update-user-profile", {
                             method: "PUT",
                             headers: {
                               "Content-Type": "application/json",
                               Authorization: `Bearer ${session.access_token}`,
                             },
                             body: JSON.stringify({
+                              targetUserId: userId, // This is the id from user_profiles table
                               ...editFormData,
                             }),
                           });
@@ -859,18 +862,21 @@ function UserProfilePage() {
                           alert("Profile updated successfully!");
                           setIsEditMode(false);
                           
-                          // Refresh user data
+                          // Refresh user data using id (primary key), not user_id
                           const { data: updatedProfile } = await supabase
                             .from('user_profiles')
                             .select('*')
-                            .eq('user_id', userId)
+                            .eq('id', userId)
                             .maybeSingle();
 
                           if (updatedProfile) {
                             setUserDetail((prev: any) => prev ? {
                               ...prev,
                               ...updatedProfile,
+                              displayName: updatedProfile.user_name || prev.displayName,
+                              email: updatedProfile.email || prev.email,
                               profile_pic_url: updatedProfile.profile_pic_url,
+                              profilePicUrl: updatedProfile.profile_pic_url,
                             } : null);
                           }
                         } catch (error: any) {
@@ -890,6 +896,9 @@ function UserProfilePage() {
           </div>
         </main>
       </div>
+
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNav activeNav="profile" />
     </div>
   );
 }

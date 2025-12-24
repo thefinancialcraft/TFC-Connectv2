@@ -93,6 +93,15 @@ function verifyEmailInDatabase(email) {
   const supabaseUrl = props.getProperty('SUPABASE_URL');
   const serviceRoleKey = props.getProperty('SUPABASE_SERVICE_ROLE_KEY');
 
+    // Guard against missing Supabase configuration to avoid "Header:null" errors
+    if (!supabaseUrl || !serviceRoleKey) {
+      const cfgError =
+        'Supabase configuration missing in Script Properties. ' +
+        'Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (run setupSupabaseProperties once).';
+      Logger.log('[verifyEmailInDatabase] ' + cfgError);
+      throw new Error(cfgError);
+    }
+
     // Check in user_profiles table (case-insensitive search using ilike)
     // Supabase ilike operator requires proper URL encoding for special characters like @
     const emailLower = email.toLowerCase();
@@ -149,6 +158,15 @@ function generateAndStoreOTP(email, purpose) {
     const props = PropertiesService.getScriptProperties();
     const supabaseUrl = props.getProperty('SUPABASE_URL');
     const serviceRoleKey = props.getProperty('SUPABASE_SERVICE_ROLE_KEY');
+
+    // Guard against missing Supabase configuration to avoid "Header:null" errors
+    if (!supabaseUrl || !serviceRoleKey) {
+      const cfgError =
+        'Supabase configuration missing in Script Properties. ' +
+        'Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (run setupSupabaseProperties once).';
+      Logger.log('[generateAndStoreOTP] ' + cfgError);
+      throw new Error(cfgError);
+    }
     
     if (!supabaseUrl || !serviceRoleKey) {
       Logger.log('[generateAndStoreOTP] Missing Supabase config');

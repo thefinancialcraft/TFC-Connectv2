@@ -12,7 +12,7 @@ export default function Document() {
         />
         <link
           rel="stylesheet"
-          href="https://cdn-uicons.flaticon.com/2.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+          href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
         />
       </Head>
       <body>
