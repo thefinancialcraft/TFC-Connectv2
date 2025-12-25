@@ -6,6 +6,7 @@ import BottomNav from "../components/BottomNav";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
 import { supabase } from "../lib/supabase";
 import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
+import { useCallSessionRedirect } from "../hooks/useCallSessionRedirect";
 
 import CampaignCard, { type Campaign } from "../components/CampaignCard";
 import AddCampaignModal from "../components/AddCampaignModal";
@@ -63,6 +64,8 @@ export default function Campaign() {
 		return null;
 	});
 
+	useCallSessionRedirect(user?.uid);
+
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [activeNav, setActiveNav] = useState("campaign");
@@ -72,6 +75,7 @@ export default function Campaign() {
 	const [mounted, setMounted] = useState(false);
 	const [showAddCampaignModal, setShowAddCampaignModal] = useState(false);
 	const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 	// Campaign creation state moved to AddCampaignModal component
 	const [users, setUsers] = useState<any[]>([]);
 	const [loadingUsers, setLoadingUsers] = useState(false);
@@ -221,7 +225,11 @@ export default function Campaign() {
 		}
 	};
 
-	const filtered = campaigns;
+	const filtered = campaigns.filter(c => 
+        searchQuery === "" || 
+        (c.name && c.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (c.status && c.status.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
 	if (loading) {
 		return (
@@ -395,6 +403,8 @@ export default function Campaign() {
 												placeholder="Search campaigns..."
 												className="pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-sm focus:outline-none w-full sm:w-64 placeholder:text-gray-400"
 												type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
 												style={{ fontFamily: "'Roboto', sans-serif" }}
 											/>
 											<i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm"></i>

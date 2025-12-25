@@ -4,6 +4,7 @@ import { supabase, supabaseAdmin } from '../../../lib/supabase';
 type Data = {
   success?: boolean;
   error?: string;
+  server_now?: string;
   user?: {
     uid: string;
     displayName: string | null;
@@ -21,6 +22,16 @@ type Data = {
     profile_pic_url: string | null;
     user_name: string | null;
     profile_complete: boolean | null;
+    activeCampaignId: string | null;
+    activeCustomerId: string | null;
+    activeSessionState: string | null;
+    activeSessionStart: string | null;
+    currentCallSession?: {
+        campaign_id: string;
+        customer_id: string;
+        status: string;
+        call_start_at: string;
+    } | null;
   };
 };
 
@@ -107,8 +118,16 @@ export default async function handler(
     const displayName = userMetadata.display_name || userMetadata.user_name || profile?.user_name || null;
     const phone = userMetadata.phone || userMetadata.contact_no || profile?.contact_no || null;
 
+    // Fetch call session
+    const { data: callSession } = await clientToUse
+      .from('call_sessions')
+      .select('campaign_id, customer_id, status, call_start_at')
+      .eq('user_id', authUser.id)
+      .maybeSingle();
+
     return res.status(200).json({
       success: true,
+      server_now: new Date().toISOString(),
       user: {
         uid: authUser.id,
         displayName: displayName,
@@ -126,6 +145,11 @@ export default async function handler(
         profile_pic_url: profile?.profile_pic_url || null,
         user_name: profile?.user_name || null,
         profile_complete: profile?.profile_complete ?? false,
+        activeCampaignId: userMetadata.active_campaign_id || null,
+        activeCustomerId: userMetadata.active_customer_id || null,
+        activeSessionState: userMetadata.active_session_state || null,
+        activeSessionStart: userMetadata.active_session_start || null,
+        currentCallSession: callSession || null,
       },
     });
   } catch (error: any) {

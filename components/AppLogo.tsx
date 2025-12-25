@@ -17,7 +17,7 @@ export default function AppLogo({ size = 'default' }: AppLogoProps) {
         style={{ background: '#4b33e8' }}
       >
         <i 
-          className={`fi flex fi-rr-link ${
+          className={`fi flex fi-rr-tty-answer ${
             isSmall ? 'text-xs' : 'text-base md:text-sm'
           }`}
           style={{ 
@@ -49,7 +49,7 @@ export default function AppLogo({ size = 'default' }: AppLogoProps) {
             fontFamily: "'Roboto', sans-serif"
           }}
         >
-          Connect
+          Nexus
         </h3>
       </div>
     </div>

@@ -36,6 +36,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false); // Start with false to avoid spinner on page change
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("dashboard");
+  const [mounted, setMounted] = useState(false);
 
     const fetchAuth = async () => {
       const result = await checkAuthAndFetchProfile();
@@ -164,6 +165,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchAuth();
     
     // Refresh user data when page comes into focus (in case it was updated)
@@ -276,7 +278,7 @@ export default function Dashboard() {
                         Overview
                       </p>
                       <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                        Welcome back, {user?.displayName || "User"}!
+                        Welcome back, {mounted ? (user?.displayName || "User") : "User"}!
                       </h1>
                       <p className="text-xs sm:text-sm md:text-base text-white/80 max-w-2xl" style={{ fontFamily: "'Roboto', sans-serif" }}>
                         Monitor your account status, team access, and quick entry points across the Growik workspace.
@@ -294,11 +296,11 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3 rounded-2xl border border-white/30 bg-white/10 p-4 sm:p-5 backdrop-blur-lg text-xs sm:text-sm text-white/90 w-full lg:max-w-sm">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold" style={{ fontFamily: "'Poppins', sans-serif" }}>Employee ID</span>
-                        <span style={{ fontFamily: "'Roboto', sans-serif" }}>{user?.employeeId || "Not assigned"}</span>
+                        <span style={{ fontFamily: "'Roboto', sans-serif" }}>{mounted ? (user?.employeeId || "Not assigned") : "Not assigned"}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="font-semibold" style={{ fontFamily: "'Poppins', sans-serif" }}>Role</span>
-                        <span style={{ fontFamily: "'Roboto', sans-serif" }}>{user?.role || "super_admin"}</span>
+                        <span style={{ fontFamily: "'Roboto', sans-serif" }}>{mounted ? (user?.role || "super_admin") : "super_admin"}</span>
                       </div>
                       {user?.updatedAt && (
                         <div className="flex items-center justify-between text-xs text-white/80">
@@ -329,7 +331,7 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           <p className="text-[11px] uppercase tracking-wide" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Role</p>
                           <p className="text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                            {user?.role || "super_admin"}
+                            {mounted ? (user?.role || "super_admin") : "super_admin"}
                           </p>
                           <p className="text-[11px]" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
                             {user?.role === "super_admin" ? "Full platform authority" : "Current access level"}
@@ -348,7 +350,7 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           <p className="text-[11px] uppercase tracking-wide" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Approval</p>
                           <p className="text-lg font-semibold capitalize" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                            {user?.approvalStatus || "approved"}
+                            {mounted ? (user?.approvalStatus || "approved") : "approved"}
                           </p>
                           <p className="text-[11px]" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
                             {user?.approvalStatus === "approved" ? "Enjoy full workspace access" : "Awaiting admin review"}
@@ -367,7 +369,7 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           <p className="text-[11px] uppercase tracking-wide" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Account Status</p>
                           <p className="text-lg font-semibold capitalize" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                            {user?.accountStatus || "active"}
+                            {mounted ? (user?.accountStatus || "active") : "active"}
                           </p>
                           <p className="text-[11px]" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
                             {user?.accountStatus === "active" ? "All systems operational" : "Action required"}
@@ -386,7 +388,7 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           <p className="text-[11px] uppercase tracking-wide" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Employee ID</p>
                           <p className="text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                            {user?.employeeId || "Not assigned"}
+                            {mounted ? (user?.employeeId || "Not assigned") : "Not assigned"}
                           </p>
                           <p className="text-[11px]" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
                             {user?.employeeId === "Not assigned" ? "Generate after approval" : "Internal reference"}
@@ -430,7 +432,7 @@ export default function Dashboard() {
                         <div className="space-y-2 text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
                           <div className="flex items-center justify-between">
                             <span>Name</span>
-                            <span className="font-medium" style={{ color: "#263238" }}>{user?.displayName || "N/A"}</span>
+                            <span className="font-medium" style={{ color: "#263238" }}>{mounted ? (user?.displayName || "N/A") : "N/A"}</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span>Email</span>

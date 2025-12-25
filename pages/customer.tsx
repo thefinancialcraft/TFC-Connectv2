@@ -276,16 +276,56 @@ export default function Customer() {
         .select("*")
         .order("created_at", { ascending: false });
 
+      if (searchQuery) {
+        query = query.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+      }
+
+      let data: any[] | null = null;
+      let error: any = null;
+
       if (pageSize === "all") {
-        // Fetch all data without pagination
-        query = query;
+        // Fetch all data in batches of 1000 to bypass API limits
+        let allData: any[] = [];
+        let hasMore = true;
+        let pageIndex = 0;
+        const batchSize = 1000;
+
+        while (hasMore) {
+            let batchQuery = supabase
+                .from("customers")
+                .select("*")
+                .order("created_at", { ascending: false });
+
+            if (searchQuery) {
+                batchQuery = batchQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+            }
+
+            const { data: batch, error: batchError } = await batchQuery
+                .range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
+
+            if (batchError) {
+                error = batchError;
+                break;
+            }
+
+            if (batch && batch.length > 0) {
+                allData = [...allData, ...batch];
+                if (batch.length < batchSize) {
+                    hasMore = false;
+                }
+                pageIndex++;
+            } else {
+                hasMore = false;
+            }
+        }
+        data = allData;
       } else {
         // Calculate offset for pagination
         const offset = (page - 1) * pageSize;
-        query = query.range(offset, offset + pageSize - 1);
+        const { data: pagedData, error: pagedError } = await query.range(offset, offset + pageSize - 1);
+        data = pagedData;
+        error = pagedError;
       }
-
-      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching customers:", error);
@@ -408,6 +448,15 @@ export default function Customer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSize]);
 
+  // Fetch customers when search query changes
+  useEffect(() => {
+    if (mounted) {
+      setCurrentPage(1);
+      fetchCustomers(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   // Fetch customers when page changes (only if not showing all)
   useEffect(() => {
     if (mounted && pageSize !== "all") {
@@ -416,18 +465,8 @@ export default function Customer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
-  // Filter customers based on search query (client-side filtering on current page)
-  const filteredCustomers = allCustomers.filter((customer) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      (customer.customer_name?.toLowerCase().includes(query) ||
-        customer.phone_no?.toLowerCase().includes(query) ||
-        customer.lead_id?.toLowerCase().includes(query) ||
-        customer.campaign_id?.toLowerCase().includes(query)) ??
-      false
-    );
-  });
+  // Use allCustomers directly since it is now filtered by the API
+  const filteredCustomers = allCustomers;
 
   // Calculate pagination
   const effectivePageSize = pageSize === "all" ? totalCustomers : pageSize;
@@ -1275,6 +1314,11 @@ export default function Customer() {
                       }}
                     >
                       All Customers
+                      {selectedCustomers.size > 0 && (
+                        <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
+                          {selectedCustomers.size} SELECTED
+                        </span>
+                      )}
                     </h2>
                     <p
                       className="text-xs"
@@ -1453,6 +1497,11 @@ export default function Customer() {
                         }}
                       >
                         All Customers
+                        {selectedCustomers.size > 0 && (
+                          <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
+                            {selectedCustomers.size} SELECTED
+                          </span>
+                        )}
                       </h2>
                       <p
                         className="text-sm"
@@ -1644,238 +1693,228 @@ export default function Customer() {
                     </div>
                   ) : viewType === "list" ? (
                     <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-200">
-                          <tr>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider w-12">
-                              <input
-                                type="checkbox"
-                                checked={
-                                  filteredCustomers.length > 0 &&
-                                  selectedCustomers.size ===
-                                  filteredCustomers.length
-                                }
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    const allIds = new Set(
-                                      filteredCustomers.map((c) => c.id)
-                                    );
-                                    setSelectedCustomers(allIds);
-                                  } else {
-                                    setSelectedCustomers(new Set());
-                                  }
-                                }}
-                                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                              />
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">
-                              Name
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">
-                              Contact
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">
-                              Status
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[130px] md:min-w-[150px]">
-                              Campaign
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
-                              Assigned To
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
-                              Expiry Date
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[90px] md:min-w-[120px]">
-                              Created Date
-                            </th>
-                            <th className="px-2 md:px-6 py-3 md:py-4 text-right text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider w-10 md:w-auto">
-                              Action
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {filteredCustomers.map((customer) => (
-                            <tr
-                              key={customer.id}
-                              className="hover:bg-gray-50 transition-colors"
-                            >
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedCustomers.has(customer.id)}
-                                  onChange={(e) => {
-                                    const newSelected = new Set(
-                                      selectedCustomers
-                                    );
-                                    if (e.target.checked) {
-                                      newSelected.add(customer.id);
-                                    } else {
-                                      newSelected.delete(customer.id);
-                                    }
-                                    setSelectedCustomers(newSelected);
-                                  }}
-                                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                />
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <div className="flex items-center gap-1.5 md:gap-3">
-                                  <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-xs md:text-sm">
-                                    {customer.customer_name
-                                      ? customer.customer_name
-                                        .charAt(0)
-                                        .toUpperCase()
-                                      : "C"}
-                                  </div>
-                                  <span
-                                    className="text-xs md:text-sm font-medium text-gray-900"
-                                    style={{
-                                      fontFamily: "'Poppins', sans-serif",
-                                    }}
-                                  >
-                                    {customer.customer_name || "N/A"}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <span
-                                  className="text-xs md:text-sm text-gray-600"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  {customer.phone_no || "N/A"}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <div className="flex items-center gap-1 md:gap-2 flex-wrap">
-                                  <div
-                                    className={`px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full inline-flex items-center gap-1 md:gap-1.5 ${customer.status === "active"
-                                      ? "bg-green-100"
-                                      : customer.status === "inactive"
-                                        ? "bg-gray-100"
-                                        : "bg-orange-100"
-                                      }`}
-                                  >
-                                    <div
-                                      className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full ${customer.status === "active"
-                                        ? "bg-green-500"
-                                        : customer.status === "inactive"
-                                          ? "bg-gray-400"
-                                          : "bg-orange-400"
-                                        }`}
-                                    ></div>
-                                    <span
-                                      className={`text-[10px] md:text-xs font-semibold ${customer.status === "active"
-                                        ? "text-green-700"
-                                        : customer.status === "inactive"
-                                          ? "text-gray-600"
-                                          : "text-orange-700"
-                                        }`}
-                                    >
-                                      {customer.status === "active"
-                                        ? "Active"
-                                        : customer.status === "inactive"
-                                          ? "Inactive"
-                                          : "Pending"}
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <span
-                                  className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] md:text-xs font-semibold"
-                                  style={{ fontFamily: "'Poppins', sans-serif" }}
-                                >
-                                  {customer.campaign_name || "No Campaign"}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <span
-                                  className="text-xs md:text-sm text-gray-600"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  {customer.assigned_user_name ||
-                                    customer.assigned_employee_id ||
-                                    "N/A"}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <span
-                                  className="text-xs md:text-sm text-gray-600"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  {customer.expiry_date
-                                    ? formatDate(customer.expiry_date)
-                                    : "N/A"}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
-                                <span
-                                  className="text-xs md:text-sm text-gray-600"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  {formatDate(customer.created_at)}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedCustomer(customer);
-                                      setShowCustomerDetailsModal(true);
-                                    }}
-                                    className="text-purple-600 hover:text-purple-700 transition-colors"
-                                    title="View Details"
-                                    style={{
-                                      fontFamily: "'Roboto', sans-serif",
-                                    }}
-                                  >
-                                    <i className="fi flex fi-rr-info text-sm"></i>
-                                  </button>
-                                  <button
-                                    className="text-red-600 hover:text-red-700 transition-colors"
-                                    title="Delete"
-                                    style={{
-                                      fontFamily: "'Roboto', sans-serif",
-                                    }}
-                                    onClick={async () => {
-                                      if (
-                                        confirm(
-                                          "Are you sure you want to delete this customer?"
-                                        )
-                                      ) {
-                                        try {
-                                          const { error } = await supabase
-                                            .from("customers")
-                                            .delete()
-                                            .eq("id", customer.id);
-
-                                          if (error) {
-                                            console.error(
-                                              "Error deleting customer:",
-                                              error
-                                            );
-                                            alert("Failed to delete customer");
-                                          } else {
-                                            await fetchCustomers(currentPage);
-                                          }
-                                        } catch (err) {
-                                          console.error(
-                                            "Error deleting customer:",
-                                            err
-                                          );
-                                          alert("Failed to delete customer");
-                                        }
+                      <div className="overflow-x-auto -mx-2">
+                          <table className="w-full text-left">
+                            <thead>
+                              <tr className="border-b border-gray-50">
+                                <th className="px-4 py-4 w-10">
+                                  <div className="flex items-center justify-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={
+                                        allCustomers.length > 0 &&
+                                        selectedCustomers.size ===
+                                        allCustomers.length
                                       }
-                                    }}
-                                  >
-                                    <i className="fi flex fi-rr-trash text-sm"></i>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          const allIds = new Set(
+                                            allCustomers.map((c) => c.id)
+                                          );
+                                          setSelectedCustomers(allIds);
+                                        } else {
+                                          setSelectedCustomers(new Set());
+                                        }
+                                      }}
+                                      className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+                                    />
+                                  </div>
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Customer Name
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Contact Info
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
+                                  Status
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Campaign
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Assigned To
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Expiry Date
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Created Date
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right">
+                                  Action
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                              {filteredCustomers.map((customer) => (
+                                <tr
+                                  key={customer.id}
+                                  className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0"
+                                >
+                                  <td className="px-4 py-4">
+                                    <div className="flex items-center justify-center">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedCustomers.has(customer.id)}
+                                        onChange={(e) => {
+                                          const newSelected = new Set(
+                                            selectedCustomers
+                                          );
+                                          if (e.target.checked) {
+                                            newSelected.add(customer.id);
+                                          } else {
+                                            newSelected.delete(customer.id);
+                                          }
+                                          setSelectedCustomers(newSelected);
+                                        }}
+                                        className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+                                      />
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-medium shadow-lg shadow-indigo-100 uppercase">
+                                        {customer.customer_name
+                                          ? customer.customer_name
+                                            .charAt(0)
+                                            .toUpperCase()
+                                          : "C"}
+                                      </div>
+                                      <span
+                                        className="text-xs font-medium text-gray-800"
+                                        style={{
+                                          fontFamily: "'Poppins', sans-serif",
+                                          color: "#263238",
+                                        }}
+                                      >
+                                        {customer.customer_name || "N/A"}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-medium text-gray-700 leading-none mb-1">
+                                        {customer.phone_no || "No Contact"}
+                                      </span>
+                                      <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+                                        Verified Lead
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-center">
+                                    <div className="flex justify-center">
+                                      <div
+                                        className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${customer.status === "active"
+                                            ? "bg-green-50 text-green-600 border border-green-100"
+                                            : customer.status === "inactive"
+                                              ? "bg-gray-50 text-gray-600 border border-gray-100"
+                                              : "bg-orange-50 text-orange-600 border border-orange-100"
+                                          }`}
+                                      >
+                                        {customer.status === "active"
+                                          ? "Active"
+                                          : customer.status === "inactive"
+                                            ? "Inactive"
+                                            : "Pending"}
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <span className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">
+                                      {customer.campaign_name || "No Campaign"}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <span className="text-xs font-medium text-gray-600">
+                                      {customer.assigned_user_name ||
+                                        customer.assigned_employee_id ||
+                                        "Unassigned"}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-medium text-gray-700 leading-none mb-1">
+                                        {customer.expiry_date
+                                          ? formatDate(customer.expiry_date)
+                                          : "---"}
+                                      </span>
+                                      <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+                                        Expires
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-medium text-gray-700 leading-none mb-1">
+                                        {formatDate(customer.created_at)}
+                                      </span>
+                                      <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+                                        Created
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                      <button
+                                        onClick={() => {
+                                          setSelectedCustomer(customer);
+                                          setShowCustomerDetailsModal(true);
+                                        }}
+                                        className="text-purple-600 hover:text-purple-700 transition-colors p-1.5 hover:bg-purple-50 rounded"
+                                        title="View Details"
+                                      >
+                                        <i className="fi flex fi-rr-info text-sm"></i>
+                                      </button>
+                                      <button
+                                        className="text-red-600 hover:text-red-700 transition-colors p-1.5 hover:bg-red-50 rounded"
+                                        title="Delete"
+                                        onClick={async () => {
+                                          if (
+                                            confirm(
+                                              "Are you sure you want to delete this customer?"
+                                            )
+                                          ) {
+                                            try {
+                                              const { error } = await supabase
+                                                .from("customers")
+                                                .delete()
+                                                .eq("id", customer.id);
+
+                                              if (error) {
+                                                console.error(
+                                                  "Error deleting customer:",
+                                                  error
+                                                );
+                                                alert(
+                                                  "Failed to delete customer"
+                                                );
+                                              } else {
+                                                await fetchCustomers(
+                                                  currentPage
+                                                );
+                                              }
+                                            } catch (err) {
+                                              console.error(
+                                                "Error deleting customer:",
+                                                err
+                                              );
+                                              alert(
+                                                "Failed to delete customer"
+                                              );
+                                            }
+                                          }
+                                        }}
+                                      >
+                                        <i className="fi flex fi-rr-trash text-sm"></i>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

@@ -65,12 +65,23 @@ export interface UserProfile {
   accountStatus: string | null;
   updatedAt: string | null;
   profilePicUrl?: string | null;
+  activeCampaignId?: string | null;
+  activeCustomerId?: string | null;
+  activeSessionState?: string | null;
+  activeSessionStart?: string | null;
+  currentCallSession?: {
+    campaign_id: string;
+    customer_id: string;
+    status: 'assigned' | 'active' | 'disposition_pending' | 'closed';
+    call_start_at: string;
+  } | null;
 }
 
 export interface AuthResult {
   user: UserProfile | null;
   error: string | null;
   shouldRedirect: boolean;
+  serverNow?: string;
 }
 
 /**
@@ -101,9 +112,11 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
     // Check if user data is already available in session
     const cachedUser = session.user;
     let userData: UserProfile | null = null;
+    let serverNow: string | undefined;
 
     if (cachedUser) {
       // Set minimal user data immediately to avoid spinner
+      const userMetadata = cachedUser.user_metadata || {};
       userData = {
         uid: cachedUser.id,
         displayName: null,
@@ -118,6 +131,10 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         approvalStatus: null,
         accountStatus: null,
         updatedAt: null,
+        activeCampaignId: userMetadata.active_campaign_id || null,
+        activeCustomerId: userMetadata.active_customer_id || null,
+        activeSessionState: userMetadata.active_session_state || null,
+        activeSessionStart: userMetadata.active_session_start || null,
       };
     }
 
@@ -132,6 +149,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
 
       const data = await response.json();
       const authUser = session.user;
+      serverNow = data.server_now;
       
       // Handle 406 error (PGRST116 - no rows found) gracefully
       if (!response.ok) {
@@ -184,6 +202,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         }
       } else if (authUser) {
         // If no user data but no error, create minimal user object
+        const userMetadata = authUser.user_metadata || {};
         userData = {
           uid: authUser.id,
           displayName: null,
@@ -198,6 +217,10 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
           approvalStatus: null,
           accountStatus: null,
           updatedAt: null,
+          activeCampaignId: userMetadata.active_campaign_id || null,
+          activeCustomerId: userMetadata.active_customer_id || null,
+          activeSessionState: userMetadata.active_session_state || null,
+          activeSessionStart: userMetadata.active_session_start || null,
         };
       }
     } catch (fetchError: any) {
@@ -208,6 +231,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
           user: userData,
           error: null,
           shouldRedirect: false,
+          serverNow: serverNow,
         };
       }
       throw fetchError;
@@ -217,6 +241,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       user: userData,
       error: null,
       shouldRedirect: false,
+      serverNow: serverNow,
     };
   } catch (error: any) {
     console.error("Auth check error:", error);

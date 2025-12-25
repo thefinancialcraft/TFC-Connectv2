@@ -5,6 +5,7 @@ import Header from "../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../lib/authService";
 import { supabase } from "../../lib/supabase";
 import { getStoredUserData, storeUserData } from "../../lib/localStorageUtils";
+import { useCallSessionRedirect } from "../../hooks/useCallSessionRedirect";
 import BottomNav from "../../components/BottomNav";
 
 interface Campaign {
@@ -25,6 +26,7 @@ interface CampaignStats {
     overdueCount: number;
     freshProspects: number;
     upcomingProspects: number;
+    recentCount: number;
 }
 
 export default function CampaignDetails() {
@@ -53,6 +55,8 @@ export default function CampaignDetails() {
         }
         return null;
     });
+    
+    useCallSessionRedirect(user?.uid);
 
     const [loading, setLoading] = useState(true);
     const [campaign, setCampaign] = useState<Campaign | null>(null);
@@ -61,12 +65,35 @@ export default function CampaignDetails() {
         followupCount: 0,
         overdueCount: 0,
         freshProspects: 0,
-        upcomingProspects: 0
+        upcomingProspects: 0,
+        recentCount: 0
     });
     const [error, setError] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [leads, setLeads] = useState<any[]>([]);
+    const [recentCalls, setRecentCalls] = useState<any[]>([]);
+    const [overdueLeads, setOverdueLeads] = useState<any[]>([]);
+    const [upcomingLeads, setUpcomingLeads] = useState<any[]>([]);
     const [loadingLeads, setLoadingLeads] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [leadsPerPage] = useState(10);
+    const [totalLeadsCount, setTotalLeadsCount] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '—';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '—';
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2);
+            return `${day}/${month}/${year}`;
+        } catch (e) {
+            return '—';
+        }
+    };
 
     const fetchAuth = async () => {
         const result = await checkAuthAndFetchProfile();
@@ -95,7 +122,7 @@ export default function CampaignDetails() {
             if (campaignError) throw campaignError;
             setCampaign(campaignData);
 
-            const now = new Date().toISOString().split('T')[0];
+            const now = new Date().toISOString();
 
             // 2. Fetch Stats
             // Total Customers
@@ -126,22 +153,74 @@ export default function CampaignDetails() {
                 .eq('campaign_id', id)
                 .is('assigned_to', null);
 
-            // Upcoming Prospects (Active/Upcoming status or Expiry Date >= Now)
+            // Upcoming Prospects (Followup + Expiry Date >= Now)
             const { count: upcomingCount } = await supabase
                 .from('customers')
                 .select('*', { count: 'exact', head: true })
                 .eq('campaign_id', id)
-                .or(`status.eq.upcoming,and(status.eq.active,expiry_date.gte.${now})`);
+                .eq('status', 'followup')
+                .gte('expiry_date', now);
+
+            // Recent Activity Count (Last 24h)
+            const twentyFourHoursAgoCount = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            const { count: recentCount } = await supabase
+                .from('call_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('campaign_id', id)
+                .gte('created_at', twentyFourHoursAgoCount);
 
             setStats({
                 totalCustomers: totalCount || 0,
                 followupCount: followupCount || 0,
                 overdueCount: overdueCount || 0,
                 freshProspects: freshCount || 0,
-                upcomingProspects: upcomingCount || 0
+                upcomingProspects: upcomingCount || 0,
+                recentCount: recentCount || 0
             });
 
-            // 3. Fetch Leads
+            // 3. Fetch Tile Data (Recent, Overdue, Upcoming)
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            
+            // a. Recent Calls (Limit 3)
+            const { data: recentData } = await supabase
+                .from('call_logs')
+                .select(`
+                    id, 
+                    disposition, 
+                    sub_disposition,
+                    created_at, 
+                    customer_id,
+                    customers (customer_name, expiry_date)
+                `)
+                .eq('campaign_id', id)
+                .gte('created_at', twentyFourHoursAgo)
+                .order('created_at', { ascending: false })
+                .limit(3);
+            setRecentCalls(recentData || []);
+
+            // b. Overdue (Limit 3)
+            const { data: overdueData } = await supabase
+                .from('customers')
+                .select('id, customer_name, disposition, sub_disposition, expiry_date')
+                .eq('campaign_id', id)
+                .eq('status', 'followup')
+                .lt('expiry_date', now)
+                .order('expiry_date', { ascending: true })
+                .limit(3);
+            setOverdueLeads(overdueData || []);
+
+            // c. Upcoming (Limit 3)
+            const { data: upcomingData } = await supabase
+                .from('customers')
+                .select('id, customer_name, disposition, sub_disposition, expiry_date')
+                .eq('campaign_id', id)
+                .eq('status', 'followup')
+                .gte('expiry_date', now)
+                .order('expiry_date', { ascending: true })
+                .limit(3);
+            setUpcomingLeads(upcomingData || []);
+
+            // 2. Fetch Leads
             fetchLeads();
 
         } catch (err: any) {
@@ -152,45 +231,79 @@ export default function CampaignDetails() {
         }
     };
 
-    const fetchLeads = async () => {
+    const fetchLeads = async (pageOverride?: number) => {
         if (!id) return;
         try {
             setLoadingLeads(true);
-            const { data, error } = await supabase
+
+            // Use the override if provided (e.g. when search changes), otherwise use state
+            const targetPage = pageOverride || currentPage;
+
+            // Build base query for count
+            let countQuery = supabase
+                .from('customers')
+                .select('*', { count: 'exact', head: true })
+                .eq('campaign_id', id);
+            
+            if (searchQuery) {
+                countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
+            }
+
+            const { count: totalCount } = await countQuery;
+            
+            setTotalLeadsCount(totalCount || 0);
+
+            const from = (targetPage - 1) * leadsPerPage;
+            const to = from + leadsPerPage - 1;
+
+            // Build base query for data
+            let dataQuery = supabase
                 .from('customers')
                 .select('*')
-                .eq('campaign_id', id)
-                .order('created_at', { ascending: false });
+                .eq('campaign_id', id);
+
+            if (searchQuery) {
+                dataQuery = dataQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
+            }
+
+            const { data, error } = await dataQuery
+                .order('expiry_date', { ascending: true })
+                .range(from, to);
 
             if (error) throw error;
 
-            // Fetch assigned user names
-            const assignedUserIds = [
+            // Fetch assigned user names and last updated by info
+            const allUserIds = [
                 ...new Set(
                     (data || [])
-                        .map((c: any) => c.assigned_to)
+                        .flatMap((c: any) => [c.assigned_to, c.last_updated_by])
                         .filter((userId: string | null) => userId)
                 ),
             ];
 
-            let userMap: Record<string, string> = {};
+            let userMap: Record<string, {name: string, empId: string}> = {};
 
-            if (assignedUserIds.length > 0) {
+            if (allUserIds.length > 0) {
                 const { data: userData } = await supabase
                     .from("user_profiles")
-                    .select("user_id, user_name")
-                    .in("user_id", assignedUserIds);
+                    .select("user_id, user_name, employee_id")
+                    .in("user_id", allUserIds);
 
                 if (userData) {
                     userData.forEach((u) => {
-                        userMap[u.user_id] = u.user_name || "Unknown";
+                        userMap[u.user_id] = {
+                            name: u.user_name || "Unknown",
+                            empId: u.employee_id || "N/A"
+                        };
                     });
                 }
             }
 
             const mappedLeads = (data || []).map((lead: any) => ({
                 ...lead,
-                assigned_user_name: lead.assigned_to ? userMap[lead.assigned_to] || "Unknown" : "Unassigned"
+                assigned_user_name: lead.assigned_to ? userMap[lead.assigned_to]?.name || "Unknown" : "Unassigned",
+                assigned_user_info: lead.assigned_to ? userMap[lead.assigned_to] : null,
+                last_updated_by_info: lead.last_updated_by ? userMap[lead.last_updated_by] : null
             }));
 
             setLeads(mappedLeads);
@@ -204,6 +317,89 @@ export default function CampaignDetails() {
     useEffect(() => {
         fetchAuth();
     }, []);
+
+    // Effect for Page Change (Standard pagination)
+    useEffect(() => {
+        if (id) fetchLeads();
+    }, [id, currentPage]);
+
+    // Effect for Search Change (Reset to Page 1 and force fetch)
+    useEffect(() => {
+        if (!id) return;
+        setCurrentPage(1);
+        fetchLeads(1);
+    }, [searchQuery]);
+
+    const toggleSelect = (id: string) => {
+        setSelectedLeads(prev =>
+            prev.includes(id) ? prev.filter(l => l !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        const pageIds = leads.map(l => l.id);
+        const allSelected = pageIds.every(id => selectedLeads.includes(id));
+        if (allSelected) {
+            setSelectedLeads(prev => prev.filter(id => !pageIds.includes(id)));
+        } else {
+            setSelectedLeads(prev => [...new Set([...prev, ...pageIds])]);
+        }
+    };
+
+    const [calling, setCalling] = useState(false);
+
+    const handleStartCalling = async () => {
+        if (!id || !user) return;
+        
+        try {
+            setCalling(true);
+
+            // 0. Check if user already has an active or assigned session
+            const { data: existingSession } = await supabase
+                .from('call_sessions')
+                .select('*')
+                .eq('user_id', user.uid)
+                .maybeSingle();
+
+            if (existingSession && (existingSession.status === 'assigned' || existingSession.status === 'active' || existingSession.status === 'disposition_pending')) {
+                console.log('[Session] Found existing session, resuming...', existingSession);
+                router.push(`/campaign/${existingSession.campaign_id}/${existingSession.customer_id}`);
+                return;
+            }
+            
+            // 1. Assign Next Lead via RPC
+            const { data: leadId, error: rpcError } = await supabase.rpc('assign_next_lead', {
+                p_campaign_id: id,
+                p_user_id: user.uid
+            });
+
+            if (rpcError) throw rpcError;
+
+            if (!leadId) {
+                alert("No compatible leads found for assignment.");
+                return;
+            }
+
+            // 2. Create/Update Call Session
+            await supabase
+                .from('call_sessions')
+                .upsert({
+                    user_id: user.uid,
+                    campaign_id: id,
+                    customer_id: leadId,
+                    status: 'assigned',
+                    updated_at: new Date().toISOString()
+                });
+
+            // 3. Redirect to Lead Page
+            router.push(`/campaign/${id}/${leadId}`);
+        } catch (err: any) {
+            console.error("Error starting call assignment:", err);
+            alert(err.message || "Failed to assign lead");
+        } finally {
+            setCalling(false);
+        }
+    };
 
     useEffect(() => {
         if (id) {
@@ -270,86 +466,105 @@ export default function CampaignDetails() {
                     onLogout={handleLogoutClick}
                 />
 
-                <main className="flex-1 pt-[60px] pb-24 lg:pb-8">
-                    <div className="container mx-auto px-4 md:px-6 py-8 max-w-7xl">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] lg:ml-0">
+                    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
                         {/* Breadcrumbs */}
-                        <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
-                            <span className="cursor-pointer hover:text-[#4b33e8]" onClick={() => router.push('/campaign')}>Campaigns</span>
-                            <i className="fi flex fi-rr-angle-small-right"></i>
-                            <span className="text-gray-600 font-medium">{campaign?.name}</span>
+                        <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
+                            <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push('/campaign')}>Campaigns</span>
+                            <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
+                            <span className="text-gray-600 font-bold">{campaign?.name}</span>
                         </div>
 
                         {/* Top Banner */}
-                        <div className="relative overflow-hidden rounded-3xl bg-white p-6 md:p-8 shadow-sm border border-gray-100 mb-8">
-                            <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
+                        <div className="relative overflow-hidden rounded-3xl bg-white p-6 md:p-8 shadow-sm border border-gray-100 mb-8 group">
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700" style={{ background: 'linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)' }} />
+                            <div className="absolute top-0 right-0 p-8 opacity-[0.03] transform group-hover:scale-110 transition-transform duration-700">
                                 <i className="fi flex fi-rr-megaphone text-9xl"></i>
                             </div>
 
-                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h1 className="text-2xl md:text-3xl font-black text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                                            {campaign?.name}
-                                        </h1>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${campaign?.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-                                            }`}>
-                                            {campaign?.status}
-                                        </span>
+                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                                <div className="max-w-3xl">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#4b33e8] shadow-sm">
+                                            <i className="fi flex fi-rr-megaphone text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 className="text-xl  md:text-xl   font-black text-gray-800" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>
+                                                {campaign?.name}
+                                            </h1>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${campaign?.status === 'active' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-orange-100 text-orange-700 border border-orange-200'
+                                                    }`}>
+                                                    {campaign?.status}
+                                                </span>
+                                                <div className="w-1 h-1 rounded-full bg-gray-300 mx-1"></div>
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Campaign ID: <span className="text-gray-600">{id}</span></span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <p className="text-gray-500 text-sm max-w-2xl leading-relaxed">
+                                    <p className="text-gray-500 text-sm leading-relaxed mb-6 font-medium">
                                         {campaign?.description || 'No description provided for this campaign.'}
                                     </p>
-                                    <div className="flex flex-wrap items-center gap-4 mt-6">
-                                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                                            <i className="fi flex fi-rr-calendar"></i>
+                                    <div className="flex flex-wrap items-center gap-6">
+                                        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
+                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+                                                <i className="fi flex fi-rr-calendar"></i>
+                                            </div>
                                             <span>Created: {campaign?.created_at ? new Date(campaign.created_at).toLocaleDateString() : 'N/A'}</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                                            <i className="fi flex fi-rr-user"></i>
+                                        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
+                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+                                                <i className="fi flex fi-rr-user"></i>
+                                            </div>
                                             <span>Creator: {campaign?.created_by || 'System'} {campaign?.employee_id ? `(#${campaign.employee_id})` : ''}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-wrap gap-4 items-center">
+                                <div className="flex flex-wrap gap-4 items-center self-start lg:self-center">
                                     {/* Talk Time Tile */}
-                                    <div className="flex items-center gap-3 bg-blue-50/50 px-5 py-4 rounded-2xl border border-blue-100/50">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm transition-transform hover:scale-110">
+                                    <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm transition-transform hover:scale-110">
                                             <i className="fi flex fi-rr-microphone-alt text-base"></i>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider leading-none mb-1.5">Talk Time</span>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Talk Time</span>
                                             <span className="text-base font-black text-gray-800 leading-none">{campaign?.talktime || '0h 0m'}</span>
                                         </div>
                                     </div>
 
                                     {/* Dials Tile */}
-                                    <div className="flex items-center gap-3 bg-purple-50/50 px-5 py-4 rounded-2xl border border-purple-100/50">
-                                        <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 shadow-sm transition-transform hover:scale-110">
+                                    <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                        <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shadow-sm transition-transform hover:scale-110">
                                             <i className="fi flex fi-rr-phone-call text-base"></i>
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider leading-none mb-1.5">Total Dials</span>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Total Dials</span>
                                             <span className="text-base font-black text-gray-800 leading-none">{campaign?.total_dials || 0}</span>
                                         </div>
                                     </div>
 
                                     {/* Start Calling Tile */}
                                     <button
-                                        onClick={() => router.push(`/activity?campaignId=${campaign?.id}`)}
-                                        className="flex items-center gap-4 px-7 py-4 rounded-2xl border border-white/10 shadow-xl shadow-indigo-200/50 transition-all hover:scale-[1.03] active:scale-95 group relative overflow-hidden"
+                                        onClick={handleStartCalling}
+                                        disabled={calling}
+                                        className={`flex items-center gap-4 px-7 py-4 rounded-2xl border border-white/10 shadow-xl shadow-indigo-200/50 transition-all hover:scale-[1.03] active:scale-95 group/btn relative overflow-hidden h-18 ${calling ? 'opacity-80' : ''}`}
                                         style={{
                                             background: 'linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)'
                                         }}
                                     >
-                                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                                        <div className="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors shadow-sm ring-1 ring-white/30">
-                                            <i className="fi flex fi-rr-play text-sm ml-0.5"></i>
+                                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+                                        
+                                        <div className="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover/btn:bg-white/30 transition-colors shadow-sm ring-1 ring-white/30">
+                                            {calling ? (
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            ) : (
+                                                <i className="fi flex fi-rr-play text-sm ml-0.5"></i>
+                                            )}
                                         </div>
                                         <div className="relative z-10 flex flex-col items-start translate-y-[1px]">
-                                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mb-1.5">Mission</span>
-                                            <span className="text-base font-black text-white leading-none">Start Calling</span>
+                                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mb-1.5">{calling ? 'Assigning...' : 'Mission'}</span>
+                                            <span className="text-base font-black text-white leading-none">{calling ? 'Finding Lead' : 'Start Calling'}</span>
                                         </div>
                                     </button>
                                 </div>
@@ -357,50 +572,90 @@ export default function CampaignDetails() {
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-                            {/* Total Assigned */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4 text-blue-500">
-                                    <i className="fi flex fi-rr-users"></i>
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 mb-8">
+                            {/* Total Leads */}
+                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
+                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(59, 130, 246, 0.12), transparent 60%)" }}></div>
+                                <div className="absolute -right-2 -bottom-2">
+                                    <i className="fi flex fi-rr-users text-5xl" style={{ color: "#3b82f6", opacity: 0.15 }}></i>
                                 </div>
-                                <span className="text-2xl font-black text-gray-800 leading-none mb-1">{stats.totalCustomers}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Leads</span>
+                                <div className="relative flex flex-col h-full z-10">
+                                    <div className="flex items-start justify-between mb-auto">
+                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Total Leads</p>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.totalCustomers}</p>
+                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Assigned to campaign</p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Fresh Prospects */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center mb-4 text-purple-500">
-                                    <i className="fi flex fi-rr-bulb"></i>
+                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
+                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(139, 92, 246, 0.12), transparent 60%)" }}></div>
+                                <div className="absolute -right-2 -bottom-2">
+                                    <i className="fi flex fi-rr-bulb text-5xl" style={{ color: "#8b5cf6", opacity: 0.15 }}></i>
                                 </div>
-                                <span className="text-2xl font-black text-gray-800 leading-none mb-1">{stats.freshProspects}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Fresh Prospects</span>
+                                <div className="relative flex flex-col h-full z-10">
+                                    <div className="flex items-start justify-between mb-auto">
+                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Fresh</p>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.freshProspects}</p>
+                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Not yet assigned</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Followups */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center mb-4 text-orange-500">
-                                    <i className="fi flex fi-rr-phone-call"></i>
+                            {/* Follow-ups */}
+                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
+                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(249, 115, 22, 0.12), transparent 60%)" }}></div>
+                                <div className="absolute -right-2 -bottom-2">
+                                    <i className="fi flex fi-rr-phone-call text-5xl" style={{ color: "#f97316", opacity: 0.15 }}></i>
                                 </div>
-                                <span className="text-2xl font-black text-gray-800 leading-none mb-1">{stats.followupCount}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Follow-ups</span>
+                                <div className="relative flex flex-col h-full z-10">
+                                    <div className="flex items-start justify-between mb-auto">
+                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Follow-ups</p>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.followupCount}</p>
+                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Pending action</p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Upcoming */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-4 text-green-500">
-                                    <i className="fi flex fi-rr-calendar-clock"></i>
+                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
+                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(16, 185, 129, 0.12), transparent 60%)" }}></div>
+                                <div className="absolute -right-2 -bottom-2">
+                                    <i className="fi flex fi-rr-calendar-clock text-5xl" style={{ color: "#10b981", opacity: 0.15 }}></i>
                                 </div>
-                                <span className="text-2xl font-black text-gray-800 leading-none mb-1">{stats.upcomingProspects}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Upcoming</span>
+                                <div className="relative flex flex-col h-full z-10">
+                                    <div className="flex items-start justify-between mb-auto">
+                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Upcoming</p>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.upcomingProspects}</p>
+                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Scheduled leads</p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Overdue */}
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4 text-red-500">
-                                    <i className="fi flex fi-rr-time-watch-calendar"></i>
+                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
+                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(185, 22, 16, 0.12), transparent 60%)" }}></div>
+                                <div className="absolute -right-2 -bottom-2">
+                                    <i className="fi flex fi-rr-time-watch-calendar text-5xl" style={{ color: "#ef4444", opacity: 0.15 }}></i>
                                 </div>
-                                <span className="text-2xl font-black text-red-600 leading-none mb-1">{stats.overdueCount}</span>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-red-400">Overdue</span>
+                                <div className="relative flex flex-col h-full z-10">
+                                    <div className="flex items-start justify-between mb-auto">
+                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Overdue</p>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <p className="text-xl   sm:text-4xl font-semibold text-red-600" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.overdueCount}</p>
+                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-red-400">Past due date</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -408,96 +663,230 @@ export default function CampaignDetails() {
                         <div className="space-y-6">
                             {/* Top 3 Cards Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Recent Calls */}
-                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col h-[180px] relative overflow-hidden group hover:shadow-md transition-all">
-                                    <div className="flex items-center justify-between mb-auto">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500">
-                                                <i className="fi flex fi-rr-time-past text-sm"></i>
-                                            </div>
-                                            <h3 className="font-bold text-gray-800 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Recent Calls</h3>
-                                        </div>
-                                        <div className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-gray-100">
-                                            0
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 flex flex-col items-center justify-center -mt-2">
-                                        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center mb-2">
-                                            <i className="fi flex fi-rr-time-past text-gray-300 text-base"></i>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-medium font-bold">No recent calls</p>
-                                    </div>
-                                </div>
-
-                                {/* Overdue Calls */}
-                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col h-[180px] relative overflow-hidden group hover:shadow-md transition-all">
-                                    <div className="flex items-center justify-between mb-auto">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
-                                                <i className="fi flex fi-rr-pending text-sm"></i>
-                                            </div>
-                                            <h3 className="font-bold text-gray-800 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Overdue Calls</h3>
-                                        </div>
-                                        <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white border border-red-600 shadow-lg shadow-red-100">
-                                            {stats.overdueCount}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 flex flex-col items-center justify-center -mt-2">
-                                        <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mb-2 border border-green-100">
-                                            <i className="fi flex fi-rr-pending text-green-500 text-base"></i>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-medium font-bold">No overdue calls</p>
-                                    </div>
-                                </div>
-
-                                {/* Upcoming Calls */}
-                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col h-[180px] relative overflow-hidden group hover:shadow-md transition-all">
-                                    <div className="flex items-center justify-between mb-auto">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                                <i className="fi flex fi-rr-clock text-sm"></i>
-                                            </div>
-                                            <h3 className="font-bold text-gray-800 text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>Upcoming Calls</h3>
-                                        </div>
-                                        <div className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-gray-100">
-                                            {stats.upcomingProspects}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 flex flex-col items-center justify-center -mt-2">
-                                        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center mb-2">
-                                            <i className="fi flex fi-rr-clock text-gray-300 text-base"></i>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-medium font-bold">No upcoming calls</p>
-                                    </div>
-                                </div>
+                                 {/* Recent Calls */}
+                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="flex items-center justify-between mb-6 relative z-10">
+                                         <div className="flex items-center gap-3">
+                                             <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-indigo-50 group-hover:text-[#4b33e8] transition-colors">
+                                                 <i className="fi flex fi-rr-time-past text-sm"></i>
+                                             </div>
+                                             <div>
+                                                 <h3 className="font-bold text-gray-800 text-sm italic" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>Recent Calls</h3>
+                                                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">Last 24 Hours</p>
+                                             </div>
+                                         </div>
+                                         <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-[11px] font-black text-gray-400 border border-gray-100">
+                                             {stats.recentCount}
+                                         </div>
+                                     </div>
+                                     <div className="flex-1 flex flex-col relative z-10">
+                                         {recentCalls.length === 0 ? (
+                                             <div className="flex flex-col items-center justify-center h-full py-8">
+                                                 <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-2 border border-dashed border-gray-200">
+                                                     <i className="fi flex fi-rr-time-past text-gray-300 text-lg"></i>
+                                                 </div>
+                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No recent records</p>
+                                             </div>
+                                         ) : (
+                                             <div className="space-y-3">
+                                                 {recentCalls.map((item: any) => (
+                                                     <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-gray-50 bg-gray-50/30 hover:bg-white hover:border-gray-200 transition-all group/item">
+                                                         <div className="flex flex-col min-w-0 pr-2">
+                                                             <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customers?.customer_name || 'Anonymous'}</span>
+                                                             <div className="flex flex-col gap-1.5">
+                                                                 <div className="flex items-center gap-2 flex-wrap">
+                                                                     <span className="text-[9px] font-black text-[#4b33e8] bg-indigo-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         {item.disposition || 'Call'}
+                                                                         {item.sub_disposition && ` > ${item.sub_disposition}`}
+                                                                     </span>
+                                                                     {item.customers?.expiry_date && (
+                                                                         <div className="flex items-center gap-1 text-[9px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded uppercase tracking-tighter">
+                                                                             <i className="fi fi-rr-calendar-check text-[8px]"></i>
+                                                                             <span>{formatDate(item.customers.expiry_date)}</span>
+                                                                         </div>
+                                                                     )}
+                                                                 </div>
+                                                                 <div className="flex items-center gap-1.5 text-gray-400">
+                                                                     <i className="fi fi-rr-clock text-[8px]"></i>
+                                                                     <span className="text-[9px] font-bold leading-none">{formatDate(item.created_at)}</span>
+                                                                     <span className="text-[8px] font-medium leading-none">{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <button 
+                                                             onClick={() => router.push(`/campaign/${id}/${item.customer_id}`)}
+                                                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-gray-400 hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-gray-100"
+                                                         >
+                                                             <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                         </button>
+                                                     </div>
+                                                 ))}
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
+ 
+                                 {/* Overdue Calls */}
+                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="flex items-center justify-between mb-6 relative z-10">
+                                         <div className="flex items-center gap-3">
+                                             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
+                                                 <i className="fi flex fi-rr-pending text-sm"></i>
+                                             </div>
+                                             <div>
+                                                 <h3 className="font-bold text-gray-800 text-sm italic" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>Overdue</h3>
+                                                 <p className="text-[9px] text-red-400 font-bold uppercase tracking-widest leading-none mt-1">Action Required</p>
+                                             </div>
+                                         </div>
+                                         <div className="w-7 h-7 rounded-full bg-red-500 flex items-center justify-center text-[11px] font-black text-white border border-red-600 shadow-lg shadow-red-100">
+                                             {stats.overdueCount}
+                                         </div>
+                                     </div>
+                                     <div className="flex-1 flex flex-col relative z-10">
+                                         {overdueLeads.length === 0 ? (
+                                             <div className="flex flex-col items-center justify-center h-full py-8">
+                                                 <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-2 border border-red-100">
+                                                     <i className="fi flex fi-rr-check opacity-50 text-red-500 text-lg"></i>
+                                                 </div>
+                                                 <p className="text-[10px] text-red-500 font-black opacity-50 uppercase tracking-widest">All caught up</p>
+                                             </div>
+                                         ) : (
+                                             <div className="space-y-3">
+                                                 {overdueLeads.map((item: any) => (
+                                                     <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-red-50 bg-red-50/10 hover:bg-white hover:border-red-200 transition-all group/item shadow-[0_0_15px_-10px_rgba(239,68,68,0.2)]">
+                                                         <div className="flex flex-col min-w-0 pr-2">
+                                                             <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customer_name || 'Anonymous'}</span>
+                                                             <div className="flex flex-col gap-1.5">
+                                                                 <div className="flex items-center gap-2">
+                                                                     <span className="text-[9px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         {item.disposition || 'Follow Up'}
+                                                                         {item.sub_disposition && ` > ${item.sub_disposition}`}
+                                                                     </span>
+                                                                 </div>
+                                                                 <div className="flex items-center gap-1.5 text-red-400">
+                                                                     <i className="fi fi-rr-calendar-clock text-[9px]"></i>
+                                                                     <span className="text-[9px] font-bold leading-none">{formatDate(item.expiry_date)}</span>
+                                                                     <span className="text-[8px] font-medium leading-none">{item.expiry_date && String(item.expiry_date).includes('T') ? new Date(item.expiry_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No Time'}</span>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <button 
+                                                             onClick={() => router.push(`/campaign/${id}/${item.id}`)}
+                                                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-red-100"
+                                                         >
+                                                             <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                         </button>
+                                                     </div>
+                                                 ))}
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
+ 
+                                 {/* Upcoming Calls */}
+                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="flex items-center justify-between mb-6 relative z-10">
+                                         <div className="flex items-center gap-3">
+                                             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+                                                 <i className="fi flex fi-rr-clock text-sm"></i>
+                                             </div>
+                                             <div>
+                                                 <h3 className="font-bold text-gray-800 text-sm italic" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>Upcoming</h3>
+                                                 <p className="text-[9px] text-blue-400 font-bold uppercase tracking-widest leading-none mt-1">Scheduled Tasks</p>
+                                             </div>
+                                         </div>
+                                         <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-[11px] font-black text-gray-500 border border-gray-100">
+                                             {stats.upcomingProspects}
+                                         </div>
+                                     </div>
+                                     <div className="flex-1 flex flex-col relative z-10">
+                                         {upcomingLeads.length === 0 ? (
+                                             <div className="flex flex-col items-center justify-center h-full py-8">
+                                                 <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-2">
+                                                     <i className="fi flex fi-rr-clock text-blue-300 text-lg"></i>
+                                                 </div>
+                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No scheduled tasks</p>
+                                             </div>
+                                         ) : (
+                                             <div className="space-y-3">
+                                                 {upcomingLeads.map((item: any) => (
+                                                     <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-blue-50 bg-blue-50/10 hover:bg-white hover:border-blue-200 transition-all group/item">
+                                                         <div className="flex flex-col min-w-0 pr-2">
+                                                             <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customer_name || 'Anonymous'}</span>
+                                                             <div className="flex flex-col gap-1.5">
+                                                                 <div className="flex items-center gap-2">
+                                                                     <span className="text-[9px] font-black text-blue-500 bg-blue-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         {item.disposition || 'Scheduled'}
+                                                                         {item.sub_disposition && ` > ${item.sub_disposition}`}
+                                                                     </span>
+                                                                 </div>
+                                                                 <div className="flex items-center gap-1.5 text-blue-400">
+                                                                     <i className="fi fi-rr-calendar-clock text-[9px]"></i>
+                                                                     <span className="text-[9px] font-bold leading-none">{formatDate(item.expiry_date)}</span>
+                                                                     <span className="text-[8px] font-medium leading-none">{item.expiry_date && String(item.expiry_date).includes('T') ? new Date(item.expiry_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No Time'}</span>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <button 
+                                                             onClick={() => router.push(`/campaign/${id}/${item.id}`)}
+                                                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-blue-100"
+                                                         >
+                                                             <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                         </button>
+                                                     </div>
+                                                 ))}
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
                             </div>
 
                             {/* Large Bottom Card: All Leads */}
-                            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 min-h-[400px] relative overflow-hidden group hover:shadow-md transition-all">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-[#4b33e8]">
-                                            <i className="fi flex fi-rr-users text-base font-bold"></i>
+                            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 min-h-[400px] relative overflow-hidden group hover:shadow-md transition-all">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+                                
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#4b33e8] border border-indigo-100/50 shadow-sm">
+                                            <i className="fi flex fi-rr-users text-lg font-bold"></i>
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-gray-800 text-lg md:text-xl leading-none mb-1" style={{ fontFamily: "'Poppins', sans-serif" }}>All Leads </h3>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Full Campaign Database</p>
+                                            <h3 className="font-bold text-gray-800 text-xl leading-none mb-2" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>All Leads</h3>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Campaign Database • {totalLeadsCount} Records</p>
+                                                {selectedLeads.length > 0 && (
+                                                    <span className="bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300">
+                                                        {selectedLeads.length} Selected
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3">
-                                        {/* Add Lead Button */}
-                                        <button className="flex items-center gap-2 px-4 py-2 bg-[#4b33e8] text-white rounded-xl text-[10px] font-bold shadow-lg shadow-indigo-100 hover:scale-105 transition-all">
-                                            <i className="fi flex fi-rr-plus"></i>
-                                            Add Lead
-                                        </button>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        {/* Search Bar */}
+                                        <div className="relative group/search min-w-[240px]">
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <i className="fi fi-rr-search text-gray-400 text-xs group-focus-within/search:text-[#4b33e8] transition-colors"></i>
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder="SEARCH NAME OR PHONE..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full h-[42px] pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-100 text-[10px] font-black text-gray-600 focus:bg-white focus:border-[#4b33e8]/30 focus:ring-4 focus:ring-[#4b33e8]/5 outline-none transition-all placeholder:text-gray-300 tracking-widest uppercase"
+                                            />
+                                        </div>
 
                                         {/* Working Date Picker Container */}
                                         <div
-                                            className="px-4 py-2 rounded-xl bg-gray-50 border border-gray-100 text-[10px] font-black text-gray-500 flex items-center gap-2 cursor-pointer hover:bg-gray-100 transition-all relative group/date"
+                                            className="px-4 h-[42px] rounded-xl bg-gray-50 border border-gray-100 text-[11px] font-black text-gray-500 flex items-center gap-2 cursor-pointer hover:bg-gray-100 transition-all relative group/date shadow-sm"
                                         >
                                             <i className="fi flex fi-rr-calendar text-gray-400 group-hover/date:text-[#4b33e8] transition-colors"></i>
-                                            <span>{new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</span>
+                                            <span className="uppercase tracking-tight">{new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</span>
                                             <input
                                                 type="date"
                                                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
@@ -505,6 +894,12 @@ export default function CampaignDetails() {
                                                 onChange={(e) => setSelectedDate(e.target.value)}
                                             />
                                         </div>
+
+                                        {/* Add Lead Button */}
+                                        <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
+                                            <i className="fi flex fi-rr-plus"></i>
+                                            Add Lead
+                                        </button>
                                     </div>
                                 </div>
 
@@ -527,24 +922,49 @@ export default function CampaignDetails() {
                                         <table className="w-full text-left">
                                             <thead>
                                                 <tr className="border-b border-gray-50">
+                                                    <th className="px-4 py-4 w-10">
+                                                        <div className="flex items-center justify-center">
+                                                            <input 
+                                                                type="checkbox"
+                                                                checked={leads.length > 0 && leads.every(l => selectedLeads.includes(l.id))}
+                                                                onChange={toggleSelectAll}
+                                                                className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+                                                            />
+                                                        </div>
+                                                    </th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Customer Name</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Contact Info</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">Status</th>
-                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Disposition</th>
-                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Assigned To</th>
+                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">Disposition/Sub</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Expiry Date</th>
-                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right">Action</th>
+                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Assigned To</th>
+                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Last Called</th>
+                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Last Updated By</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
                                                 {leads.map((lead) => (
-                                                    <tr key={lead.id} className="group hover:bg-gray-50/50 transition-all">
+                                                    <tr 
+                                                        key={lead.id} 
+                                                        onClick={() => router.push(`/campaign/${id}/${lead.id}`)}
+                                                        className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0"
+                                                    >
+                                                        <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                                                            <div className="flex items-center justify-center">
+                                                                <input 
+                                                                    type="checkbox"
+                                                                    checked={selectedLeads.includes(lead.id)}
+                                                                    onChange={() => toggleSelect(lead.id)}
+                                                                    className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+                                                                />
+                                                            </div>
+                                                        </td>
                                                         <td className="px-4 py-4">
                                                             <div className="flex items-center gap-3">
                                                                 <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-medium shadow-lg shadow-indigo-100 uppercase">
                                                                     {lead.customer_name?.charAt(0) || 'C'}
                                                                 </div>
-                                                                <span className="text-xs font-medium text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>{lead.customer_name || 'Anonymous'}</span>
+                                                                <span className="text-xs font-medium text-gray-800" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{lead.customer_name || 'Anonymous'}</span>
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-4">
@@ -555,43 +975,147 @@ export default function CampaignDetails() {
                                                         </td>
                                                         <td className="px-4 py-4 text-center">
                                                             <div className="flex justify-center">
-                                                                <div className={`px-3 py-1 rounded-full text-[9px] font-medium uppercase tracking-widest ${lead.status === 'active' ? 'bg-green-50 text-green-600 border border-green-100' :
+                                                                <div className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+                                                                    lead.status === 'active' ? 'bg-green-50 text-green-600 border border-green-100' :
                                                                     lead.status === 'followup' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
-                                                                        'bg-gray-50 text-gray-600 border border-gray-100'
-                                                                    }`}>
+                                                                    lead.status === 'closed' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+                                                                    'bg-gray-50 text-gray-600 border border-gray-100'
+                                                                }`}>
+                                                                    {lead.status === 'closed' && <i className="fi fi-rr-check-circle flex text-[10px]"></i>}
                                                                     {lead.status}
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <div className="flex flex-col items-center">
-                                                                <span className="text-[10px] font-medium text-gray-700 leading-none mb-1">{lead.disposition || 'Fresh'}</span>
-                                                                <span className="text-[8px] text-gray-400 font-medium uppercase tracking-widest text-center">Outcome</span>
+                                                                <span className="text-[10px] font-bold text-gray-700 leading-none mb-1">
+                                                                    {lead.disposition || 'Fresh'}
+                                                                </span>
+                                                                <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest">
+                                                                    {lead.sub_disposition || '---'}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-4">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-indigo-600">{formatDate(lead.expiry_date)}</span>
+                                                                {lead.expiry_date && (
+                                                                    <span className="text-[8px] text-gray-400 font-medium">
+                                                                        {new Date(lead.expiry_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <div className="flex items-center gap-2">
                                                                 <div className={`w-1.5 h-1.5 rounded-full ${lead.assigned_user_name === 'Unassigned' ? 'bg-gray-300' : 'bg-indigo-400'}`}></div>
-                                                                <span className="text-[10px] font-medium text-gray-600 uppercase tracking-tighter">
-                                                                    {lead.assigned_user_name}
-                                                                </span>
+                                                                {lead.assigned_user_info ? (
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[10px] font-medium text-gray-800 leading-none mb-0.5">
+                                                                            {lead.assigned_user_info.name}
+                                                                        </span>
+                                                                        <span className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">
+                                                                            ID: {lead.assigned_user_info.empId}
+                                                                        </span>
+                                                                    </div>
+                                                                ) : (
+                                                                     <span className="text-[10px] font-medium text-gray-600 uppercase tracking-tighter">
+                                                                        {lead.assigned_user_name}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-4 text-xs font-medium text-gray-500">
-                                                            {lead.expiry_date ? new Date(lead.expiry_date).toLocaleDateString() : '—'}
+                                                        <td className="px-4 py-4">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-gray-700">{formatDate(lead.last_called_at)}</span>
+                                                                {lead.last_called_at && (
+                                                                    <span className="text-[8px] text-gray-400 font-medium">
+                                                                        {new Date(lead.last_called_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </td>
-                                                        <td className="px-4 py-4 text-right">
-                                                            <button
-                                                                onClick={() => router.push(`/campaign/${id}/${lead.id}`)}
-                                                                className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm group-hover:scale-110 active:scale-95"
-                                                            >
-                                                                <i className="fi flex fi-rr-phone-call text-xs"></i>
-                                                            </button>
+                                                        <td className="px-4 py-4">
+                                                            {lead.last_updated_by_info ? (
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] font-bold text-gray-800 leading-none mb-1">{lead.last_updated_by_info.name}</span>
+                                                                    <span className="text-[9px] text-indigo-500 font-black uppercase tracking-tighter">ID: {lead.last_updated_by_info.empId}</span>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-[10px] text-gray-300 italic">No Updates</span>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
+                                    </div>
+                                )}
+
+                                {/* Pagination Controls */}
+                                {!loadingLeads && totalLeadsCount > 0 && (
+                                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-50 pt-6">
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                                            Showing <span className="text-gray-800">{(currentPage - 1) * leadsPerPage + 1}</span> to <span className="text-gray-800">{Math.min(currentPage * leadsPerPage, totalLeadsCount)}</span> of <span className="text-gray-800">{totalLeadsCount}</span> Leads
+                                        </p>
+                                        
+                                        <div className="flex items-center gap-2">
+                                            <button 
+                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                disabled={currentPage === 1}
+                                                className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
+                                                    currentPage === 1 
+                                                    ? 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed' 
+                                                    : 'bg-white border-gray-200 text-gray-600 hover:border-indigo-500 hover:text-indigo-500 shadow-sm'
+                                                }`}
+                                            >
+                                                <i className="fi fi-rr-angle-small-left text-lg"></i>
+                                            </button>
+                                            
+                                            <div className="flex items-center gap-1">
+                                                {[...Array(Math.ceil(totalLeadsCount / leadsPerPage))].map((_, idx) => {
+                                                    const pgNum = idx + 1;
+                                                    // Show only few pages if there are many
+                                                    if (
+                                                        pgNum === 1 || 
+                                                        pgNum === Math.ceil(totalLeadsCount / leadsPerPage) || 
+                                                        (pgNum >= currentPage - 1 && pgNum <= currentPage + 1)
+                                                    ) {
+                                                        return (
+                                                            <button
+                                                                key={pgNum}
+                                                                onClick={() => setCurrentPage(pgNum)}
+                                                                className={`w-10 h-10 rounded-xl text-[11px] font-bold transition-all ${
+                                                                    currentPage === pgNum
+                                                                    ? 'bg-[#4b33e8] text-white shadow-lg shadow-indigo-100'
+                                                                    : 'bg-white border border-gray-200 text-gray-500 hover:border-indigo-400 hover:text-indigo-500'
+                                                                }`}
+                                                            >
+                                                                {pgNum}
+                                                            </button>
+                                                        );
+                                                    } else if (
+                                                        (pgNum === currentPage - 2 && pgNum > 1) || 
+                                                        (pgNum === currentPage + 2 && pgNum < Math.ceil(totalLeadsCount / leadsPerPage))
+                                                    ) {
+                                                        return <span key={pgNum} className="text-gray-300 px-1">...</span>;
+                                                    }
+                                                    return null;
+                                                })}
+                                            </div>
+
+                                            <button 
+                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalLeadsCount / leadsPerPage)))}
+                                                disabled={currentPage === Math.ceil(totalLeadsCount / leadsPerPage)}
+                                                className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all ${
+                                                    currentPage === Math.ceil(totalLeadsCount / leadsPerPage)
+                                                    ? 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed' 
+                                                    : 'bg-white border-gray-200 text-gray-600 hover:border-indigo-500 hover:text-indigo-500 shadow-sm'
+                                                }`}
+                                            >
+                                                <i className="fi fi-rr-angle-small-right text-lg"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

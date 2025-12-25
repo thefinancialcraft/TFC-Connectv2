@@ -4010,10 +4010,12 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                       status: "active", // Filter by active status
                     });
                   }}
-                  className="relative rounded-2xl p-3 sm:p-4 border-[1.8px] border-dashed border-gray-400 transition-shadow duration-200 flex flex-col overflow-hidden cursor-pointer hover:shadow-md"
-                  style={{ backgroundColor: "#f6f5f7" }}
+                  className="relative overflow-hidden rounded-2xl p-3 sm:p-4 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 cursor-pointer"
+                  style={{ backgroundColor: "white" }}
                   title="Click to filter active users"
                 >
+                  <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 60%)" }} />
+                  <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-green-200/20 blur-2xl" />
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1">
                       <h2
@@ -4140,10 +4142,12 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                       status: "", // Clear all filters - show all users
                     });
                   }}
-                  className="relative rounded-2xl p-3 sm:p-4 border-[1.8px] border-dashed border-gray-400 transition-shadow duration-200 flex flex-col overflow-hidden cursor-pointer hover:shadow-md"
-                  style={{ backgroundColor: "#f6f5f7" }}
+                  className="relative overflow-hidden rounded-2xl p-3 sm:p-4 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 cursor-pointer"
+                  style={{ backgroundColor: "white" }}
                   title="Click to show all users"
                 >
+                  <div className="absolute inset-0" style={{ backgroundColor: "radial-gradient(circle at top right, rgba(75, 51, 232, 0.12), transparent 60%)" }} />
+                  <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-purple-200/20 blur-2xl" />
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1">
                       <h2
@@ -4304,7 +4308,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           status: "",
                         });
                       }}
-                      className="relative rounded-tl-xl rounded-tr-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 border-[1.8px] border-gray-300 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      className="relative rounded-tl-xl rounded-tr-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                       title="Click to filter approved users"
                     >
                       {/* Background Icon */}
@@ -4381,7 +4385,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           status: "",
                         });
                       }}
-                      className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 border-[1.8px] border-gray-300 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                       title="Click to filter pending users"
                     >
                       {/* Background Icon */}
@@ -4458,7 +4462,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           status: "",
                         });
                       }}
-                      className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 border-[1.8px] border-gray-300 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                       title="Click to filter users on hold"
                     >
                       {/* Background Icon */}
@@ -4535,7 +4539,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           status: "",
                         });
                       }}
-                      className="relative rounded-tr-xl rounded-br-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 border-[1.8px] border-gray-300 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      className="relative rounded-tr-xl rounded-br-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                       title="Click to filter suspended users"
                     >
                       {/* Background Icon */}
