@@ -207,7 +207,7 @@ export default function Settings() {
               const { data: fullProfile } = await supabase
                 .from('user_profiles')
                 .select('*')
-                .eq('user_id', result.user.uid)
+                .eq('user_id', result.user?.uid)
                 .maybeSingle();
               
               // Use cached data as fallback for critical fields
@@ -257,11 +257,11 @@ export default function Settings() {
             // Fallback to basic data - use cached data if available, preserve existing formData
             const cachedData = getStoredUserData();
             setFormData((prevFormData) => ({
-          email: result.user.email || prevFormData.email || cachedData?.email || "",
-              user_name: result.user.displayName || prevFormData.user_name || cachedData?.user_name || "",
-              contact_no: result.user.phone || prevFormData.contact_no || "",
-              employee_id: result.user.employeeId || prevFormData.employee_id || cachedData?.employee_id || "",
-              role: result.user.role || prevFormData.role || cachedData?.role || "",
+              email: result.user?.email || prevFormData.email || cachedData?.email || "",
+              user_name: result.user?.displayName || prevFormData.user_name || cachedData?.user_name || "",
+              contact_no: result.user?.phone || prevFormData.contact_no || "",
+              employee_id: result.user?.employeeId || prevFormData.employee_id || cachedData?.employee_id || "",
+              role: result.user?.role || prevFormData.role || cachedData?.role || "",
               father_name: prevFormData.father_name || "",
               gender: prevFormData.gender || "",
               date_of_birth: prevFormData.date_of_birth || "",
@@ -399,7 +399,9 @@ export default function Settings() {
       const result = await checkAuthAndFetchProfile();
       if (result.user) {
         setUser((prevUser) => {
-          const updatedUser = {
+          if (!result.user) return prevUser;
+          
+          const updatedUser: UserProfile = {
             ...result.user,
             profilePicUrl: formData.profile_pic_url || result.user.profilePicUrl || null,
           };
