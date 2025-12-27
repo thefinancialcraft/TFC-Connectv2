@@ -100,7 +100,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete 
                             <i className="fi flex  fi-rr-clock text-base"></i>
                         </div>
                         <span className="text-lg font-bold text-gray-700">{campaign.pending_calls ?? 0}</span>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-wide">Pending</span>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wide">Fresh</span>
                     </div>
                     <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-purple-50/50 transition-colors border border-gray-100">
                         <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mb-1 text-purple-600">

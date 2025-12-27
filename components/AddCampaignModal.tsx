@@ -3,9 +3,11 @@ import { supabase } from '../lib/supabase';
 
 interface User {
     id: string;
+    user_id: string;
     user_name: string | null;
     email: string;
     profile_pic_url: string | null;
+    employee_id?: string | null;
 }
 
 interface AddCampaignModalProps {
@@ -47,7 +49,7 @@ export default function AddCampaignModal({
                 setCampaignStatus(campaign.status || "active");
                 // Pre-select users if they exist in the 'users' column
                 if (Array.isArray(campaign.users)) {
-                    setSelectedUsers(campaign.users.map((u: any) => u.id).filter(Boolean));
+                    setSelectedUsers(campaign.users.map((u: any) => u.user_id || u.id).filter(Boolean));
                 } else {
                     setSelectedUsers([]);
                 }
@@ -106,14 +108,16 @@ export default function AddCampaignModal({
         setIsSubmitting(true);
         try {
             // Map selected IDs to detailed objects {id, name, email}
-            const selectedUserObjects = selectedUsers.map(id => {
-                const found = users.find(u => u.id === id);
+            const selectedUserObjects = selectedUsers.map(uid => {
+                const found = users.find(u => u.user_id === uid || u.id === uid);
                 return {
                     id: found?.id,
+                    user_id: found?.user_id,
                     name: found?.user_name,
-                    email: found?.email
+                    email: found?.email,
+                    employee_id: (found as any)?.employee_id
                 };
-            }).filter(u => u.id); // Filter out any that might not have been found
+            }).filter(u => u.user_id); // Filter out any that might not have been found
 
             const campaignData = {
                 id: campaignId,
@@ -269,10 +273,10 @@ export default function AddCampaignModal({
                                 {selectedUsers.length === 0 ? (
                                     <div className="text-xs text-gray-400 italic py-2">No team members assigned yet. Use the panel on the right ➜</div>
                                 ) : (
-                                    selectedUsers.map(userId => {
-                                        const user = users.find(u => u.id === userId);
+                                    selectedUsers.map(uid => {
+                                        const user = users.find(u => u.user_id === uid || u.id === uid);
                                         return (
-                                            <div key={userId} className="flex items-center gap-2 bg-purple-50 border border-purple-100 px-2 py-1.5 rounded-lg group animate-in fade-in zoom-in duration-200">
+                                            <div key={uid} className="flex items-center gap-2 bg-purple-50 border border-purple-100 px-2 py-1.5 rounded-lg group animate-in fade-in zoom-in duration-200">
                                                 {user?.profile_pic_url ? (
                                                     <img src={user.profile_pic_url} className="w-5 h-5 rounded-full object-cover" alt="" />
                                                 ) : (
@@ -282,7 +286,7 @@ export default function AddCampaignModal({
                                                 )}
                                                 <span className="text-xs font-medium text-gray-700">{user?.user_name || 'User'}</span>
                                                 <button
-                                                    onClick={() => setSelectedUsers(prev => prev.filter(id => id !== userId))}
+                                                    onClick={() => setSelectedUsers(prev => prev.filter(id => id !== uid))}
                                                     className="ml-1 text-gray-400 hover:text-red-500 transition-colors"
                                                 >
                                                     <i className="fi flex fi-rr-cross-small text-xs"></i>
@@ -340,19 +344,19 @@ export default function AddCampaignModal({
                                                 <div className="relative flex-shrink-0">
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedUsers.includes(user.id)}
+                                                        checked={selectedUsers.includes(user.user_id)}
                                                         onChange={(e) => {
                                                             if (e.target.checked) {
-                                                                setSelectedUsers([...selectedUsers, user.id]);
+                                                                setSelectedUsers([...selectedUsers, user.user_id]);
                                                             } else {
-                                                                setSelectedUsers(selectedUsers.filter(id => id !== user.id));
+                                                                setSelectedUsers(selectedUsers.filter(id => id !== user.user_id));
                                                             }
                                                         }}
                                                         className="sr-only"
                                                     />
-                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedUsers.includes(user.id) ? "bg-purple-600 border-purple-600 rotate-0 scale-100" : "bg-white border-gray-300 -rotate-90 scale-95"
+                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${selectedUsers.includes(user.user_id) ? "bg-purple-600 border-purple-600 rotate-0 scale-100" : "bg-white border-gray-300 -rotate-90 scale-95"
                                                         }`}>
-                                                        {selectedUsers.includes(user.id) && <i className="fi flex fi-rr-check text-[8px] text-white"></i>}
+                                                        {selectedUsers.includes(user.user_id) && <i className="fi flex fi-rr-check text-[8px] text-white"></i>}
                                                     </div>
                                                 </div>
 

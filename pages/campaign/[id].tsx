@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../../components/Sidebar";
@@ -7,6 +8,11 @@ import { supabase } from "../../lib/supabase";
 import { getStoredUserData, storeUserData } from "../../lib/localStorageUtils";
 import { useCallSessionRedirect } from "../../hooks/useCallSessionRedirect";
 import BottomNav from "../../components/BottomNav";
+import { 
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+    BarChart, Bar, Cell, 
+    PieChart, Pie, Legend
+} from 'recharts';
 
 interface Campaign {
     id: string;
@@ -18,6 +24,7 @@ interface Campaign {
     employee_id?: string | null;
     talktime?: string | null;
     total_dials?: number | null;
+    users?: { id: string, name: string, email: string, employee_id?: string }[];
 }
 
 interface CampaignStats {
@@ -27,7 +34,34 @@ interface CampaignStats {
     freshProspects: number;
     upcomingProspects: number;
     recentCount: number;
+    managedCount: number;
 }
+
+interface AnalyticsData {
+    hourly_calls: { hour: number; count: number }[];
+    agent_performance: { name: string; employee_id: string; calls: number; duration: number }[];
+    disposition_stats: { name: string; value: number }[];
+    hourly_detailed: { 
+        hour: number; 
+        total_calls: number; 
+        connected_calls: number; 
+        outgoing_calls: number; 
+        incoming_calls: number; 
+        missed_calls: number; 
+        total_duration: number; 
+    }[];
+    caller_performance: {
+        caller: string;
+        total_calls: number;
+        connected_calls: number;
+        outgoing_calls: number;
+        incoming_calls: number;
+        missed_calls: number;
+        total_duration: number;
+    }[];
+}
+
+const COLORS = ['#4b33e8', '#00C49F', '#FFBB28', '#FF8042', '#FF4560', '#775DD0'];
 
 export default function CampaignDetails() {
     const router = useRouter();
@@ -66,7 +100,15 @@ export default function CampaignDetails() {
         overdueCount: 0,
         freshProspects: 0,
         upcomingProspects: 0,
-        recentCount: 0
+        recentCount: 0,
+        managedCount: 0
+    });
+    const [analytics, setAnalytics] = useState<AnalyticsData>({
+        hourly_calls: [],
+        agent_performance: [],
+        disposition_stats: [],
+        hourly_detailed: [],
+        caller_performance: []
     });
     const [error, setError] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -74,7 +116,10 @@ export default function CampaignDetails() {
     const [recentCalls, setRecentCalls] = useState<any[]>([]);
     const [overdueLeads, setOverdueLeads] = useState<any[]>([]);
     const [upcomingLeads, setUpcomingLeads] = useState<any[]>([]);
+    const [managedLeads, setManagedLeads] = useState<any[]>([]);
     const [loadingLeads, setLoadingLeads] = useState(false);
+    const [expandedChart, setExpandedChart] = useState<'hourly' | 'users' | null>(null);
+    const [campaignStats, setCampaignStats] = useState({ talkTime: '0h 0m', totalDials: 0 });
     const [currentPage, setCurrentPage] = useState(1);
     const [leadsPerPage] = useState(10);
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
@@ -113,11 +158,13 @@ export default function CampaignDetails() {
             setLoading(true);
 
             // 1. Fetch Campaign Details
-            const { data: campaignData, error: campaignError } = await supabase
+            const { data: cRows, error: campaignError } = await supabase
                 .from('campaigns')
                 .select('*')
                 .eq('id', id)
-                .single();
+                .limit(1);
+
+            const campaignData = cRows ? cRows[0] : null;
 
             if (campaignError) throw campaignError;
             setCampaign(campaignData);
@@ -169,14 +216,58 @@ export default function CampaignDetails() {
                 .eq('campaign_id', id)
                 .gte('created_at', twentyFourHoursAgoCount);
 
+            // Managed Count (Managed By is not null)
+            const { count: managedCount } = await supabase
+                .from('customers')
+                .select('*', { count: 'exact', head: true })
+                .eq('campaign_id', id)
+                .not('managed_by', 'is', null);
+
             setStats({
                 totalCustomers: totalCount || 0,
                 followupCount: followupCount || 0,
                 overdueCount: overdueCount || 0,
                 freshProspects: freshCount || 0,
                 upcomingProspects: upcomingCount || 0,
-                recentCount: recentCount || 0
+                recentCount: recentCount || 0,
+                managedCount: managedCount || 0
             });
+
+            // 2.5 Fetch Analytics (RPC)
+            // Use Supabase RPC to fetch aggregated analytics data
+            // We'll use a simple `any` cast if the type definition isn't updated yet in the library
+            const { data: analyticsResult, error: analyticsError } = await supabase
+                .rpc('get_campaign_analytics', { campaign_id_input: id });
+
+            if (!analyticsError && analyticsResult) {
+                // Ensure data structure matches
+                setAnalytics({
+                    hourly_calls: analyticsResult.hourly_calls || [],
+                    agent_performance: analyticsResult.agent_performance || [],
+                    disposition_stats: analyticsResult.disposition_stats || [],
+                    hourly_detailed: analyticsResult.hourly_detailed || [],
+                    caller_performance: analyticsResult.caller_performance || []
+                });
+            } else {
+                console.error("Analytics fetch error:", analyticsError);
+            }
+
+            // 2.6 Fetch Today's Campaign Stats (Talk Time & Total Dials)
+            const { data: todayStats } = await supabase
+                .from('call_logs')
+                .select('duration')
+                .eq('campaign_id', id)
+                .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
+
+            if (todayStats) {
+                const totalDuration = todayStats.reduce((sum, log) => sum + (log.duration || 0), 0);
+                const hours = Math.floor(totalDuration / 3600);
+                const minutes = Math.floor((totalDuration % 3600) / 60);
+                setCampaignStats({
+                    talkTime: `${hours}h ${minutes}m`,
+                    totalDials: todayStats.length
+                });
+            }
 
             // 3. Fetch Tile Data (Recent, Overdue, Upcoming)
             const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -219,6 +310,48 @@ export default function CampaignDetails() {
                 .order('expiry_date', { ascending: true })
                 .limit(3);
             setUpcomingLeads(upcomingData || []);
+
+            // d. Managed Leads (Limit 3)
+            const { data: managedData } = await supabase
+                .from('customers')
+                .select('id, customer_name, managed_by, assigned_to')
+                .eq('campaign_id', id)
+                .not('managed_by', 'is', null)
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            // Fetch manager and agent names for these leads
+            let enrichedManagedLeads: any[] = [];
+            if (managedData && managedData.length > 0) {
+                const userIds = [
+                    ...new Set([
+                        ...managedData.map((d: any) => d.managed_by),
+                        ...managedData.map((d: any) => d.assigned_to)
+                    ])
+                ].filter(Boolean);
+                
+                // Fetch profiles where either user_id OR id matches
+                const { data: userProfiles } = await supabase
+                    .from('user_profiles')
+                    .select('id, user_id, user_name, employee_id')
+                    .or(`user_id.in.(${userIds.join(',')}),id.in.(${userIds.join(',')})`);
+                
+                enrichedManagedLeads = managedData.map((lead: any) => {
+                    // Resolve Manager
+                    const manager = userProfiles?.find((p: any) => p.user_id === lead.managed_by || p.id === lead.managed_by);
+                    // Resolve Agent
+                    const agent = userProfiles?.find((p: any) => p.user_id === lead.assigned_to || p.id === lead.assigned_to);
+
+                    return {
+                        ...lead,
+                        manager_name: manager?.user_name || 'Unknown',
+                        manager_emp_id: manager?.employee_id || 'N/A',
+                        agent_name: agent?.user_name || 'Unassigned',
+                        agent_emp_id: agent?.employee_id || '—'
+                    };
+                });
+            }
+            setManagedLeads(enrichedManagedLeads);
 
             // 2. Fetch Leads
             fetchLeads();
@@ -276,7 +409,7 @@ export default function CampaignDetails() {
             const allUserIds = [
                 ...new Set(
                     (data || [])
-                        .flatMap((c: any) => [c.assigned_to, c.last_updated_by])
+                        .flatMap((c: any) => [c.assigned_to, c.last_updated_by, c.managed_by])
                         .filter((userId: string | null) => userId)
                 ),
             ];
@@ -290,8 +423,26 @@ export default function CampaignDetails() {
                     .in("user_id", allUserIds);
 
                 if (userData) {
-                    userData.forEach((u) => {
-                        userMap[u.user_id] = {
+                    userData.forEach((u: any) => {
+                        const info = {
+                            name: u.user_name || "Unknown",
+                            empId: u.employee_id || "N/A"
+                        };
+                        userMap[u.user_id] = info;
+                    });
+                }
+            }
+            
+            // Re-fetch with 'id' to be absolutely sure we can map both
+            if (allUserIds.length > 0) {
+                const { data: userDataById } = await supabase
+                    .from("user_profiles")
+                    .select("id, user_name, employee_id")
+                    .in("id", allUserIds);
+                
+                if (userDataById) {
+                    userDataById.forEach((u: any) => {
+                        userMap[u.id] = {
                             name: u.user_name || "Unknown",
                             empId: u.employee_id || "N/A"
                         };
@@ -299,35 +450,53 @@ export default function CampaignDetails() {
                 }
             }
 
-            const mappedLeads = (data || []).map((lead: any) => ({
+            const enrichedLeads = (data || []).map((lead: any) => ({
                 ...lead,
-                assigned_user_name: lead.assigned_to ? userMap[lead.assigned_to]?.name || "Unknown" : "Unassigned",
+                // assigned_to mapping
+                assigned_user_name: lead.assigned_to ? userMap[lead.assigned_to]?.name : "Unassigned",
                 assigned_user_info: lead.assigned_to ? userMap[lead.assigned_to] : null,
+                
+                // managed_by mapping
+                managed_by_name: lead.managed_by ? userMap[lead.managed_by]?.name : "Self",
+                managed_by_id: lead.managed_by ? userMap[lead.managed_by]?.empId : null,
+
+                // last_updated_by mapping
                 last_updated_by_info: lead.last_updated_by ? userMap[lead.last_updated_by] : null
             }));
 
-            setLeads(mappedLeads);
-        } catch (err) {
+            setLeads(enrichedLeads);
+        } catch (err: any) {
             console.error("Error fetching leads:", err);
+            setLeads([]);
         } finally {
             setLoadingLeads(false);
         }
     };
 
     useEffect(() => {
+        if (!router.isReady) return;
         fetchAuth();
-    }, []);
+        fetchCampaignData();
+    }, [router.isReady, id]);
 
     // Effect for Page Change (Standard pagination)
     useEffect(() => {
         if (id) fetchLeads();
     }, [id, currentPage]);
 
-    // Effect for Search Change (Reset to Page 1 and force fetch)
+    // Handle pagination change
+    const onPageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+        fetchLeads(newPage);
+    };
+
+    // Handle Search
     useEffect(() => {
-        if (!id) return;
-        setCurrentPage(1);
-        fetchLeads(1);
+        const timer = setTimeout(() => {
+            setCurrentPage(1);
+            fetchLeads(1);
+        }, 500); 
+        return () => clearTimeout(timer);
     }, [searchQuery]);
 
     const toggleSelect = (id: string) => {
@@ -355,11 +524,13 @@ export default function CampaignDetails() {
             setCalling(true);
 
             // 0. Check if user already has an active or assigned session
-            const { data: existingSession } = await supabase
+            const { data: sRows } = await supabase
                 .from('call_sessions')
                 .select('*')
                 .eq('user_id', user.uid)
-                .maybeSingle();
+                .limit(1);
+
+            const existingSession = sRows ? sRows[0] : null;
 
             if (existingSession && (existingSession.status === 'assigned' || existingSession.status === 'active' || existingSession.status === 'disposition_pending')) {
                 console.log('[Session] Found existing session, resuming...', existingSession);
@@ -392,7 +563,11 @@ export default function CampaignDetails() {
                 });
 
             // 3. Redirect to Lead Page
-            router.push(`/campaign/${id}/${leadId}`);
+            if (id && leadId) {
+                router.push(`/campaign/${id}/${leadId}`);
+            } else {
+                throw new Error("Missing campaign ID or lead ID for redirection");
+            }
         } catch (err: any) {
             console.error("Error starting call assignment:", err);
             alert(err.message || "Failed to assign lead");
@@ -477,7 +652,7 @@ export default function CampaignDetails() {
 
                         {/* Top Banner */}
                         <div className="relative overflow-hidden rounded-3xl bg-white p-6 md:p-8 shadow-sm border border-gray-100 mb-8 group">
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700" style={{ background: 'linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)' }} />
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700"  />
                             <div className="absolute top-0 right-0 p-8 opacity-[0.03] transform group-hover:scale-110 transition-transform duration-700">
                                 <i className="fi flex fi-rr-megaphone text-9xl"></i>
                             </div>
@@ -529,7 +704,7 @@ export default function CampaignDetails() {
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Talk Time</span>
-                                            <span className="text-base font-black text-gray-800 leading-none">{campaign?.talktime || '0h 0m'}</span>
+                                            <span className="text-base font-black text-gray-800 leading-none">{campaignStats.talkTime}</span>
                                         </div>
                                     </div>
 
@@ -540,7 +715,7 @@ export default function CampaignDetails() {
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Total Dials</span>
-                                            <span className="text-base font-black text-gray-800 leading-none">{campaign?.total_dials || 0}</span>
+                                            <span className="text-base font-black text-gray-800 leading-none">{campaignStats.totalDials}</span>
                                         </div>
                                     </div>
 
@@ -571,7 +746,7 @@ export default function CampaignDetails() {
                             </div>
                         </div>
 
-                        {/* Stats Grid */}
+                           {/* Stats Grid */}
                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 mb-8">
                             {/* Total Leads */}
                             <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
@@ -659,12 +834,245 @@ export default function CampaignDetails() {
                             </div>
                         </div>
 
+
+                        {/* ANALYTICS SECTION */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            {/* 1. Hourly Activity (Area Chart) */}
+                            <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
+                                expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
+                            }`}>
+                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
+                                    Hourly Activity (Today)
+                                </h3>
+                                <div className="flex-1 w-full min-h-0">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={analytics.hourly_calls}>
+                                            <defs>
+                                                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#4b33e8" stopOpacity={0.3}/>
+                                                    <stop offset="95%" stopColor="#4b33e8" stopOpacity={0}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                            <XAxis 
+                                                dataKey="hour" 
+                                                tick={{fontSize: 10, fill: '#9ca3af'}} 
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickFormatter={(tick) => `${tick}:00`}
+                                            />
+                                            <YAxis hide />
+                                            <Tooltip 
+                                                contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                                                labelStyle={{color: '#6b7280', fontSize: '10px', fontWeight: 'bold'}}
+                                            />
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey="count" 
+                                                stroke="#4b33e8" 
+                                                strokeWidth={3}
+                                                fillOpacity={1} 
+                                                fill="url(#colorCount)" 
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <button 
+                                    onClick={() => setExpandedChart(expandedChart === 'hourly' ? null : 'hourly')}
+                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
+                                >
+                                    <i className={`fi ${expandedChart === 'hourly' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
+                                </button>
+                            </div>
+
+                            {/* 2. Agent Performance (Bar Chart) */}
+                            <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
+                                expandedChart === 'users' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
+                            }`}>
+                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i className="fi fi-rr-trophy text-yellow-500"></i>
+                                    Top Agents (Today)
+                                </h3>
+                                <div className="flex-1 w-full min-h-0">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart 
+                                            data={analytics.agent_performance.slice(0, expandedChart === 'users' ? 20 : 5)} 
+                                            layout="vertical"
+                                            barSize={12}
+                                            margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                                            <XAxis type="number" hide />
+                                            <YAxis 
+                                                dataKey="name" 
+                                                type="category" 
+                                                tick={{fontSize: 10, fill: '#4b5563', fontWeight: 600}} 
+                                                width={60}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickFormatter={(val) => val.split(' ')[0]} 
+                                            />
+                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}}/>
+                                            <Bar dataKey="calls" fill="#00C49F" radius={[0, 4, 4, 0]} background={{ fill: '#f9fafb', radius: 4 }} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <button 
+                                    onClick={() => setExpandedChart(expandedChart === 'users' ? null : 'users')}
+                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
+                                >
+                                    <i className={`fi ${expandedChart === 'users' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
+                                </button>
+                            </div>
+
+                            {/* 3. Outcomes (Pie Chart) */}
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 col-span-1 lg:col-span-1 flex flex-col h-[300px]">
+                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i className="fi fi-rr-pie-chart text-pink-500"></i>
+                                    Call Outcomes
+                                </h3>
+                                <div className="flex-1 w-full min-h-0 relative">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={analytics.disposition_stats}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={60}
+                                                outerRadius={80}
+                                                paddingAngle={5}
+                                                dataKey="value"
+                                            >
+                                                {analytics.disposition_stats.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip contentStyle={{borderRadius: '8px'}} />
+                                            <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" iconSize={8} wrapperStyle={{fontSize: '10px'}} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    {/* Center Label */}
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none pr-14">
+                                        <div className="text-center">
+                                            <span className="text-xs text-gray-400 font-bold block">TOTAL</span>
+                                            <span className="text-xl font-black text-gray-800">
+                                                {analytics.disposition_stats.reduce((acc, curr) => acc + curr.value, 0)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Detailed Hourly Analytics Table */}
+                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
+                           <div className="p-6 border-b border-gray-50">
+                                <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i className="fi fi-rr-time-check text-[#4b33e8]"></i>
+                                    Hourly Performance Breakdown
+                                </h3>
+                           </div>
+                           <div className="overflow-x-auto">
+                               <table className="w-full text-left">
+                                   <thead className="bg-[#f9fafb]">
+                                       <tr>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hour</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody className="divide-y divide-gray-50">
+                                       {analytics.hourly_detailed.length > 0 ? (
+                                            analytics.hourly_detailed.map((row, index) => (
+                                                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-6 py-4 text-xs font-bold text-gray-700">
+                                                        Time - {row.hour % 12 === 0 ? 12 : row.hour % 12} {row.hour >= 12 ? 'pm' : 'am'}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">
+                                                        {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                       ) : (
+                                           <tr>
+                                               <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
+                                                   No data available for today
+                                               </td>
+                                           </tr>
+                                       )}
+                                   </tbody>
+                               </table>
+                           </div>
+                        </div>
+
+                        {/* Caller Performance Breakdown Table */}
+                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
+                           <div className="p-6 border-b border-gray-50">
+                                <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                    <i className="fi fi-rr-headset text-[#4b33e8]"></i>
+                                    Caller Performance Breakdown
+                                </h3>
+                           </div>
+                           <div className="overflow-x-auto">
+                               <table className="w-full text-left">
+                                   <thead className="bg-[#f9fafb]">
+                                       <tr>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Caller</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
+                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody className="divide-y divide-gray-50">
+                                       {analytics.caller_performance.length > 0 ? (
+                                            analytics.caller_performance.map((row, index) => (
+                                                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-6 py-4 text-xs font-bold text-gray-700 capitalize">
+                                                        {row.caller}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">
+                                                        {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                       ) : (
+                                           <tr>
+                                               <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
+                                                   No data available for today
+                                               </td>
+                                           </tr>
+                                       )}
+                                   </tbody>
+                               </table>
+                           </div>
+                        </div>
+
+                     
+
                         {/* Call Dashboard Section */}
                         <div className="space-y-6">
-                            {/* Top 3 Cards Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Top 4 Cards Grid - 2x2 Layout */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                  {/* Recent Calls */}
-                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                 <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
                                      <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
@@ -715,7 +1123,11 @@ export default function CampaignDetails() {
                                                              </div>
                                                          </div>
                                                          <button 
-                                                             onClick={() => router.push(`/campaign/${id}/${item.customer_id}`)}
+                                                             onClick={() => {
+                                                                 if (id && item.customer_id) {
+                                                                     router.push(`/campaign/${id}/${item.customer_id}`);
+                                                                 }
+                                                             }}
                                                              className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-gray-400 hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-gray-100"
                                                          >
                                                              <i className="fi flex fi-rr-phone-call text-[10px]"></i>
@@ -728,7 +1140,7 @@ export default function CampaignDetails() {
                                  </div>
  
                                  {/* Overdue Calls */}
-                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                 <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
                                      <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
@@ -786,7 +1198,7 @@ export default function CampaignDetails() {
                                  </div>
  
                                  {/* Upcoming Calls */}
-                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                 <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
                                      <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
@@ -842,10 +1254,71 @@ export default function CampaignDetails() {
                                          )}
                                      </div>
                                  </div>
+
+                                 {/* Managed By */}
+                                 <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
+                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="flex items-center justify-between mb-6 relative z-10">
+                                         <div className="flex items-center gap-3">
+                                             <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-500">
+                                                 <i className="fi flex fi-rr-briefcase text-sm"></i>
+                                             </div>
+                                             <div>
+                                                 <h3 className="font-bold text-gray-800 text-sm italic" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>Managed By</h3>
+                                                 <p className="text-[9px] text-teal-400 font-bold uppercase tracking-widest leading-none mt-1">Assigned Leads</p>
+                                             </div>
+                                         </div>
+                                         <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-[11px] font-black text-gray-500 border border-gray-100">
+                                             {stats.managedCount}
+                                         </div>
+                                     </div>
+                                     <div className="flex-1 flex flex-col relative z-10">
+                                         {managedLeads.length === 0 ? (
+                                             <div className="flex flex-col items-center justify-center h-full py-8">
+                                                 <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center mb-2">
+                                                     <i className="fi flex fi-rr-user-add text-teal-300 text-lg"></i>
+                                                 </div>
+                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">No managed leads</p>
+                                             </div>
+                                         ) : (
+                                             <div className="space-y-3">
+                                                 {managedLeads.map((item: any) => (
+                                                     <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-teal-50 bg-teal-50/10 hover:bg-white hover:border-teal-200 transition-all group/item">
+                                                         <div className="flex flex-col min-w-0 pr-2">
+                                                             <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customer_name || 'Anonymous'}</span>
+                                                             <div className="flex flex-col gap-1.5 min-w-[120px]">
+                                                                 {/* Manager Info */}
+                                                                 <div className="flex items-center gap-2">
+                                                                     <span className="text-[9px] font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded inline-block uppercase tracking-tighter">
+                                                                         M: {item.manager_name?.split(' ')[0]}
+                                                                     </span>
+                                                                     <span className="text-[8px] font-bold text-teal-400">({item.manager_emp_id})</span>
+                                                                 </div>
+                                                                 {/* Agent Info */}
+                                                                 <div className="flex items-center gap-2">
+                                                                     <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded inline-block uppercase tracking-tighter">
+                                                                         A: {item.agent_name?.split(' ')[0]}
+                                                                     </span>
+                                                                     <span className="text-[8px] font-bold text-indigo-400">({item.agent_emp_id})</span>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                         <button 
+                                                             onClick={() => router.push(`/campaign/${id}/${item.id}`)}
+                                                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-teal-100"
+                                                         >
+                                                             <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                         </button>
+                                                     </div>
+                                                 ))}
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
                             </div>
 
                             {/* Large Bottom Card: All Leads */}
-                            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 min-h-[400px] relative overflow-hidden group hover:shadow-md transition-all">
+                            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 min-h-[400px] relative overflow-hidden group hover:shadow-md transition-all">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                                 
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">
@@ -856,9 +1329,9 @@ export default function CampaignDetails() {
                                         <div>
                                             <h3 className="font-bold text-gray-800 text-xl leading-none mb-2" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>All Leads</h3>
                                             <div className="flex items-center gap-2">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Campaign Database • {totalLeadsCount} Records</p>
+                                                <p className="text-[10px] text-gray-400 font-semibold tracking-[0.2em]">Campaign Database • {totalLeadsCount} Records</p>
                                                 {selectedLeads.length > 0 && (
-                                                    <span className="bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300">
+                                                    <span className="bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold  animate-in fade-in slide-in-from-left-4 duration-300">
                                                         {selectedLeads.length} Selected
                                                     </span>
                                                 )}
@@ -881,19 +1354,8 @@ export default function CampaignDetails() {
                                             />
                                         </div>
 
-                                        {/* Working Date Picker Container */}
-                                        <div
-                                            className="px-4 h-[42px] rounded-xl bg-gray-50 border border-gray-100 text-[11px] font-black text-gray-500 flex items-center gap-2 cursor-pointer hover:bg-gray-100 transition-all relative group/date shadow-sm"
-                                        >
-                                            <i className="fi flex fi-rr-calendar text-gray-400 group-hover/date:text-[#4b33e8] transition-colors"></i>
-                                            <span className="uppercase tracking-tight">{new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</span>
-                                            <input
-                                                type="date"
-                                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                                                value={selectedDate}
-                                                onChange={(e) => setSelectedDate(e.target.value)}
-                                            />
-                                        </div>
+                                       
+                                        
 
                                         {/* Add Lead Button */}
                                         <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
@@ -938,6 +1400,7 @@ export default function CampaignDetails() {
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">Disposition/Sub</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Expiry Date</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Assigned To</th>
+                                                    <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">Manage By</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Last Called</th>
                                                     <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">Last Updated By</th>
                                                 </tr>
@@ -946,7 +1409,11 @@ export default function CampaignDetails() {
                                                 {leads.map((lead) => (
                                                     <tr 
                                                         key={lead.id} 
-                                                        onClick={() => router.push(`/campaign/${id}/${lead.id}`)}
+                                                        onClick={() => {
+                                                            if (id && lead.id) {
+                                                                router.push(`/campaign/${id}/${lead.id}`);
+                                                            }
+                                                        }}
                                                         className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0"
                                                     >
                                                         <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
@@ -961,7 +1428,7 @@ export default function CampaignDetails() {
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-medium shadow-lg shadow-indigo-100 uppercase">
+                                                                <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-indigo-100 uppercase">
                                                                     {lead.customer_name?.charAt(0) || 'C'}
                                                                 </div>
                                                                 <span className="text-xs font-medium text-gray-800" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{lead.customer_name || 'Anonymous'}</span>
@@ -1022,6 +1489,16 @@ export default function CampaignDetails() {
                                                                      <span className="text-[10px] font-medium text-gray-600 uppercase tracking-tighter">
                                                                         {lead.assigned_user_name}
                                                                     </span>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-4 text-center">
+                                                            <div className="flex flex-col items-center justify-center gap-1">
+                                                                <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-50/40 border border-indigo-100/50 backdrop-blur-sm">
+                                                                    <span className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-tighter">{lead.managed_by_name}</span>
+                                                                </div>
+                                                                {lead.managed_by_id && (
+                                                                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">ID: {lead.managed_by_id}</span>
                                                                 )}
                                                             </div>
                                                         </td>

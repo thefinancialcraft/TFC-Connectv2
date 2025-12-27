@@ -27,6 +27,9 @@ interface Customer {
   assigned_user_name?: string | null;
   assigned_employee_id?: string | null;
   campaign_name?: string | null;
+  managed_by?: string | null;
+  managed_by_name?: string | null;
+  managed_by_id?: string | null;
 }
 
 export default function Customer() {
@@ -332,10 +335,10 @@ export default function Customer() {
         setAllCustomers([]);
       } else {
         // Fetch assigned user names separately
-        const assignedUserIds = [
+        const allUserIds = [
           ...new Set(
             (data || [])
-              .map((c: any) => c.assigned_to)
+              .flatMap((c: any) => [c.assigned_to, c.managed_by])
               .filter((id: string | null) => id)
           ),
         ];
@@ -345,18 +348,20 @@ export default function Customer() {
           { user_name: string | null; employee_id: string | null }
         > = {};
 
-        if (assignedUserIds.length > 0) {
+        if (allUserIds.length > 0) {
           const { data: userData } = await supabase
             .from("user_profiles")
-            .select("user_id, user_name, employee_id")
-            .in("user_id", assignedUserIds);
+            .select("user_id, id, user_name, employee_id")
+            .or(`user_id.in.("${allUserIds.join('","')}"),id.in.("${allUserIds.join('","')}")`);
 
           if (userData) {
             userData.forEach((user) => {
-              userMap[user.user_id] = {
-                user_name: user.user_name,
-                employee_id: user.employee_id,
-              };
+                const info = {
+                    user_name: user.user_name,
+                    employee_id: user.employee_id,
+                };
+                userMap[user.user_id] = info;
+                userMap[user.id] = info;
             });
           }
         }
@@ -393,6 +398,12 @@ export default function Customer() {
             : null,
           assigned_employee_id: customer.assigned_to
             ? userMap[customer.assigned_to]?.employee_id || null
+            : null,
+          managed_by_name: customer.managed_by
+            ? userMap[customer.managed_by]?.user_name || "Unknown"
+            : "Self",
+          managed_by_id: customer.managed_by
+            ? userMap[customer.managed_by]?.employee_id || customer.managed_by.slice(0, 8).toUpperCase()
             : null,
           campaign_name: customer.campaign_id
             ? campaignMap[customer.campaign_id] || null
@@ -1736,6 +1747,9 @@ export default function Customer() {
                                   Assigned To
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Managed By
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
                                   Expiry Date
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
@@ -1774,7 +1788,7 @@ export default function Customer() {
                                   </td>
                                   <td className="px-4 py-4">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-medium shadow-lg shadow-indigo-100 uppercase">
+                                      <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-indigo-100 uppercase">
                                         {customer.customer_name
                                           ? customer.customer_name
                                             .charAt(0)
@@ -1831,6 +1845,18 @@ export default function Customer() {
                                         customer.assigned_employee_id ||
                                         "Unassigned"}
                                     </span>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-semibold text-gray-800">
+                                        {customer.managed_by_name || "Self"}
+                                      </span>
+                                      {customer.managed_by_id && (
+                                        <span className="text-[10px] text-gray-400 font-medium">
+                                          ID: {customer.managed_by_id}
+                                        </span>
+                                      )}
+                                    </div>
                                   </td>
                                   <td className="px-4 py-4">
                                     <div className="flex flex-col">
@@ -1981,7 +2007,7 @@ export default function Customer() {
                             </button>
                           </div>
                           <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-lg">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
                               {customer.customer_name
                                 ? customer.customer_name.charAt(0).toUpperCase()
                                 : "C"}
@@ -2013,6 +2039,24 @@ export default function Customer() {
                                 </span>
                               </div>
                             )}
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-headset text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.assigned_user_name || "Unassigned"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-user text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.managed_by_name || "Self"}
+                              </span>
+                            </div>
                             <div className="flex items-center justify-between">
                               <div
                                 className={`px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${customer.status === "active"
@@ -3315,6 +3359,30 @@ Boya Varalakshmi Dev,9885562055,Care Supreme,13-Oct-2025,₹17,50,000,105604,279
                         selectedCustomer.assigned_employee_id ||
                         "N/A"}
                     </p>
+                  </div>
+                  <div>
+                    <label
+                      className="text-xs font-medium text-gray-500 block mb-1"
+                      style={{ fontFamily: "'Roboto', sans-serif" }}
+                    >
+                      Managed By
+                    </label>
+                    <div className="flex flex-col">
+                      <p
+                        className="text-sm font-semibold text-gray-900"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        {selectedCustomer.managed_by_name || "Self"}
+                      </p>
+                      {selectedCustomer.managed_by_id && (
+                        <p
+                          className="text-[10px] text-gray-400"
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          ID: {selectedCustomer.managed_by_id}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label

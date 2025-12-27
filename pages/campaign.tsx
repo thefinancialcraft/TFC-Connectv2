@@ -137,15 +137,48 @@ export default function Campaign() {
 	const fetchCampaigns = async () => {
 		try {
 			setLoadingCampaigns(true);
-			const { data, error } = await supabase.from("campaigns").select("*").order("created_at", { ascending: false });
-			if (error) {
-				console.error("Error fetching campaigns:", error);
-				setCampaigns([]);
-			} else {
-				setCampaigns((data || []) as Campaign[]);
+			
+			// 1. Fetch all campaigns
+			const { data: campaignData, error: campaignError } = await supabase
+				.from("campaigns")
+				.select("*")
+				.order("created_at", { ascending: false });
+			
+			if (campaignError) throw campaignError;
+			
+			const baseCampaigns = (campaignData || []) as Campaign[];
+			
+			// 2. Fetch all campaign stats via high-performance RPC
+			const { data: statsData, error: statsError } = await supabase.rpc('get_campaign_stats');
+			
+			if (statsError) {
+				console.error("Error fetching campaign stats:", statsError);
+				setCampaigns(baseCampaigns);
+				return;
 			}
+
+			// 3. Map stats back to campaigns
+			const enrichedCampaigns = baseCampaigns.map(camp => {
+				const stats = statsData?.find((s: any) => s.campaign_id === camp.id);
+				
+				const totalSeconds = stats?.total_duration || 0;
+				const hours = Math.floor(totalSeconds / 3600);
+				const minutes = Math.floor((totalSeconds % 3600) / 60);
+				const talktimeFormatted = `${hours}h ${minutes}m`;
+
+				return {
+					...camp,
+					pending_calls: stats?.fresh_count || 0,
+					upcoming_followups: stats?.upcoming_count || 0,
+					overdue_followups: stats?.overdue_count || 0,
+					total_dials: stats?.total_dials || 0,
+					talktime: talktimeFormatted
+				};
+			});
+
+			setCampaigns(enrichedCampaigns);
 		} catch (e) {
-			console.error(e);
+			console.error("Error fetching campaigns:", e);
 			setCampaigns([]);
 		} finally {
 			setLoadingCampaigns(false);
@@ -158,7 +191,7 @@ export default function Campaign() {
 			// Use user_profiles table as in the users page to get consistent fields
 			const { data, error } = await supabase
 				.from("user_profiles")
-				.select("id, user_id, email, user_name, profile_pic_url")
+				.select("id, user_id, email, user_name, profile_pic_url, employee_id")
 				.order("created_at", { ascending: false });
 			if (!error && data) {
 				// map fields to expected shape

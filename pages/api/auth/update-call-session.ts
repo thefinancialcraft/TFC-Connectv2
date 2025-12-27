@@ -95,7 +95,14 @@ export default async function handler(
              newStatus = 'paused';
              isManual = true;
              console.log('[API] ✅ Setting is_manual=true, status=paused (Manual call starting)');
-        } else if (status === 'disposition_pending' || status === 'closed') {
+        } else if (status === 'disposition_pending') {
+             // User ended the manual call, is now in disposition screen.
+             // We MUST keep the session on the ASSIGNED lead as 'paused'/'manual' state
+             // so the system knows the user is still busy and avoids redirecting.
+             newStatus = 'paused';
+             isManual = true;
+             console.log('[API] ✅ Keeping is_manual=true, status=paused (Manual call disposition pending)');
+        } else if (status === 'closed') {
              newStatus = 'assigned'; // Resume as 'assigned' to hold the lead, not 'active' to auto-call
              isManual = false;
              console.log('[API] ✅ Setting is_manual=false, status=assigned (Manual call ending)');

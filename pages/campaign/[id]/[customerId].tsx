@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../../../components/Sidebar";
 import Header from "../../../components/Header";
@@ -14,6 +14,7 @@ export default function CallingPage() {
     const [customer, setCustomer] = useState<any>(null);
     const [campaign, setCampaign] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
+    const [managedByInfo, setManagedByInfo] = useState<{name: string, empId: string} | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -29,6 +30,47 @@ export default function CallingPage() {
     const [callbackDate, setCallbackDate] = useState("");
     const [callbackTime, setCallbackTime] = useState("");
     const [notes, setNotes] = useState("");
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+    const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+    const [isAssignPickerOpen, setIsAssignPickerOpen] = useState(false);
+    const [calendarViewDate, setCalendarViewDate] = useState(new Date());
+    
+    const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
+    const prevCustomerId = useRef<string | null>(null);
+
+    const datePickerRef = useRef<HTMLDivElement>(null);
+    const timePickerRef = useRef<HTMLDivElement>(null);
+    const assignPickerRef = useRef<HTMLDivElement>(null);
+
+    // Track lead changes for notification
+    useEffect(() => {
+        if (customerId && prevCustomerId.current && customerId !== prevCustomerId.current) {
+            console.log('[Lead-Change] New lead detected, showing alert');
+            setShowNewLeadAlert(true);
+            const timer = setTimeout(() => setShowNewLeadAlert(false), 8000);
+            return () => clearTimeout(timer);
+        }
+        if (customerId) {
+            prevCustomerId.current = customerId as string;
+        }
+    }, [customerId]);
+
+    // Close pickers on outside click
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+                setIsDatePickerOpen(false);
+            }
+            if (timePickerRef.current && !timePickerRef.current.contains(event.target as Node)) {
+                setIsTimePickerOpen(false);
+            }
+            if (assignPickerRef.current && !assignPickerRef.current.contains(event.target as Node)) {
+                setIsAssignPickerOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const dispositionHierarchy: Record<string, string[]> = {
         "Not Intrested": [],
@@ -137,6 +179,36 @@ export default function CallingPage() {
         }
     };
 
+    const handleUpdateManagedBy = async (userId: string) => {
+        if (!customer?.id) return;
+        try {
+            const { error } = await supabase
+                .from('customers')
+                .update({ managed_by: userId })
+                .eq('id', customer.id);
+            
+            if (error) throw error;
+            
+            setCustomer((prev: any) => ({ ...prev, managed_by: userId }));
+            
+            // Update local info immediately
+            const foundInCampaign = campaign?.users?.find((u: any) => (u.user_id || u.id) === userId);
+            if (foundInCampaign) {
+                setManagedByInfo({ 
+                    name: foundInCampaign.name, 
+                    empId: foundInCampaign.employee_id || userId.slice(0, 8).toUpperCase()
+                });
+            } else {
+                setManagedByInfo({ name: "Self", empId: "" });
+            }
+
+            setIsAssignPickerOpen(false);
+        } catch (err) {
+            console.error("Error updating managed_by:", err);
+            alert("Failed to update manager");
+        }
+    };
+
     const fetchData = async (overrideId?: string) => {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
@@ -148,58 +220,87 @@ export default function CallingPage() {
             
             // 1. Fetch Campaign (Static for the page)
             if (!campaign) {
-                const { data: campaignData, error: campaignError } = await supabase
+                const { data: campData, error: campaignError } = await supabase
                     .from('campaigns')
                     .select('*')
                     .eq('id', campaignId)
-                    .single();
-                if (!campaignError) setCampaign(campaignData);
+                    .limit(1);
+                if (!campaignError && campData?.[0]) setCampaign(campData[0]);
             }
 
             // 2. Fetch Customer (Try all three tables)
             let foundCustomer: any = null;
             
             // Try primary customers table
-            const { data: cData } = await supabase
+            const { data: cDataRows } = await supabase
                 .from('customers')
                 .select('*')
                 .eq('id', idToFetch)
-                .maybeSingle();
+                .limit(1);
             
-            if (cData) {
-                foundCustomer = cData;
+            if (cDataRows && cDataRows[0]) {
+                foundCustomer = cDataRows[0];
             } else {
                 // Try closed_deals
-                const { data: clData } = await supabase
+                const { data: clDataRows } = await supabase
                     .from('closed_deals')
                     .select('*')
                     .eq('id', idToFetch)
-                    .maybeSingle();
+                    .limit(1);
                 
-                if (clData) {
-                    foundCustomer = clData;
+                if (clDataRows && clDataRows[0]) {
+                    foundCustomer = clDataRows[0];
                 } else {
                     // Try rejected_leads
-                    const { data: rData } = await supabase
+                    const { data: rDataRows } = await supabase
                         .from('rejected_leads')
                         .select('*')
                         .eq('id', idToFetch)
-                        .maybeSingle();
-                    if (rData) foundCustomer = rData;
+                        .limit(1);
+                    if (rDataRows && rDataRows[0]) foundCustomer = rDataRows[0];
                 }
             }
             
             if (foundCustomer) {
                 setCustomer(foundCustomer);
+                
+                // Resolve Manager Info
+                if (foundCustomer.managed_by) {
+                    // Try global user profiles
+                    const { data: mRows } = await supabase
+                        .from('user_profiles')
+                        .select('user_name, employee_id')
+                        .eq('user_id', foundCustomer.managed_by)
+                        .limit(1);
+                    
+                    const mData = mRows ? mRows[0] : null;
+                    
+                    if (mData) {
+                        setManagedByInfo({
+                            name: mData.user_name || "Unknown",
+                            empId: mData.employee_id || foundCustomer.managed_by.slice(0, 8).toUpperCase()
+                        });
+                    } else {
+                        // Fallback to campaign users
+                        const campUser = campaign?.users?.find((u: any) => (u.user_id || u.id) === foundCustomer.managed_by);
+                        setManagedByInfo({
+                            name: campUser?.name || "Unknown",
+                            empId: campUser?.employee_id || foundCustomer.managed_by.slice(0, 8).toUpperCase()
+                        });
+                    }
+                } else {
+                    setManagedByInfo({ name: "Self", empId: "" });
+                }
             } else {
                 console.warn(`[Fetch] Customer ${idToFetch} not found in any table.`);
                 
                 // Ghost Session Recovery: If this missing customer is currently assigned to the user, clear it and re-assign.
-                const { data: sessionData } = await supabase
+                const { data: sData } = await supabase
                     .from('call_sessions')
                     .select('*')
                     .eq('user_id', user.uid)
-                    .single();
+                    .limit(1);
+                const sessionData = sData ? sData[0] : null;
 
                 // If user has a session for THIS missing customer, clear and re-assign
                 if (sessionData && sessionData.customer_id === idToFetch) {
@@ -215,25 +316,34 @@ export default function CallingPage() {
                         p_user_id: user.uid
                     });
 
-                    if (nextLeadId) {
+                    const targetCampaignId = campaignId || campaign?.id;
+                    if (nextLeadId && targetCampaignId) {
                         await supabase.from('call_sessions').upsert({
                             user_id: user.uid,
-                            campaign_id: campaignId,
+                            campaign_id: targetCampaignId,
                             customer_id: nextLeadId,
                             status: 'assigned',
                             updated_at: new Date().toISOString()
                         });
-                        router.push(`/campaign/${campaignId}/${nextLeadId}`);
+                        router.push(`/campaign/${targetCampaignId}/${nextLeadId}`);
+                        return;
+                    } else if (targetCampaignId) {
+                        router.push(`/campaign/${targetCampaignId}`);
                         return;
                     } else {
-                        router.push(`/campaign/${campaignId}`);
+                        router.push('/campaign');
                         return;
                     }
                 } else {
                     // No matching session for this missing customer, but page is broken. 
                     // Redirect to dashboard to be safe.
                     console.warn(`[Fetch] No session matches missing customer ${idToFetch}. Redirecting to safety.`);
-                    router.push(`/campaign/${campaignId}`);
+                    const targetCampaignId = campaignId || campaign?.id;
+                    if (targetCampaignId) {
+                        router.push(`/campaign/${targetCampaignId}`);
+                    } else {
+                        router.push('/campaign');
+                    }
                     return;
                 }
             }
@@ -329,11 +439,16 @@ export default function CallingPage() {
                     
                     if (!session) return;
 
-                    // Ensure we are comparing strings
-                    const currentCampaignId = String(campaignId);
-                    const currentCustomerId = String(customerId);
+                    // Ensure we are comparing strings and have valid IDs
+                    const currentCampaignId = String(campaignId || campaign?.id || "");
+                    const currentCustomerId = String(customerId || "");
                     const incomingCampaignId = String(session.campaign_id);
                     const incomingCustomerId = String(session.customer_id);
+
+                    if (!incomingCampaignId || incomingCampaignId === "undefined" || !incomingCustomerId || incomingCustomerId === "undefined") {
+                        console.log('[Realtime-Sync] Received invalid session data, ignoring.');
+                        return;
+                    }
 
                     if (incomingCampaignId === currentCampaignId && incomingCustomerId === currentCustomerId) {
                         console.log('[Realtime-Sync] Updating local state for current lead');
@@ -359,8 +474,18 @@ export default function CallingPage() {
                             setCallDuration(0);
                             setCallStartTime(null);
                         }
-                    } else {
-                        console.log('[Realtime-Sync] Session change detected for different lead, ignoring on this page.');
+                    } else if (incomingCustomerId && incomingCustomerId !== currentCustomerId) {
+                        // FIX: Do not redirect if the session is paused (manual call active) or explicitly manual
+                        // This prevents user being pulled back to an assigned lead when they are manually calling someone else
+                        if (session.status === 'paused' || session.is_manual) {
+                            console.log('[Realtime-Sync] Ignoring redirect - Session is paused/manual');
+                            return;
+                        }
+
+                        console.log('[Realtime-Sync] New lead assigned on another device. Redirecting to:', incomingCustomerId);
+                        // Redirect this device to the new lead to keep sessions in sync
+                        // Use incoming IDs explicitly to avoid "undefined" from current context
+                        router.push(`/campaign/${incomingCampaignId}/${incomingCustomerId}`);
                     }
                 }
             )
@@ -529,6 +654,18 @@ export default function CallingPage() {
             return;
         }
 
+        if (disposition === 'Call Back') {
+            if (!callbackDate || !callbackTime) {
+                alert("Please select both Date and Time for Call Back");
+                return;
+            }
+            const selectedDateTime = new Date(`${callbackDate}T${callbackTime}`);
+            if (selectedDateTime < new Date()) {
+                alert("Cannot schedule a call for a past date/time. Please select a future time.");
+                return;
+            }
+        }
+
         const finalDisposition = subDisposition ? `${disposition} > ${subDisposition}` : disposition;
 
         try {
@@ -541,14 +678,51 @@ export default function CallingPage() {
                 ? 'contactable' 
                 : (disposition === 'Not Contactable' ? 'uncontactable' : null);
 
-            // 2. Perform Movement Logic or Update Status
+            // Calculate preliminary log values
             const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO';
             const isClosed = disposition === 'Deal Done';
-
+            
             let logNextCalledAt = null;
             let logStatus = 'active';
             let logAssignedTo = null;
 
+            // Pre-calculate status for log
+            if (isRejected) logStatus = 'rejected';
+            else if (isClosed) logStatus = 'closed';
+            else if (disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'follow up') {
+                logStatus = 'followup';
+                logAssignedTo = user?.uid;
+                if (disposition === 'Call Back' && callbackDate) {
+                     const combinedDateTime = callbackTime 
+                        ? new Date(`${callbackDate}T${callbackTime}`).toISOString()
+                        : new Date(callbackDate).toISOString();
+                     logNextCalledAt = combinedDateTime;
+                }
+            }
+
+            // 1. Save Call Log FIRST (before customer might be deleted/moved)
+            const { error: logError } = await supabase
+                .from('call_logs')
+                .insert({
+                    customer_id: customerId,
+                    campaign_id: campaignId,
+                    agent_id: user?.uid,
+                    last_updated_by: user?.uid,
+                    disposition: disposition,
+                    sub_disposition: subDisposition,
+                    is_connected: isConnected,
+                    notes: notes,
+                    duration: callDuration,
+                    last_called_at: now,
+                    updated_at: now,
+                    next_called_at: logNextCalledAt,
+                    status: logStatus,
+                    assigned_to: logAssignedTo
+                });
+
+            if (logError) throw logError;
+
+            // 2. Perform Movement Logic or Update Status
             if (isRejected) {
                 // Move to rejected table and delete from customers
                 const { error: rejectError } = await supabase.rpc('move_to_rejected', {
@@ -559,7 +733,6 @@ export default function CallingPage() {
                     p_sub_disposition: subDisposition
                 });
                 if (rejectError) throw rejectError;
-                logStatus = 'rejected';
             } else if (isClosed) {
                 // Move to closed table and delete from customers
                 const { error: closeError } = await supabase.rpc('move_to_closed', {
@@ -569,7 +742,6 @@ export default function CallingPage() {
                     p_final_disposition: finalDisposition
                 });
                 if (closeError) throw closeError;
-                logStatus = 'closed';
             } else if (disposition === 'Not Contactable' || disposition === 'Not Intrested') {
                 // --- Specific Logic for Retries (Not Contactable or Not Interested) ---
                 const currentAttempts = customer?.attempt_count || 0;
@@ -660,26 +832,7 @@ export default function CallingPage() {
             }
 
             // 1. Save Call Log (Moved here to include calculated metadata)
-            const { error: logError } = await supabase
-                .from('call_logs')
-                .insert({
-                    customer_id: customerId,
-                    campaign_id: campaignId,
-                    agent_id: user?.uid,
-                    last_updated_by: user?.uid,
-                    disposition: disposition,
-                    sub_disposition: subDisposition,
-                    is_connected: isConnected,
-                    notes: notes,
-                    duration: callDuration,
-                    last_called_at: now,
-                    updated_at: now,
-                    next_called_at: logNextCalledAt,
-                    status: logStatus,
-                    assigned_to: logAssignedTo
-                });
-
-            if (logError) throw logError;
+            // (Call log already saved above)
 
             // 2.5 Check if this is a manual call before clearing session
             let isManualCall = false;
@@ -687,11 +840,13 @@ export default function CallingPage() {
             let preservedCustomerId = null;
 
             if (user?.uid) {
-                const { data: currentSession } = await supabase
+                const { data: sRows } = await supabase
                     .from('call_sessions')
                     .select('is_manual, campaign_id, customer_id')
                     .eq('user_id', user.uid)
-                    .single();
+                    .limit(1);
+
+                const currentSession = sRows ? sRows[0] : null;
 
                 if (currentSession) {
                     isManualCall = currentSession.is_manual || false;
@@ -742,24 +897,33 @@ export default function CallingPage() {
                     return;
                 }
 
-                if (nextLeadId && user?.uid) {
+                // Final safeguard for Campaign ID
+                const effectiveCampaignId = campaignId || campaign?.id || preservedCampaignId;
+
+                if (nextLeadId && user?.uid && effectiveCampaignId) {
                     // Update session to 'assigned' for the NEW lead
                     await supabase.from('call_sessions').upsert({
                         user_id: user.uid,
-                        campaign_id: campaignId,
+                        campaign_id: effectiveCampaignId,
                         customer_id: nextLeadId,
                         status: 'assigned',
                         updated_at: new Date().toISOString()
                     });
                     
                     // Redirect to the next lead automatically
-                    router.push(`/campaign/${campaignId}/${nextLeadId}`);
+                    console.log('[Disposition] Redirecting to next lead:', nextLeadId);
+                    router.push(`/campaign/${effectiveCampaignId}/${nextLeadId}`);
                     // Note: useEffect will handle fetchData() for the new lead
                     setSaving(false);
                     return; 
-                } else {
+                } else if (effectiveCampaignId) {
                     // No more leads or No user, go to dashboard
-                    router.push(`/campaign/${campaignId}`);
+                    console.log('[Disposition] No more leads. Returning to campaign dashboard.');
+                    router.push(`/campaign/${effectiveCampaignId}`);
+                    setSaving(false);
+                    return;
+                } else {
+                    router.push('/campaign');
                     setSaving(false);
                     return;
                 }
@@ -783,6 +947,52 @@ export default function CallingPage() {
         }
     };
 
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+    const generateCalendarDays = () => {
+        const year = calendarViewDate.getFullYear();
+        const month = calendarViewDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        
+        const days = [];
+        
+        // Prev month days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            days.push({ day: daysInPrevMonth - i, currentMonth: false, month: month - 1, year });
+        }
+        
+        // Current month days
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push({ day: i, currentMonth: true, month, year });
+        }
+        
+        // Next month days
+        const totalSlots = 42;
+        const remainingSlots = totalSlots - days.length;
+        for (let i = 1; i <= remainingSlots; i++) {
+            days.push({ day: i, currentMonth: false, month: month + 1, year });
+        }
+        
+        return days;
+    };
+
+    const handleDateSelect = (day: number, month: number, year: number) => {
+        const selectedDate = new Date(year, month, day);
+        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+        setCallbackDate(dateStr);
+        setIsDatePickerOpen(false);
+    };
+
+    const timeOptions = [
+        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", 
+        "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", 
+        "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", 
+        "18:00", "18:30", "19:00", "19:30", "20:00"
+    ];
+
     if (loading || !user) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-[#f8faff]">
@@ -795,10 +1005,10 @@ export default function CallingPage() {
     }
 
     return (
-        <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f8fafc", maxWidth: "100vw" }}>
+        <div className="flex min-h-screen w-full" style={{ backgroundColor: "#f8fafc", maxWidth: "100vw" }}>
             <Sidebar activeNav="campaign" />
             
-            <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
+            <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
                 <Header 
                     user={user ? {
                         displayName: user.displayName,
@@ -809,8 +1019,31 @@ export default function CallingPage() {
                     onLogout={() => handleLogout(router)} 
                 />
                 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f8fafc" }}>
-                    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-12 max-w-7xl">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] relative" style={{ backgroundColor: "#f8fafc" }}>
+                    {/* Floating New Lead Alert */}
+                    {showNewLeadAlert && (
+                        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md animate-in fade-in slide-in-from-top-4 duration-500">
+                            <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                                        <i className="fi flex fi-rr-bolt text-lg"></i>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Assignment Success</span>
+                                        <span className="text-sm font-bold truncate max-w-[200px]">{customer?.customer_name || 'New Lead Assigned'}</span>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowNewLeadAlert(false)}
+                                    className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
+                                >
+                                    <i className="fi flex fi-rr-cross-small"></i>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-32 lg:pb-12 max-w-7xl">
                         
                         {/* 1. Header & Navigation */}
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -844,13 +1077,13 @@ export default function CallingPage() {
                         </div>
 
                         {/* 2. Primary Customer Profile Card */}
-                        <div className="relative mb-6 rounded-3xl bg-white border border-slate-100 overflow-hidden group">
+                        <div className="relative mb-6 rounded-2xl bg-white border border-slate-100 overflow-hidden group">
                             {/* Decorative Background Elements */}
                             <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-indigo-50/50 to-transparent pointer-events-none" />
                             <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
                             <div className="absolute top-12 left-1/4 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
 
-                            <div className="relative z-10 p-6 sm:p-10">
+                            <div className="relative z-10 p-4 sm:p-6 lg:p-10">
                                 <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10">
                                     {/* Profile Meta */}
                                     <div className="flex items-center gap-6 sm:gap-8">
@@ -865,7 +1098,7 @@ export default function CallingPage() {
                                         
                                         <div className="space-y-2">
                                             <div className="flex flex-wrap items-center gap-3">
-                                                <h2 className="text-2xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                                                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                                                     {customer?.customer_name || 'Anonymous Customer'}
                                                 </h2>
                                                 <span className={`px-3 py-1 rounded-xl text-[10px] font-semibold  ${
@@ -891,7 +1124,15 @@ export default function CallingPage() {
                                     </div>
 
                                     {/* Stats Row */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-12 w-full xl:w-auto pt-6 xl:pt-0 border-t xl:border-t-0 xl:border-l border-slate-100 xl:pl-12">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-12 w-full xl:w-auto pt-6 xl:pt-0 border-t xl:border-t-0 xl:border-l border-slate-100 xl:pl-12">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-semibold text-slate-400 ">Manager</p>
+                                            <div className="flex flex-col">
+                                                <span className="text-base font-semibold text-slate-800">{managedByInfo?.name || 'Self'}</span>
+                                                <span className="text-[10px] text-slate-400">{managedByInfo?.empId ? `ID: ${managedByInfo.empId}` : 'No Manager'}</span>
+                                            </div>
+                                        </div>
+
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-semibold text-slate-400 ">Experience</p>
                                             <div className="flex flex-col">
@@ -920,7 +1161,7 @@ export default function CallingPage() {
 
                                 {/* Detail Tags Area */}
                                 {customer?.utilities && (
-                                    <div className="mt-10 pt-10 border-t border-slate-50">
+                                    <div className="mt-6 sm:mt-10 pt-6 sm:pt-10 border-t border-slate-50">
                                         <div className="flex items-center gap-3 mb-6">
                                             <i className="fi flex  fi-rr-layers text-indigo-500"></i>
                                             <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-[0.2em]">Extended Profile Data</h3>
@@ -948,93 +1189,121 @@ export default function CallingPage() {
                             <div className="lg:col-span-8 space-y-6">
                                 
                                 {/* The Call Engine */}
-                                <div className={`relative overflow-hidden rounded-3xl p-4 sm:p-6 transition-all duration-1000 ${
+                                <div className={`relative overflow-hidden rounded-3xl transition-all duration-1000 ${
                                     isCalling 
-                                    ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 ' 
-                                    : 'bg-white border border-slate-100'
+                                    ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-800' 
+                                    : 'bg-white border border-slate-100 shadow-sm'
                                 }`}>
-                                    {/* Animated Background effects for active call */}
-                                    {isCalling && (
-                                        <>
-                                            <div className="absolute top-0 right-0 w-full h-full opacity-20 pointer-events-none">
-                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white rounded-full animate-pulse blur-[120px]" />
-                                            </div>
-                                            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent" />
-                                        </>
-                                    )}
+                                    {/* Abstract Background Visuals */}
+                                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                        <div className={`absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-white/15' : 'bg-indigo-50/50'}`} />
+                                        <div className={`absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-purple-500/20' : 'bg-violet-50/50'}`} />
+                                        
+                                        {/* Scanline effect for active call */}
+                                        {isCalling && (
+                                            <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 bg-[length:100%_2px,3px_100%]" />
+                                        )}
+                                    </div>
 
-                                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-                                        <div className="flex flex-col md:flex-row items-center gap-8">
-                                            {/* Dynamic Icon Container */}
-                                            <div className={`relative group`}>
-                                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-700 ${
-                                                    isCalling 
-                                                    ? 'bg-white text-indigo-600 animate-bounce shadow-2xl' 
-                                                    : 'bg-indigo-50 text-indigo-500 border border-indigo-100 group-hover:scale-105 group-hover:rotate-6'
-                                                }`}>
-                                                    <i className={`fi fi-rr-${isCalling ? 'headset' : 'phone-call'}`}></i>
+                                    {/* Content Container */}
+                                    <div className="relative z-10 p-6 sm:p-10">
+                                        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 text-center lg:text-left">
+                                            
+                                            {/* LEFT: Branding & Status (Mobile: Centered) */}
+                                            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                                                {/* Calling Hub Icon */}
+                                                <div className="relative">
+                                                    {/* Pulse animations only show when calling */}
+                                                    {isCalling && (
+                                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%]">
+                                                            <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-50" />
+                                                            <div className="absolute inset-4 rounded-full border border-white/10 animate-[ping_3s_linear_infinite] opacity-30" />
+                                                        </div>
+                                                    )}
+
+                                                    <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] flex items-center justify-center transition-all duration-500 border ${
+                                                        isCalling 
+                                                        ? 'bg-white text-indigo-600 border-white/20 scale-105 rotate-2' 
+                                                        : 'bg-indigo-50 text-indigo-600 border-indigo-100'
+                                                    }`}>
+                                                        <i className={`fi flex fi-rr-${isCalling ? 'headset' : 'phone-call'} text-2xl sm:text-3xl`}></i>
+                                                    </div>
+
+                                                    {/* Online Indicator */}
+                                                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-4 ${isCalling ? 'bg-emerald-400 border-indigo-600' : 'bg-indigo-600 border-white'} flex items-center justify-center shadow-md`}>
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                                    </div>
                                                 </div>
-                                                {isCalling && (
-                                                    <div className="" />
-                                                )}
-                                            </div>
 
-                                            <div className="text-center md:text-left space-y-2">
-                                                <h4 className={`text-2xl font-extrabold tracking-tight ${isCalling ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                                    {isCalling ? 'Call Active' : postCall ? 'Session Ended' : 'Ready to Connect'}
-                                                </h4>
-                                                <div className="flex items-center justify-center md:justify-start gap-3">
-                                                   
-                                                    <p className={`text-[11px] font-semibold tracking-[0.2em] ${isCalling ? 'text-indigo-100' : 'text-slate-400'}`}>
-                                                        {isCalling ? 'Voice transmission live' : 'System standby • Waiting for operator'}
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
+                                                        <span className={`px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border ${
+                                                            isCalling 
+                                                            ? 'bg-white/10 text-white border-white/20' 
+                                                            : 'bg-indigo-50 text-indigo-600 border-indigo-100'
+                                                        }`}>
+                                                            {isCalling ? 'Live Session' : 'Standby Mode'}
+                                                        </span>
+                                                        <div className={`w-1 h-1 rounded-full ${isCalling ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+                                                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isCalling ? 'text-indigo-200' : 'text-slate-400'}`}>
+                                                            Encrypted Voice
+                                                        </span>
+                                                    </div>
+                                                    <h4 className={`text-2xl sm:text-3xl font-black tracking-tight leading-tight ${isCalling ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                                                        {isCalling ? 'Call Active' : postCall ? 'Session Ended' : 'Ready to Connect'}
+                                                    </h4>
+                                                    <p className={`text-[11px] font-semibold opacity-70 ${isCalling ? 'text-indigo-100' : 'text-slate-400'}`}>
+                                                        {isCalling ? 'System is transmitting secure digital voice data...' : 'Waiting for operator to initiate lead engagement.'}
                                                     </p>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Dynamic Action Area */}
-                                        <div className="flex flex-col items-center md:items-end gap-2">
-                                            {isCalling ? (
-                                                <div className="flex flex-col md:flex-row items-center gap-6">
-                                                    <div className="text-center md:text-right px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
-                                                        <p className="text-2xl font-semibold text-white lining-nums tabular-nums tracking-tighter">
-                                                            {formatTime(callDuration)}
-                                                        </p>
-                                                        <p className="text-[12px] font-semibold  text-indigo-200">Live Duration</p>
+                                            {/* RIGHT: Dynamic Action & Stats Area */}
+                                            <div className="w-full lg:w-auto flex flex-col items-center lg:items-end gap-5">
+                                                {isCalling ? (
+                                                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+                                                        {/* Modern Timer Card */}
+                                                        <div className="flex-1 lg:flex-none py-3 px-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center lg:text-right min-w-[140px]">
+                                                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums tracking-tighter leading-none mb-1">
+                                                                {formatTime(callDuration)}
+                                                            </p>
+                                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-200">Session Time</p>
+                                                        </div>
+
+                                                        {/* End Call Action */}
+                                                        <button 
+                                                            onClick={handleEndCall}
+                                                            className="w-full sm:w-auto h-14 sm:h-auto sm:aspect-square sm:p-5 rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-2xl shadow-red-500/30 transition-all hover:scale-105 active:scale-95 group flex items-center justify-center gap-3 sm:gap-0"
+                                                        >
+                                                            <i className="fi flex fi-rr-phone-slash text-xl transform group-hover:rotate-12 transition-transform"></i>
+                                                            <span className="sm:hidden font-black text-[10px] uppercase tracking-widest">End Call</span>
+                                                        </button>
                                                     </div>
+                                                ) : !postCall ? (
                                                     <button 
-                                                        onClick={handleEndCall}
-                                                        className="h-14 px-7 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-extrabold text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-red-500/30 transition-all hover:-translate-y-1 active:translate-y-0 group"
+                                                        onClick={handleStartCall}
+                                                        className="w-full sm:w-auto px-10 h-16 rounded-[1.5rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
                                                     >
-                                                        <span className="flex items-center gap-3">
-                                                            <i className="fi flex  fi-rr-phone-slash text-lg group-hover:rotate-12 transition-transform"></i>
-                                                            End Call
-                                                        </span>
+                                                        <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                                            <i className="fi flex fi-rr-phone-call text-sm"></i>
+                                                        </div>
+                                                        Initialize Connection
                                                     </button>
-                                                </div>
-                                            ) : !postCall ? (
-                                                <button 
-                                                    onClick={handleStartCall}
-                                                    className="h-14 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 group"
-                                                >
-                                                    <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                        <i className="fi flex  fi-rr-phone-call text-sm"></i>
+                                                ) : (
+                                                    <div className="px-6 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
+                                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Session Logged • Set Outcome</span>
                                                     </div>
-                                                    Start Calling
-                                                </button>
-                                            ) : (
-                                                <div className="px-6 py-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-semibold ">
-                                                    Session complete • Save Outcome
-                                                </div>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Detail Display & Form Area */}
-                                <div className="grid grid-cols-1 xl:grid-cols-6 gap-6">
+                                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                                     {/* INFO CARD */}
-                                    <div className="xl:col-span-2 bg-white rounded-3xl p-8 border border-slate-100 relative overflow-hidden h-[800px] flex flex-col">
+                                    <div className="xl:col-span-5 bg-white rounded-2xl p-5 sm:p-8 border border-slate-100 relative overflow-hidden h-auto xl:min-h-[800px] flex flex-col">
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/30 rounded-bl-[3rem] -z-0" />
                                         <div className="relative z-10 flex flex-col h-full">
                                             <div className="flex items-center gap-3 mb-8">
@@ -1046,16 +1315,16 @@ export default function CallingPage() {
                                                     <p className="text-[10px] font-semibold text-slate-400 ">Reference Data</p>
                                                 </div>
                                             </div>
-                                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                             <div className="flex-initial xl:flex-1 xl:overflow-y-auto overflow-visible pr-2 custom-scrollbar">
                                                 {renderCleanedDetails(customer?.customer_details)}
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* OUTCOME FORM */}
-                                    <div className={`xl:col-span-4 bg-white rounded-3xl p-8 border border-slate-100 relative overflow-hidden transition-opacity duration-500 h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
-                                        <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50/30 rounded-bl-[3rem] -z-0" />
-                                        <div className="relative z-10 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
+                                    <div className={`xl:col-span-7 bg-white rounded-2xl p-5 border border-slate-100 relative transition-opacity duration-500 h-auto xl:min-h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50/30 rounded-bl-[3rem] z-0" />
+                                         <div className="relative z-10 space-y-6 flex-1 pb-24">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-2xl bg-purple-600 shadow-lg shadow-purple-100 flex items-center justify-center text-white">
                                                     <i className="fi flex  fi-rr-check-circle text-sm"></i>
@@ -1066,11 +1335,58 @@ export default function CallingPage() {
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-8">
+                                            <div className="space-y-4">
                                                 {/* Primary Dispositions */}
-                                                <div className="space-y-4">
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Primary Status</p>
-                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center justify-between px-1">
+                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Primary Status</p>
+                                                        
+                                                        <div className="relative" ref={assignPickerRef}>
+                                                            <button 
+                                                                onClick={() => setIsAssignPickerOpen(!isAssignPickerOpen)}
+                                                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100/50 hover:bg-slate-900 hover:text-white transition-all group"
+                                                            >
+                                                                <i className="fi fi-rr-user-gear flex text-[10px] text-indigo-500 group-hover:text-indigo-300"></i>
+                                                                <span className="text-[9px] font-bold uppercase tracking-tight text-indigo-600 group-hover:text-white">Assigned To</span>
+                                                                <i className={`fi fi-rr-angle-small-down flex text-[10px] transition-transform ${isAssignPickerOpen ? 'rotate-180' : ''}`}></i>
+                                                            </button>
+
+                                                            {isAssignPickerOpen && (
+                                                                <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-[110] animate-in fade-in zoom-in-95 duration-200">
+                                                                    <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
+                                                                        {(!campaign?.users || campaign.users.length === 0) ? (
+                                                                            <div className="p-4 text-center">
+                                                                                <p className="text-[10px] text-slate-400 font-bold uppercase">No Users Found</p>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="space-y-1">
+                                                                                 {campaign.users.map((u: any) => {
+                                                                                     const targetId = u.user_id || u.id;
+                                                                                     const isSelected = customer?.managed_by === targetId;
+                                                                                     return (
+                                                                                        <button
+                                                                                            key={u.id}
+                                                                                            onClick={() => handleUpdateManagedBy(targetId)}
+                                                                                            className={`w-full flex items-center gap-2 p-2 rounded-xl transition-all hover:bg-indigo-50 ${isSelected ? 'bg-indigo-600 text-white hover:bg-indigo-600' : 'text-slate-600'}`}
+                                                                                        >
+                                                                                            <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold ${isSelected ? 'bg-white/20' : 'bg-indigo-100 text-indigo-600'}`}>
+                                                                                                {u.name?.charAt(0) || 'U'}
+                                                                                            </div>
+                                                                                            <div className="text-left overflow-hidden">
+                                                                                                <p className="text-[10px] font-bold truncate leading-tight">{u.name || 'Unknown'}</p>
+                                                                                                <p className={`text-[8px] truncate ${isSelected ? 'text-indigo-200' : 'text-slate-400'}`}>{u.email || 'No email'}</p>
+                                                                                            </div>
+                                                                                        </button>
+                                                                                     );
+                                                                                 })}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                                         {primaryDispositions.map((item) => (
                                                             <button
                                                                 key={item}
@@ -1078,7 +1394,7 @@ export default function CallingPage() {
                                                                     setDisposition(item);
                                                                     setSubDisposition(""); 
                                                                 }}
-                                                                className={`px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                                                className={`px-3 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                                                     disposition === item 
                                                                     ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
                                                                     : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-400 hover:text-indigo-600 hover:shadow-sm'
@@ -1094,17 +1410,17 @@ export default function CallingPage() {
                                                 {disposition && dispositionHierarchy[disposition]?.length > 0 && (
                                                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest pl-1 text-[10px]">Reason / Type</p>
-                                                        <div className="grid grid-cols-2 gap-4">
+                                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                                             {dispositionHierarchy[disposition].map((sub) => (
-                                                                <button
-                                                                    key={sub}
-                                                                    onClick={() => setSubDisposition(sub)}
-                                                                    className={`px-4 py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
-                                                                        subDisposition === sub 
-                                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
-                                                                        : 'bg-white text-indigo-500 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-sm'
-                                                                    }`}
-                                                                >
+                                                                    <button
+                                                                        key={sub}
+                                                                        onClick={() => setSubDisposition(sub)}
+                                                                        className={`px-3 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                                                            subDisposition === sub 
+                                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
+                                                                            : 'bg-white text-indigo-500 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-sm'
+                                                                        }`}
+                                                                    >
                                                                     {sub}
                                                                 </button>
                                                             ))}
@@ -1114,8 +1430,11 @@ export default function CallingPage() {
 
                                                 {/* Call Back Scheduling (Modern Version) */}
                                                 {disposition === 'Call Back' && (
-                                                    <div className="space-y-5 p-6 rounded-3xl bg-indigo-50/40 border border-indigo-100/50 backdrop-blur-sm animate-in zoom-in-95 duration-500 relative overflow-hidden">
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -mr-16 -mt-16" />
+                                                    <div className="space-y-3 p-6 rounded-2xl bg-indigo-50/40 border border-indigo-100/50 backdrop-blur-sm animate-in zoom-in-95 duration-500 relative">
+                                                        {/* Isolated Background Decorative elements to prevent horizontal overflow */}
+                                                        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                                                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -mr-16 -mt-16" />
+                                                        </div>
                                                         
                                                         <div className="flex items-center justify-between relative z-10">
                                                             <div className="flex items-center gap-2.5">
@@ -1132,7 +1451,7 @@ export default function CallingPage() {
                                                         </div>
 
                                                         {/* Quick Presets */}
-                                                         <div className="flex flex-wrap gap-3 relative z-10">
+                                                         <div className="flex flex-wrap mt-4 gap-1.5 relative z-10">
                                                              {[
                                                                  { 
                                                                      label: '10 Min', 
@@ -1167,23 +1486,17 @@ export default function CallingPage() {
                                                                          setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
                                                                      }
                                                                  },
-                                                                 { 
-                                                                     label: 'Today', 
-                                                                     icon: 'calendar-day', 
-                                                                     action: () => {
-                                                                         const now = new Date();
-                                                                         const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-                                                                         setCallbackDate(localDate);
-                                                                     }
-                                                                 },
+                                                                
                                                                  { 
                                                                      label: 'Tomorrow', 
                                                                      icon: 'sunrise', 
                                                                      action: () => {
-                                                                         const tomorrow = new Date();
+                                                                         const now = new Date();
+                                                                         const tomorrow = new Date(now);
                                                                          tomorrow.setDate(tomorrow.getDate() + 1);
                                                                          const localDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
                                                                          setCallbackDate(localDate);
+                                                                         setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
                                                                      }
                                                                  }
                                                              ].map((preset) => (
@@ -1191,7 +1504,7 @@ export default function CallingPage() {
                                                                     key={preset.label}
                                                                     type="button"
                                                                     onClick={preset.action}
-                                                                    className="px-3 py-1.5 rounded-xl bg-white border border-indigo-100 text-[12px] font-bold text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-1.5"
+                                                                    className="px-2.5 py-1.5 rounded-lg bg-white border border-indigo-100 text-[10px] font-bold text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-1.5"
                                                                 >
                                                                     <i className={`fi flex fi-rr-${preset.icon} text-[10px]`}></i>
                                                                     {preset.label}
@@ -1199,53 +1512,159 @@ export default function CallingPage() {
                                                             ))}
                                                         </div>
 
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-                                                            <div className="relative group/date">
-                                                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-50">
+                                                            {/* Custom Date Picker Trigger */}
+                                                            <div className="relative group/date" ref={datePickerRef}>
+                                                                <div className="absolute  inset-y-0 left-3 flex items-center pointer-events-none z-10">
                                                                     <i className="fi flex fi-rr-calendar text-slate-400 text-[12px]"></i>
                                                                 </div>
-                                                                <div className="w-full h-[30px] bg-white rounded-full pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 flex items-center group-hover/date:border-indigo-200 transition-all uppercase tracking-tight">
-                                                                    {callbackDate ? formatDate(callbackDate) : 'DD/MM/YY'}
-                                                                </div>
-                                                                <input 
-                                                                    type="date" 
-                                                                    value={callbackDate}
-                                                                    onChange={(e) => setCallbackDate(e.target.value)}
-                                                                    className="absolute inset-0 opacity-0 cursor-pointer w-full"
-                                                                    style={{ colorScheme: 'light' }}
-                                                                />
+                                                                <button 
+                                                                    type="button"
+                                                                    onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+                                                                    className="w-full h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
+                                                                >
+                                                                    {callbackDate ? formatDate(callbackDate) : 'Select Date'}
+                                                                </button>
+
+                                                                {isDatePickerOpen && (
+                                                                    <div className="absolute top-full mt-2 left-0 w-[240px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                                                        {/* Calendar Header */}
+                                                                        <div className="flex items-center justify-between mb-4">
+                                                                            <button 
+                                                                                type="button"
+                                                                                onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1))}
+                                                                                className="w-8 h-8 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-400"
+                                                                            >
+                                                                                <i className="fi fi-rr-angle-left text-[10px]"></i>
+                                                                            </button>
+                                                                            <p className="text-[12px] font-bold text-slate-800">
+                                                                                {months[calendarViewDate.getMonth()]} {calendarViewDate.getFullYear()}
+                                                                            </p>
+                                                                            <button 
+                                                                                type="button"
+                                                                                onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1))}
+                                                                                className="w-8 h-8 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-400"
+                                                                            >
+                                                                                <i className="fi fi-rr-angle-right text-[10px]"></i>
+                                                                            </button>
+                                                                        </div>
+
+                                                                        {/* Week Days */}
+                                                                        <div className="grid grid-cols-7 mb-2">
+                                                                            {weekDays.map(d => (
+                                                                                <div key={d} className="text-[10px] font-bold text-slate-400 text-center">{d}</div>
+                                                                            ))}
+                                                                        </div>
+
+                                                                        {/* Dates Grid */}
+                                                                        <div className="grid grid-cols-7 gap-1">
+                                                                            {generateCalendarDays().map((d, i) => {
+                                                                                const dateObj = new Date(d.year, d.month, d.day);
+                                                                                const isToday = new Date().toDateString() === dateObj.toDateString();
+                                                                                const isSelected = callbackDate === `${d.year}-${String(d.month + 1).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+                                                                                
+                                                                                return (
+                                                                                    <button
+                                                                                        key={i}
+                                                                                        type="button"
+                                                                                        onClick={() => handleDateSelect(d.day, d.month, d.year)}
+                                                                                        className={`h-7 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center ${
+                                                                                            isSelected 
+                                                                                            ? 'bg-indigo-600 text-white' 
+                                                                                            : !d.currentMonth 
+                                                                                                ? 'text-slate-300 hover:bg-slate-50' 
+                                                                                                : isToday 
+                                                                                                    ? 'text-indigo-600 bg-indigo-50' 
+                                                                                                    : 'text-slate-600 hover:bg-slate-50'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {d.day}
+                                                                                    </button>
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
                                                             </div>
 
-                                                            <div className="relative">
+                                                            {/* Custom Time Picker Trigger */}
+                                                            <div className="relative" ref={timePickerRef}>
                                                                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                                                                     <i className="fi flex fi-rr-clock-three text-slate-400 text-[12px]"></i>
                                                                 </div>
-                                                                <input 
-                                                                    type="time" 
-                                                                    value={callbackTime}
-                                                                    onChange={(e) => setCallbackTime(e.target.value)}
-                                                                    className="w-full h-[30px] bg-white rounded-full pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 focus:border-indigo-200 outline-none transition-all uppercase tracking-tight [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                                                    style={{ colorScheme: 'light' }}
-                                                                />
+                                                                <button 
+                                                                    type="button"
+                                                                    onClick={() => setIsTimePickerOpen(!isTimePickerOpen)}
+                                                                    className="w-full  h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
+                                                                >
+                                                                    {callbackTime || 'Select Time'}
+                                                                </button>
+
+                                                                 {isTimePickerOpen && (
+                                                                    <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-3 z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                                                        {/* Custom Time Input */}
+                                                                        <div className="mb-4 pt-1">
+                                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Custom Time</p>
+                                                                            <input 
+                                                                                type="time" 
+                                                                                value={callbackTime}
+                                                                                onChange={(e) => setCallbackTime(e.target.value)}
+                                                                                onClick={(e) => e.currentTarget.showPicker?.()}
+                                                                                className="w-full h-[32px] bg-slate-50 rounded-xl px-3 text-[10px] font-bold text-slate-700 border border-slate-100 focus:border-indigo-400 outline-none transition-all uppercase tracking-tight cursor-pointer"
+                                                                                style={{ colorScheme: 'light' }}
+                                                                            />
+                                                                        </div>
+
+                                                                        <div className="h-px bg-slate-100 mb-3" />
+
+                                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 pl-1">Popular Slots</p>
+                                                                        <div className="grid grid-cols-2 gap-2 h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                                                                            {timeOptions.map(t => (
+                                                                                <button
+                                                                                    key={t}
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        setCallbackTime(t);
+                                                                                        setIsTimePickerOpen(false);
+                                                                                    }}
+                                                                                    className={`py-2 rounded-xl text-[10px] font-bold transition-all border ${
+                                                                                        callbackTime === t
+                                                                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                                                                        : 'bg-slate-50 text-slate-600 border-slate-100 hover:border-indigo-200 hover:text-indigo-600'
+                                                                                    }`}
+                                                                                >
+                                                                                    {t}
+                                                                                </button>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
                                                             </div>
+
+                                                            {callbackDate && callbackTime && new Date(`${callbackDate}T${callbackTime}`) < new Date() && (
+                                                                <div className="flex items-center gap-2 mt-2 px-1 animate-pulse">
+                                                                    <i className="fi fi-rr-info text-red-500 text-[12px]"></i>
+                                                                    <p className="text-red-500 text-[10px] font-bold uppercase tracking-tight">Cannot schedule for a past time!</p>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 )}
                                                 
-                                                <div className="space-y-3">
+                                                <div className="space-y-2">
                                                     <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest pl-1">Session Notes</p>
                                                     <textarea 
                                                         value={notes}
                                                         onChange={(e) => setNotes(e.target.value)}
                                                         placeholder="Add specific details about the conversation..."
-                                                        className="w-full bg-slate-50/50 rounded-2xl p-4 text-xs font-semibold border border-slate-100 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:outline-none transition-all min-h-[100px] resize-none"
+                                                        className="w-full bg-slate-50/50 text-gray-700 rounded-2xl p-4 text-xs font-semibold border border-slate-100 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:outline-none transition-all min-h-[80px] resize-none"
                                                     />
                                                 </div>
 
                                                 <button 
                                                     disabled={saving || !postCall}
                                                     onClick={handleSaveDisposition}
-                                                    className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-slate-900 text-white font-semibold text-xs uppercase tracking-[0.2em] shadow-xl transition-all disabled:opacity-50"
+                                                    className="w-full h-11 rounded-2xl bg-indigo-600 hover:bg-slate-900 text-white font-semibold text-xs uppercase tracking-[0.2em] shadow-xl transition-all disabled:opacity-50"
                                                 >
                                                     {saving ? 'Processing...' : 'Save & Continue'}
                                                 </button>
@@ -1257,7 +1676,7 @@ export default function CallingPage() {
 
                             {/* ACTIVITY SIDEBAR (Right) */}
                             <div className="lg:col-span-4">
-                                <div className="bg-white rounded-3xl p-8 border border-slate-100 h-[800px] flex flex-col">
+                                <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-100 h-auto xl:min-h-[800px] flex flex-col">
                                     <div className="flex items-center justify-between mb-10">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-white">
