@@ -16,7 +16,20 @@ export default async function handler(
   }
 
   try {
-    const { email, password, user_name, contact_no, profile_pic_url, user_type, from_admin_panel } = req.body;
+    const { 
+      email, 
+      password, 
+      user_name, 
+      contact_no, 
+      profile_pic_url, 
+      user_type, 
+      from_admin_panel, 
+      organization_id,
+      is_client,
+      joined_at,
+      renewal_at,
+      expire_at
+    } = req.body;
 
     // Validate required fields
     if (!email || !password || !user_name || !contact_no) {
@@ -204,9 +217,7 @@ export default async function handler(
     const clientToUse = supabaseAdmin || supabase;
 
     // -----------------------------------------------------------------------
-    // Generate employee_id based on user_type
-    // Employees  → TFC-001, TFC-002, ...
-    // POSP Agent → AGT-001, AGT-002, ...
+    // Generate employee_id based on user_type or Organization
     // -----------------------------------------------------------------------
     const resolvedUserType: 'employee' | 'posp_agent' =
       user_type === 'posp_agent' ? 'posp_agent' : 'employee';
@@ -214,7 +225,23 @@ export default async function handler(
     let generatedEmployeeId: string | null = null;
 
     try {
-      const idPrefix = resolvedUserType === 'posp_agent' ? 'AGT' : 'TFC';
+      let basePrefix = resolvedUserType === 'posp_agent' ? 'AGT' : 'TFC';
+      
+      // If organization_id is provided, use the organization's org_code as basePrefix
+      if (organization_id) {
+        const { data: orgData } = await clientToUse
+          .from('organizations')
+          .select('org_code')
+          .eq('id', organization_id)
+          .maybeSingle();
+        
+        if (orgData?.org_code) {
+          basePrefix = orgData.org_code.toUpperCase();
+        }
+      }
+
+      // For posp_agent, the prefix should be A{basePrefix}
+      const idPrefix = resolvedUserType === 'posp_agent' ? `A${basePrefix}` : basePrefix;
 
       // Find latest employee_id with this prefix
       const { data: latestIds, error: latestError } = await clientToUse
@@ -230,9 +257,13 @@ export default async function handler(
 
       let nextNumber = 1;
       if (latestIds && latestIds.length > 0 && latestIds[0].employee_id) {
-        const parts = String(latestIds[0].employee_id).split('-');
-        if (parts.length === 2) {
-          const parsed = parseInt(parts[1], 10);
+        // Find all matches for the prefix pattern to correctly parse the number
+        const idStr = String(latestIds[0].employee_id);
+        const lastDashIndex = idStr.lastIndexOf('-');
+        
+        if (lastDashIndex !== -1) {
+          const numPart = idStr.substring(lastDashIndex + 1);
+          const parsed = parseInt(numPart, 10);
           if (!isNaN(parsed) && parsed >= 1) {
             nextNumber = parsed + 1;
           }
@@ -255,6 +286,7 @@ export default async function handler(
           contact_no: contact_no, // Phone number
           profile_pic_url: profile_pic_url || null, // Profile picture URL
           user_type: resolvedUserType, // User type: employee or posp_agent
+          organization_id: organization_id || null, // Association with organization
           // For a brand new profile, set generated employee_id
           employee_id: generatedEmployeeId,
           status: 'inactive', // Default status: inactive
@@ -264,6 +296,25 @@ export default async function handler(
           created_at: new Date().toISOString(),
           profile_complete: false,
           super_admin: false,
+          // Client Lifecycle
+          is_client: is_client ?? false,
+          joined_at: joined_at || new Date().toISOString(),
+          renewal_at: renewal_at || new Date().toISOString(),
+          expire_at: expire_at || (() => {
+            const today = new Date();
+            
+            if (today.getDate() === 1) {
+              const nextMonth = new Date(today);
+              nextMonth.setMonth(today.getMonth() + 1);
+              return nextMonth.toISOString().split('T')[0];
+            } else {
+              const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+              const year = lastDay.getFullYear();
+              const month = String(lastDay.getMonth() + 1).padStart(2, '0');
+              const day = String(lastDay.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
+            }
+          })(),
         },
         {
           onConflict: 'user_id', // Conflict resolution on user_id unique constraint

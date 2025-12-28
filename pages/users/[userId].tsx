@@ -68,6 +68,11 @@ interface UserDetail {
   user_type?: string | null;
   work_type?: string | null;
   department?: string | null;
+  // Client Lifecycle
+  is_client?: boolean | null;
+  joined_at?: string | null;
+  renewal_at?: string | null;
+  expire_at?: string | null;
 }
 
 function UserProfilePage() {
@@ -79,7 +84,7 @@ function UserProfilePage() {
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("users");
   const [mounted, setMounted] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
+  const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -194,6 +199,10 @@ function UserProfilePage() {
           displayName: profileData.user_name || authResult.user?.displayName || null,
           email: profileData.email || authResult.user?.email || '',
           profilePicUrl: profileData.profile_pic_url || null,
+          is_client: profileData.is_client,
+          joined_at: profileData.joined_at,
+          renewal_at: profileData.renewal_at,
+          expire_at: profileData.expire_at,
         };
 
         setUserDetail(detail);
@@ -229,6 +238,11 @@ function UserProfilePage() {
           aadhar_back_url: profileData.aadhar_back_url || "",
           qualification_marksheet_url: profileData.qualification_marksheet_url || "",
           bank_passbook_url: profileData.bank_passbook_url || "",
+          // Client Lifecycle
+          is_client: profileData.is_client !== undefined ? String(profileData.is_client) : "false",
+          joined_at: profileData.joined_at ? profileData.joined_at.split('T')[0] : "",
+          renewal_at: profileData.renewal_at ? profileData.renewal_at.split('T')[0] : "",
+          expire_at: profileData.expire_at ? profileData.expire_at.split('T')[0] : "",
         });
       } catch (err: any) {
         console.error('Error fetching user data:', err);
@@ -536,6 +550,7 @@ function UserProfilePage() {
                       { id: "basic_info", label: "Basic Details", icon: "fi-rr-user" },
                       { id: "personal_info", label: "Personal Info", icon: "fi-rr-user-gear" },
                       { id: "employment_info", label: "Employment", icon: "fi-rr-briefcase" },
+                      { id: "client_lifecycle", label: "Lifecycle", icon: "fi-rr-calendar-check" },
                       { id: "address_info", label: "Address", icon: "fi-rr-map-marker" },
                       { id: "kyc_info", label: "KYC", icon: "fi-rr-shield-check" },
                       { id: "bank_info", label: "Bank Details", icon: "fi-rr-credit-card" },
@@ -671,6 +686,11 @@ function UserProfilePage() {
                           aadhar_back_url: userDetail.aadhar_back_url || "",
                           qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
                           bank_passbook_url: userDetail.bank_passbook_url || "",
+                          // Client Lifecycle
+                          is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
+                          joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
+                          renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
+                          expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
                         });
                       }}
                       className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#4b33e8] text-white hover:opacity-90 transition-colors"
@@ -734,6 +754,7 @@ function UserProfilePage() {
                     {activeCategory === "basic_info" && "Basic Details"}
                     {activeCategory === "personal_info" && "Personal Information"}
                     {activeCategory === "employment_info" && "Employment Information"}
+                    {activeCategory === "client_lifecycle" && "Lifecycle & Status"}
                     {activeCategory === "address_info" && "Address Information"}
                     {activeCategory === "kyc_info" && "KYC Information"}
                     {activeCategory === "bank_info" && "Bank Details"}
@@ -774,6 +795,11 @@ function UserProfilePage() {
                         aadhar_back_url: userDetail.aadhar_back_url || "",
                         qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
                         bank_passbook_url: userDetail.bank_passbook_url || "",
+                        // Client Lifecycle
+                        is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
+                        joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
+                        renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
+                        expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
                       }}
                       handleInputChange={isEditMode ? (e) => {
                         const { id, value } = e.target;
@@ -823,6 +849,11 @@ function UserProfilePage() {
                           aadhar_back_url: userDetail.aadhar_back_url || "",
                           qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
                           bank_passbook_url: userDetail.bank_passbook_url || "",
+                          // Client Lifecycle
+                          is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
+                          joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
+                          renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
+                          expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
                         });
                       }}
                       className="px-4 py-2 rounded-lg bg-gray-100 text-[#4b33e8] font-medium text-sm transition-colors hover:bg-gray-200"

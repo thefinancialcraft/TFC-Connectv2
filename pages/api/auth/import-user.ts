@@ -14,6 +14,7 @@ interface ImportUser {
   contact_no: string;
   user_type: 'employee' | 'posp_agent';
   password: string;
+  organization_id?: string;
 }
 
 export default async function handler(
@@ -29,7 +30,7 @@ export default async function handler(
   }
 
   try {
-    const { user_name, employee_id, email, contact_no, user_type, password } = req.body as ImportUser;
+    const { user_name, employee_id, email, contact_no, user_type, password, organization_id } = req.body as ImportUser;
 
     // Trim all string fields
     const trimmedEmployeeId = employee_id?.trim() || '';
@@ -95,7 +96,7 @@ export default async function handler(
       // If auth user exists, check if profile exists for this user_id
       const { data: profileByUserId, error: profileCheckError } = await supabaseAdmin
         .from('user_profiles')
-        .select('id, user_id, email, employee_id')
+        .select('id, user_id, email, employee_id, organization_id')
         .eq('user_id', userId)
         .single();
 
@@ -115,7 +116,7 @@ export default async function handler(
       // Check for existing email
       const { data: existingEmail, error: emailCheckError } = await supabaseAdmin
         .from('user_profiles')
-        .select('id, user_id, email, employee_id')
+        .select('id, user_id, email, employee_id, organization_id')
         .eq('email', trimmedEmail.toLowerCase())
         .maybeSingle();
 
@@ -131,7 +132,7 @@ export default async function handler(
         // Check for existing employee_id
         const { data: existingEmployeeId, error: employeeIdCheckError } = await supabaseAdmin
           .from('user_profiles')
-          .select('id, user_id, email, employee_id')
+          .select('id, user_id, email, employee_id, organization_id')
           .eq('employee_id', trimmedEmployeeId)
           .maybeSingle();
 
@@ -147,6 +148,22 @@ export default async function handler(
       }
     }
 
+    // Calculate lifecycle dates (needed for updates too)
+    const today = new Date();
+    const joinedAt = today.toISOString();
+    const renewalAt = today.toISOString();
+    
+    // Calculate expiry date
+    let expireAtDate = new Date(today);
+    if (today.getDate() === 1) {
+      // If joined start of month (1st), expiry is 1 month later
+      expireAtDate.setMonth(today.getMonth() + 1);
+    } else {
+      // Mid-month -> End of current month
+      expireAtDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+    const expireAt = `${expireAtDate.getFullYear()}-${String(expireAtDate.getMonth() + 1).padStart(2, '0')}-${String(expireAtDate.getDate()).padStart(2, '0')}`;
+
     // If profile exists, check if we can update employee_id instead of erroring
     if (existingProfile) {
       console.log('Existing profile found:', existingProfile);
@@ -159,26 +176,64 @@ export default async function handler(
       // If email matches but employee_id is different or missing, update employee_id
       if (existingProfile.email?.toLowerCase() === trimmedEmail.toLowerCase()) {
         if (!existingProfile.employee_id || existingProfile.employee_id !== trimmedEmployeeId) {
-          console.log('Profile exists with same email, updating employee_id');
+          console.log('Profile exists with same email, updating all details including lifecycle dates');
+          
+          const updatePayload: any = { 
+            employee_id: trimmedEmployeeId,
+            updated_at: new Date().toISOString(),
+            is_client: true,
+            joined_at: joinedAt,
+            renewal_at: renewalAt,
+            expire_at: expireAt
+          };
+
+          // Update organization_id if provided
+          if (organization_id) {
+            updatePayload.organization_id = organization_id;
+          }
+
           const { error: updateError } = await supabaseAdmin
             .from('user_profiles')
-            .update({ 
-              employee_id: trimmedEmployeeId,
-              updated_at: new Date().toISOString()
-            })
+            .update(updatePayload)
             .eq('id', existingProfile.id);
           
           if (updateError) {
-            console.error('Error updating employee_id:', updateError);
+            console.error('Error updating details:', updateError);
             return res.status(500).json({ 
-              error: 'Failed to update employee_id: ' + updateError.message 
+              error: 'Failed to update user details: ' + updateError.message 
             });
           }
           
           return res.status(200).json({
             success: true,
-            message: 'User profile exists, employee_id updated successfully',
+            message: 'User profile exists, details updated successfully',
           });
+        }
+        
+        // If employee_id matches, we should still update organization_id and lifecycle dates if provided
+        if (organization_id && existingProfile.organization_id !== organization_id) {
+            console.log('Profile exists with matching employee_id, updating organization and lifecycle dates');
+            const { error: orgUpdateError } = await supabaseAdmin
+                .from('user_profiles')
+                .update({ 
+                    organization_id: organization_id, 
+                    updated_at: new Date().toISOString(),
+                    is_client: true,
+                    joined_at: joinedAt,
+                    renewal_at: renewalAt,
+                    expire_at: expireAt
+                })
+                .eq('id', existingProfile.id);
+
+            if (orgUpdateError) {
+                console.error('Error updating organization_id:', orgUpdateError);
+                // Non-critical error, can probably proceed or return warning
+            } else {
+                 return res.status(200).json({
+                    success: true,
+                    message: 'User profile exists, organization and lifecycle dates updated successfully',
+                });
+            }
         }
       }
       
@@ -245,27 +300,37 @@ export default async function handler(
       
       // If profile exists, try to update employee_id if it's missing or different
       if (!existingProfileCheck.employee_id || existingProfileCheck.employee_id !== trimmedEmployeeId) {
-        console.log('Updating employee_id from', existingProfileCheck.employee_id, 'to', trimmedEmployeeId);
+        console.log('Updating employee_id and lifecycle dates from', existingProfileCheck.employee_id, 'to', trimmedEmployeeId);
+        
+        const updatePayload: any = { 
+          employee_id: trimmedEmployeeId,
+          updated_at: new Date().toISOString(),
+          is_client: true,
+          joined_at: joinedAt,
+          renewal_at: renewalAt,
+          expire_at: expireAt
+        };
+
+        if (organization_id) {
+          updatePayload.organization_id = organization_id;
+        }
         
         const { error: updateError } = await supabaseAdmin
           .from('user_profiles')
-          .update({ 
-            employee_id: trimmedEmployeeId,
-            updated_at: new Date().toISOString()
-          })
+          .update(updatePayload)
           .eq('user_id', userId);
         
         if (updateError) {
-          console.error('Error updating employee_id:', updateError);
+          console.error('Error updating details:', updateError);
           return res.status(500).json({ 
-            error: 'User profile exists but failed to update employee_id: ' + updateError.message 
+            error: 'User profile exists but failed to update details: ' + updateError.message 
           });
         }
         
-        console.log('Successfully updated employee_id');
+        console.log('Successfully updated all details');
         return res.status(200).json({
           success: true,
-          message: 'User profile exists, employee_id updated successfully',
+          message: 'User profile exists, all details updated successfully',
         });
       } else {
         console.log('Employee_id already matches, returning success');
@@ -276,6 +341,8 @@ export default async function handler(
       }
     }
 
+    // Lifecycle dates already calculated above
+
     // Prepare insert data
     const insertData = {
       user_id: userId,
@@ -284,6 +351,7 @@ export default async function handler(
       contact_no: trimmedContactNo,
       employee_id: trimmedEmployeeId, // Use employee_id from CSV (trimmed)
       user_type: trimmedUserType.toLowerCase(),
+      organization_id: organization_id,
       status: 'inactive', // Default status: inactive
       work_type: 'on_site', // Default work type: on_site
       department: 'sales', // Default department: sales
@@ -292,6 +360,11 @@ export default async function handler(
       created_at: new Date().toISOString(),
       profile_complete: false,
       super_admin: false,
+      // Client Lifecycle
+      is_client: true,
+      joined_at: joinedAt,
+      renewal_at: renewalAt,
+      expire_at: expireAt,
     };
 
     // Log for debugging before insert

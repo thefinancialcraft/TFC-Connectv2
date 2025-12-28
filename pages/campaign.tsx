@@ -138,10 +138,10 @@ export default function Campaign() {
 		try {
 			setLoadingCampaigns(true);
 			
-			// 1. Fetch all campaigns
+			// 1. Fetch all campaigns with organization details
 			const { data: campaignData, error: campaignError } = await supabase
 				.from("campaigns")
-				.select("*")
+				.select("*, organizations(id, company_name, org_code)")
 				.order("created_at", { ascending: false });
 			
 			if (campaignError) throw campaignError;
@@ -191,7 +191,7 @@ export default function Campaign() {
 			// Use user_profiles table as in the users page to get consistent fields
 			const { data, error } = await supabase
 				.from("user_profiles")
-				.select("id, user_id, email, user_name, profile_pic_url, employee_id")
+				.select("id, user_id, email, user_name, profile_pic_url, employee_id, organization_id")
 				.order("created_at", { ascending: false });
 			if (!error && data) {
 				// map fields to expected shape

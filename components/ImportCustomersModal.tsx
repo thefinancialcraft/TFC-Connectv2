@@ -1,0 +1,405 @@
+
+import { useState, useRef, useEffect } from "react";
+import { supabase } from "../lib/supabase";
+
+interface ImportCustomersModalProps {
+  show: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  preselectedOrgId?: string;
+  preselectedCampaignId?: string;
+}
+
+export default function ImportCustomersModal({
+  show,
+  onClose,
+  onSuccess,
+  preselectedOrgId = "",
+  preselectedCampaignId = "",
+}: ImportCustomersModalProps) {
+  const [showImportModal, setShowImportModal] = useState(show);
+  const [showMappingModal, setShowMappingModal] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [importSuccess, setImportSuccess] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [csvColumns, setCsvColumns] = useState<string[]>([]);
+  const [fieldMapping, setFieldMapping] = useState<Record<string, string>>({});
+  const [mergedFields, setMergedFields] = useState<Record<string, string[]>>({});
+  const [customFields, setCustomFields] = useState<
+    Array<{ id: string; name: string; mappedTo: string }>
+  >([]);
+  const [selectedFields, setSelectedFields] = useState<Record<string, boolean>>({
+    name: true,
+    phone: true,
+    sum_insured: false,
+    premium: false,
+    company: false,
+    expiry_date: true,
+  });
+
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [selectedOrgId, setSelectedOrgId] = useState(preselectedOrgId);
+  const [selectedCampaignId, setSelectedCampaignId] = useState(preselectedCampaignId);
+
+  useEffect(() => {
+    setShowImportModal(show);
+    if (show) {
+      setSelectedOrgId(preselectedOrgId);
+      setSelectedCampaignId(preselectedCampaignId);
+      fetchOrganizations();
+      fetchCampaigns(preselectedOrgId); // Fetch campaigns for the preselected org
+    }
+  }, [show, preselectedOrgId, preselectedCampaignId]);
+
+  // Re-fetch campaigns when selected organization changes
+  useEffect(() => {
+    if (showImportModal) {
+      fetchCampaigns(selectedOrgId);
+      // If we change org, we should probably clear campaign unless it's the preselected one
+      if (selectedOrgId !== preselectedOrgId) {
+        setSelectedCampaignId("");
+      } else {
+        setSelectedCampaignId(preselectedCampaignId);
+      }
+    }
+  }, [selectedOrgId]);
+
+  const fetchCampaigns = async (orgId?: string) => {
+    try {
+      let query = supabase
+        .from("campaigns")
+        .select("id, name")
+        .eq("status", "active")
+        .order("name", { ascending: true });
+      
+      if (orgId) {
+        query = query.eq("organization_id", orgId);
+      }
+
+      const { data, error } = await query;
+      if (!error) setCampaigns(data || []);
+    } catch (err) {
+      console.error("Error fetching campaigns:", err);
+    }
+  };
+
+  const fetchOrganizations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("organizations")
+        .select("id, company_name, org_code")
+        .eq("is_active", true)
+        .order("company_name", { ascending: true });
+      if (!error) setOrganizations(data || []);
+    } catch (err) {
+      console.error("Error fetching organizations:", err);
+    }
+  };
+
+  const handleClose = () => {
+    setShowImportModal(false);
+    setShowMappingModal(false);
+    setImportFile(null);
+    setImportError("");
+    setImportSuccess("");
+    onClose();
+  };
+
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') inQuotes = !inQuotes;
+      else if (char === "," && !inQuotes) {
+        result.push(current.trim());
+        current = "";
+      } else current += char;
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const getFieldValue = (
+    row: Record<string, string>,
+    fieldKey: string,
+    fieldMapping: Record<string, string>,
+    mergedFields: Record<string, string[]>
+  ): string => {
+    const mainColumn = fieldMapping[fieldKey];
+    if (!mainColumn) return "";
+    let value = row[mainColumn] || "";
+    const merged = mergedFields[fieldKey] || [];
+    if (merged.length > 0) {
+      const mergedValues = merged
+        .filter((col) => col && row[col])
+        .map((col) => row[col])
+        .join(" ");
+      if (mergedValues) value = value ? `${value} ${mergedValues}` : mergedValues;
+    }
+    return value.trim();
+  };
+
+  const generateLeadId = () => {
+    return `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  };
+
+  const uploadCustomersToSupabase = async () => {
+    if (!importFile) {
+      setImportError("Please select a file to upload");
+      return;
+    }
+    setImporting(true);
+    setImportError("");
+    setImportSuccess("");
+
+    try {
+      const text = await importFile.text();
+      const lines = text.split("\n").filter((line) => line.trim());
+      if (lines.length < 2) {
+        setImportError("CSV file must contain at least a header row and one data row");
+        setImporting(false);
+        return;
+      }
+
+      const headers = parseCSVLine(lines[0]);
+      const customers = [];
+      const errors: string[] = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        try {
+          const values = parseCSVLine(lines[i]);
+          if (values.length === 0 || values.every((v) => !v.trim())) continue;
+          const row: Record<string, string> = {};
+          headers.forEach((header, index) => {
+            row[header.trim()] = values[index]?.trim() || "";
+          });
+
+          const customerName = getFieldValue(row, "name", fieldMapping, mergedFields);
+          const phoneNo = getFieldValue(row, "phone", fieldMapping, mergedFields);
+          const expiryDate = getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
+
+          if (!customerName) {
+            errors.push(`Row ${i + 1}: Customer name is required`);
+            continue;
+          }
+
+          const customerDetails: Record<string, string> = {};
+          const predefinedFields = [
+            { key: "sum_insured", label: "Sum Insured" },
+            { key: "premium", label: "Premium" },
+            { key: "company", label: "Company" },
+          ];
+
+          predefinedFields.forEach((field) => {
+            const value = getFieldValue(row, field.key, fieldMapping, mergedFields);
+            if (value) {
+              const suffix = selectedFields[field.key] ? "_checked" : "_unchecked";
+              customerDetails[`${field.label}${suffix}`] = value;
+            }
+          });
+
+          customFields.forEach((cf) => {
+            if (cf.mappedTo && row[cf.mappedTo]) {
+              const suffix = selectedFields[`custom_${cf.id}`] ? "_checked" : "_unchecked";
+              customerDetails[`${cf.name || cf.mappedTo}${suffix}`] = row[cf.mappedTo];
+            }
+          });
+
+          let parsedExpiryDate: string | null = null;
+          if (expiryDate) {
+            try {
+              let dateStr = expiryDate.replace(/₹/g, "").trim();
+              const yearRegex = /\b(19|20)\d{2}\b/;
+              if (!yearRegex.test(dateStr)) {
+                const defaultYear = 2024; // Default to previous year as per original code logic
+                // Simple parser for common formats
+                const parts = dateStr.split(/[\s\-/]+/);
+                const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+                let d = "", m = "";
+                parts.forEach(p => {
+                  const mIdx = months.findIndex(name => p.toLowerCase().startsWith(name));
+                  if (mIdx !== -1) m = String(mIdx + 1).padStart(2, "0");
+                  else if (/^\d{1,2}$/.test(p)) d = p.padStart(2, "0");
+                });
+                if (d && m) dateStr = `${defaultYear}-${m}-${d}`;
+              }
+              const date = new Date(dateStr);
+              if (!isNaN(date.getTime())) parsedExpiryDate = date.toISOString().split("T")[0];
+            } catch (e) {}
+          }
+
+          customers.push({
+            lead_id: generateLeadId(),
+            customer_name: customerName,
+            phone_no: phoneNo || null,
+            expiry_date: parsedExpiryDate,
+            campaign_id: selectedCampaignId || null,
+            organization_id: selectedOrgId || null,
+            customer_details: Object.keys(customerDetails).length > 0 ? JSON.stringify(customerDetails) : null,
+            status: "active",
+          });
+        } catch (err) {
+          errors.push(`Row ${i + 1}: ${err}`);
+        }
+      }
+
+      const batchSize = 100;
+      let success = 0;
+      for (let i = 0; i < customers.length; i += batchSize) {
+        const { error } = await supabase.from("customers").insert(customers.slice(i, i + batchSize));
+        if (!error) success += customers.slice(i, i + batchSize).length;
+      }
+
+      if (success > 0) {
+        setImportSuccess(`Successfully imported ${success} customers!`);
+        if (onSuccess) onSuccess();
+        setTimeout(handleClose, 2000);
+      } else setImportError("Failed to import customers.");
+
+    } catch (err) {
+      setImportError(`Error: ${err}`);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportFile(file);
+    const text = await file.text();
+    const firstLine = text.split("\n")[0];
+    if (firstLine) {
+      const cols = parseCSVLine(firstLine);
+      setCsvColumns(cols);
+      const initialMapping: Record<string, string> = {};
+      const fields = ["name", "phone", "sum_insured", "premium", "company", "expiry_date"];
+      fields.forEach(f => {
+        const match = cols.find(c => c.toLowerCase().includes(f.toLowerCase()));
+        if (match) initialMapping[f] = match;
+      });
+      setFieldMapping(initialMapping);
+      setShowMappingModal(true);
+    }
+  };
+
+  if (!showImportModal && !showMappingModal) return null;
+
+  return (
+    <>
+      {/* Import Modal */}
+      {showImportModal && !showMappingModal && (
+        <div className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>Import Customers</h2>
+              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                <i className="fi flex fi-rr-cross text-xl"></i>
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
+                <strong>Instructions:</strong> Upload a CSV file with customer data.
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Organization</label>
+                  </div>
+                  <select 
+                    value={selectedOrgId} 
+                    onChange={(e) => setSelectedOrgId(e.target.value)}
+                    disabled={!!preselectedOrgId}
+                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedOrgId ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  >
+                    <option value="">Select Organization</option>
+                    {organizations.map(org => <option key={org.id} value={org.id}>{org.company_name} ({org.org_code})</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Campaign</label>
+                  </div>
+                  <select 
+                    value={selectedCampaignId} 
+                    onChange={(e) => setSelectedCampaignId(e.target.value)}
+                    disabled={!!preselectedCampaignId}
+                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedCampaignId ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  >
+                    <option value="">Select Campaign</option>
+                    {campaigns.map(camp => <option key={camp.id} value={camp.id}>{camp.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-10 text-center hover:border-[#4b33e8] transition-colors">
+                <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                <i className="fi flex fi-rr-upload text-3xl text-gray-400 mb-2 justify-center"></i>
+                <p className="text-sm text-gray-500">Click or drag CSV file here</p>
+                {importFile && <p className="mt-2 text-sm text-[#4b33e8] font-bold">{importFile.name}</p>}
+              </div>
+
+              {importError && <div className="mt-4 p-3 bg-red-50 text-red-600 rounded text-sm">{importError}</div>}
+              {importSuccess && <div className="mt-4 p-3 bg-green-50 text-green-600 rounded text-sm">{importSuccess}</div>}
+              
+              <div className="flex justify-end gap-3 mt-6">
+                <button onClick={handleClose} className="px-6 py-2 bg-gray-100 rounded-lg text-sm font-medium">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mapping Modal */}
+      {showMappingModal && (
+        <div className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-[70] p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold">Map CSV Columns</h2>
+              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                <i className="fi flex fi-rr-cross text-xl"></i>
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {["name", "phone", "expiry_date", "sum_insured", "premium", "company"].map(field => (
+                  <div key={field} className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase">{field.replace("_", " ")}</label>
+                    <select
+                      value={fieldMapping[field] || ""}
+                      onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                    >
+                      <option value="">Select column...</option>
+                      {csvColumns.map(col => <option key={col} value={col}>{col}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              
+              {importError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded text-sm">{importError}</div>}
+              {importSuccess && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded text-sm">{importSuccess}</div>}
+
+              <div className="flex justify-end gap-3 border-t pt-4">
+                <button onClick={() => setShowMappingModal(false)} className="px-6 py-2 bg-gray-100 rounded-lg text-sm">Back</button>
+                <button 
+                  onClick={uploadCustomersToSupabase} 
+                  disabled={importing}
+                  className="px-6 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center gap-2"
+                >
+                  {importing ? <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...</> : "Start Import"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

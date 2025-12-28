@@ -201,6 +201,12 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       icon: "fi-rr-time-past",
       adminOnly: false,
     },
+    {
+      name: "Organization",
+      path: "/organization",
+      icon: "fi-rr-building",
+      adminOnly: false,
+    },
   ];
 
   // Filter nav items based on admin status

@@ -268,6 +268,10 @@ export interface UserProfileData {
   approval_status?: string;
   status?: string;
   hold_end_time?: string;
+  is_client?: boolean;
+  joined_at?: string;
+  renewal_at?: string;
+  expire_at?: string;
   created_at?: string;
   updated_at?: string;
   [key: string]: any; // Allow additional fields

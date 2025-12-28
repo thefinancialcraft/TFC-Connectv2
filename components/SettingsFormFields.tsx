@@ -247,6 +247,24 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
     );
   }
 
+  if (category === "client_lifecycle") {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {renderField("is_client", "Is this a Client?", "select", false, false, undefined, undefined, undefined, [
+            { value: "false", label: "No (Personnel)" },
+            { value: "true", label: "Yes (Client)" },
+          ])}
+          {renderField("joined_at", "joined at", "date")}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {renderField("renewal_at", "renewal at", "date")}
+          {renderField("expire_at", "expire at", "date")}
+        </div>
+      </div>
+    );
+  }
+
   if (category === "documents") {
       const DocumentUploadField = ({ fieldName, label, acceptedTypes = "image/*,.pdf" }: { fieldName: string; label: string; acceptedTypes?: string }) => {
       const [uploading, setUploading] = React.useState(false);

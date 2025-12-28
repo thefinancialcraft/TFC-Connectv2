@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
@@ -6,9 +6,10 @@ interface SignupFormProps {
   onError?: (error: string) => void;
   onSuccess?: () => void;
   fromAdminPanel?: boolean; // Flag to indicate this is from admin panel
+  defaultOrganizationId?: string; // Optional prop to pre-select organization
 }
 
-export default function SignupForm({ onError, onSuccess, fromAdminPanel = false }: SignupFormProps) {
+export default function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganizationId }: SignupFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -20,6 +21,51 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<'employee' | 'posp_agent'>('employee');
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [selectedOrgId, setSelectedOrgId] = useState<string>(defaultOrganizationId || "");
+  const [loadingOrgs, setLoadingOrgs] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [joinedAt, setJoinedAt] = useState(new Date().toISOString().split('T')[0]);
+  const [renewalAt, setRenewalAt] = useState(new Date().toISOString().split('T')[0]);
+  const [expireAt, setExpireAt] = useState(() => {
+    const today = new Date();
+    
+    // Logic: If joined start of month (1st), expiry is 1 month later.
+    // If joined mid-month, expiry is end of current month.
+    if (today.getDate() === 1) {
+      const nextMonth = new Date(today);
+      nextMonth.setMonth(today.getMonth() + 1);
+      return nextMonth.toISOString().split('T')[0];
+    } else {
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      const year = lastDay.getFullYear();
+      const month = String(lastDay.getMonth() + 1).padStart(2, '0');
+      const day = String(lastDay.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  });
+
+  useEffect(() => {
+    const fetchOrgs = async () => {
+      try {
+        setLoadingOrgs(true);
+        const { data, error } = await supabase
+          .from("organizations")
+          .select("id, company_name, org_code")
+          .eq("is_active", true)
+          .order("company_name");
+        
+        if (!error && data) {
+          setOrganizations(data);
+        }
+      } catch (err) {
+        console.error("Error fetching orgs:", err);
+      } finally {
+        setLoadingOrgs(false);
+      }
+    };
+    fetchOrgs();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -97,7 +143,12 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false 
           user_name: formData.name,
           contact_no: formData.contactNo,
           user_type: userType,
+          organization_id: selectedOrgId || null,
           from_admin_panel: fromAdminPanel, // Flag to indicate this is from admin panel
+          is_client: isClient,
+          joined_at: joinedAt,
+          renewal_at: renewalAt,
+          expire_at: expireAt,
         }),
       });
 
@@ -183,6 +234,121 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false 
           </button>
         </div>
       </div>
+
+      {/* Organization Selection (only if from admin panel or if there are organizations) */}
+      {(fromAdminPanel || organizations.length > 0) && (
+        <div className="mb-4">
+          <label
+            className="block text-sm font-medium mb-1"
+            style={{ color: "rgb(38, 50, 56)" }}
+          >
+            Assign Organization
+          </label>
+          <div className="relative">
+            <i
+              className="fi flex fi-rr-building absolute left-4 top-1/2 transform -translate-y-1/2 text-lg md:text-base"
+              style={{
+                color: "#787E9D",
+                pointerEvents: "none",
+                zIndex: 1
+              }}
+            ></i>
+            <select
+              value={selectedOrgId}
+              onChange={(e) => setSelectedOrgId(e.target.value)}
+              className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none appearance-none cursor-pointer"
+              style={{
+                borderColor: "#DCDEE3",
+                backgroundColor: "#FFFFFF",
+                color: selectedOrgId ? "rgb(38, 50, 56)" : "#787E9D",
+                fontFamily: "'Roboto', sans-serif",
+                paddingLeft: "45px",
+                paddingRight: "40px",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#4b33e8";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#DCDEE3";
+              }}
+            >
+              <option value="">Select Organization (Optional)</option>
+              {organizations.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.company_name} ({org.org_code})
+                </option>
+              ))}
+            </select>
+            <i className="fi flex fi-rr-angle-small-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+          </div>
+          {loadingOrgs && <p className="text-[10px] text-blue-500 mt-1">Loading organizations...</p>}
+        </div>
+      )}
+
+      {/* Classification & Lifecycle (Admin Only) */}
+      {fromAdminPanel && (
+        <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <i className="fi flex fi-rr-settings-sliders text-indigo-500 text-xs text-[10px]"></i>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Onboarding Lifecycle</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsClient(!isClient)}
+              className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all border ${
+                isClient 
+                ? 'bg-indigo-500 text-white border-indigo-400 shadow-sm' 
+                : 'bg-white text-slate-400 border-slate-200 hover:border-indigo-200'
+              }`}
+            >
+              <i className={`fi flex ${isClient ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`}></i>
+              <span className="text-[9px] font-black uppercase tracking-widest">{isClient ? 'Client Asset' : 'Personnel'}</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1.5 block px-1">Engagement Date</label>
+              <div className="relative">
+                <i className="fi flex fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                <input
+                  type="date"
+                  value={joinedAt}
+                  onChange={(e) => setJoinedAt(e.target.value)}
+                  className="w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1.5 block px-1">Next Renewal</label>
+                <div className="relative">
+                  <i className="fi flex fi-rr-refresh absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                  <input
+                    type="date"
+                    value={renewalAt}
+                    onChange={(e) => setRenewalAt(e.target.value)}
+                    className="w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.2em] mb-1.5 block px-1">Expiration</label>
+                <div className="relative">
+                  <i className="fi flex fi-rr-alarm-clock absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                  <input
+                    type="date"
+                    value={expireAt}
+                    onChange={(e) => setExpireAt(e.target.value)}
+                    className="w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Name Field */}
       <div className="mb-4">

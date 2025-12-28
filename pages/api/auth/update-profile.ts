@@ -66,6 +66,11 @@ export default async function handler(
       aadhar_back_url,
       qualification_marksheet_url,
       bank_passbook_url,
+      // Client Lifecycle
+      is_client,
+      joined_at,
+      renewal_at,
+      expire_at,
     } = req.body;
 
     // Prepare update data (only include provided fields)
@@ -115,6 +120,12 @@ export default async function handler(
     if (aadhar_back_url !== undefined) updateData.aadhar_back_url = aadhar_back_url || null;
     if (qualification_marksheet_url !== undefined) updateData.qualification_marksheet_url = qualification_marksheet_url || null;
     if (bank_passbook_url !== undefined) updateData.bank_passbook_url = bank_passbook_url || null;
+
+    // Client Lifecycle
+    if (is_client !== undefined) updateData.is_client = is_client === 'true' || is_client === true;
+    if (joined_at !== undefined) updateData.joined_at = joined_at || null;
+    if (renewal_at !== undefined) updateData.renewal_at = renewal_at || null;
+    if (expire_at !== undefined) updateData.expire_at = expire_at || null;
     
     // profile_complete flag
     if (req.body.profile_complete !== undefined) {

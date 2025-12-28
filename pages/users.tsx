@@ -12,6 +12,8 @@ import {
 } from "../lib/authService";
 import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
 import { supabase } from "../lib/supabase";
+import Link from "next/link";
+import ExpiryBadge from "../components/ExpiryBadge";
 import BottomNav from "../components/BottomNav";
 
 interface UserStats {
@@ -84,6 +86,12 @@ interface AllUser {
   work_type: string | null;
   department: string | null;
   designation: string | null;
+  organization_id: string | null;
+  organizations?: { id: string; company_name: string; org_code: string } | null;
+  is_client: boolean | null;
+  joined_at: string | null;
+  renewal_at: string | null;
+  expire_at: string | null;
 }
 
 // Hold Countdown Component
@@ -372,6 +380,7 @@ function HoldBadgeWithTooltip({
   );
 }
 
+
 export default function Users() {
   const router = useRouter();
   // Initialize with cached data from localStorage to show previous data immediately (ghost update)
@@ -398,6 +407,7 @@ export default function Users() {
     return null;
   });
   const [isClient, setIsClient] = useState(false);
+  const [organizations, setOrganizations] = useState<{ id: string; company_name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("users");
@@ -520,35 +530,31 @@ export default function Users() {
   const [userTypeToggle, setUserTypeToggle] = useState<
     "all" | "employee" | "posp_agent"
   >("all");
-  const [filters, setFilters] = useState({
-    approval_status: "" as
-      | ""
-      | "approved"
-      | "pending"
-      | "hold"
-      | "suspend"
-      | "rejected",
-    role: "" as "" | "user" | "admin" | "super_admin",
-    department: "" as
-      | ""
-      | "sales"
-      | "renewal"
-      | "backend"
-      | "management"
-      | "service",
-    designation: "" as
-      | ""
-      | "agent"
-      | "manager"
-      | "faculty_staff"
-      | "team_leader"
-      | "ceo"
-      | "developer",
-    work_type: "" as "" | "remote" | "on_site",
-    user_type: "" as "" | "employee" | "posp_agent",
-    status: "" as "" | "active" | "inactive",
+  interface UserFilters {
+    approval_status: "" | "approved" | "pending" | "hold" | "suspend" | "rejected";
+    role: "" | "user" | "admin" | "super_admin";
+    department: "" | "sales" | "renewal" | "backend" | "management" | "service";
+    designation: "" | "agent" | "manager" | "faculty_staff" | "team_leader" | "ceo" | "developer";
+    work_type: "" | "remote" | "on_site";
+    user_type: "" | "employee" | "posp_agent";
+    status: "" | "active" | "inactive";
+    organization_id?: string;
+    is_client?: boolean | "";
+  }
+
+  const [filters, setFilters] = useState<UserFilters>({
+    approval_status: "",
+    role: "",
+    department: "",
+    designation: "" as any,
+    work_type: "",
+    user_type: "",
+    status: "",
+    organization_id: "",
+    is_client: "",
   });
   const [showImportModal, setShowImportModal] = useState(false);
+  const [selectedImportOrgId, setSelectedImportOrgId] = useState<string>("");
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState("");
@@ -977,50 +983,58 @@ export default function Users() {
     }
   };
 
-  const generateNextEmployeeId = async (): Promise<string> => {
+  const generateNextEmployeeId = async (
+    userType: string = "employee",
+    organizationId: string | null = null
+  ): Promise<string> => {
     try {
-      // Fetch all employee_ids that match TFC-XXX pattern
-      const { data, error } = await supabase
+      let basePrefix = userType === "posp_agent" ? "AGT" : "TFC";
+
+      // If organization_id is provided, use the organization's org_code as basePrefix
+      if (organizationId) {
+        const { data: orgData } = await supabase
+          .from("organizations")
+          .select("org_code")
+          .eq("id", organizationId)
+          .maybeSingle();
+
+        if (orgData?.org_code) {
+          basePrefix = orgData.org_code.toUpperCase();
+        }
+      }
+
+      // For posp_agent, the prefix should be A{basePrefix}
+      const idPrefix = userType === "posp_agent" ? `A${basePrefix}` : basePrefix;
+      const searchPattern = `${idPrefix}-%`;
+
+      // Find latest employee_id with this prefix
+      const { data: latestIds, error: latestError } = await supabase
         .from("user_profiles")
         .select("employee_id")
-        .not("employee_id", "is", null)
-        .like("employee_id", "TFC-%");
+        .ilike("employee_id", searchPattern)
+        .order("employee_id", { ascending: false })
+        .limit(1);
 
-      if (error) {
-        console.error("Error fetching employee IDs:", error);
-        // If error, start from TFC-001
-        return "TFC-001";
+      if (latestError) {
+        console.error("Error fetching latest employee_id:", latestError);
       }
 
-      if (!data || data.length === 0) {
-        // No existing employee IDs, start from TFC-001
-        return "TFC-001";
+      let nextNumber = 1;
+      if (latestIds && latestIds.length > 0 && latestIds[0].employee_id) {
+        const idStr = String(latestIds[0].employee_id);
+        const lastDashIndex = idStr.lastIndexOf("-");
+        if (lastDashIndex !== -1) {
+          const numPart = idStr.substring(lastDashIndex + 1);
+          const parsed = parseInt(numPart, 10);
+          if (!isNaN(parsed) && parsed >= 1) {
+            nextNumber = parsed + 1;
+          }
+        }
       }
 
-      // Extract numeric parts and find the maximum
-      const numbers = data
-        .map((item) => {
-          const empId = item.employee_id;
-          if (!empId || !empId.startsWith("TFC-")) return 0;
-          const numPart = empId.replace("TFC-", "");
-          const num = parseInt(numPart, 10);
-          return isNaN(num) ? 0 : num;
-        })
-        .filter((num) => num > 0);
-
-      if (numbers.length === 0) {
-        return "TFC-001";
-      }
-
-      const maxNumber = Math.max(...numbers);
-      const nextNumber = maxNumber + 1;
-
-      // Format with zero padding (e.g., 1 -> 001, 12 -> 012, 123 -> 123)
-      const paddedNumber = nextNumber.toString().padStart(3, "0");
-      return `TFC-${paddedNumber}`;
+      return `${idPrefix}-${String(nextNumber).padStart(3, "0")}`;
     } catch (err) {
       console.error("Error generating employee ID:", err);
-      // On error, start from TFC-001
       return "TFC-001";
     }
   };
@@ -1146,7 +1160,7 @@ export default function Users() {
       // Build query based on userTypeToggle
       let query = supabase
         .from("user_profiles")
-        .select("*")
+        .select("*, organizations(id, company_name, org_code)")
         .order("date_of_joining", { ascending: false });
 
       if (userTypeToggle === "employee") {
@@ -1251,6 +1265,22 @@ export default function Users() {
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
   }, [router, isClient]);
+
+  // Handle organization filter from URL
+  useEffect(() => {
+    if (router.isReady && router.query.organization) {
+      setFilters(prev => ({ ...prev, organization_id: router.query.organization as string }));
+    }
+  }, [router.isReady, router.query.organization]);
+
+  // Fetch organizations for filter dropdown
+  useEffect(() => {
+    const fetchOrgs = async () => {
+      const { data } = await supabase.from("organizations").select("id, company_name").order("company_name");
+      if (data) setOrganizations(data);
+    };
+    fetchOrgs();
+  }, []);
 
   // Periodically check for expired holds (every 30 seconds)
   useEffect(() => {
@@ -1928,22 +1958,34 @@ export default function Users() {
   const getFilteredUsers = () => {
     let filtered = allUsers;
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(
-        (user) =>
-          user.user_name?.toLowerCase().includes(query) ||
-          user.email?.toLowerCase().includes(query) ||
-          user.employee_id?.toLowerCase().includes(query) ||
-          user.contact_no?.includes(query) ||
-          user.role?.toLowerCase().includes(query) ||
-          user.department?.toLowerCase().includes(query) ||
-          user.designation?.toLowerCase().includes(query)
-      );
-    }
+    // Generic Search Filter
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((user) => {
+        const userName = (user.user_name || "").toLowerCase();
+        const employeeId = (user.employee_id || "").toLowerCase();
+        const email = (user.email || "").toLowerCase();
+        const contactNo = (user.contact_no || "").toLowerCase();
+        const department = (user.department || "").toLowerCase();
+        const designation = (user.designation || "").toLowerCase();
+        const role = (user.role || "").toLowerCase();
+        const orgName = (user.organizations?.company_name || "").toLowerCase();
+        const isClient = user.is_client ? "client" : "personnel employee agent";
 
-    // Apply filters
+        return (
+          userName.includes(query) ||
+          employeeId.includes(query) ||
+          email.includes(query) ||
+          contactNo.includes(query) ||
+          department.includes(query) ||
+          designation.includes(query) ||
+          role.includes(query) ||
+          orgName.includes(query) ||
+          isClient.includes(query)
+        );
+      });
+    }
+// Apply filters
     if (filters.approval_status) {
       filtered = filtered.filter(
         (user) => user.approval_status === filters.approval_status
@@ -1980,6 +2022,13 @@ export default function Users() {
     }
     if (filters.status) {
       filtered = filtered.filter((user) => user.status === filters.status);
+    }
+    if (filters.organization_id) {
+      filtered = filtered.filter((user) => user.organization_id === filters.organization_id);
+    }
+
+    if (filters.is_client !== "") {
+      filtered = filtered.filter((user) => user.is_client === filters.is_client);
     }
 
     return filtered;
@@ -2847,7 +2896,10 @@ export default function Users() {
                       // Generate next employee ID if user doesn't have one
                       let employeeId = approvalUserData.employee_id;
                       if (!employeeId || employeeId.trim() === "") {
-                        employeeId = await generateNextEmployeeId();
+                        employeeId = await generateNextEmployeeId(
+                          approvalFormData.user_type,
+                          approvalUserData.organization_id
+                        );
                       }
 
                       const { error } = await supabase
@@ -3270,6 +3322,7 @@ export default function Users() {
                   setImportFile(null);
                   setImportError("");
                   setImportSuccess("");
+                  setSelectedImportOrgId("");
                   if (fileInputRef.current) {
                     fileInputRef.current.value = "";
                   }
@@ -3367,6 +3420,32 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                 </button>
               </div>
 
+              {/* Organization Selection */}
+              <div className="mb-6">
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{
+                    color: "#263238",
+                    fontFamily: "'Poppins', sans-serif",
+                  }}
+                >
+                  Select Organization <span style={{ color: "#EF4444" }}>*</span>
+                </label>
+                <select
+                  value={selectedImportOrgId}
+                  onChange={(e) => setSelectedImportOrgId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                >
+                  <option value="">Select an organization</option>
+                  {organizations.map((org) => (
+                    <option key={org.id} value={org.id}>
+                      {org.company_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* File Upload */}
               <div className="mb-6">
                 <label
@@ -3379,79 +3458,93 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                   Upload CSV File <span style={{ color: "#EF4444" }}>*</span>
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#4b33e8] transition-colors">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        if (
-                          file.type !== "text/csv" &&
-                          !file.name.endsWith(".csv")
-                        ) {
-                          setImportError("Please upload a valid CSV file");
-                          setImportFile(null);
-                          return;
-                        }
-                        setImportFile(file);
-                        setImportError("");
-                        setImportSuccess("");
-                      }
-                    }}
-                    className="hidden"
-                    id="csv-upload"
-                  />
-                  <label
-                    htmlFor="csv-upload"
-                    className="cursor-pointer flex flex-col items-center gap-2"
-                  >
-                    <i className="fi flex fi-rr-upload text-3xl text-gray-400"></i>
-                    <div>
-                      <span
-                        className="text-sm font-medium text-[#4b33e8]"
-                        style={{ fontFamily: "'Poppins', sans-serif" }}
-                      >
-                        Click to upload
-                      </span>
-                      <span
-                        className="text-sm text-gray-500"
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        {" "}
-                        or drag and drop
-                      </span>
+                  {importing ? (
+                    <div className="flex flex-col items-center justify-center py-4">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#4b33e8] mb-3"></div>
+                      <p className="text-sm font-medium text-gray-700" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                        Importing users...
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                        Please wait while we process your CSV file
+                      </p>
                     </div>
-                    <p
-                      className="text-xs text-gray-400"
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
-                    >
-                      CSV file only
-                    </p>
-                  </label>
-                  {importFile && (
-                    <div className="mt-3 p-2 bg-gray-50 rounded-lg flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <i className="fi flex fi-rr-file text-gray-600"></i>
-                        <span
-                          className="text-sm text-gray-700"
-                          style={{ fontFamily: "'Roboto', sans-serif" }}
-                        >
-                          {importFile.name}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setImportFile(null);
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = "";
+                  ) : (
+                    <>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".csv"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (
+                              file.type !== "text/csv" &&
+                              !file.name.endsWith(".csv")
+                            ) {
+                              setImportError("Please upload a valid CSV file");
+                              setImportFile(null);
+                              return;
+                            }
+                            setImportFile(file);
+                            setImportError("");
+                            setImportSuccess("");
                           }
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="hidden"
+                        id="csv-upload"
+                      />
+                      <label
+                        htmlFor="csv-upload"
+                        className="cursor-pointer flex flex-col items-center gap-2"
                       >
-                        <i className="fi flex fi-rr-cross text-sm"></i>
-                      </button>
-                    </div>
+                        <i className="fi flex fi-rr-upload text-3xl text-gray-400"></i>
+                        <div>
+                          <span
+                            className="text-sm font-medium text-[#4b33e8]"
+                            style={{ fontFamily: "'Poppins', sans-serif" }}
+                          >
+                            Click to upload
+                          </span>
+                          <span
+                            className="text-sm text-gray-500"
+                            style={{ fontFamily: "'Roboto', sans-serif" }}
+                          >
+                            {" "}
+                            or drag and drop
+                          </span>
+                        </div>
+                        <p
+                          className="text-xs text-gray-400"
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          CSV file only
+                        </p>
+                      </label>
+                      {importFile && (
+                        <div className="mt-3 p-2 bg-gray-50 rounded-lg flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <i className="fi flex fi-rr-file text-gray-600"></i>
+                            <span
+                              className="text-sm text-gray-700"
+                              style={{ fontFamily: "'Roboto', sans-serif" }}
+                            >
+                              {importFile.name}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setImportFile(null);
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = "";
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <i className="fi flex fi-rr-cross text-sm"></i>
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -3477,6 +3570,11 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                   onClick={async () => {
                     if (!importFile) {
                       setImportError("Please select a CSV file");
+                      return;
+                    }
+
+                    if (!selectedImportOrgId) {
+                      setImportError("Please select an organization");
                       return;
                     }
 
@@ -3645,6 +3743,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                 contact_no: user.contact_no,
                                 user_type: user.user_type,
                                 password: user.password,
+                                organization_id: selectedImportOrgId,
                               }),
                             }
                           );
@@ -4008,6 +4107,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                       work_type: "",
                       user_type: "",
                       status: "active", // Filter by active status
+                      organization_id: "",
                     });
                   }}
                   className="relative overflow-hidden rounded-2xl p-3 sm:p-4 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 cursor-pointer"
@@ -4140,6 +4240,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                       work_type: "",
                       user_type: "",
                       status: "", // Clear all filters - show all users
+                      organization_id: "",
                     });
                   }}
                   className="relative overflow-hidden rounded-2xl p-3 sm:p-4 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 cursor-pointer"
@@ -4262,6 +4363,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                               work_type: "",
                               user_type: "",
                               status: "inactive", // Filter by inactive status
+                              organization_id: "",
                             });
                           }}
                           className="text-[10px] sm:text-xs cursor-pointer hover:underline"
@@ -4306,6 +4408,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           work_type: "",
                           user_type: "",
                           status: "",
+                          organization_id: "",
                         });
                       }}
                       className="relative rounded-tl-xl rounded-tr-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
@@ -4383,6 +4486,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           work_type: "",
                           user_type: "",
                           status: "",
+                          organization_id: "",
                         });
                       }}
                       className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
@@ -4460,6 +4564,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           work_type: "",
                           user_type: "",
                           status: "",
+                          organization_id: "",
                         });
                       }}
                       className="relative rounded-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
@@ -4537,6 +4642,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                           work_type: "",
                           user_type: "",
                           status: "",
+                          organization_id: "",
                         });
                       }}
                       className="relative rounded-tr-xl rounded-br-xl rounded-bl-xl pl-3 pr-1.5 py-1.5 sm:pl-4 sm:pr-2 sm:py-2 flex flex-col bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
@@ -4982,6 +5088,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                     work_type: "",
                                     user_type: "",
                                     status: "",
+                                    organization_id: "",
                                   });
                                 }}
                                 onMouseEnter={(e) => {
@@ -5055,6 +5162,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                               work_type: "",
                                               user_type: "",
                                               status: "",
+                                              organization_id: "",
                                             });
                                           }}
                                           onMouseEnter={(e) => {
@@ -5097,6 +5205,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                         work_type: "",
                                         user_type: "",
                                         status: "",
+                                        organization_id: "",
                                       });
                                     }}
                                     className="text-xs text-[#4b33e8] hover:underline"
@@ -5316,6 +5425,63 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                       <option value="">All</option>
                                       <option value="active">Active</option>
                                       <option value="inactive">Inactive</option>
+                                    </select>
+                                  </div>
+
+                                  {/* Organization Filter */}
+                                  <div>
+                                    <label
+                                      className="block text-xs font-medium mb-1.5"
+                                      style={{
+                                        color: "#263238",
+                                        fontFamily: "'Poppins', sans-serif",
+                                      }}
+                                    >
+                                      Organization
+                                    </label>
+                                    <select
+                                      value={filters.organization_id}
+                                      onChange={(e) =>
+                                        setFilters((prev) => ({
+                                          ...prev,
+                                          organization_id: e.target.value,
+                                        }))
+                                      }
+                                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                                    >
+                                      <option value="">All Organizations</option>
+                                      {organizations.map((org) => (
+                                        <option key={org.id} value={org.id}>
+                                          {org.company_name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+
+                                  {/* Client Filter */}
+                                  <div>
+                                    <label
+                                      className="block text-xs font-medium mb-1.5"
+                                      style={{
+                                        color: "#263238",
+                                        fontFamily: "'Poppins', sans-serif",
+                                      }}
+                                    >
+                                      Classification
+                                    </label>
+                                    <select
+                                      value={filters.is_client === "" ? "" : filters.is_client ? "true" : "false"}
+                                      onChange={(e) =>
+                                        setFilters((prev) => ({
+                                          ...prev,
+                                          is_client: e.target.value === "" ? "" : e.target.value === "true",
+                                        }))
+                                      }
+                                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                                    >
+                                      <option value="">All</option>
+                                      <option value="false">Personnel</option>
+                                      <option value="true">Client</option>
                                     </select>
                                   </div>
                                 </div>
@@ -5800,6 +5966,16 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                 >
                                   {user.role || "Employee"}
                                 </p>
+                                {(user.is_client || user.expire_at) && (
+                                  <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
+                                    {user.is_client && (
+                                        <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[#4b33e8] text-[10px] font-bold">
+                                        Client
+                                        </span>
+                                    )}
+                                    <ExpiryBadge expireDate={user.expire_at} />
+                                  </div>
+                                )}
                               </div>
 
                               {/* Employee ID . Role - Mobile (one row with dot separator) */}
@@ -5824,9 +6000,17 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                   className="text-xs text-gray-700"
                                   style={{ fontFamily: "'Roboto', sans-serif" }}
                                 >
-                                  <span className="font-semibold">
+                                  <span className="font-semibold text-[#4b33e8]">
                                     {user.employee_id || "N/A"}
                                   </span>
+                                  {user.organizations && (
+                                    <div className="flex items-center gap-1 mt-0.5 text-[#263238] font-bold">
+                                      <i className="fi flex fi-rr-building text-[10px] text-blue-500"></i>
+                                      <span className="truncate" title={user.organizations.company_name}>
+                                        {user.organizations.company_name}
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
 
                                 <div
@@ -5994,6 +6178,9 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                 <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] md:min-w-[100px]">
                                   Emp ID
                                 </th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
+                                  Organization
+                                </th>
                                 <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[80px] md:min-w-[100px]">
                                   Role
                                 </th>
@@ -6077,12 +6264,30 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                   </td>
                                   <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
                                     <span
+                                      className="text-xs md:text-sm font-medium text-[#4b33e8]"
+                                      style={{
+                                        fontFamily: "'Roboto', sans-serif",
+                                      }}
+                                    >
+                                      {user.organizations?.company_name || "-"}
+                                    </span>
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">
+                                    <span
                                       className="text-xs md:text-sm text-gray-600"
                                       style={{
                                         fontFamily: "'Roboto', sans-serif",
                                       }}
                                     >
                                       {user.role || "Employee"}
+                                      {user.is_client && (
+                                        <span className="ml-2 px-1.5 py-0.5 rounded bg-blue-100 text-[#4b33e8] text-[9px] font-bold">
+                                          CLIENT
+                                        </span>
+                                      )}
+                                      <span className="ml-2">
+                                        <ExpiryBadge expireDate={user.expire_at} />
+                                      </span>
                                     </span>
                                   </td>
                                   <td className="px-2 md:px-6 py-3 md:py-5 whitespace-nowrap">

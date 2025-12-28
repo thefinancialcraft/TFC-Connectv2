@@ -9,6 +9,43 @@ import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
 import BottomNav from "../components/BottomNav";
 
+interface SettingsFormData {
+  email: string;
+  user_name: string;
+  contact_no: string;
+  employee_id: string;
+  role: string;
+  father_name: string;
+  gender: string;
+  date_of_birth: string;
+  blood_group: string;
+  alternate_contact: string;
+  emergency_contact_no: string;
+  date_of_joining: string;
+  in_hand_salary: string;
+  is_client: string;
+  joined_at: string;
+  renewal_at: string;
+  expire_at: string;
+  primary_address: string;
+  area_pincode: string;
+  pan_number: string;
+  aadhar_card_no: string;
+  bank_name: string;
+  account_holder_name: string;
+  account_number: string;
+  ifsc_code: string;
+  branch_city: string;
+  branch_state: string;
+  branch_pincode: string;
+  profile_pic_url: string;
+  pancard_url: string;
+  aadhar_front_url: string;
+  aadhar_back_url: string;
+  qualification_marksheet_url: string;
+  bank_passbook_url: string;
+}
+
 export default function Settings() {
   const router = useRouter();
   // Initialize with cached data from localStorage to show previous data immediately (ghost update)
@@ -38,10 +75,10 @@ export default function Settings() {
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("settings");
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
-  const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
+  const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
   // Form state - organized by categories, initialized with cached data
-  const [formData, setFormData] = useState(() => {
+  const [formData, setFormData] = useState<SettingsFormData>(() => {
     const cachedData = getStoredUserData();
     return {
       // basic_info - use cached data if available
@@ -60,6 +97,11 @@ export default function Settings() {
     // employment_info
     date_of_joining: "",
     in_hand_salary: "",
+    // lifecycle_info
+    is_client: "false",
+    joined_at: "",
+    renewal_at: "",
+    expire_at: "",
     // address_info
     primary_address: "",
     area_pincode: "",
@@ -229,6 +271,11 @@ export default function Settings() {
                 // employment_info
                 date_of_joining: fullProfile?.date_of_joining || prevFormData.date_of_joining || "",
                 in_hand_salary: fullProfile?.in_hand_salary?.toString() || prevFormData.in_hand_salary || "",
+                // Client Lifecycle
+                is_client: fullProfile?.is_client !== undefined ? String(fullProfile.is_client) : prevFormData.is_client || "false",
+                joined_at: fullProfile?.joined_at ? fullProfile.joined_at.split('T')[0] : prevFormData.joined_at || "",
+                renewal_at: fullProfile?.renewal_at ? fullProfile.renewal_at.split('T')[0] : prevFormData.renewal_at || "",
+                expire_at: fullProfile?.expire_at ? fullProfile.expire_at.split('T')[0] : prevFormData.expire_at || "",
                 // address_info
                 primary_address: fullProfile?.primary_address || prevFormData.primary_address || "",
                 area_pincode: fullProfile?.area_pincode || prevFormData.area_pincode || "",
@@ -270,6 +317,10 @@ export default function Settings() {
               emergency_contact_no: prevFormData.emergency_contact_no || "",
               date_of_joining: prevFormData.date_of_joining || "",
               in_hand_salary: prevFormData.in_hand_salary || "",
+              is_client: prevFormData.is_client || "false",
+              joined_at: prevFormData.joined_at || "",
+              renewal_at: prevFormData.renewal_at || "",
+              expire_at: prevFormData.expire_at || "",
               primary_address: prevFormData.primary_address || "",
               area_pincode: prevFormData.area_pincode || "",
               pan_number: prevFormData.pan_number || "",
@@ -590,42 +641,30 @@ export default function Settings() {
 
   // Calculate profile completion percentage
   const calculateProfileCompletion = () => {
-    // Fields that count toward completion (excluding disabled fields like email, employee_id, role)
-    const fieldsToCheck = [
-      // basic_info (excluding email, employee_id, role as they're disabled)
-      { key: 'user_name', required: true },
-      { key: 'contact_no', required: true },
-      // personal_info
-      { key: 'father_name', required: false },
-      { key: 'gender', required: false },
-      { key: 'date_of_birth', required: false },
-      { key: 'blood_group', required: false },
-      { key: 'alternate_contact', required: false },
-      { key: 'emergency_contact_no', required: false },
-      // employment_info
-      { key: 'date_of_joining', required: false },
-      { key: 'in_hand_salary', required: false },
-      // address_info
-      { key: 'primary_address', required: false },
-      { key: 'area_pincode', required: false },
-      // kyc_info
-      { key: 'pan_number', required: false },
-      { key: 'aadhar_card_no', required: false },
-      // bank_info
-      { key: 'bank_name', required: false },
-      { key: 'account_holder_name', required: false },
-      { key: 'account_number', required: false },
-      { key: 'ifsc_code', required: false },
-      { key: 'branch_city', required: false },
-      { key: 'branch_state', required: false },
-      { key: 'branch_pincode', required: false },
+    const fieldsToCheck: Array<keyof SettingsFormData> = [
+      "user_name",
+      "contact_no",
+      "father_name",
+      "gender",
+      "date_of_birth",
+      "blood_group",
+      "primary_address",
+      "pan_number",
+      "aadhar_card_no",
+      "bank_name",
+      "account_number",
+      "ifsc_code",
+      "is_client",
+      "joined_at",
+      "renewal_at",
+      "expire_at",
     ];
 
     let filledCount = 0;
     let totalFields = fieldsToCheck.length;
 
     fieldsToCheck.forEach(field => {
-      const value = (formData as any)[field.key];
+      const value = formData[field];
       if (value && value.toString().trim() !== '') {
         filledCount++;
       }
@@ -774,6 +813,7 @@ export default function Settings() {
                       { id: "basic_info", label: "Basic Details", icon: "fi-rr-user" },
                       { id: "personal_info", label: "Personal Info", icon: "fi-rr-user-gear" },
                       { id: "employment_info", label: "Employment", icon: "fi-rr-briefcase" },
+                      { id: "client_lifecycle", label: "Lifecycle", icon: "fi-rr-refresh" },
                       { id: "address_info", label: "Address", icon: "fi-rr-map-marker" },
                       { id: "kyc_info", label: "KYC", icon: "fi-rr-shield-check" },
                       { id: "bank_info", label: "Bank Details", icon: "fi-rr-credit-card" },
@@ -803,15 +843,24 @@ export default function Settings() {
                   {/* Category Content */}
                   <div className="rounded-lg border bg-white p-4 sm:p-6" style={{ borderColor: "#E0E0E0" }}>
                     <div className="space-y-4">
-                      <h3 className="text-base sm:text-lg font-semibold mb-4" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                        {activeCategory === "basic_info" && "Basic Details"}
-                        {activeCategory === "personal_info" && "Personal Information"}
-                        {activeCategory === "employment_info" && "Employment Information"}
-                        {activeCategory === "address_info" && "Address Information"}
-                        {activeCategory === "kyc_info" && "KYC Information"}
-                        {activeCategory === "bank_info" && "Bank Details"}
-                        {activeCategory === "documents" && "Documents"}
-                      </h3>
+                  <h3
+                    className="text-lg font-bold mb-6 flex items-center gap-2"
+                    style={{
+                      color: "#263238",
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    {activeCategory === "basic_info" && "Basic Information"}
+                    {activeCategory === "personal_info" && "Personal Details"}
+                    {activeCategory === "employment_info" &&
+                      "Employment Information"}
+                    {activeCategory === "client_lifecycle" &&
+                      "Lifecycle & Status"}
+                    {activeCategory === "address_info" && "Address Details"}
+                    {activeCategory === "kyc_info" && "KYC Documents"}
+                    {activeCategory === "bank_info" && "Bank Account Details"}
+                    {activeCategory === "documents" && "Uploaded Documents"}
+                  </h3>
 
                       {/* Form Fields */}
                       <SettingsFormFields

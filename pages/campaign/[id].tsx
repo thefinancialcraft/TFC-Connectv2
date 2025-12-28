@@ -13,6 +13,7 @@ import {
     BarChart, Bar, Cell, 
     PieChart, Pie, Legend
 } from 'recharts';
+import ImportCustomersModal from "../../components/ImportCustomersModal";
 
 interface Campaign {
     id: string;
@@ -25,6 +26,8 @@ interface Campaign {
     talktime?: string | null;
     total_dials?: number | null;
     users?: { id: string, name: string, email: string, employee_id?: string }[];
+    organization_id?: string | null;
+    organizations?: { id: string, company_name: string, org_code: string } | null;
 }
 
 interface CampaignStats {
@@ -125,6 +128,7 @@ export default function CampaignDetails() {
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '—';
@@ -157,10 +161,10 @@ export default function CampaignDetails() {
         try {
             setLoading(true);
 
-            // 1. Fetch Campaign Details
+            // 1. Fetch Campaign Details with organization
             const { data: cRows, error: campaignError } = await supabase
                 .from('campaigns')
-                .select('*')
+                .select('*, organizations(id, company_name, org_code)')
                 .eq('id', id)
                 .limit(1);
 
@@ -693,6 +697,14 @@ export default function CampaignDetails() {
                                             </div>
                                             <span>Creator: {campaign?.created_by || 'System'} {campaign?.employee_id ? `(#${campaign.employee_id})` : ''}</span>
                                         </div>
+                                        {campaign?.organizations && (
+                                            <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
+                                                <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                                    <i className="fi flex fi-rr-building"></i>
+                                                </div>
+                                                <span className="text-blue-600">Org: {campaign.organizations.company_name} {campaign.organizations.org_code ? `(${campaign.organizations.org_code})` : ''}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -1357,6 +1369,15 @@ export default function CampaignDetails() {
                                        
                                         
 
+                                        {/* Add Bulk Button */}
+                                        <button 
+                                            onClick={() => setShowImportModal(true)}
+                                            className="flex items-center gap-2 px-6 h-[42px] bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest"
+                                        >
+                                            <i className="fi flex fi-rr-upload"></i>
+                                            Add Bulk
+                                        </button>
+
                                         {/* Add Lead Button */}
                                         <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
                                             <i className="fi flex fi-rr-plus"></i>
@@ -1601,7 +1622,20 @@ export default function CampaignDetails() {
                 </main>
             </div>
 
+            {/* Bottom Navigation for Mobile */}
             <BottomNav activeNav="campaign" userRole={user?.role || null} />
+
+            {/* Import Customers Modal */}
+            <ImportCustomersModal 
+                show={showImportModal}
+                onClose={() => setShowImportModal(false)}
+                onSuccess={() => {
+                    fetchLeads(1);
+                    fetchCampaignData();
+                }}
+                preselectedOrgId={campaign?.organization_id || ""}
+                preselectedCampaignId={id as string}
+            />
         </div>
     );
 }

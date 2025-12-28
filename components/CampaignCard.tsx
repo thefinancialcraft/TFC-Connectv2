@@ -17,6 +17,8 @@ export interface Campaign {
     created_by?: string | null;
     employee_id?: string | null;
     users?: { id: string, name: string, email: string }[] | null;
+    organization_id?: string | null;
+    organizations?: { id: string, company_name: string, org_code: string } | null;
 }
 
 interface CampaignCardProps {
@@ -91,6 +93,20 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete 
                     >
                         {campaign.description || 'No description provided for this campaign.'}
                     </p>
+
+                    {/* Organization Banner */}
+                    <div className="flex items-center gap-2 mb-4 bg-blue-50/50 p-2 rounded-lg border border-blue-100 group-hover:bg-blue-50 transition-colors">
+                        <div className="w-6 h-6 rounded-md bg-blue-500 flex items-center justify-center text-white shrink-0 shadow-sm">
+                            <i className="fi flex fi-rr-building text-[10px]"></i>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] uppercase font-black text-blue-400 tracking-widest leading-none mb-0.5">Assigned Asset</p>
+                            <p className="text-xs font-bold text-blue-900 truncate">
+                                {campaign.organizations?.company_name || 'Individual Managed'} 
+                                {campaign.organizations?.org_code && <span className="ml-1 text-[10px] text-blue-400 font-mono">#{campaign.organizations.org_code}</span>}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Stats Grid */}
