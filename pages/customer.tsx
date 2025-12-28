@@ -35,6 +35,7 @@ interface Customer {
   organization_name?: string | null;
 }
 
+
 export default function Customer() {
   const router = useRouter();
   // Initialize with cached data from localStorage to show previous data immediately (ghost update)

@@ -48,9 +48,21 @@ export function storeUserData(userData: StoredUserData): void {
     // Also store in array format for multiple users support
     const allUsers = getAllStoredUsers();
     const existingIndex = allUsers.findIndex(
-      (u) => u.user_id === dataToStore.user_id || 
-             (dataToStore.employee_id && u.employee_id === dataToStore.employee_id)
+      (u) => u.user_id === dataToStore.user_id
     );
+
+    // Safety check: If we didn't find by user_id, but we would have found by employee_id, log a warning
+    if (existingIndex === -1 && dataToStore.employee_id) {
+       const collisionIndex = allUsers.findIndex(u => u.employee_id === dataToStore.employee_id);
+       if (collisionIndex >= 0) {
+         console.warn('Potential user data collision detected: employee_id matches but user_id differs. Preventing overwrite.', {
+           existing: allUsers[collisionIndex],
+           new: dataToStore
+         });
+         // Do NOT overwrite. Potentially we should append? 
+         // For now, we will treat it as a new user to avoid corrupting the existing one.
+       }
+    }
     
     if (existingIndex >= 0) {
       // Update existing user with new session tokens

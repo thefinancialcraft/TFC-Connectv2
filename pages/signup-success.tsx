@@ -49,9 +49,9 @@ export default function SignupSuccess() {
     >
       <div className="w-full md:flex md:items-center md:justify-center md:gap-6 md:max-w-6xl md:px-6">
         {/* Success Container */}
-        <div className="w-full h-screen md:h-auto md:max-w-[500px] md:mx-auto">
+        <div className="w-full md:h-auto md:max-w-[500px] md:mx-auto">
           <div 
-            className="w-full h-full md:rounded-2xl p-6 sm:p-8 md:p-[39px] md:shadow-2xl md:backdrop-blur-sm md:min-h-[400px] md:min-w-0 flex flex-col gap-6 md:gap-4 justify-center"
+            className="w-full min-h-screen md:h-full md:rounded-2xl p-6 sm:p-8 md:p-[39px] md:shadow-2xl md:backdrop-blur-sm md:min-h-[400px] md:min-w-0 flex flex-col gap-6 md:gap-4 justify-center"
             style={{ 
               backgroundColor: '#FFFFFF',
               border: '1.5px solid #ffffff'

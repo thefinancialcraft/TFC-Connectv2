@@ -162,6 +162,16 @@ export default async function handler(
       return res.status(404).json({ error: 'Target user not found' });
     }
 
+    // Safety Logging: Check if the admin is updating their own profile via this admin route
+    // This helps debug scenarios where the frontend might be passing the wrong targetUserId
+    if (authUser.id === targetProfile.user_id) {
+       console.warn('ALERT: Admin is updating their own profile via update-user-profile.ts', {
+         adminId: authUser.id,
+         targetProfileId: targetUserId,
+         targetAuthId: targetProfile.user_id
+       });
+    }
+
     // Update user profile in user_profiles table using id (primary key)
     const { error: updateError } = await supabaseAdmin
       .from('user_profiles')

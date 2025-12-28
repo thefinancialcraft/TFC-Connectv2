@@ -106,6 +106,10 @@ export default function LoginFormUserId({
             if (profileResponse.ok) {
               const profileData = await profileResponse.json();
               if (profileData.success && profileData.user) {
+                // Check approval status and account status first
+                // If rejected, suspended, or on hold, we might not want to save the user for quick login
+                // However, for pending users, it might be useful to keep the card
+                
                 // Store user data in localStorage with session tokens
                 const userDataToStore = {
                   user_id: user.id,
@@ -118,11 +122,14 @@ export default function LoginFormUserId({
                   session_token: accessToken,
                   refresh_token: refreshToken,
                 };
-                console.log('Storing user data with tokens:', { 
-                  hasAccessToken: !!userDataToStore.session_token,
-                  hasRefreshToken: !!userDataToStore.refresh_token 
-                });
-                storeUserData(userDataToStore);
+                
+                // Only store if the account is not rejected (other statuses like pending/suspend/hold might still want a card)
+                if (profileData.user.approvalStatus !== 'rejected') {
+                  console.log('Storing user data with tokens');
+                  storeUserData(userDataToStore);
+                } else {
+                  console.log('User rejected, not storing in localStorage');
+                }
 
                 // Check profile_complete first
                 if (profileData.user.profile_complete === false) {
@@ -131,7 +138,6 @@ export default function LoginFormUserId({
                 }
 
                 // Redirect based on approval status and account status
-                // Priority order: rejected → pending → suspend/hold (direct or via status) → approved+active
                 if (profileData.user.approvalStatus === 'rejected') {
                   router.push("/rejected");
                   return;
@@ -150,92 +156,18 @@ export default function LoginFormUserId({
                 }
               }
             } else {
-              // Even if profile fetch fails, store basic data with tokens
-              const userDataToStore = {
-                user_id: user.id,
-                email: user.email || '',
-                user_name: user.email?.split('@')[0] || '',
-                employee_id: '',
-                role: 'user',
-                profile_pic_url: null,
-                displayName: user.email?.split('@')[0] || '',
-                session_token: accessToken,
-                refresh_token: refreshToken,
-              };
-              console.log('Storing basic user data with tokens');
-              storeUserData(userDataToStore);
+              console.error('Profile fetch failed with status:', profileResponse.status);
+              // Do not store any data if profile fetch fails
             }
           }
         } catch (profileError) {
           console.error('Error fetching profile for localStorage:', profileError);
-          // Even on error, try to store basic data with tokens
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user && accessToken && refreshToken) {
-              const userDataToStore = {
-                user_id: user.id,
-                email: user.email || '',
-                user_name: user.email?.split('@')[0] || '',
-                employee_id: '',
-                role: 'user',
-                profile_pic_url: null,
-                displayName: user.email?.split('@')[0] || '',
-                session_token: accessToken,
-                refresh_token: refreshToken,
-              };
-              console.log('Storing fallback user data with tokens');
-              storeUserData(userDataToStore);
-            }
-          } catch (fallbackError) {
-            console.error('Error in fallback storage:', fallbackError);
-          }
+          // Do not store any data if an error occurs
         }
 
-        // Check approval status before redirecting
-        try {
-          const { data: { user: currentUser } } = await supabase.auth.getUser();
-          if (currentUser) {
-            const profileResponse = await fetch("/api/auth/user-profile", {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            });
-            
-            if (profileResponse.ok) {
-              const profileData = await profileResponse.json();
-              if (profileData.success && profileData.user) {
-                // Check profile_complete first
-                if (profileData.user.profile_complete === false) {
-                  router.push("/profile-completion");
-                  return;
-                }
-                // Redirect based on approval status and account status
-                // Priority order: rejected → pending → suspend/hold (direct or via status) → approved+active
-                if (profileData.user.approvalStatus === 'rejected') {
-                  router.push("/rejected");
-                  return;
-                } else if (profileData.user.approvalStatus === 'pending') {
-                  router.push("/pending");
-                  return;
-                } else if (profileData.user.approvalStatus === 'suspend' || profileData.user.accountStatus === 'suspend') {
-                  router.push("/suspended");
-                  return;
-                } else if (profileData.user.approvalStatus === 'hold' || profileData.user.accountStatus === 'hold') {
-                  router.push("/hold");
-                  return;
-                } else if (profileData.user.approvalStatus === 'approved' && profileData.user.accountStatus === 'active') {
-                  router.push("/dashboard");
-                  return;
-                }
-              }
-            }
-          }
-        } catch (checkError) {
-          console.error('Error checking approval status:', checkError);
-        }
 
-        // Redirect to dashboard or home page
-        router.push("/dashboard"); // Update this to your desired redirect path
+        // Fallback redirect if everything above somehow bypassed redirects
+        router.push("/dashboard");
       }
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred during login";
