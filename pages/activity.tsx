@@ -41,6 +41,15 @@ export default function Activity() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
+  const [activities, setActivities] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    totalDials: 0,
+    totalTalkTime: 0,
+    contactable: 0,
+    uncontactable: 0,
+    lastCallTime: "N/A",
+    idleFrom: "N/A"
+  });
 
   const fetchAuth = async () => {
     const result = await checkAuthAndFetchProfile();
@@ -155,8 +164,68 @@ export default function Activity() {
     }
   };
 
+  const fetchActivities = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const startOfDay = `${selectedDate}T00:00:00.000Z`;
+      const endOfDay = `${selectedDate}T23:59:59.999Z`;
+
+      const { data, error: fetchError } = await supabase
+        .from("call_logs")
+        .select(`
+          *,
+          agent:user_profiles!agent_id(user_name, employee_id),
+          customer:customers(customer_name),
+          campaign:campaigns!campaign_id(name)
+        `)
+        .gte("created_at", startOfDay)
+        .lte("created_at", endOfDay)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) throw fetchError;
+
+      setActivities(data || []);
+
+      // Calculate Stats
+      if (data) {
+        const totalTalkTimeSec = data.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+        const contactableCount = data.filter(cl => cl.is_connected === 'contactable').length;
+        const lastCall = data.length > 0 ? new Date(data[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
+        
+        setStats({
+          totalDials: data.length,
+          totalTalkTime: totalTalkTimeSec,
+          contactable: contactableCount,
+          uncontactable: data.length - contactableCount,
+          lastCallTime: lastCall,
+          idleFrom: data.length > 0 ? lastCall : "N/A" // Simplified logic for idle
+        });
+      }
+
+    } catch (err: any) {
+      console.error("Error fetching activities:", err);
+      setError("Failed to load activities");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatSeconds = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+
   useEffect(() => {
     fetchAuth();
+    fetchActivities();
     
     const handleFocus = () => {
       fetchAuth();
@@ -164,7 +233,7 @@ export default function Activity() {
     
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, [router]);
+  }, [router, selectedDate]);
 
   const handleLogoutClick = async () => {
     await handleLogout(router);
@@ -363,7 +432,7 @@ export default function Activity() {
                           fontFamily: "'Poppins', sans-serif",
                         }}
                       >
-                        0
+                        {stats.totalDials}
                       </p>
                       <p
                         className="text-xs sm:text-sm mt-1"
@@ -437,7 +506,7 @@ export default function Activity() {
                           fontFamily: "'Poppins', sans-serif",
                         }}
                       >
-                        00:00
+                        {formatSeconds(stats.totalTalkTime).substring(0, 5)}
                       </p>
                       <p
                         className="text-xs sm:text-sm mt-1"
@@ -498,7 +567,7 @@ export default function Activity() {
                               fontFamily: "'Poppins', sans-serif",
                             }}
                           >
-                            0
+                            {stats.contactable}
                           </p>
                           <p
                             className="text-[10px] sm:text-xs font-medium"
@@ -554,7 +623,7 @@ export default function Activity() {
                               fontFamily: "'Poppins', sans-serif",
                             }}
                           >
-                            0
+                            {stats.uncontactable}
                           </p>
                           <p
                             className="text-[10px] sm:text-xs font-medium"
@@ -617,7 +686,7 @@ export default function Activity() {
                               fontFamily: "'Poppins', sans-serif",
                             }}
                           >
-                            N/A
+                            {stats.idleFrom}
                           </p>
                           <p
                             className="text-[10px] sm:text-xs font-medium"
@@ -673,7 +742,7 @@ export default function Activity() {
                               fontFamily: "'Poppins', sans-serif",
                             }}
                           >
-                            N/A
+                            {stats.lastCallTime}
                           </p>
                           <p
                             className="text-[10px] sm:text-xs font-medium"
@@ -937,21 +1006,61 @@ export default function Activity() {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        <tr>
-                          <td colSpan={9} className="px-6 py-12 text-center">
-                            <div className="flex flex-col items-center justify-center">
-                              <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
-                                <i className="fi flex fi-rr-time-past text-3xl" style={{ color: "#4b33e8" }}></i>
+                        {activities.length > 0 ? (
+                          activities.filter(a => 
+                            a.agent?.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            a.customer?.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            a.agent?.employee_id?.toLowerCase().includes(searchQuery.toLowerCase())
+                          ).map((activity) => (
+                            <tr key={activity.id} className="hover:bg-gray-50 transition-colors">
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-medium text-gray-900">
+                                {activity.agent?.employee_id || "N/A"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-semibold text-gray-800">
+                                {activity.agent?.user_name || "Unknown Agent"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-700 font-medium">
+                                {activity.customer?.customer_name || "Unknown Customer"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
+                                {activity.next_called_at ? formatDisplayDate(activity.next_called_at) : "No Followup"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-indigo-600 font-bold uppercase tracking-tighter">
+                                {activity.campaign?.name || "General"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
+                                {formatTime(activity.created_at)}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-mono font-bold text-gray-600">
+                                {activity.duration ? formatSeconds(activity.duration) : "00:00:00"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4">
+                                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${activity.is_connected === 'contactable' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                  {activity.is_connected || "N/A"}
+                                </span>
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-500 italic max-w-xs truncate" title={activity.notes}>
+                                {activity.notes || "No remark provided"}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={9} className="px-6 py-12 text-center">
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
+                                  <i className="fi flex fi-rr-time-past text-3xl" style={{ color: "#4b33e8" }}></i>
+                                </div>
+                                <h3 className="text-lg font-semibold mb-2" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
+                                  No Activity Data
+                                </h3>
+                                <p className="text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
+                                  Activity records will appear here once employees start making calls.
+                                </p>
                               </div>
-                              <h3 className="text-lg font-semibold mb-2" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                                No Activity Data
-                              </h3>
-                              <p className="text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
-                                Activity records will appear here once employees start making calls.
-                              </p>
-                            </div>
-                          </td>
-                        </tr>
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
