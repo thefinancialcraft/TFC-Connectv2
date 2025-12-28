@@ -11,7 +11,7 @@ export default function Signup() {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center bg-transparent md:bg-[#e7e3ff]"
+      className="flex min-h-screen items-center justify-center bg-transparent md:bg-[#e7e3ff] py-12 px-4 sm:px-6 lg:px-8"
       style={{ position: 'relative' }}
     >
       {/* Error Notification - Top of Screen */}
@@ -31,7 +31,7 @@ export default function Signup() {
           />
         </div>
       )}
-      <div className="w-full md:flex md:items-stretch md:justify-center md:gap-6 md:max-w-6xl md:px-6">
+      <div className="w-full md:flex md:items-stretch md:justify-center md:gap-6 md:max-w-6xl">
         {/* Reservation Container - Desktop Only */}
         <div
           className="hidden md:flex md:rounded-2xl md:p-[39px] md:shadow-2xl md:backdrop-blur-sm md:min-h-[512px] md:flex-col"
@@ -46,14 +46,14 @@ export default function Signup() {
         </div>
 
         {/* Signup Container */}
-        <div className="w-full md:h-auto md:max-w-[380px] md:mx-auto">
+        <div className="w-full h-screen md:h-auto md:max-w-[380px] md:mx-auto">
           <div
-            className="w-full min-h-screen md:h-full md:rounded-2xl p-6 sm:p-8 md:p-[39px] md:shadow-2xl md:backdrop-blur-sm md:min-h-[512px] flex flex-col md:mt-0 gap-[5px] justify-start md:justify-center overflow-y-auto hide-scrollbar py-12 md:py-[39px]"
+            className="w-full h-full md:rounded-2xl p-6 sm:p-8 md:p-[39px] md:shadow-2xl md:backdrop-blur-sm md:h-[512px] md:min-h-0 flex flex-col md:mt-0 gap-[5px] justify-center md:justify-start md:overflow-y-auto hide-scrollbar"
             style={{
               backgroundColor: "#FFFFFF",
               border: "1.5px solid #ffffff",
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
             }}
           >
             {/* Logo/Title Section */}

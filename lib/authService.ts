@@ -225,6 +225,15 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       }
     } catch (fetchError: any) {
       console.error("Profile fetch error:", fetchError);
+
+      // If the token is invalid/expired (server returned 401), we MUST NOT use cached data.
+      // We should let this fail so the user is redirected to login.
+      if (fetchError.message && (fetchError.message.includes("Invalid or expired token") || fetchError.message.includes("invalid claim"))) {
+        // Clear stored data to ensure full logout
+        clearStoredUserData();
+        throw fetchError;
+      }
+
       // Return cached user data if available, otherwise return error
       if (userData) {
         return {
