@@ -39,7 +39,7 @@ export default function Signup() {
             backgroundColor: "#f6f5ff",
             border: "1.5px solid #ffffff",
             width: "100%",
-            maxWidth: "620px",
+            minWidth: "360px",
           }}
         >
           <HeroSection />
