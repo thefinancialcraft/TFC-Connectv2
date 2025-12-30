@@ -148,11 +148,18 @@ export default function ImportCustomersModal({
     return `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   };
 
-  const uploadCustomersToSupabase = async () => {
+    const uploadCustomersToSupabase = async () => {
     if (!importFile) {
       setImportError("Please select a file to upload");
       return;
     }
+    
+    // Validate Org and Campaign Selection
+    if (!selectedOrgId) {
+        setImportError("Please select an Organization before importing.");
+        return;
+    }
+
     setImporting(true);
     setImportError("");
     setImportSuccess("");
@@ -165,6 +172,8 @@ export default function ImportCustomersModal({
         setImporting(false);
         return;
       }
+      
+      console.log("Importing with Org:", selectedOrgId, "Campaign:", selectedCampaignId); // Debug log
 
       const headers = parseCSVLine(lines[0]);
       const customers = [];
@@ -204,10 +213,21 @@ export default function ImportCustomersModal({
           });
 
           customFields.forEach((cf) => {
-            if (cf.mappedTo && row[cf.mappedTo]) {
-              const suffix = selectedFields[`custom_${cf.id}`] ? "_checked" : "_unchecked";
-              customerDetails[`${cf.name || cf.mappedTo}${suffix}`] = row[cf.mappedTo];
-            }
+             // For custom fields, we construct the value manually including merged fields
+             let value = row[cf.mappedTo] || "";
+             const merged = mergedFields[cf.id] || [];
+             if (merged.length > 0) {
+                 const mergedValues = merged
+                     .filter((col) => col && row[col])
+                     .map((col) => row[col])
+                     .join(" ");
+                 if (mergedValues) value = value ? `${value} ${mergedValues}` : mergedValues;
+             }
+             
+             if (value) {
+                const suffix = selectedFields[`custom_${cf.id}`] !== false ? "_checked" : "_unchecked";
+                customerDetails[`${cf.name || cf.mappedTo}${suffix}`] = value.trim();
+             }
           });
 
           let parsedExpiryDate: string | null = null;
@@ -300,6 +320,30 @@ export default function ImportCustomersModal({
     setCustomFields(customFields.filter((f) => f.id !== id));
   };
 
+  /* Merged Fields Logic */
+  const addMergedField = (fieldKey: string) => {
+    setMergedFields((prev) => ({
+      ...prev,
+      [fieldKey]: [...(prev[fieldKey] || []), ""],
+    }));
+  };
+
+  const removeMergedField = (fieldKey: string, index: number) => {
+    setMergedFields((prev) => {
+      const current = [...(prev[fieldKey] || [])];
+      current.splice(index, 1);
+      return { ...prev, [fieldKey]: current };
+    });
+  };
+
+  const updateMergedField = (fieldKey: string, index: number, value: string) => {
+    setMergedFields((prev) => {
+      const current = [...(prev[fieldKey] || [])];
+      current[index] = value;
+      return { ...prev, [fieldKey]: current };
+    });
+  };
+
   const updateCustomField = (id: string, key: "name" | "mappedTo", value: string) => {
     setCustomFields(
       customFields.map((f) => {
@@ -320,6 +364,28 @@ export default function ImportCustomersModal({
       })
     );
   };
+
+  // Get set of all currently mapped columns
+  const getUsedColumns = () => {
+    const used = new Set<string>();
+    // Add standard field mappings
+    Object.values(fieldMapping).forEach(val => {
+        if (val) used.add(val);
+    });
+    // Add merged fields
+    Object.values(mergedFields).forEach(arr => {
+        arr.forEach(val => {
+            if (val) used.add(val);
+        });
+    });
+    // Add custom mapped fields
+    customFields.forEach(f => {
+        if (f.mappedTo) used.add(f.mappedTo);
+    });
+    return used;
+  };
+
+  const usedColumns = getUsedColumns(); // Calculate for render
 
   if (!showImportModal && !showMappingModal) return null;
 
@@ -418,14 +484,43 @@ export default function ImportCustomersModal({
                           </div>
                        )}
                     </div>
-                    <select
-                      value={fieldMapping[field] || ""}
-                      onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
-                      className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                    >
-                      <option value="">Select column...</option>
-                      {csvColumns.map(col => <option key={col} value={col}>{col}</option>)}
-                    </select>
+                    <div className="flex gap-2">
+                        <select
+                          value={fieldMapping[field] || ""}
+                          onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
+                          className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                        >
+                          <option value="">Select column...</option>
+                          {csvColumns.filter(col => !usedColumns.has(col) || col === fieldMapping[field]).map(col => <option key={col} value={col}>{col}</option>)}
+                        </select>
+                        <button 
+                            onClick={() => addMergedField(field)}
+                            className="p-2 w-9 h-9 bg-blue-50 text-[#4b33e8] rounded-lg hover:bg-blue-100 transition-colors"
+                            title="Merge another column"
+                        >
+                            <i className="fi fi-rr-plus text-xs"></i>
+                        </button>
+                    </div>
+                    {/* Merged Fields for Standard Fields */}
+                    {mergedFields[field] && mergedFields[field].map((val, idx) => (
+                        <div key={idx} className="flex gap-2 mt-1 pl-4 relative">
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-px bg-gray-300"></div>
+                            <select
+                                value={val}
+                                onChange={(e) => updateMergedField(field, idx, e.target.value)}
+                                className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                            >
+                                <option value="">Select column to merge...</option>
+                                {csvColumns.filter(col => !usedColumns.has(col) || col === val).map(col => <option key={col} value={col}>{col}</option>)}
+                            </select>
+                            <button 
+                                onClick={() => removeMergedField(field, idx)}
+                                className="p-2 w-9 h-9 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"
+                            >
+                                <i className="fi fi-rr-trash text-xs"></i>
+                            </button>
+                        </div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -445,39 +540,74 @@ export default function ImportCustomersModal({
                 {customFields.length > 0 ? (
                   <div className="space-y-3">
                     {customFields.map((cf) => (
-                      <div key={cf.id} className="flex gap-3 items-center">
-                         <div className="flex items-center pt-2">
-                            <input 
-                                type="checkbox"
-                                checked={selectedFields[`custom_${cf.id}`] !== false} // Default true
-                                onChange={(e) => setSelectedFields({...selectedFields, [`custom_${cf.id}`]: e.target.checked})}
-                                className="w-4 h-4 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
-                                title="Show in Customer Details"
-                             />
-                         </div>
-                         <input
-                            placeholder="Field Name (e.g. Plan Type)"
-                            className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
-                            value={cf.name}
-                            onChange={(e) => updateCustomField(cf.id, "name", e.target.value)}
-                         />
-                         <i className="fi fi-rr-arrow-right text-gray-300"></i>
-                         <select
-                             className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
-                             value={cf.mappedTo}
-                             onChange={(e) => updateCustomField(cf.id, "mappedTo", e.target.value)}
-                         >
-                              <option value="">Select CSV column...</option>
-                              {csvColumns.map((col) => (
-                                <option key={col} value={col}>{col}</option>
-                              ))}
-                         </select>
-                         <button 
-                           onClick={() => removeCustomField(cf.id)} 
-                           className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                         >
-                           <i className="fi fi-rr-trash text-sm"></i>
-                         </button>
+                      <div key={cf.id} className="space-y-2">
+                        <div className="flex gap-3 items-center">
+                           <div className="flex items-center pt-2">
+                              <input 
+                                  type="checkbox"
+                                  checked={selectedFields[`custom_${cf.id}`] !== false} // Default true
+                                  onChange={(e) => setSelectedFields({...selectedFields, [`custom_${cf.id}`]: e.target.checked})}
+                                  className="w-4 h-4 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
+                                  title="Show in Customer Details"
+                               />
+                           </div>
+                           <input
+                              placeholder="Field Name (e.g. Plan Type)"
+                              className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                              value={cf.name}
+                              onChange={(e) => updateCustomField(cf.id, "name", e.target.value)}
+                           />
+                           <i className="fi fi-rr-arrow-right text-gray-300"></i>
+                           <div className="flex-1 flex gap-2">
+                               <select
+                                   className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                                   value={cf.mappedTo}
+                                   onChange={(e) => updateCustomField(cf.id, "mappedTo", e.target.value)}
+                               >
+                                    <option value="">Select CSV column...</option>
+                                    {csvColumns.filter(col => !usedColumns.has(col) || col === cf.mappedTo).map((col) => (
+                                      <option key={col} value={col}>{col}</option>
+                                    ))}
+                               </select>
+                               <button 
+                                  onClick={() => addMergedField(cf.id)}
+                                  className="p-2 w-9 h-9 bg-blue-50 text-[#4b33e8] rounded-lg hover:bg-blue-100 transition-colors flex-shrink-0"
+                                  title="Merge another column"
+                               >
+                                  <i className="fi fi-rr-plus text-xs"></i>
+                               </button>
+                           </div>
+                           <button 
+                             onClick={() => removeCustomField(cf.id)} 
+                             className="p-2 w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors flex-shrink-0"
+                           >
+                             <i className="fi flex fi-rr-trash text-sm"></i>
+                           </button>
+                        </div>
+                        {/* Merged Fields for Custom Fields */}
+                        {mergedFields[cf.id] && mergedFields[cf.id].map((val, idx) => (
+                            <div key={idx} className="flex gap-2 pl-[calc(2rem_+_1px)] relative">
+                                <div className="absolute left-[1rem] top-1/2 -translate-y-1/2 w-4 h-px bg-gray-300"></div>
+                                <div className="flex-1"></div> {/* Spacer to align with right side */}
+                                <div className="flex-1 flex gap-2">
+                                     <select
+                                        value={val}
+                                        onChange={(e) => updateMergedField(cf.id, idx, e.target.value)}
+                                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                                     >
+                                         <option value="">Select column to merge...</option>
+                                         {csvColumns.filter(col => !usedColumns.has(col) || col === val).map(col => <option key={col} value={col}>{col}</option>)}
+                                     </select>
+                                     <button 
+                                         onClick={() => removeMergedField(cf.id, idx)}
+                                         className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors flex-shrink-0"
+                                     >
+                                         <i className="fi fi-rr-trash text-xs"></i>
+                                     </button>
+                                     <div className="w-8"></div> {/* Spacer for delete button alignment */}
+                                </div>
+                            </div>
+                        ))}
                       </div>
                     ))}
                   </div>

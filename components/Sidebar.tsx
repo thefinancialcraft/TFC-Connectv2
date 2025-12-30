@@ -213,6 +213,12 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       icon: "fi-rr-building",
       adminOnly: false,
     },
+    {
+      name: "Team",
+      path: "/team",
+      icon: "fi-rr-users-alt",
+      adminOnly: false,
+    },
   ];
 
   // Filter nav items based on admin status

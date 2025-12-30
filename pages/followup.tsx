@@ -32,7 +32,7 @@ export default function FollowUp() {
     }
     return null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("followup");
   const [mounted, setMounted] = useState(false);
@@ -183,16 +183,7 @@ export default function FollowUp() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
-          <div className="text-lg" style={{ color: "#4b33e8" }}>Loading Follow Ups...</div>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>

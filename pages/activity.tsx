@@ -298,16 +298,7 @@ export default function Activity() {
     setShowDatePicker(false);
   };
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
-          <div className="text-lg" style={{ color: "#4b33e8" }}>Loading...</div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
