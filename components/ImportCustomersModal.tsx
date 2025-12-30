@@ -28,7 +28,7 @@ export default function ImportCustomersModal({
   const [fieldMapping, setFieldMapping] = useState<Record<string, string>>({});
   const [mergedFields, setMergedFields] = useState<Record<string, string[]>>({});
   const [customFields, setCustomFields] = useState<
-    Array<{ id: string; name: string; mappedTo: string }>
+    Array<{ id: string; name: string; mappedTo: string; isEdited?: boolean }>
   >([]);
   const [selectedFields, setSelectedFields] = useState<Record<string, boolean>>({
     name: true,
@@ -288,6 +288,39 @@ export default function ImportCustomersModal({
     }
   };
 
+  /* Custom Fields Logic */
+  const addCustomField = () => {
+    setCustomFields([
+      ...customFields,
+      { id: Date.now().toString(), name: "", mappedTo: "", isEdited: false },
+    ]);
+  };
+
+  const removeCustomField = (id: string) => {
+    setCustomFields(customFields.filter((f) => f.id !== id));
+  };
+
+  const updateCustomField = (id: string, key: "name" | "mappedTo", value: string) => {
+    setCustomFields(
+      customFields.map((f) => {
+        if (f.id !== id) return f;
+
+        if (key === "name") {
+            return { ...f, name: value, isEdited: true };
+        } else if (key === "mappedTo") {
+            // Auto-fill name if it hasn't been manually edited
+            const shouldUpdateName = !f.isEdited;
+            return { 
+                ...f, 
+                mappedTo: value, 
+                name: shouldUpdateName ? value : f.name 
+            };
+        }
+        return f;
+      })
+    );
+  };
+
   if (!showImportModal && !showMappingModal) return null;
 
   return (
@@ -316,7 +349,7 @@ export default function ImportCustomersModal({
                     value={selectedOrgId} 
                     onChange={(e) => setSelectedOrgId(e.target.value)}
                     disabled={!!preselectedOrgId}
-                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedOrgId ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    className={`w-full px-4 py-2.5 text-gray-500 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedOrgId ? 'opacity-60 cursor-not-allowed' : ''}`}
                   >
                     <option value="">Select Organization</option>
                     {organizations.map(org => <option key={org.id} value={org.id}>{org.company_name} ({org.org_code})</option>)}
@@ -330,7 +363,7 @@ export default function ImportCustomersModal({
                     value={selectedCampaignId} 
                     onChange={(e) => setSelectedCampaignId(e.target.value)}
                     disabled={!!preselectedCampaignId}
-                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedCampaignId ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    className={`w-full px-4 py-2.5 text-gray-500 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedCampaignId ? 'opacity-60 cursor-not-allowed' : ''}`}
                   >
                     <option value="">Select Campaign</option>
                     {campaigns.map(camp => <option key={camp.id} value={camp.id}>{camp.name}</option>)}
@@ -361,7 +394,7 @@ export default function ImportCustomersModal({
         <div className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-[70] p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-bold">Map CSV Columns</h2>
+              <h2 className="text-xl text-[#4b33e8] font-semibold">Map CSV Columns</h2>
               <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                 <i className="fi flex fi-rr-cross text-xl"></i>
               </button>
@@ -370,17 +403,89 @@ export default function ImportCustomersModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {["name", "phone", "expiry_date", "sum_insured", "premium", "company"].map(field => (
                   <div key={field} className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">{field.replace("_", " ")}</label>
+                    <div className="flex items-center justify-between">
+                       <label className="text-xs font-bold text-gray-500 uppercase">{field.replace("_", " ")}</label>
+                       {['sum_insured', 'premium', 'company', 'expiry_date'].includes(field) && (
+                          <div className="flex items-center gap-2">
+                             <input 
+                                type="checkbox" 
+                                id={`check_${field}`}
+                                checked={!!selectedFields[field]}
+                                onChange={(e) => setSelectedFields({...selectedFields, [field]: e.target.checked})}
+                                className="w-3 h-3 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
+                             />
+                             <label htmlFor={`check_${field}`} className="text-[10px] text-gray-400 cursor-pointer">Show in App</label>
+                          </div>
+                       )}
+                    </div>
                     <select
                       value={fieldMapping[field] || ""}
                       onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                      className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
                     >
                       <option value="">Select column...</option>
                       {csvColumns.map(col => <option key={col} value={col}>{col}</option>)}
                     </select>
                   </div>
                 ))}
+              </div>
+
+              {/* Custom Fields Section */}
+              <div className="mb-6 border-t border-gray-100 pt-4">
+                <div className="flex items-center justify-between mb-3">
+                   <label className="text-xs font-bold text-gray-500 uppercase">Custom Fields</label>
+                   <button 
+                     onClick={addCustomField} 
+                     className="text-xs text-[#4b33e8] font-bold hover:underline flex items-center gap-1"
+                   >
+                     <i className="fi fi-rr-plus"></i> Add Field
+                   </button>
+                </div>
+                
+                {customFields.length > 0 ? (
+                  <div className="space-y-3">
+                    {customFields.map((cf) => (
+                      <div key={cf.id} className="flex gap-3 items-center">
+                         <div className="flex items-center pt-2">
+                            <input 
+                                type="checkbox"
+                                checked={selectedFields[`custom_${cf.id}`] !== false} // Default true
+                                onChange={(e) => setSelectedFields({...selectedFields, [`custom_${cf.id}`]: e.target.checked})}
+                                className="w-4 h-4 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
+                                title="Show in Customer Details"
+                             />
+                         </div>
+                         <input
+                            placeholder="Field Name (e.g. Plan Type)"
+                            className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                            value={cf.name}
+                            onChange={(e) => updateCustomField(cf.id, "name", e.target.value)}
+                         />
+                         <i className="fi fi-rr-arrow-right text-gray-300"></i>
+                         <select
+                             className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                             value={cf.mappedTo}
+                             onChange={(e) => updateCustomField(cf.id, "mappedTo", e.target.value)}
+                         >
+                              <option value="">Select CSV column...</option>
+                              {csvColumns.map((col) => (
+                                <option key={col} value={col}>{col}</option>
+                              ))}
+                         </select>
+                         <button 
+                           onClick={() => removeCustomField(cf.id)} 
+                           className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                         >
+                           <i className="fi fi-rr-trash text-sm"></i>
+                         </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-400 italic text-center py-2 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    No custom fields added
+                  </div>
+                )}
               </div>
               
               {importError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded text-sm">{importError}</div>}

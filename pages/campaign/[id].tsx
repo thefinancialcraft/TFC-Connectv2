@@ -1153,7 +1153,7 @@ export default function CampaignDetails() {
  
                                  {/* Overdue Calls */}
                                  <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
-                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, rgb(239, 68, 68) 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
                                              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
@@ -1211,7 +1211,7 @@ export default function CampaignDetails() {
  
                                  {/* Upcoming Calls */}
                                  <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
-                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, rgb(59, 130, 246) 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
                                              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
@@ -1269,7 +1269,7 @@ export default function CampaignDetails() {
 
                                  {/* Managed By */}
                                  <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
-                                     <div className="absolute inset-0" style={{ background: "#ffffff" }}></div>
+                                     <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, rgb(20, 184, 166) 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
                                      <div className="flex items-center justify-between mb-6 relative z-10">
                                          <div className="flex items-center gap-3">
                                              <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-500">

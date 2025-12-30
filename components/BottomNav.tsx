@@ -103,6 +103,13 @@ export default function BottomNav({
       path: "/activity",
       adminOnly: false,
     },
+    {
+      id: "followup",
+      label: "Follow Up",
+      icon: "fi-rr-calendar-clock",
+      path: "/followup",
+      adminOnly: false,
+    },
   ];
 
   // Filter nav items based on admin status

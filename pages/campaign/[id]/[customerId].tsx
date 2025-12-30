@@ -78,7 +78,7 @@ export default function CallingPage() {
         "DND": [],
         "Wrong NO": [],
         "Not Contactable": ["hang up", "busy", "Ring", "not reacable", "others"],
-        "Call Back": ["intrested", "follow up", "busy"],
+        "Call Back": ["intrested", "follow up", "busy", "busy", "Ring", "not reacable", "others"],
         "Deal Done": [],
     };
 
@@ -746,9 +746,11 @@ export default function CallingPage() {
                 // --- Specific Logic for Retries (Not Contactable or Not Interested) ---
                 const currentAttempts = customer?.attempt_count || 0;
                 const newAttempts = currentAttempts + 1;
-                const isRetryable = newAttempts <= 3;
+                // User Request: Retry 1 time only (previously 3)
+                const isRetryable = newAttempts <= 1;
                 
-                const nextCallTime = new Date(new Date(now).getTime() + 60 * 60 * 1000 + 2 * 60 * 1000).toISOString(); // 1h + 2m buffer
+                // User Request: 2 hour gap (previously 1h + 2m)
+                const nextCallTime = new Date(new Date(now).getTime() + 2 * 60 * 60 * 1000).toISOString();
 
                 let updatePayload: any = {
                     last_called_at: now,
@@ -1282,7 +1284,7 @@ export default function CallingPage() {
                                                 ) : !postCall ? (
                                                     <button 
                                                         onClick={handleStartCall}
-                                                        className="w-full sm:w-auto px-10 h-16 rounded-[1.5rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
+                                                        className="w-full sm:w-auto px-3 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
                                                     >
                                                         <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
                                                             <i className="fi flex fi-rr-phone-call text-sm"></i>

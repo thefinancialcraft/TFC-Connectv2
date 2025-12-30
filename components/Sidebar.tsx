@@ -202,6 +202,12 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       adminOnly: false,
     },
     {
+      name: "Follow Up",
+      path: "/followup",
+      icon: "fi-rr-calendar-clock",
+      adminOnly: false,
+    },
+    {
       name: "Organization",
       path: "/organization",
       icon: "fi-rr-building",
@@ -333,6 +339,29 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
           </div>
 
           <div className="flex gap-2">
+            <button
+              onClick={() => router.push('/settings')}
+              className="w-8 h-8 text-xs border rounded-lg transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                borderColor: "#DCDEE3",
+                backgroundColor: "#FFFFFF",
+                color: "#263238",
+                fontFamily: "'Poppins', sans-serif",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#4b33e8";
+                e.currentTarget.style.backgroundColor = "#EEF2FF";
+                e.currentTarget.style.color = "#4b33e8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#DCDEE3";
+                e.currentTarget.style.backgroundColor = "#FFFFFF";
+                e.currentTarget.style.color = "#263238";
+              }}
+              title="Settings"
+            >
+              <i className="fi flex fi-rr-settings text-sm"></i>
+            </button>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
