@@ -86,7 +86,7 @@ export default function FlutterBridgeTab() {
     
     if (window.flutter_inappwebview?.callHandler) {
       console.log("📤 [Web] Sending to Flutter:", payload);
-      window.flutter_inappwebview.callHandler('fromWebApp', payload);
+      window.flutter_inappwebview.callHandler('bridge', payload);
       addMessage('out', testType, testValue);
     } else {
       console.warn("⚠️ Flutter InAppWebView not detected.");
@@ -127,7 +127,7 @@ export default function FlutterBridgeTab() {
 
     if (window.flutter_inappwebview?.callHandler) {
       console.log("📤 [Web] Syncing User Info to Flutter:", messagePayload);
-      window.flutter_inappwebview.callHandler('fromWebApp', messagePayload);
+      window.flutter_inappwebview.callHandler('bridge', messagePayload);
       addMessage('out', 'sync_user_info', userInfoPayload);
     } else {
       console.warn("⚠️ Flutter InAppWebView not detected.");
@@ -139,7 +139,7 @@ export default function FlutterBridgeTab() {
     if (window.flutter_inappwebview?.callHandler) {
       console.log("📤 [Web] Opening Dev Mode");
       const payload = { type: 'isdevmode_open', value: true };
-      window.flutter_inappwebview.callHandler('fromWebApp', payload);
+      window.flutter_inappwebview.callHandler('bridge', payload);
       addMessage('out', 'isdevmode_open', true);
     } else {
        console.warn("⚠️ Flutter InAppWebView not detected.");

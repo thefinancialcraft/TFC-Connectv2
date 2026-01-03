@@ -33,7 +33,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
         console.log("🚀 [Auto-Sync] Syncing User Info to Flutter:", messagePayload);
-        win.flutter_inappwebview.callHandler('fromWebApp', messagePayload)
+        win.flutter_inappwebview.callHandler('bridge', messagePayload)
           .then((result: any) => console.log("✅ [Auto-Sync] Success:", result))
           .catch((err: any) => console.error("❌ [Auto-Sync] Failed:", err));
       }
