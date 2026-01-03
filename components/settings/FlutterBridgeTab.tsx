@@ -24,15 +24,43 @@ export default function FlutterBridgeTab() {
   const [testValue, setTestValue] = useState('');
   const [isBridgeActive, setIsBridgeActive] = useState(false);
 
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedMessages = localStorage.getItem('flutter_bridge_logs');
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages).map((m: any) => ({
+            ...m,
+            timestamp: new Date(m.timestamp) // Revive dates
+          }));
+          setMessages(parsed);
+        } catch (e) {
+          console.error("Failed to load bridge logs", e);
+        }
+      }
+    }
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('flutter_bridge_logs', JSON.stringify(messages));
+    }
+  }, [messages]);
+
   // Helper to add message to log
   const addMessage = (direction: 'in' | 'out', type: string, payload: any) => {
-    setMessages(prev => [{
-      id: Math.random().toString(36).substr(2, 9),
-      direction,
-      type,
-      payload,
-      timestamp: new Date()
-    }, ...prev]);
+    setMessages(prev => {
+      const newMessages = [{
+        id: Math.random().toString(36).substr(2, 9),
+        direction,
+        type,
+        payload,
+        timestamp: new Date()
+      }, ...prev];
+      return newMessages;
+    });
   };
 
   useEffect(() => {
@@ -51,12 +79,6 @@ export default function FlutterBridgeTab() {
       
       addMessage('in', type, value);
     };
-
-    // Cleanup not strictly necessary for window globals, but good practice if we want to remove hook
-    return () => {
-      // We often keep it attached so we don't miss messages if component unmounts/remounts quickly
-      // or we can allow it to be overwritten on remount.
-    };
   }, []);
 
   const sendToFlutter = () => {
@@ -74,6 +96,7 @@ export default function FlutterBridgeTab() {
 
   const clearLogs = () => {
     setMessages([]);
+    localStorage.removeItem('flutter_bridge_logs');
   };
 
   // Sync User Info Hook
