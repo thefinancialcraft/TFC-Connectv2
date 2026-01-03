@@ -120,9 +120,14 @@ export default function FlutterBridgeTab() {
       profilePicUrl: user.profilePicUrl
     };
 
+    const messagePayload = {
+      type: 'sync_user_info',
+      value: userInfoPayload
+    };
+
     if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Syncing User Info to Flutter:", userInfoPayload);
-      window.flutter_inappwebview.callHandler('syncUserInfo', userInfoPayload);
+      console.log("📤 [Web] Syncing User Info to Flutter:", messagePayload);
+      window.flutter_inappwebview.callHandler('fromWebApp', messagePayload);
       addMessage('out', 'sync_user_info', userInfoPayload);
     } else {
       console.warn("⚠️ Flutter InAppWebView not detected.");

@@ -24,11 +24,16 @@ export function UserProvider({ children }: UserProviderProps) {
         profilePicUrl: user.profilePicUrl
       };
 
+      const messagePayload = {
+        type: 'sync_user_info',
+        value: userInfoPayload
+      };
+
       // Check if running inside Flutter WebView
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
-        console.log("🚀 [Auto-Sync] Syncing User Info to Flutter:", userInfoPayload);
-        win.flutter_inappwebview.callHandler('syncUserInfo', userInfoPayload)
+        console.log("🚀 [Auto-Sync] Syncing User Info to Flutter:", messagePayload);
+        win.flutter_inappwebview.callHandler('fromWebApp', messagePayload)
           .then((result: any) => console.log("✅ [Auto-Sync] Success:", result))
           .catch((err: any) => console.error("❌ [Auto-Sync] Failed:", err));
       }
