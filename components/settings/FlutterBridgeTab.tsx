@@ -153,7 +153,7 @@ export default function FlutterBridgeTab() {
                <input 
                   type="text" 
                   placeholder="Type (e.g. user_id)"
-                  className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 text-gray-700 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
                   value={testType}
                   onChange={(e) => setTestType(e.target.value)}
                />
@@ -162,7 +162,7 @@ export default function FlutterBridgeTab() {
                <input 
                   type="text" 
                   placeholder="Value (e.g. 12345)"
-                  className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 text-gray-700 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
                   value={testValue}
                   onChange={(e) => setTestValue(e.target.value)}
                />
