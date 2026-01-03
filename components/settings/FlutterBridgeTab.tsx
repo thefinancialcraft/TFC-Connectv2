@@ -161,23 +161,23 @@ export default function FlutterBridgeTab() {
 
         {/* Test Sender */}
         <div className="bg-gray-50 p-4 rounded-lg mb-6 border">
-          <h4 className="text-sm font-bold mb-3">Send Message</h4>
-          <div className="flex gap-3">
+          <h4 className="text-sm font-bold mb-3 text-gray-700">Send Message</h4>
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
-              className="flex-1 px-3 py-2 border rounded text-sm"
+              className="flex-1 px-3 py-2 border rounded text-sm text-gray-700"
               placeholder="Event"
               value={testEvent}
               onChange={e => setTestEvent(e.target.value)}
             />
             <input
-              className="flex-[2] px-3 py-2 border rounded text-sm"
+              className="flex-[2] px-3 py-2 border rounded text-sm text-gray-700"
               placeholder="Value"
               value={testValue}
               onChange={e => setTestValue(e.target.value)}
             />
             <button
               onClick={() => sendToFlutter(testEvent, testValue)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded text-sm"
+              className="px-4 py-2 bg-indigo-600 text-white rounded text-sm whitespace-nowrap"
             >
               Send
             </button>
@@ -185,16 +185,16 @@ export default function FlutterBridgeTab() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <button
             onClick={syncUserInfoToFlutter}
-            className="px-4 py-2 bg-blue-600 text-white rounded text-sm"
+            className="px-4 py-2 bg-blue-600 text-white rounded text-sm w-full sm:w-auto"
           >
             Sync User Info
           </button>
           <button
             onClick={openDevMode}
-            className="px-4 py-2 bg-purple-600 text-white rounded text-sm"
+            className="px-4 py-2 bg-purple-600 text-white rounded text-sm w-full sm:w-auto"
           >
             Open Dev Mode
           </button>
