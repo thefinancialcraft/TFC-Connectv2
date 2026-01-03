@@ -4,6 +4,7 @@ import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
+import FlutterBridgeTab from "../components/settings/FlutterBridgeTab";
 
 interface SettingsFormData {
   email: string;
@@ -48,7 +49,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav] = useState("settings");
-  const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge">("profile");
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
   // Form state - organized by categories
@@ -499,6 +500,18 @@ export default function Settings() {
                 >
                   Security
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("flutter_bridge")}
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                    activeTab === "flutter_bridge"
+                      ? "bg-white text-gray-900"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  Flutter Bridge
+                </button>
                 </div>
 
                 {/* Profile Completion Percentage */}
@@ -791,6 +804,13 @@ export default function Settings() {
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Flutter Bridge Tab Content */}
+              {activeTab === "flutter_bridge" && (
+                <div className="mt-2">
+                  <FlutterBridgeTab />
                 </div>
               )}
             </div>
