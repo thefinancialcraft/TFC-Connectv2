@@ -57,8 +57,8 @@ export function useOrganizationDetailData(orgId: string | string[] | undefined) 
         .from("organizations")
         .select("*")
         .eq("id", orgId)
-        .single()
-        .abortSignal(abortControllerRef.current.signal);
+        .abortSignal(abortControllerRef.current.signal)
+        .single();
 
       if (orgError) throw orgError;
       setOrganization(orgData as Organization);
@@ -68,8 +68,8 @@ export function useOrganizationDetailData(orgId: string | string[] | undefined) 
         .from("user_profiles")
         .select("id, user_name, email, role, status, profile_pic_url, expire_at, is_client, employee_id")
         .eq("organization_id", orgId)
-        .order("created_at", { ascending: false })
-        .abortSignal(abortControllerRef.current.signal);
+        .abortSignal(abortControllerRef.current.signal)
+        .order("created_at", { ascending: false });
         
       if (userError) throw userError;
       setOrgUsers(userData as OrgUser[] || []);
