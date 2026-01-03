@@ -24,7 +24,8 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false,
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [selectedOrgId, setSelectedOrgId] = useState<string>(defaultOrganizationId || "");
   const [loadingOrgs, setLoadingOrgs] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
+  const [isCaller, setIsCaller] = useState(true);
   const [joinedAt, setJoinedAt] = useState(new Date().toISOString().split('T')[0]);
   const [renewalAt, setRenewalAt] = useState(new Date().toISOString().split('T')[0]);
   const [expireAt, setExpireAt] = useState(() => {
@@ -146,6 +147,7 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false,
           organization_id: selectedOrgId || null,
           from_admin_panel: fromAdminPanel, // Flag to indicate this is from admin panel
           is_client: isClient,
+          is_caller: isCaller,
           joined_at: joinedAt,
           renewal_at: renewalAt,
           expire_at: expireAt,
@@ -293,18 +295,33 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false,
               <i className="fi flex fi-rr-settings-sliders text-indigo-500 text-xs text-[10px]"></i>
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Onboarding Lifecycle</span>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsClient(!isClient)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all border ${
-                isClient 
-                ? 'bg-indigo-500 text-white border-indigo-400 shadow-sm' 
-                : 'bg-white text-slate-400 border-slate-200 hover:border-indigo-200'
-              }`}
-            >
-              <i className={`fi flex ${isClient ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`}></i>
-              <span className="text-[9px] font-black uppercase tracking-widest">{isClient ? 'Client Asset' : 'Personnel'}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsClient(!isClient)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all border ${
+                  isClient 
+                  ? 'bg-indigo-500 text-white border-indigo-400 shadow-sm' 
+                  : 'bg-white text-slate-400 border-slate-200 hover:border-indigo-200'
+                }`}
+              >
+                <i className={`fi flex ${isClient ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`}></i>
+                <span className="text-[9px] font-black uppercase tracking-widest">{isClient ? 'Client' : 'Personnel'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsCaller(!isCaller)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all border ${
+                  isCaller 
+                  ? 'bg-blue-500 text-white border-blue-400 shadow-sm' 
+                  : 'bg-white text-slate-400 border-slate-200 hover:border-blue-200'
+                }`}
+              >
+                <i className={`fi flex ${isCaller ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`}></i>
+                <span className="text-[9px] font-black uppercase tracking-widest">{isCaller ? 'Caller' : 'Non-Caller'}</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-4">

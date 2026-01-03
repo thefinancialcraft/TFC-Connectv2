@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, memo, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
 import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
@@ -13,7 +13,7 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
-export default function Header({ user, onLogout }: HeaderProps) {
+function HeaderComponent({ user, onLogout }: HeaderProps) {
   const router = useRouter();
   const [serverStatus, setServerStatus] = useState<'online' | 'offline' | 'checking'>('online');
   const [showFullStatus, setShowFullStatus] = useState<boolean>(true);
@@ -67,10 +67,12 @@ export default function Header({ user, onLogout }: HeaderProps) {
   }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl]);
 
   // Use cached user for display (prevents "User / Not assigned" flicker)
-  // Only use cached user after mount to prevent hydration mismatch
-  const displayUser = mounted ? (cachedUser || user) : user;
+  // Memoize displayUser to prevent recalculation on every render
+  const displayUser = useMemo(() => {
+    return mounted ? (cachedUser || user) : user;
+  }, [mounted, cachedUser, user]);
 
-  const getInitials = () => {
+  const initials = useMemo(() => {
     if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
     if (displayUser?.displayName) {
       return displayUser.displayName.trim().charAt(0).toUpperCase();
@@ -79,17 +81,19 @@ export default function Header({ user, onLogout }: HeaderProps) {
       return displayUser.email.slice(0, 2).toUpperCase();
     }
     return "U";
-  };
+  }, [mounted, displayUser]);
 
-  const initials = getInitials();
   // Only use profilePicUrl after mount to prevent hydration mismatch
-  const profilePicUrl = mounted ? displayUser?.profilePicUrl : null;
+  const profilePicUrl = useMemo(() => {
+    return mounted ? displayUser?.profilePicUrl : null;
+  }, [mounted, displayUser]);
 
-  const handleLogout = () => {
+  // Stable logout handler
+  const handleLogout = useCallback(() => {
     if (onLogout) {
       onLogout();
     }
-  };
+  }, [onLogout]);
 
   // Mobile header design
   return (
@@ -257,3 +261,5 @@ export default function Header({ user, onLogout }: HeaderProps) {
   );
 }
 
+const Header = memo(HeaderComponent);
+export default Header;

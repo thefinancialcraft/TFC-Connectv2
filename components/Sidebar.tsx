@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import AppLogo from "./AppLogo";
 import { supabase } from "../lib/supabase";
 import { getStoredUserData } from "../lib/localStorageUtils";
+import { NAV_ITEMS } from "../config/navigation";
 
 interface SidebarProps {
   user?: {
@@ -19,124 +20,78 @@ interface SidebarProps {
   isSuperAdmin?: boolean;
 }
 
-export default function Sidebar({ user, activeNav = "dashboard", onNavChange, userRole, isSuperAdmin }: SidebarProps) {
+const Sidebar = memo(function Sidebar({ 
+  user, 
+  activeNav = "dashboard", 
+  onNavChange, 
+  userRole, 
+  isSuperAdmin 
+}: SidebarProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [currentUserRole, setCurrentUserRole] = useState<string | null>(userRole || null);
-  const [currentIsSuperAdmin, setCurrentIsSuperAdmin] = useState<boolean | undefined>(isSuperAdmin);
   
-  // Initialize with cached data, then update with props if different (ghost update)
-  const [cachedUser, setCachedUser] = useState<SidebarProps['user']>(() => {
-    if (typeof window === 'undefined') return undefined; // SSR safety
+  // Initialize with cached user data for ghost loading immediately
+  const [cachedUser] = useState<SidebarProps['user']>(() => {
+    if (typeof window === 'undefined') return undefined;
     const cached = getStoredUserData();
     if (cached) {
       return {
         displayName: cached.user_name || cached.displayName || null,
         email: cached.email || '',
         employeeId: cached.employee_id || null,
-        lastSignInAt: null, // Will be updated from props
+        lastSignInAt: null, 
         profilePicUrl: cached.profile_pic_url || null,
       };
     }
     return undefined;
   });
 
-  // Set mounted to true after component mounts (client-side only)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Fetch user role from database if not provided
-  useEffect(() => {
-    if (mounted && !currentUserRole) {
-      const fetchUserRole = async () => {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            const { data: userProfile } = await supabase
-              .from('user_profiles')
-              .select('role, super_admin')
-              .eq('user_id', session.user.id)
-              .single();
+  // Memoize display user to prevent unnecessary recalculations
+  const displayUser = useMemo(() => {
+    return mounted ? (user || cachedUser) : user;
+  }, [mounted, user, cachedUser]);
 
-            if (userProfile) {
-              setCurrentUserRole(userProfile.role);
-              setCurrentIsSuperAdmin(userProfile.super_admin || false);
-            }
-          }
-        } catch (err) {
-          console.error('Error fetching user role in Sidebar:', err);
-        }
-      };
-      fetchUserRole();
-    } else if (userRole) {
-      setCurrentUserRole(userRole);
-    }
-    if (isSuperAdmin !== undefined) {
-      setCurrentIsSuperAdmin(isSuperAdmin);
-    }
-  }, [mounted, userRole, isSuperAdmin, currentUserRole]);
+  // Memoize admin status
+  const isAdmin = useMemo(() => {
+    return userRole === 'admin' || userRole === 'super_admin' || isSuperAdmin === true;
+  }, [userRole, isSuperAdmin]);
 
-  // Ghost update: Only update if props actually changed
-  useEffect(() => {
-    if (user) {
-      setCachedUser(prev => {
-        // If no previous cached data, use props
-        if (!prev) {
-          return user;
-        }
-        
-        // Compare data - only update if changed
-        const hasChanged = 
-          prev.displayName !== user.displayName ||
-          prev.employeeId !== user.employeeId ||
-          prev.email !== user.email ||
-          prev.lastSignInAt !== user.lastSignInAt ||
-          prev.profilePicUrl !== user.profilePicUrl;
-        
-        // Only update if data has actually changed
-        if (hasChanged) {
-          return user;
-        }
-        
-        // Return previous data to prevent unnecessary re-render
-        return prev;
-      });
-    }
-  }, [user?.displayName, user?.employeeId, user?.email, user?.lastSignInAt, user?.profilePicUrl]);
-
-  // Use cached user for display (prevents "User / Not assigned" flicker)
-  // Only use cached user after mount to prevent hydration mismatch
-  const displayUser = mounted ? (cachedUser || user) : user;
-
-  const handleLogout = async () => {
+  // Stable logout handler
+  const handleLogout = useCallback(async () => {
+    if (isLoggingOut) return;
     setIsLoggingOut(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Logout error:", error);
-      } else {
-        // Clear any cached data
-        if (displayUser?.email) {
-          localStorage.removeItem("isAuthenticated");
-          localStorage.removeItem("userEmail");
-          localStorage.removeItem("rememberMe");
-          localStorage.removeItem("rememberedEmail");
-          localStorage.removeItem("rememberedPassword");
-        }
-        router.push("/login");
       }
+      
+      // Clear critical local storage items on logout
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("rememberMe");
+        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedPassword");
+      }
+      // Use replace to prevent back navigation after logout
+      await router.replace("/login");
     } catch (err) {
-      console.error("Logout error:", err);
-      router.push("/login");
+      console.error("Logout exception:", err);
+      await router.replace("/login");
     } finally {
-      setIsLoggingOut(false);
+      if (mounted) setIsLoggingOut(false);
     }
-  };
+  }, [isLoggingOut, router, mounted]);
 
-  const getInitials = () => {
-    if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
+  // Memoize derived UI values
+  const initials = useMemo(() => {
+    if (!mounted) return "U";
     if (displayUser?.displayName) {
       return displayUser.displayName.trim().charAt(0).toUpperCase();
     }
@@ -144,13 +99,14 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       return displayUser.email.slice(0, 2).toUpperCase();
     }
     return "U";
-  };
+  }, [mounted, displayUser]);
 
-  const initials = getInitials();
-  // Only use profilePicUrl after mount to prevent hydration mismatch
-  const profilePicUrl = mounted ? displayUser?.profilePicUrl : null;
-
-  const formatLastLogin = (dateString?: string | null) => {
+  const profilePicUrl = useMemo(() => {
+    return mounted ? displayUser?.profilePicUrl : null;
+  }, [mounted, displayUser]);
+  
+  const formattedLastLogin = useMemo(() => {
+    const dateString = displayUser?.lastSignInAt;
     if (!dateString) return "Just now";
     const date = new Date(dateString);
     const now = new Date();
@@ -164,75 +120,18 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
-  };
+  }, [displayUser?.lastSignInAt]);
 
-  // Check if user is admin or super_admin
-  // Only check after mount to prevent hydration mismatch
-  const isAdmin = mounted && (currentUserRole === 'admin' || currentUserRole === 'super_admin' || currentIsSuperAdmin === true);
+  // Memoize filtered navigation items
+  const navItems = useMemo(() => {
+    return mounted
+      ? NAV_ITEMS.filter(item => !item.adminOnly || isAdmin)
+      : NAV_ITEMS;
+  }, [mounted, isAdmin]);
 
-  const allNavItems = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: "fi-rr-home",
-      adminOnly: false,
-    },
-    {
-      name: "Users",
-      path: "/users",
-      icon: "fi-rr-users",
-      adminOnly: true, // Only show for admin/super_admin
-    },
-    {
-      name: "Customer",
-      path: "/customer",
-      icon: "fi-rr-users",
-      adminOnly: false,
-    },
-    {
-      name: "Campaign",
-      path: "/campaign",
-      icon: "fi-rr-bullhorn",
-      adminOnly: false,
-    },
-    {
-      name: "Activity",
-      path: "/activity",
-      icon: "fi-rr-time-past",
-      adminOnly: false,
-    },
-    {
-      name: "Follow Up",
-      path: "/followup",
-      icon: "fi-rr-calendar-clock",
-      adminOnly: false,
-    },
-    {
-      name: "Organization",
-      path: "/organization",
-      icon: "fi-rr-building",
-      adminOnly: false,
-    },
-    {
-      name: "Team",
-      path: "/team",
-      icon: "fi-rr-users-alt",
-      adminOnly: false,
-    },
-  ];
-
-  // Filter nav items based on admin status
-  // During SSR (before mount), show all items to prevent hydration mismatch
-  // After mount, filter based on actual role
-  const navItems = mounted 
-    ? allNavItems.filter(item => !item.adminOnly || isAdmin)
-    : allNavItems; // Show all items during SSR to prevent hydration mismatch
-
-  const handleNavClick = (path: string) => {
-    if (onNavChange) {
-      onNavChange(path);
-    }
-  };
+  const handleNavClick = useCallback((path: string) => {
+    onNavChange?.(path);
+  }, [onNavChange]);
 
   return (
     <aside
@@ -247,7 +146,11 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       {/* Navigation Items */}
       <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = router.pathname === item.path || activeNav === item.path;
+          // Robust active check handling nested routes (e.g. /users matches /users/new)
+          // But strict match for dashboard to avoid matching everything if dashboard path is '/'
+          const isOnPath = router.pathname.startsWith(item.path);
+          const isExactDashboard = item.path === '/dashboard' && router.pathname === '/dashboard';
+          const isActive = item.path === '/dashboard' ? isExactDashboard : (isOnPath || activeNav === item.path);
 
           return (
             <Link
@@ -260,12 +163,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
                   : "text-gray-600 hover:bg-gray-50"
               }`}
               style={{
-                backgroundColor: isActive
-                  ? "#4b33e8"
-                  : "transparent",
-                background: isActive
-                  ? "#4b33e8"
-                  : undefined,
+                backgroundColor: isActive ? "#4b33e8" : "transparent",
               }}
             >
               <i className={`fi ${item.icon} flex text-sm`}></i>
@@ -339,7 +237,7 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
                 className="font-medium"
                 style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
               >
-                {formatLastLogin(displayUser?.lastSignInAt)}
+                {formattedLastLogin}
               </span>
             </div>
           </div>
@@ -407,5 +305,6 @@ export default function Sidebar({ user, activeNav = "dashboard", onNavChange, us
       </div>
     </aside>
   );
-}
+});
 
+export default Sidebar;

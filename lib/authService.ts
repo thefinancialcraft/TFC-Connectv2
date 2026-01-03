@@ -65,6 +65,10 @@ export interface UserProfile {
   accountStatus: string | null;
   updatedAt: string | null;
   profilePicUrl?: string | null;
+  profile_complete?: boolean;
+  statusReason?: string | null;
+  holdStartDate?: string | null;
+  holdEndDate?: string | null;
   activeCampaignId?: string | null;
   activeCustomerId?: string | null;
   activeSessionState?: string | null;

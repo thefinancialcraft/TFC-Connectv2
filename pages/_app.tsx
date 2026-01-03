@@ -3,12 +3,16 @@ import "../styles/globals.css";
 import { DialogProvider } from "../lib/dialogService";
 import SessionRedirect from "../components/SessionRedirect";
 
+import { UserProvider } from "../components/UserProvider";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <DialogProvider>
-      <SessionRedirect />
-      <Component {...pageProps} />
-    </DialogProvider>
+    <UserProvider>
+      <DialogProvider>
+        <SessionRedirect />
+        <Component {...pageProps} />
+      </DialogProvider>
+    </UserProvider>
   );
 }
 

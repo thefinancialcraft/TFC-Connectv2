@@ -1,36 +1,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
-import BottomNav from "../components/BottomNav";
+import { handleLogout } from "../lib/authService";
 
 export default function Activity() {
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-      return {
-        uid: cachedData.user_id || '',
-        displayName: cachedData.user_name || cachedData.displayName || null,
-        email: cachedData.email || '',
-        phone: null,
-        providers: [],
-        providerType: null,
-        createdAt: '',
-        lastSignInAt: null,
-        employeeId: cachedData.employee_id || null,
-        role: cachedData.role || null,
-        approvalStatus: null,
-        accountStatus: null,
-        updatedAt: null,
-        profilePicUrl: cachedData.profile_pic_url || null,
-      };
-    }
-    return null;
-  });
+  const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav, setActiveNav] = useState("activity");
@@ -51,118 +27,6 @@ export default function Activity() {
     idleFrom: "N/A"
   });
 
-  const fetchAuth = async () => {
-    const result = await checkAuthAndFetchProfile();
-    
-    if (result.shouldRedirect) {
-      router.push("/login");
-      return;
-    }
-
-    if (result.error) {
-      setError(result.error);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-      return;
-    }
-
-    if (result.user) {
-      const { data: { session } } = await supabase.auth.getSession();
-      let latestUserData = result.user;
-      
-      if (session) {
-        try {
-          const profileResponse = await fetch("/api/auth/user-profile", {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          });
-          const profileData = await profileResponse.json();
-          
-          if (profileData.success && profileData.user) {
-            latestUserData = {
-              ...profileData.user,
-              profilePicUrl: profileData.user.profile_pic_url || null,
-            };
-            
-            if (profileData.user.profile_complete === false) {
-              router.push("/profile-completion");
-              return;
-            }
-          }
-        } catch (err) {
-          console.error('Error fetching latest profile:', err);
-        }
-      }
-
-      setUser(prevUser => {
-        if (!prevUser) {
-          if (latestUserData.uid) {
-            const cachedData = getStoredUserData();
-            const userDataToStore = {
-              user_id: latestUserData.uid,
-              email: latestUserData.email || '',
-              user_name: latestUserData.displayName || cachedData?.user_name || '',
-              employee_id: latestUserData.employeeId || cachedData?.employee_id || '',
-              role: latestUserData.role || cachedData?.role || 'user',
-              profile_pic_url: latestUserData.profilePicUrl || null,
-              displayName: latestUserData.displayName || undefined,
-              session_token: cachedData?.session_token,
-              refresh_token: cachedData?.refresh_token,
-            };
-            storeUserData(userDataToStore);
-          }
-          return latestUserData;
-        }
-        
-        const hasChanged = 
-          prevUser.displayName !== latestUserData.displayName ||
-          prevUser.employeeId !== latestUserData.employeeId ||
-          prevUser.email !== latestUserData.email ||
-          prevUser.approvalStatus !== latestUserData.approvalStatus ||
-          prevUser.accountStatus !== latestUserData.accountStatus ||
-          prevUser.role !== latestUserData.role ||
-          prevUser.phone !== latestUserData.phone ||
-          prevUser.profilePicUrl !== latestUserData.profilePicUrl;
-        
-        if (hasChanged) {
-          if (latestUserData.uid) {
-            const cachedData = getStoredUserData();
-            const userDataToStore = {
-              user_id: latestUserData.uid,
-              email: latestUserData.email || '',
-              user_name: latestUserData.displayName || cachedData?.user_name || '',
-              employee_id: latestUserData.employeeId || cachedData?.employee_id || '',
-              role: latestUserData.role || cachedData?.role || 'user',
-              profile_pic_url: latestUserData.profilePicUrl || null,
-              displayName: latestUserData.displayName || undefined,
-              session_token: cachedData?.session_token,
-              refresh_token: cachedData?.refresh_token,
-            };
-            storeUserData(userDataToStore);
-          }
-          return latestUserData;
-        }
-        
-        return prevUser;
-      });
-
-      if (latestUserData.approvalStatus === 'rejected') {
-        router.push("/rejected");
-        return;
-      } else if (latestUserData.approvalStatus === 'pending') {
-        router.push("/pending");
-        return;
-      } else if (latestUserData.approvalStatus === 'suspend' || latestUserData.accountStatus === 'suspend') {
-        router.push("/suspended");
-        return;
-      } else if (latestUserData.approvalStatus === 'hold' || latestUserData.accountStatus === 'hold') {
-        router.push("/hold");
-        return;
-      }
-    }
-  };
 
   const fetchActivities = async () => {
     try {
@@ -224,20 +88,11 @@ export default function Activity() {
   };
 
   useEffect(() => {
-    fetchAuth();
-    fetchActivities();
-    
-    const handleFocus = () => {
-      fetchAuth();
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [router, selectedDate]);
+    if (mounted && user) {
+      fetchActivities();
+    }
+  }, [mounted, user, selectedDate]);
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
 
   const formatDisplayDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -300,44 +155,9 @@ export default function Activity() {
 
 
 
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-        <div className="text-center">
-          <div className="text-lg mb-4 text-red-500">{error}</div>
-          <div className="text-sm" style={{ color: "#4b33e8" }}>Redirecting to login...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
-      <Sidebar
-        user={{
-          displayName: user?.displayName || null,
-          email: user?.email || "",
-          employeeId: user?.employeeId || null,
-          lastSignInAt: user?.lastSignInAt || null,
-          profilePicUrl: user?.profilePicUrl || null,
-        }}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        userRole={user?.role || null}
-      />
-
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
-        <Header
-          user={{
-            displayName: user?.displayName || null,
-            email: user?.email || "",
-            employeeId: user?.employeeId || null,
-            profilePicUrl: user?.profilePicUrl || null,
-          }}
-          onLogout={handleLogoutClick}
-        />
-
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
+    <AppLayout>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             <div className="space-y-6 sm:space-y-8">
               <div className="mb-6 flex items-start justify-between">
@@ -1059,10 +879,6 @@ export default function Activity() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
-
-      <BottomNav activeNav="activity" userRole={user?.role || null} />
-    </div>
+    </AppLayout>
   );
 }

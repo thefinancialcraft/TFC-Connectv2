@@ -9,6 +9,8 @@ interface User {
   department: string | null;
   designation: string | null;
   status: string | null;
+  is_client: boolean | null;
+  is_caller: boolean | null;
 }
 
 interface UserMenuDropdownProps {
@@ -23,6 +25,8 @@ interface UserMenuDropdownProps {
   onRoleChange: (userId: string, role: 'user' | 'admin' | 'super_admin') => void;
   onDepartmentChange: (userId: string, department: 'sales' | 'renewal' | 'backend' | 'management' | 'service') => void;
   onDesignationChange: (userId: string, designation: 'agent' | 'manager' | 'faculty_staff' | 'team_leader' | 'ceo' | 'developer') => void;
+  onIsClientChange: (userId: string, isClient: boolean) => void;
+  onIsCallerChange: (userId: string, isCaller: boolean) => void;
   onStatusChange: (userId: string, status: 'active' | 'inactive') => void;
   onDelete: (userId: string) => void;
   // Dropdown states
@@ -32,6 +36,8 @@ interface UserMenuDropdownProps {
   openRoleDropdown: string | null;
   openDepartmentDropdown: string | null;
   openDesignationDropdown: string | null;
+  openIsClientDropdown: string | null;
+  openIsCallerDropdown: string | null;
   // Dropdown setters
   setOpenApprovalDropdown: (id: string | null) => void;
   setOpenWorkTypeDropdown: (id: string | null) => void;
@@ -39,6 +45,8 @@ interface UserMenuDropdownProps {
   setOpenRoleDropdown: (id: string | null) => void;
   setOpenDepartmentDropdown: (id: string | null) => void;
   setOpenDesignationDropdown: (id: string | null) => void;
+  setOpenIsClientDropdown: (id: string | null) => void;
+  setOpenIsCallerDropdown: (id: string | null) => void;
   menuRef?: (el: HTMLDivElement | null) => void;
   onClose?: () => void;
   onMenuClose?: () => void;
@@ -116,6 +124,8 @@ export default function UserMenuDropdown({
   onRoleChange,
   onDepartmentChange,
   onDesignationChange,
+  onIsClientChange,
+  onIsCallerChange,
   onStatusChange,
   onDelete,
   openApprovalDropdown,
@@ -124,12 +134,16 @@ export default function UserMenuDropdown({
   openRoleDropdown,
   openDepartmentDropdown,
   openDesignationDropdown,
+  openIsClientDropdown,
+  openIsCallerDropdown,
   setOpenApprovalDropdown,
   setOpenWorkTypeDropdown,
   setOpenUserTypeDropdown,
   setOpenRoleDropdown,
   setOpenDepartmentDropdown,
   setOpenDesignationDropdown,
+  setOpenIsClientDropdown,
+  setOpenIsCallerDropdown,
   menuRef,
   onClose,
   onMenuClose
@@ -142,6 +156,8 @@ export default function UserMenuDropdown({
     setOpenRoleDropdown(null);
     setOpenDepartmentDropdown(null);
     setOpenDesignationDropdown(null);
+    setOpenIsClientDropdown(null);
+    setOpenIsCallerDropdown(null);
     onClose?.();
   };
 
@@ -573,6 +589,8 @@ export default function UserMenuDropdown({
             setOpenUserTypeDropdown(null);
             setOpenRoleDropdown(null);
             setOpenDepartmentDropdown(null);
+            setOpenIsClientDropdown(null);
+            setOpenIsCallerDropdown(null);
           }}
           className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
         >
@@ -607,9 +625,8 @@ export default function UserMenuDropdown({
                     onMenuClose?.();
                   }
                 }}
-                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${
-                  user.designation === designation ? 'bg-purple-50' : ''
-                }`}
+                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${user.designation === designation ? 'bg-purple-50' : ''
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
@@ -621,6 +638,136 @@ export default function UserMenuDropdown({
                   <span className="font-semibold text-gray-700">{getDesignationLabel(designation)}</span>
                 </div>
                 {user.designation === designation && (
+                  <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Is Client Dropdown */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenIsClientDropdown(openIsClientDropdown === user.id ? null : user.id);
+            setOpenApprovalDropdown(null);
+            setOpenWorkTypeDropdown(null);
+            setOpenUserTypeDropdown(null);
+            setOpenRoleDropdown(null);
+            setOpenDepartmentDropdown(null);
+            setOpenDesignationDropdown(null);
+            setOpenIsCallerDropdown(null);
+          }}
+          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
+        >
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Is Client: {user.is_client ? 'Yes' : 'No'}</span>
+          </div>
+          {openIsClientDropdown === user.id ? (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </button>
+        {openIsClientDropdown === user.id && (
+          <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
+            {[true, false].map((isClient) => (
+              <div
+                key={isClient ? 'yes' : 'no'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onIsClientChange(user.id, isClient);
+                  if (viewType === 'list') {
+                    onMenuClose?.();
+                  }
+                }}
+                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${user.is_client === isClient ? 'bg-purple-50' : ''
+                  }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700">{isClient ? 'Yes' : 'No'}</span>
+                </div>
+                {user.is_client === isClient && (
+                  <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Is Caller Dropdown */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenIsCallerDropdown(openIsCallerDropdown === user.id ? null : user.id);
+            setOpenApprovalDropdown(null);
+            setOpenWorkTypeDropdown(null);
+            setOpenUserTypeDropdown(null);
+            setOpenRoleDropdown(null);
+            setOpenDepartmentDropdown(null);
+            setOpenDesignationDropdown(null);
+            setOpenIsClientDropdown(null);
+          }}
+          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
+        >
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Is Caller: {user.is_caller ? 'Yes' : 'No'}</span>
+          </div>
+          {openIsCallerDropdown === user.id ? (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </button>
+        {openIsCallerDropdown === user.id && (
+          <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
+            {[true, false].map((isCaller) => (
+              <div
+                key={isCaller ? 'yes' : 'no'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onIsCallerChange(user.id, isCaller);
+                  if (viewType === 'list') {
+                    onMenuClose?.();
+                  }
+                }}
+                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${user.is_caller === isCaller ? 'bg-purple-50' : ''
+                  }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700">{isCaller ? 'Yes' : 'No'}</span>
+                </div>
+                {user.is_caller === isCaller && (
                   <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>

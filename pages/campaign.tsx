@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import BottomNav from "../components/BottomNav";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
 import { useCallSessionRedirect } from "../hooks/useCallSessionRedirect";
 
 import CampaignCard, { type Campaign } from "../components/CampaignCard";
@@ -41,38 +37,14 @@ const calculatePerformance = (c: Campaign) => {
 
 export default function Campaign() {
 	const router = useRouter();
-	const [user, setUser] = useState<UserProfile | null>(() => {
-		const cached = getStoredUserData();
-		if (cached) {
-			return {
-				uid: cached.user_id || "",
-				displayName: cached.user_name || cached.displayName || null,
-				email: cached.email || "",
-				phone: null,
-				providers: [],
-				providerType: null,
-				createdAt: "",
-				lastSignInAt: null,
-				employeeId: cached.employee_id || null,
-				role: cached.role || null,
-				approvalStatus: null,
-				accountStatus: null,
-				updatedAt: null,
-				profilePicUrl: cached.profile_pic_url || null,
-			};
-		}
-		return null;
-	});
+	const { user, mounted } = useUser();
 
 	useCallSessionRedirect(user?.uid);
 
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState("");
-	const [activeNav, setActiveNav] = useState("campaign");
+	const [activeNav] = useState("campaign");
 
 	const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 	const [loadingCampaigns, setLoadingCampaigns] = useState(true);
-	const [mounted, setMounted] = useState(false);
 	const [showAddCampaignModal, setShowAddCampaignModal] = useState(false);
 	const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -80,59 +52,6 @@ export default function Campaign() {
 	const [users, setUsers] = useState<any[]>([]);
 	const [loadingUsers, setLoadingUsers] = useState(false);
 
-	const fetchAuth = async () => {
-		const result = await checkAuthAndFetchProfile();
-		if (result.shouldRedirect) {
-			router.push("/login");
-			return;
-		}
-		if (result.error) {
-			setError(result.error);
-			setTimeout(() => router.push("/login"), 2000);
-			return;
-		}
-
-		if (result.user) {
-			const { data: { session } } = await supabase.auth.getSession();
-			let latestUserData = result.user;
-			if (session) {
-				try {
-					const profileResp = await fetch("/api/auth/user-profile", {
-						headers: { Authorization: `Bearer ${session.access_token}` },
-					});
-					const profileData = await profileResp.json();
-					if (profileData.success && profileData.user) {
-						latestUserData = { ...profileData.user, profilePicUrl: profileData.user.profile_pic_url || null };
-					}
-				} catch (e) {
-					console.error("Error fetching latest profile:", e);
-				}
-			}
-
-			setUser((prev) => {
-				if (!prev) {
-					if (latestUserData.uid) {
-						const cached = getStoredUserData();
-						storeUserData({
-							user_id: latestUserData.uid,
-							email: latestUserData.email || "",
-							user_name: latestUserData.displayName || cached?.user_name || "",
-							employee_id: latestUserData.employeeId || cached?.employee_id || "",
-							role: latestUserData.role || cached?.role || "user",
-							profile_pic_url: latestUserData.profilePicUrl || null,
-							session_token: cached?.session_token,
-							refresh_token: cached?.refresh_token,
-						});
-					}
-					return latestUserData;
-				}
-
-				const hasChanged = prev.displayName !== latestUserData.displayName || prev.employeeId !== latestUserData.employeeId || prev.email !== latestUserData.email || prev.profilePicUrl !== latestUserData.profilePicUrl || prev.role !== latestUserData.role;
-				if (hasChanged) return latestUserData;
-				return prev;
-			});
-		}
-	};
 
 	const fetchCampaigns = async () => {
 		try {
@@ -213,11 +132,8 @@ export default function Campaign() {
 	};
 
 	useEffect(() => {
-		setMounted(true);
-		fetchAuth();
 		fetchCampaigns();
 		const handleFocus = () => {
-			fetchAuth();
 			fetchCampaigns();
 		};
 		window.addEventListener("focus", handleFocus);
@@ -225,9 +141,6 @@ export default function Campaign() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router]);
 
-	const handleLogoutClick = async () => {
-		await handleLogout(router);
-	};
 
 	const handleCampaignSaved = () => {
 		alert(editingCampaign ? "Campaign updated successfully!" : "Campaign created successfully!");
@@ -264,48 +177,10 @@ export default function Campaign() {
         (c.status && c.status.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-	if (loading) {
-		return (
-			<div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
-					<div className="text-lg" style={{ color: "#4b33e8" }}>Loading...</div>
-				</div>
-			</div>
-		);
-	}
-
-	if (error) {
-		return (
-			<div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-				<div className="text-center">
-					<div className="text-lg mb-4 text-red-500">{error}</div>
-					<div className="text-sm" style={{ color: "#4b33e8" }}>Redirecting to login...</div>
-				</div>
-			</div>
-		);
-	}
 
 	return (
-		<div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
-			<Sidebar
-				user={{
-					displayName: user?.displayName || null,
-					email: user?.email || '',
-					employeeId: user?.employeeId || null,
-					lastSignInAt: user?.lastSignInAt || null,
-					profilePicUrl: user?.profilePicUrl || null,
-				}}
-				activeNav={activeNav}
-				onNavChange={setActiveNav}
-				userRole={user?.role || null}
-			/>
-
-			<div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
-				<Header user={{ displayName: user?.displayName || null, email: user?.email || '', employeeId: user?.employeeId || null, profilePicUrl: user?.profilePicUrl || null }} onLogout={handleLogoutClick} />
-
-				<main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] lg:ml-0">
-					<div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
+		<AppLayout>
+			<div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
 						<div className="space-y-6 sm:space-y-8">
 							<div className="mb-6 flex items-start justify-between">
 								<div>
@@ -484,8 +359,6 @@ export default function Campaign() {
 							</div>
 						</div>
 					</div>
-				</main>
-			</div>
 
 			{showAddCampaignModal && (
 				<AddCampaignModal
@@ -502,7 +375,6 @@ export default function Campaign() {
 				/>
 			)}
 
-			<BottomNav activeNav={activeNav} userRole={user?.role || null} isSuperAdmin={user?.role === 'super_admin'} />
-		</div>
+		</AppLayout>
 	);
 }

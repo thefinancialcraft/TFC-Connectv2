@@ -1,41 +1,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
-import BottomNav from "../components/BottomNav";
 
 export default function FollowUp() {
   const router = useRouter();
-  // Initialize with cached data from localStorage
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-      return {
-        uid: cachedData.user_id || '',
-        displayName: cachedData.user_name || cachedData.displayName || null,
-        email: cachedData.email || '',
-        phone: null,
-        providers: [],
-        providerType: null,
-        createdAt: '',
-        lastSignInAt: null,
-        employeeId: cachedData.employee_id || null,
-        role: cachedData.role || null,
-        approvalStatus: null,
-        accountStatus: null,
-        updatedAt: null,
-        profilePicUrl: cachedData.profile_pic_url || null,
-      };
-    }
-    return null;
-  });
+  const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeNav, setActiveNav] = useState("followup");
-  const [mounted, setMounted] = useState(false);
+  const [activeNav] = useState("followup");
 
   // Data States
   const [leads, setLeads] = useState<any[]>([]);
@@ -47,29 +20,9 @@ export default function FollowUp() {
     upcoming: 0
   });
 
-  const fetchAuth = async () => {
-    const result = await checkAuthAndFetchProfile();
-    
-    if (result.shouldRedirect) {
-      router.push("/login");
-      return;
-    }
 
-    if (result.error) {
-      setError(result.error);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-      return;
-    }
-
-    if (result.user) {
-      setUser(result.user);
-      fetchLeads(result.user);
-    }
-  };
-
-  const fetchLeads = async (currentUser: UserProfile) => {
+  const fetchLeads = async () => {
+    if (!user) return;
     try {
       setLoadingLeads(true);
 
@@ -151,20 +104,18 @@ export default function FollowUp() {
   };
 
   useEffect(() => {
-    setMounted(true);
-    fetchAuth();
+    if (mounted && user) {
+      fetchLeads();
+    }
     
-    // Auto-refresh periodically?
+    // Auto-refresh periodically
     const interval = setInterval(() => {
-        if(user) fetchLeads(user);
+        if(user) fetchLeads();
     }, 60000); // 1 min
 
     return () => clearInterval(interval);
-  }, [router.isReady]);
+  }, [mounted, user]);
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
   
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '—';
@@ -186,36 +137,7 @@ export default function FollowUp() {
 
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
-      {/* Left Sidebar */}
-      <Sidebar
-        user={{
-          displayName: user?.displayName || null,
-          email: user?.email || "",
-          employeeId: user?.employeeId || null,
-          lastSignInAt: user?.lastSignInAt || null,
-          profilePicUrl: user?.profilePicUrl || null,
-        }}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        userRole={user?.role || null}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
-        {/* Top Header */}
-        <Header
-          user={{
-            displayName: user?.displayName || null,
-            email: user?.email || "",
-            employeeId: user?.employeeId || null,
-            profilePicUrl: user?.profilePicUrl || null,
-          }}
-          onLogout={handleLogoutClick}
-        />
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
+    <AppLayout>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             
             {/* Page Title */}
@@ -512,7 +434,7 @@ export default function FollowUp() {
                             <i className="fi flex fi-rr-filter text-sm text-gray-600"></i>
                         </button>
                         <button 
-                            onClick={() => user && fetchLeads(user)}
+                            onClick={() => fetchLeads()}
                             disabled={loadingLeads}
                             className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center ${loadingLeads ? 'opacity-50 cursor-not-allowed' : ''}`} 
                             title="Refresh Data"
@@ -642,11 +564,6 @@ export default function FollowUp() {
                 )}
             </div>
           </div>
-        </main>
-      </div>
-
-      {/* Bottom Navigation - Mobile Only */}
-      <BottomNav activeNav="followup" userRole={user?.role || null} />
-    </div>
+    </AppLayout>
   );
 }

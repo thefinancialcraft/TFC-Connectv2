@@ -13,6 +13,12 @@ export interface StoredUserData {
   displayName?: string;
   session_token?: string; // Store session token for quick login
   refresh_token?: string; // Store refresh token
+  approval_status?: string | null;
+  status?: string | null;
+  updated_at?: string | null;
+  status_reason?: string | null;
+  hold_start_date?: string | null;
+  hold_end_date?: string | null;
 }
 
 const STORAGE_KEY = 'tfc_user_data';

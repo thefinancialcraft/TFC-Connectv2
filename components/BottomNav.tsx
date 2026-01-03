@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { useEffect, useState, memo } from "react";
+// Removed unnecessary supabase import as we rely on props
 
 interface BottomNavProps {
   activeNav?: string;
@@ -8,7 +8,7 @@ interface BottomNavProps {
   isSuperAdmin?: boolean;
 }
 
-export default function BottomNav({
+const BottomNav = memo(function BottomNav({
   activeNav,
   userRole,
   isSuperAdmin,
@@ -19,53 +19,20 @@ export default function BottomNav({
   const [scrollTimer, setScrollTimer] = useState<NodeJS.Timeout | null>(null);
   const [hideTimer, setHideTimer] = useState<NodeJS.Timeout | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [currentUserRole, setCurrentUserRole] = useState<string | null>(
-    userRole || null
-  );
-  const [currentIsSuperAdmin, setCurrentIsSuperAdmin] = useState<
-    boolean | undefined
-  >(isSuperAdmin);
-
-  // Fetch user role from database if not provided
+  
+  // Directly use props - AppLayout guarantees them
+  // We don't need local state for role since it's passed down
+  
   useEffect(() => {
     setMounted(true);
-    if (!currentUserRole) {
-      const fetchUserRole = async () => {
-        try {
-          const {
-            data: { session },
-          } = await supabase.auth.getSession();
-          if (session) {
-            const { data: userProfile } = await supabase
-              .from("user_profiles")
-              .select("role, super_admin")
-              .eq("user_id", session.user.id)
-              .single();
-
-            if (userProfile) {
-              setCurrentUserRole(userProfile.role);
-              setCurrentIsSuperAdmin(userProfile.super_admin || false);
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching user role in BottomNav:", err);
-        }
-      };
-      fetchUserRole();
-    } else if (userRole) {
-      setCurrentUserRole(userRole);
-    }
-    if (isSuperAdmin !== undefined) {
-      setCurrentIsSuperAdmin(isSuperAdmin);
-    }
-  }, [userRole, isSuperAdmin, currentUserRole]);
+  }, []);
 
   // Check if user is admin or super_admin
   const isAdmin =
     mounted &&
-    (currentUserRole === "admin" ||
-      currentUserRole === "super_admin" ||
-      currentIsSuperAdmin === true);
+    (userRole === "admin" ||
+     userRole === "super_admin" ||
+     isSuperAdmin === true);
 
   const allNavItems = [
     {
@@ -207,4 +174,6 @@ export default function BottomNav({
       </div>
     </div>
   );
-}
+});
+
+export default BottomNav;

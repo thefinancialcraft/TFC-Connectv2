@@ -26,6 +26,7 @@ export default async function handler(
       from_admin_panel, 
       organization_id,
       is_client,
+      is_caller,
       joined_at,
       renewal_at,
       expire_at
@@ -225,7 +226,7 @@ export default async function handler(
     let generatedEmployeeId: string | null = null;
 
     try {
-      let basePrefix = resolvedUserType === 'posp_agent' ? 'AGT' : 'TFC';
+      let basePrefix = resolvedUserType === 'posp_agent' ? 'ANXUS' : 'NXUS';
       
       // If organization_id is provided, use the organization's org_code as basePrefix
       if (organization_id) {
@@ -297,7 +298,8 @@ export default async function handler(
           profile_complete: false,
           super_admin: false,
           // Client Lifecycle
-          is_client: is_client ?? false,
+          is_client: is_client ?? true,
+          is_caller: is_caller ?? true,
           joined_at: joined_at || new Date().toISOString(),
           renewal_at: renewal_at || new Date().toISOString(),
           expire_at: expire_at || (() => {

@@ -1,13 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
-import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
-import BottomNav from "../components/BottomNav";
 
 interface SettingsFormData {
   email: string;
@@ -48,67 +44,36 @@ interface SettingsFormData {
 
 export default function Settings() {
   const router = useRouter();
-  // Initialize with cached data from localStorage to show previous data immediately (ghost update)
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-      return {
-        uid: cachedData.user_id || "",
-        displayName: cachedData.user_name || cachedData.displayName || null,
-        email: cachedData.email || "",
-        phone: null, // Will be updated from API
-        providers: [],
-        providerType: null,
-        createdAt: "",
-        lastSignInAt: null,
-        employeeId: cachedData.employee_id || null,
-        role: cachedData.role || null,
-        approvalStatus: null, // Will be updated from API
-        accountStatus: null, // Will be updated from API
-        updatedAt: null, // Will be updated from API
-        profilePicUrl: cachedData.profile_pic_url || null,
-      };
-    }
-    return null;
-  });
+  const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeNav, setActiveNav] = useState("settings");
+  const [activeNav] = useState("settings");
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
-  // Form state - organized by categories, initialized with cached data
-  const [formData, setFormData] = useState<SettingsFormData>(() => {
-    const cachedData = getStoredUserData();
-    return {
-      // basic_info - use cached data if available
-      email: cachedData?.email || "",
-      user_name: cachedData?.user_name || cachedData?.displayName || "",
-      contact_no: "",
-      employee_id: cachedData?.employee_id || "",
-      role: cachedData?.role || "",
-    // personal_info
+  // Form state - organized by categories
+  const [formData, setFormData] = useState<SettingsFormData>({
+    email: "",
+    user_name: "",
+    contact_no: "",
+    employee_id: "",
+    role: "",
     father_name: "",
     gender: "",
     date_of_birth: "",
     blood_group: "",
     alternate_contact: "",
     emergency_contact_no: "",
-    // employment_info
     date_of_joining: "",
     in_hand_salary: "",
-    // lifecycle_info
     is_client: "false",
     joined_at: "",
     renewal_at: "",
     expire_at: "",
-    // address_info
     primary_address: "",
     area_pincode: "",
-    // kyc_info
     pan_number: "",
     aadhar_card_no: "",
-    // bank_info
     bank_name: "",
     account_holder_name: "",
     account_number: "",
@@ -116,14 +81,12 @@ export default function Settings() {
     branch_city: "",
     branch_state: "",
     branch_pincode: "",
-      // documents (URLs - handled separately)
-      profile_pic_url: cachedData?.profile_pic_url || "",
-      pancard_url: "",
-      aadhar_front_url: "",
-      aadhar_back_url: "",
-      qualification_marksheet_url: "",
-      bank_passbook_url: "",
-    };
+    profile_pic_url: "",
+    pancard_url: "",
+    aadhar_front_url: "",
+    aadhar_back_url: "",
+    qualification_marksheet_url: "",
+    bank_passbook_url: "",
   });
   const [isSaving, setIsSaving] = useState(false);
   
@@ -146,206 +109,75 @@ export default function Settings() {
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
 
   useEffect(() => {
-    const fetchAuth = async () => {
-      const result = await checkAuthAndFetchProfile();
-      
-      if (result.shouldRedirect) {
-        router.push("/login");
-        return;
-      }
+    const fetchProfileData = async () => {
+      if (!user) return;
 
-      if (result.error) {
-        setError(result.error);
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-        return;
-      }
-
-      if (result.user) {
-        // Fetch full profile data from API
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          try {
-            const profileResponse = await fetch("/api/auth/user-profile", {
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-              },
-            });
-            const profileData = await profileResponse.json();
+      // Fetch full profile data from API
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        try {
+          const profileResponse = await fetch("/api/auth/user-profile", {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+          const profileData = await profileResponse.json();
+          
+          if (profileData.success && profileData.user) {
+            // Fetch all fields directly from user_profiles
+            const { data: fullProfile } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', user.uid)
+              .maybeSingle();
             
-            if (profileData.success && profileData.user) {
-              // Use the latest data from API
-              const latestUserData = {
-                ...profileData.user,
-                profilePicUrl: profileData.user.profile_pic_url || null,
-              };
-
-              // Ghost update: Compare existing data with fetched data - only update if there's a change
-              setUser((prevUser) => {
-                // If no previous user, set the new user
-                if (!prevUser) {
-                  // Update localStorage with the new user data (including profile_pic_url)
-                  if (latestUserData.uid) {
-                    const cachedData = getStoredUserData();
-                    const userDataToStore = {
-                      user_id: latestUserData.uid,
-                      email: latestUserData.email || "",
-                      user_name:
-                        latestUserData.displayName || cachedData?.user_name || "",
-                      employee_id:
-                        latestUserData.employeeId || cachedData?.employee_id || "",
-                      role: latestUserData.role || cachedData?.role || "user",
-                      profile_pic_url: latestUserData.profilePicUrl || null,
-                      displayName: latestUserData.displayName || undefined,
-                      session_token: cachedData?.session_token,
-                      refresh_token: cachedData?.refresh_token,
-                    };
-                    storeUserData(userDataToStore);
-                  }
-                  return latestUserData;
-                }
-
-                // Check if user data has actually changed (compare critical fields for UI update)
-                const hasChanged =
-                  prevUser.displayName !== latestUserData.displayName ||
-                  prevUser.employeeId !== latestUserData.employeeId ||
-                  prevUser.email !== latestUserData.email ||
-                  prevUser.approvalStatus !== latestUserData.approvalStatus ||
-                  prevUser.accountStatus !== latestUserData.accountStatus ||
-                  prevUser.role !== latestUserData.role ||
-                  prevUser.phone !== latestUserData.phone ||
-                  prevUser.profilePicUrl !== latestUserData.profilePicUrl;
-
-                // Only update if data has actually changed (prevents unnecessary re-renders and UI flickering)
-                // This ensures smooth ghost update - UI stays stable if data is same, updates only when changed
-                if (hasChanged) {
-                  // Update localStorage with the new user data (including profile_pic_url)
-                  if (latestUserData.uid) {
-                    const cachedData = getStoredUserData();
-                    const userDataToStore = {
-                      user_id: latestUserData.uid,
-                      email: latestUserData.email || "",
-                      user_name:
-                        latestUserData.displayName || cachedData?.user_name || "",
-                      employee_id:
-                        latestUserData.employeeId || cachedData?.employee_id || "",
-                      role: latestUserData.role || cachedData?.role || "user",
-                      profile_pic_url: latestUserData.profilePicUrl || null,
-                      displayName: latestUserData.displayName || undefined,
-                      session_token: cachedData?.session_token,
-                      refresh_token: cachedData?.refresh_token,
-                    };
-                    storeUserData(userDataToStore);
-                  }
-                  return latestUserData;
-                }
-
-                // Return previous user object to prevent unnecessary re-render and UI update
-                // This keeps showing cached/existing data if fetched data is same (ghost update)
-                return prevUser;
-              });
-              // Fetch all fields directly from user_profiles
-              const { data: fullProfile } = await supabase
-                .from('user_profiles')
-                .select('*')
-                .eq('user_id', result.user?.uid)
-                .maybeSingle();
-              
-              // Use cached data as fallback for critical fields
-              const cachedData = getStoredUserData();
-              setFormData((prevFormData) => ({
-                // basic_info - preserve from cache if available, otherwise use existing formData
-                email: profileData.user.email || fullProfile?.email || prevFormData.email || cachedData?.email || "",
-                user_name: fullProfile?.user_name || profileData.user.displayName || prevFormData.user_name || cachedData?.user_name || "",
-                contact_no: fullProfile?.contact_no || profileData.user.phone || prevFormData.contact_no || "",
-                employee_id: fullProfile?.employee_id || profileData.user.employeeId || prevFormData.employee_id || cachedData?.employee_id || "",
-                role: fullProfile?.role || profileData.user.role || prevFormData.role || cachedData?.role || "",
-                // personal_info - preserve existing values if API doesn't have them
-                father_name: fullProfile?.father_name || prevFormData.father_name || "",
-                gender: fullProfile?.gender || prevFormData.gender || "",
-                date_of_birth: fullProfile?.date_of_birth || prevFormData.date_of_birth || "",
-                blood_group: fullProfile?.blood_group || prevFormData.blood_group || "",
-                alternate_contact: fullProfile?.alternate_contact || prevFormData.alternate_contact || "",
-                emergency_contact_no: fullProfile?.emergency_contact_no || prevFormData.emergency_contact_no || "",
-                // employment_info
-                date_of_joining: fullProfile?.date_of_joining || prevFormData.date_of_joining || "",
-                in_hand_salary: fullProfile?.in_hand_salary?.toString() || prevFormData.in_hand_salary || "",
-                // Client Lifecycle
-                is_client: fullProfile?.is_client !== undefined ? String(fullProfile.is_client) : prevFormData.is_client || "false",
-                joined_at: fullProfile?.joined_at ? fullProfile.joined_at.split('T')[0] : prevFormData.joined_at || "",
-                renewal_at: fullProfile?.renewal_at ? fullProfile.renewal_at.split('T')[0] : prevFormData.renewal_at || "",
-                expire_at: fullProfile?.expire_at ? fullProfile.expire_at.split('T')[0] : prevFormData.expire_at || "",
-                // address_info
-                primary_address: fullProfile?.primary_address || prevFormData.primary_address || "",
-                area_pincode: fullProfile?.area_pincode || prevFormData.area_pincode || "",
-                // kyc_info
-                pan_number: fullProfile?.pan_number || prevFormData.pan_number || "",
-                aadhar_card_no: fullProfile?.aadhar_card_no || prevFormData.aadhar_card_no || "",
-                // bank_info
-                bank_name: fullProfile?.bank_name || prevFormData.bank_name || "",
-                account_holder_name: fullProfile?.account_holder_name || prevFormData.account_holder_name || "",
-                account_number: fullProfile?.account_number || prevFormData.account_number || "",
-                ifsc_code: fullProfile?.ifsc_code || prevFormData.ifsc_code || "",
-                branch_city: fullProfile?.branch_city || prevFormData.branch_city || "",
-                branch_state: fullProfile?.branch_state || prevFormData.branch_state || "",
-                branch_pincode: fullProfile?.branch_pincode || prevFormData.branch_pincode || "",
-                // documents - preserve existing values
-                profile_pic_url: fullProfile?.profile_pic_url || prevFormData.profile_pic_url || cachedData?.profile_pic_url || "",
-                pancard_url: fullProfile?.pancard_url || prevFormData.pancard_url || "",
-                aadhar_front_url: fullProfile?.aadhar_front_url || prevFormData.aadhar_front_url || "",
-                aadhar_back_url: fullProfile?.aadhar_back_url || prevFormData.aadhar_back_url || "",
-                qualification_marksheet_url: fullProfile?.qualification_marksheet_url || prevFormData.qualification_marksheet_url || "",
-                bank_passbook_url: fullProfile?.bank_passbook_url || prevFormData.bank_passbook_url || "",
-              }));
-            }
-          } catch (err) {
-            console.error('Error fetching profile:', err);
-            // Fallback to basic data - use cached data if available, preserve existing formData
-            const cachedData = getStoredUserData();
             setFormData((prevFormData) => ({
-              email: result.user?.email || prevFormData.email || cachedData?.email || "",
-              user_name: result.user?.displayName || prevFormData.user_name || cachedData?.user_name || "",
-              contact_no: result.user?.phone || prevFormData.contact_no || "",
-              employee_id: result.user?.employeeId || prevFormData.employee_id || cachedData?.employee_id || "",
-              role: result.user?.role || prevFormData.role || cachedData?.role || "",
-              father_name: prevFormData.father_name || "",
-              gender: prevFormData.gender || "",
-              date_of_birth: prevFormData.date_of_birth || "",
-              blood_group: prevFormData.blood_group || "",
-              alternate_contact: prevFormData.alternate_contact || "",
-              emergency_contact_no: prevFormData.emergency_contact_no || "",
-              date_of_joining: prevFormData.date_of_joining || "",
-              in_hand_salary: prevFormData.in_hand_salary || "",
-              is_client: prevFormData.is_client || "false",
-              joined_at: prevFormData.joined_at || "",
-              renewal_at: prevFormData.renewal_at || "",
-              expire_at: prevFormData.expire_at || "",
-              primary_address: prevFormData.primary_address || "",
-              area_pincode: prevFormData.area_pincode || "",
-              pan_number: prevFormData.pan_number || "",
-              aadhar_card_no: prevFormData.aadhar_card_no || "",
-              bank_name: prevFormData.bank_name || "",
-              account_holder_name: prevFormData.account_holder_name || "",
-              account_number: prevFormData.account_number || "",
-              ifsc_code: prevFormData.ifsc_code || "",
-              branch_city: prevFormData.branch_city || "",
-              branch_state: prevFormData.branch_state || "",
-              branch_pincode: prevFormData.branch_pincode || "",
-              profile_pic_url: prevFormData.profile_pic_url || cachedData?.profile_pic_url || "",
-              pancard_url: prevFormData.pancard_url || "",
-              aadhar_front_url: prevFormData.aadhar_front_url || "",
-              aadhar_back_url: prevFormData.aadhar_back_url || "",
-              qualification_marksheet_url: prevFormData.qualification_marksheet_url || "",
-              bank_passbook_url: prevFormData.bank_passbook_url || "",
+              email: profileData.user.email || fullProfile?.email || prevFormData.email || "",
+              user_name: fullProfile?.user_name || profileData.user.displayName || prevFormData.user_name || "",
+              contact_no: fullProfile?.contact_no || profileData.user.phone || prevFormData.contact_no || "",
+              employee_id: fullProfile?.employee_id || profileData.user.employeeId || prevFormData.employee_id || "",
+              role: fullProfile?.role || profileData.user.role || prevFormData.role || "",
+              father_name: fullProfile?.father_name || prevFormData.father_name || "",
+              gender: fullProfile?.gender || prevFormData.gender || "",
+              date_of_birth: fullProfile?.date_of_birth || prevFormData.date_of_birth || "",
+              blood_group: fullProfile?.blood_group || prevFormData.blood_group || "",
+              alternate_contact: fullProfile?.alternate_contact || prevFormData.alternate_contact || "",
+              emergency_contact_no: fullProfile?.emergency_contact_no || prevFormData.emergency_contact_no || "",
+              date_of_joining: fullProfile?.date_of_joining || prevFormData.date_of_joining || "",
+              in_hand_salary: fullProfile?.in_hand_salary?.toString() || prevFormData.in_hand_salary || "",
+              is_client: fullProfile?.is_client !== undefined ? String(fullProfile.is_client) : prevFormData.is_client || "false",
+              joined_at: fullProfile?.joined_at ? fullProfile.joined_at.split('T')[0] : prevFormData.joined_at || "",
+              renewal_at: fullProfile?.renewal_at ? fullProfile.renewal_at.split('T')[0] : prevFormData.renewal_at || "",
+              expire_at: fullProfile?.expire_at ? fullProfile.expire_at.split('T')[0] : prevFormData.expire_at || "",
+              primary_address: fullProfile?.primary_address || prevFormData.primary_address || "",
+              area_pincode: fullProfile?.area_pincode || prevFormData.area_pincode || "",
+              pan_number: fullProfile?.pan_number || prevFormData.pan_number || "",
+              aadhar_card_no: fullProfile?.aadhar_card_no || prevFormData.aadhar_card_no || "",
+              bank_name: fullProfile?.bank_name || prevFormData.bank_name || "",
+              account_holder_name: fullProfile?.account_holder_name || prevFormData.account_holder_name || "",
+              account_number: fullProfile?.account_number || prevFormData.account_number || "",
+              ifsc_code: fullProfile?.ifsc_code || prevFormData.ifsc_code || "",
+              branch_city: fullProfile?.branch_city || prevFormData.branch_city || "",
+              branch_state: fullProfile?.branch_state || prevFormData.branch_state || "",
+              branch_pincode: fullProfile?.branch_pincode || prevFormData.branch_pincode || "",
+              profile_pic_url: fullProfile?.profile_pic_url || prevFormData.profile_pic_url || "",
+              pancard_url: fullProfile?.pancard_url || prevFormData.pancard_url || "",
+              aadhar_front_url: fullProfile?.aadhar_front_url || prevFormData.aadhar_front_url || "",
+              aadhar_back_url: fullProfile?.aadhar_back_url || prevFormData.aadhar_back_url || "",
+              qualification_marksheet_url: fullProfile?.qualification_marksheet_url || prevFormData.qualification_marksheet_url || "",
+              bank_passbook_url: fullProfile?.bank_passbook_url || prevFormData.bank_passbook_url || "",
             }));
           }
+        } catch (err) {
+          console.error('Error fetching profile:', err);
         }
       }
     };
 
-    fetchAuth();
-  }, [router]);
+    if (mounted && user) {
+      fetchProfileData();
+    }
+  }, [mounted, user]);
 
   // Fetch active sessions when security tab is active
   useEffect(() => {
@@ -354,9 +186,6 @@ export default function Settings() {
     }
   }, [activeTab, user]);
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -428,55 +257,6 @@ export default function Settings() {
       }
 
       showSuccess("Profile updated successfully!", "Success");
-      
-      // Update cache with new data
-      const cachedData = getStoredUserData();
-      if (cachedData && formData) {
-        const userDataToStore = {
-          user_id: cachedData.user_id,
-          email: formData.email || cachedData.email || "",
-          user_name: formData.user_name || cachedData.user_name || "",
-          employee_id: formData.employee_id || cachedData.employee_id || "",
-          role: formData.role || cachedData.role || "user",
-          profile_pic_url: formData.profile_pic_url || cachedData.profile_pic_url || null,
-          displayName: formData.user_name || cachedData.displayName || undefined,
-          session_token: cachedData.session_token,
-          refresh_token: cachedData.refresh_token,
-        };
-        storeUserData(userDataToStore);
-      }
-      
-      // Refresh user data
-      const result = await checkAuthAndFetchProfile();
-      if (result.user) {
-        setUser((prevUser) => {
-          if (!result.user) return prevUser;
-          
-          const updatedUser: UserProfile = {
-            ...result.user,
-            profilePicUrl: formData.profile_pic_url || result.user.profilePicUrl || null,
-          };
-          
-          // Update cache again with refreshed data
-          if (updatedUser.uid) {
-            const cachedData = getStoredUserData();
-            const userDataToStore = {
-              user_id: updatedUser.uid,
-              email: updatedUser.email || formData.email || "",
-              user_name: updatedUser.displayName || formData.user_name || "",
-              employee_id: updatedUser.employeeId || formData.employee_id || "",
-              role: updatedUser.role || formData.role || "user",
-              profile_pic_url: updatedUser.profilePicUrl || formData.profile_pic_url || null,
-              displayName: updatedUser.displayName || undefined,
-              session_token: cachedData?.session_token,
-              refresh_token: cachedData?.refresh_token,
-            };
-            storeUserData(userDataToStore);
-          }
-          
-          return updatedUser;
-        });
-      }
     } catch (error: any) {
       showError(error.message || "An error occurred while saving", "Error");
     } finally {
@@ -676,64 +456,10 @@ export default function Settings() {
 
   const profileCompletion = calculateProfileCompletion();
 
-  // Memoize user props to prevent unnecessary re-renders and flickering
-  const sidebarUserProps = useMemo(() => ({
-    displayName: user?.displayName || null,
-    email: user?.email || "",
-    employeeId: user?.employeeId || null,
-    lastSignInAt: user?.lastSignInAt || null,
-    profilePicUrl: user?.profilePicUrl || null,
-  }), [user?.displayName, user?.email, user?.employeeId, user?.lastSignInAt, user?.profilePicUrl]);
 
-  const headerUserProps = useMemo(() => ({
-    displayName: user?.displayName || null,
-    email: user?.email || "",
-    employeeId: user?.employeeId || null,
-    profilePicUrl: user?.profilePicUrl || null,
-  }), [user?.displayName, user?.email, user?.employeeId, user?.profilePicUrl]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" style={{ borderColor: '#4b33e8' }}></div>
-          <div className="text-lg" style={{ color: "#4b33e8" }}>Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "#f6f5f7" }}>
-        <div className="text-center">
-          <div className="text-lg mb-4 text-red-500">{error}</div>
-          <div className="text-sm" style={{ color: "#4b33e8" }}>Redirecting to login...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
-      {/* Left Sidebar */}
-      <Sidebar
-        user={sidebarUserProps}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        userRole={user?.role || null}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
-        {/* Top Header */}
-        <Header
-          user={headerUserProps}
-          onLogout={handleLogoutClick}
-        />
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
+    <AppLayout>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 sm:space-y-6 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             {/* Page Header */}
             <div>
@@ -1069,12 +795,7 @@ export default function Settings() {
               )}
             </div>
           </div>
-        </main>
-      </div>
-
-      {/* Bottom Navigation - Mobile Only */}
-      <BottomNav activeNav="profile" />
-    </div>
+    </AppLayout>
   );
 }
 

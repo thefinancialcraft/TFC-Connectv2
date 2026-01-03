@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { checkAuthAndFetchProfile } from "../lib/authService";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
 import AppLogo from "../components/AppLogo";
 
 function ProfileCompletion() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user, mounted: authMounted } = useUser();
   const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
@@ -57,144 +57,104 @@ function ProfileCompletion() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const result = await checkAuthAndFetchProfile();
-      
-      if (result.shouldRedirect) {
-        router.push("/login");
-        return;
-      }
+      if (!authMounted || !user) return;
 
-      if (result.error) {
-        showError(result.error, "Error");
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-        return;
-      }
-
-      if (result.user) {
-        // Fetch full profile data from API
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          try {
-            const profileResponse = await fetch("/api/auth/user-profile", {
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-              },
-            });
-            const profileData = await profileResponse.json();
+      // Fetch full profile data from API
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        try {
+          const profileResponse = await fetch("/api/auth/user-profile", {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          });
+          const profileData = await profileResponse.json();
+          
+          if (profileData.success && profileData.user) {
+            // Fetch all fields directly from user_profiles
+            const { data: fullProfile } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', user.uid)
+              .maybeSingle();
             
-            if (profileData.success && profileData.user) {
-              // Fetch all fields directly from user_profiles
-              const { data: fullProfile } = await supabase
-                .from('user_profiles')
-                .select('*')
-                .eq('user_id', result.user.uid)
-                .maybeSingle();
-              
-              // Format dates for input fields (YYYY-MM-DD format) - client-only, fixed format
-              const formatDateForInput = (dateString: string | null | undefined): string => {
-                if (!dateString || typeof window === 'undefined') return "";
-                try {
-                  // Use UTC to avoid timezone issues
-                  const date = new Date(dateString);
-                  if (isNaN(date.getTime())) return "";
-                  // Use toISOString for consistent YYYY-MM-DD format (UTC)
-                  return date.toISOString().split('T')[0];
-                } catch {
-                  return "";
-                }
-              };
-
-              setFormData({
-                // basic_info
-                email: String(profileData.user.email || fullProfile?.email || ""),
-                user_name: String(fullProfile?.user_name || profileData.user.displayName || ""),
-                contact_no: String(fullProfile?.contact_no || profileData.user.phone || ""),
-                employee_id: String(fullProfile?.employee_id || profileData.user.employeeId || ""),
-                role: String(fullProfile?.role || profileData.user.role || ""),
-                // personal_info
-                father_name: String(fullProfile?.father_name || ""),
-                gender: String(fullProfile?.gender || ""),
-                date_of_birth: formatDateForInput(fullProfile?.date_of_birth),
-                blood_group: String(fullProfile?.blood_group || ""),
-                alternate_contact: String(fullProfile?.alternate_contact || ""),
-                emergency_contact_no: String(fullProfile?.emergency_contact_no || ""),
-                // employment_info
-                date_of_joining: formatDateForInput(fullProfile?.date_of_joining),
-                in_hand_salary: String(fullProfile?.in_hand_salary || ""),
-                // address_info
-                primary_address: String(fullProfile?.primary_address || ""),
-                area_pincode: String(fullProfile?.area_pincode || ""),
-                // kyc_info
-                pan_number: String(fullProfile?.pan_number || ""),
-                aadhar_card_no: String(fullProfile?.aadhar_card_no || ""),
-                // bank_info
-                bank_name: String(fullProfile?.bank_name || ""),
-                account_holder_name: String(fullProfile?.account_holder_name || ""),
-                account_number: String(fullProfile?.account_number || ""),
-                ifsc_code: String(fullProfile?.ifsc_code || ""),
-                branch_city: String(fullProfile?.branch_city || ""),
-                branch_state: String(fullProfile?.branch_state || ""),
-                branch_pincode: String(fullProfile?.branch_pincode || ""),
-                // documents
-                profile_pic_url: String(fullProfile?.profile_pic_url || ""),
-                pancard_url: String(fullProfile?.pancard_url || ""),
-                aadhar_front_url: String(fullProfile?.aadhar_front_url || ""),
-                aadhar_back_url: String(fullProfile?.aadhar_back_url || ""),
-                qualification_marksheet_url: String(fullProfile?.qualification_marksheet_url || ""),
-                bank_passbook_url: String(fullProfile?.bank_passbook_url || ""),
-              });
-
-              // Check if profile is already complete, redirect if so
-              if (fullProfile?.profile_complete) {
-                router.push("/pending");
-                return;
+            // Format dates for input fields (YYYY-MM-DD format) - client-only, fixed format
+            const formatDateForInput = (dateString: string | null | undefined): string => {
+              if (!dateString || typeof window === 'undefined') return "";
+              try {
+                // Use UTC to avoid timezone issues
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return "";
+                // Use toISOString for consistent YYYY-MM-DD format (UTC)
+                return date.toISOString().split('T')[0];
+              } catch {
+                return "";
               }
-            }
-          } catch (err) {
-            console.error('Error fetching profile:', err);
-            // Fallback to basic data - ensure all values are strings
+            };
+
             setFormData({
-              email: String(result.user.email || ""),
-              user_name: String(result.user.displayName || ""),
-              contact_no: String(result.user.phone || ""),
-              employee_id: String(result.user.employeeId || ""),
-              role: String(result.user.role || ""),
-              father_name: "",
-              gender: "",
-              date_of_birth: "",
-              blood_group: "",
-              alternate_contact: "",
-              emergency_contact_no: "",
-              date_of_joining: "",
-              in_hand_salary: "",
-              primary_address: "",
-              area_pincode: "",
-              pan_number: "",
-              aadhar_card_no: "",
-              bank_name: "",
-              account_holder_name: "",
-              account_number: "",
-              ifsc_code: "",
-              branch_city: "",
-              branch_state: "",
-              branch_pincode: "",
-              profile_pic_url: "",
-              pancard_url: "",
-              aadhar_front_url: "",
-              aadhar_back_url: "",
-              qualification_marksheet_url: "",
-              bank_passbook_url: "",
+              // basic_info
+              email: String(profileData.user.email || fullProfile?.email || ""),
+              user_name: String(fullProfile?.user_name || profileData.user.displayName || ""),
+              contact_no: String(fullProfile?.contact_no || profileData.user.phone || ""),
+              employee_id: String(fullProfile?.employee_id || profileData.user.employeeId || ""),
+              role: String(fullProfile?.role || profileData.user.role || ""),
+              // personal_info
+              father_name: String(fullProfile?.father_name || ""),
+              gender: String(fullProfile?.gender || ""),
+              date_of_birth: formatDateForInput(fullProfile?.date_of_birth),
+              blood_group: String(fullProfile?.blood_group || ""),
+              alternate_contact: String(fullProfile?.alternate_contact || ""),
+              emergency_contact_no: String(fullProfile?.emergency_contact_no || ""),
+              // employment_info
+              date_of_joining: formatDateForInput(fullProfile?.date_of_joining),
+              in_hand_salary: String(fullProfile?.in_hand_salary || ""),
+              // address_info
+              primary_address: String(fullProfile?.primary_address || ""),
+              area_pincode: String(fullProfile?.area_pincode || ""),
+              // kyc_info
+              pan_number: String(fullProfile?.pan_number || ""),
+              aadhar_card_no: String(fullProfile?.aadhar_card_no || ""),
+              // bank_info
+              bank_name: String(fullProfile?.bank_name || ""),
+              account_holder_name: String(fullProfile?.account_holder_name || ""),
+              account_number: String(fullProfile?.account_number || ""),
+              ifsc_code: String(fullProfile?.ifsc_code || ""),
+              branch_city: String(fullProfile?.branch_city || ""),
+              branch_state: String(fullProfile?.branch_state || ""),
+              branch_pincode: String(fullProfile?.branch_pincode || ""),
+              // documents
+              profile_pic_url: String(fullProfile?.profile_pic_url || ""),
+              pancard_url: String(fullProfile?.pancard_url || ""),
+              aadhar_front_url: String(fullProfile?.aadhar_front_url || ""),
+              aadhar_back_url: String(fullProfile?.aadhar_back_url || ""),
+              qualification_marksheet_url: String(fullProfile?.qualification_marksheet_url || ""),
+              bank_passbook_url: String(fullProfile?.bank_passbook_url || ""),
             });
+
+            // Check if profile is already complete, redirect if so
+            if (fullProfile?.profile_complete) {
+              router.push("/pending");
+              return;
+            }
           }
+        } catch (err) {
+          console.error('Error fetching profile:', err);
+          // Fallback to basic data - ensure all values are strings
+          setFormData(prev => ({
+            ...prev,
+            email: String(user.email || ""),
+            user_name: String(user.displayName || ""),
+            contact_no: String(user.phone || ""),
+            employee_id: String(user.employeeId || ""),
+            role: String(user.role || ""),
+          }));
         }
       }
-      setLoading(false);
     };
 
     fetchProfile();
-  }, [router]);
+  }, [authMounted, user, router]);
 
   useEffect(() => {
     setMounted(true);
@@ -338,7 +298,7 @@ function ProfileCompletion() {
     return Math.round((filledCount / totalFields) * 100);
   };
 
-  if (!mounted || loading) {
+  if (!mounted || !authMounted || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#e7e3ff" }}>
         <div className="text-center">
@@ -363,7 +323,8 @@ function ProfileCompletion() {
   ];
 
   return (
-    <div className="min-h-screen py-8" style={{ backgroundColor: "#e7e3ff" }}>
+    <AppLayout hideSidebar hideHeader>
+      <div className="min-h-screen py-8" style={{ backgroundColor: "#e7e3ff" }}>
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -478,7 +439,8 @@ function ProfileCompletion() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </AppLayout>
   );
 }
 

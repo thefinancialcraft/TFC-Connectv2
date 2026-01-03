@@ -2,11 +2,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../lib/authService";
-import { getStoredUserData } from "../lib/localStorageUtils";
+import { handleLogout } from "../lib/authService";
 import ExpiryBadge from "../components/ExpiryBadge";
 
 interface Organization {
@@ -40,28 +38,7 @@ const formatDate = (dateString: string | null) => {
 
 export default function OrganizationPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-      return {
-        uid: cachedData.user_id || "",
-        displayName: cachedData.user_name || cachedData.displayName || null,
-        email: cachedData.email || "",
-        phone: null,
-        providers: [],
-        providerType: null,
-        createdAt: "",
-        lastSignInAt: null,
-        employeeId: cachedData.employee_id || null,
-        role: cachedData.role || null,
-        approvalStatus: null,
-        accountStatus: null,
-        updatedAt: null,
-        profilePicUrl: cachedData.profile_pic_url || null,
-      };
-    }
-    return null;
-  });
+  const { user, mounted } = useUser();
 
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -81,16 +58,6 @@ export default function OrganizationPage() {
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false);
 
-  const fetchAuth = async () => {
-    const result = await checkAuthAndFetchProfile();
-    if (result.shouldRedirect) {
-      router.push("/login");
-      return;
-    }
-    if (result.user) {
-      setUser(result.user);
-    }
-  };
 
   const fetchOrganizations = async () => {
     try {
@@ -187,10 +154,11 @@ export default function OrganizationPage() {
   };
 
   useEffect(() => {
-    fetchAuth();
-    fetchOrganizations();
-    fetchUsers();
-  }, []);
+    if (mounted && user) {
+      fetchOrganizations();
+      fetchUsers();
+    }
+  }, [mounted, user]);
 
   const handleAssignUsers = async () => {
     if (!selectedOrg || selectedUserIds.length === 0) return;
@@ -222,41 +190,9 @@ export default function OrganizationPage() {
     org.owner_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
 
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden bg-[#f6f5f7]">
-      <Head>
-        <title>Organizations • TFC Nexus</title>
-      </Head>
-
-      <Sidebar
-        user={{
-          displayName: user?.displayName || null,
-          email: user?.email || "",
-          employeeId: user?.employeeId || null,
-          lastSignInAt: user?.lastSignInAt || null,
-          profilePicUrl: user?.profilePicUrl || null,
-        }}
-        activeNav="organization"
-        onNavChange={() => {}}
-        userRole={user?.role || null}
-      />
-
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
-        <Header
-          user={{
-            displayName: user?.displayName || null,
-            email: user?.email || "",
-            employeeId: user?.employeeId || null,
-            profilePicUrl: user?.profilePicUrl || null,
-          }}
-          onLogout={handleLogoutClick}
-        />
-
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] lg:ml-0">
+    <AppLayout>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
@@ -556,8 +492,6 @@ export default function OrganizationPage() {
               )}
             </div>
           </div>
-        </main>
-      </div>
       {/* Assign Members Modal */}
       {showAssignModal && selectedOrg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
@@ -707,7 +641,6 @@ export default function OrganizationPage() {
           </div>
         </div>
       )}
-
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 5px;
@@ -724,6 +657,6 @@ export default function OrganizationPage() {
           background: #cbd5e1;
         }
       `}</style>
-    </div>
+    </AppLayout>
   );
 }
