@@ -1,7 +1,6 @@
 import { ReactNode, useMemo } from "react";
 import { UserContext } from "../context/UserContext";
 import { useAuthGuard } from "../hooks/useAuthGuard";
-import { sendToFlutter } from "../lib/bridgeUtils";
 
 interface UserProviderProps {
   children: ReactNode;
@@ -30,10 +29,14 @@ export function UserProvider({ children }: UserProviderProps) {
         value: userInfoPayload
       };
 
-      // Use the robust utility for auto-sync
-      sendToFlutter('sync_user_info', userInfoPayload, (log) => {
-        console.log(`🚀 [Auto-Sync] ${log}`);
-      });
+      // Check if running inside Flutter WebView
+      const win = window as any;
+      if (win.flutter_inappwebview?.callHandler) {
+        console.log("🚀 [Auto-Sync] Syncing User Info to Flutter:", messagePayload);
+        win.flutter_inappwebview.callHandler('fromWebApp', messagePayload)
+          .then((result: any) => console.log("✅ [Auto-Sync] Success:", result))
+          .catch((err: any) => console.error("❌ [Auto-Sync] Failed:", err));
+      }
     }
   }, [user]);
 
