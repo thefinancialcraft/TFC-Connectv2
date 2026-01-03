@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 interface BridgeMessage {
   id: string;
@@ -75,6 +76,37 @@ export default function FlutterBridgeTab() {
     setMessages([]);
   };
 
+  // Sync User Info Hook
+  const { user } = useAuthGuard();
+
+  const syncUserInfoToFlutter = () => {
+    if (!user) {
+      addMessage('out', 'sync_user_info_error', 'No user data available to sync');
+      return;
+    }
+
+    const userInfoPayload = {
+      user_name: user.displayName,
+      employee_id: user.employeeId,
+      email: user.email,
+      role: user.role,
+      designation: user.role, // Mapping role to designation as designation is not explicit
+      department: null, // Schema does not currently have department
+      createdAt: user.createdAt,
+      lastSignInAt: user.lastSignInAt,
+      profilePicUrl: user.profilePicUrl
+    };
+
+    if (window.flutter_inappwebview?.callHandler) {
+      console.log("📤 [Web] Syncing User Info to Flutter:", userInfoPayload);
+      window.flutter_inappwebview.callHandler('syncUserInfo', userInfoPayload);
+      addMessage('out', 'sync_user_info', userInfoPayload);
+    } else {
+      console.warn("⚠️ Flutter InAppWebView not detected.");
+      addMessage('out', 'sync_user_info', { ...userInfoPayload, error: 'Bridge not detected' });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-lg border bg-white p-4 sm:p-6" style={{ borderColor: "#E0E0E0" }}>
@@ -117,6 +149,21 @@ export default function FlutterBridgeTab() {
                 className="px-4 py-2 bg-[#4b33e8] text-white rounded-md text-sm font-medium hover:bg-[#3b25b8] transition-colors"
              >
                 Send
+             </button>
+           </div>
+        </div>
+
+        
+        {/* Sync Actions */}
+        <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
+           <h4 className="text-sm font-bold text-blue-900 mb-3">Sync Actions</h4>
+           <div className="flex gap-3">
+             <button 
+                onClick={syncUserInfoToFlutter}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+             >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Sync User Info to Flutter
              </button>
            </div>
         </div>
