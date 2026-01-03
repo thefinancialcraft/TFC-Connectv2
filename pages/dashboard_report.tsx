@@ -246,9 +246,9 @@ export default function DashboardReport() {
                                 {agent.name}
                             </td>
                             <td className="px-6 py-3 text-xs text-gray-400">Agent</td>
-                            <td className="px-6 py-3 text-right font-bold">{agent.count.toLocaleString()}</td>
+                            <td className="px-6 py-3 text-right font-bold">{(agent.count || 0).toLocaleString()}</td>
                              <td className="px-6 py-3 text-right text-xs">
-                                {((agent.count / (agentData.reduce((a,b)=>a+b.count,0) || 1)) * 100).toFixed(1)}%
+                                {(((agent.count || 0) / (agentData.reduce((a, b) => a + (b.count || 0), 0) || 1)) * 100).toFixed(1)}%
                             </td>
                         </tr>
                     ))}

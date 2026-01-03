@@ -82,7 +82,7 @@ export default function SecondaryStats({
               </div>
               <div>
                 <h4 className="text-base font-bold text-[#263238] leading-tight">
-                  {item.value.toLocaleString()}
+                  {(item.value || 0).toLocaleString()}
                 </h4>
                 <p className="text-[9px] font-bold text-[#787E9D] uppercase tracking-wider">
                   {item.label}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useUser } from '../context/UserContext';
 
 interface User {
     id: string;
@@ -17,7 +18,6 @@ interface AddCampaignModalProps {
     onSuccess: () => void;
     users: User[];
     loadingUsers: boolean;
-    currentUser: any;
     campaign?: any; // Optional campaign for editing mode
 }
 
@@ -27,9 +27,9 @@ export default function AddCampaignModal({
     onSuccess,
     users,
     loadingUsers,
-    currentUser,
     campaign
 }: AddCampaignModalProps) {
+    const { user: currentUser } = useUser();
     const [campaignName, setCampaignName] = useState("");
     const [campaignDescription, setCampaignDescription] = useState("");
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);

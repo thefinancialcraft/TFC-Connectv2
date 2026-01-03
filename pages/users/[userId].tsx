@@ -130,18 +130,35 @@ function UserProfilePage() {
           return;
         }
 
-        // Fetch user profile by ID (using the id from user_profiles table)
-        const { data: profileData, error: profileError } = await supabase
+        // Fetch user profile by ID
+        // Try both PK 'id' and Auth UUID 'user_id' for maximum robustness
+        console.log("Searching user profile for ID:", userId);
+        const { data: profileByRowId, error: rowError } = await supabase
           .from('user_profiles')
           .select('*')
           .eq('id', userId)
           .maybeSingle();
 
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError);
-          setError("Failed to load user profile");
-          setLoading(false);
-          return;
+        let profileData = profileByRowId;
+        
+        if (!profileData && !rowError) {
+           console.log("Not found by Row ID, searching by User UUID...");
+           const { data: profileByUserId, error: userError } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .maybeSingle();
+           profileData = profileByUserId;
+        }
+
+        if (rowError || !profileData) {
+          const actualError = rowError || (profileData ? null : "User not found in database");
+          if (actualError) {
+            console.error('Error fetching user profile:', actualError);
+            setError(typeof actualError === 'string' ? actualError : "Failed to load user profile");
+            setLoading(false);
+            return;
+          }
         }
 
         if (!profileData) {
@@ -253,9 +270,12 @@ function UserProfilePage() {
     };
 
     if (mounted && userId) {
+      console.log("Effect triggered: Fetching profile for", userId);
       fetchData();
+    } else if (mounted) {
+      console.log("Effect triggered but userId missing:", { userId, isReady: router.isReady });
     }
-  }, [userId, router, mounted]);
+  }, [userId, router.isReady, mounted]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';

@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   LabelList,
+  Legend,
 } from "recharts";
 import { AgentDataPoint, useAgentPerformance } from "../../hooks/useAgentPerformance";
 
@@ -27,8 +28,19 @@ export default function AgentPerformanceTab({
   const { 
     agentData, 
     fetchAgentPerformance, 
-    loading 
+    loading,
+    totalDuration
   } = useAgentPerformance();
+
+  // Helper to format duration (seconds to HH:MM:SS)
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    if (mins > 0) return `${mins}m ${secs}s`;
+    return `${secs}s`;
+  };
 
   // Fetch data when filter changes
   useEffect(() => {
@@ -112,7 +124,7 @@ export default function AgentPerformanceTab({
                 Agent Productivity Leaderboard
               </h3>
               <p className="text-sm text-gray-400 mt-1">
-                Total dials per agent across all active sessions
+                Total dials and total talktime per agent across all active sessions
               </p>
             </div>
             <div className="flex items-center gap-3 no-print">
@@ -142,7 +154,14 @@ export default function AgentPerformanceTab({
                   horizontal={false}
                   stroke="#F1F1F1"
                 />
-                <XAxis type="number" hide />
+                <XAxis type="number" hide xAxisId="cnt" />
+                <XAxis type="number" hide xAxisId="dur" />
+                <Legend 
+                  verticalAlign="top" 
+                  align="right" 
+                  iconType="circle"
+                  wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }}
+                />
                 <YAxis
                   dataKey="name"
                   type="category"
@@ -157,32 +176,74 @@ export default function AgentPerformanceTab({
                 />
                 <Tooltip
                   cursor={{ fill: "#F9FAFB", radius: 8 }}
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "none",
-                    background: "#111827",
-                    color: "#fff",
-                  }}
-                  itemStyle={{
-                    color: "#fff",
-                    fontSize: "12px",
-                    fontWeight: "bold",
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-[#111827] p-3 rounded-xl border-none shadow-xl">
+                          <p className="text-white font-bold text-xs mb-1">{data.name}</p>
+                          <div className="flex flex-col gap-0.5">
+                            <p className="text-[#4b33e8] text-[10px] font-bold">Dials: {data.count}</p>
+                            <p className="text-green-400 text-[10px] font-bold">Talktime: {formatDuration(data.duration)}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
                 <Bar
                   dataKey="count"
-                  name="Total Activities"
+                  xAxisId="cnt"
+                  name="Dials"
                   fill="#4b33e8"
                   radius={[0, 20, 20, 0]}
-                  barSize={24}
+                  barSize={12}
                 >
                   <LabelList
                     dataKey="count"
                     position="right"
-                    fill="#263238"
-                    fontSize={12}
-                    fontWeight="bold"
-                    offset={15}
+                    content={(props: any) => {
+                      const { x, y, width, value } = props;
+                      return (
+                        <text
+                          x={x + width + 5}
+                          y={y + 10}
+                          fill="#4b33e8"
+                          fontSize={10}
+                          fontWeight="bold"
+                        >
+                          {value}
+                        </text>
+                      );
+                    }}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="duration"
+                  xAxisId="dur"
+                  name="Talktime"
+                  fill="#10b981"
+                  radius={[0, 20, 20, 0]}
+                  barSize={12}
+                >
+                   <LabelList
+                    dataKey="duration"
+                    position="right"
+                    content={(props: any) => {
+                      const { x, y, width, value } = props;
+                      return (
+                        <text
+                          x={x + width + 5}
+                          y={y + 10}
+                          fill="#10b981"
+                          fontSize={10}
+                          fontWeight="bold"
+                        >
+                          {formatDuration(value)}
+                        </text>
+                      );
+                    }}
                   />
                 </Bar>
               </BarChart>
@@ -221,11 +282,14 @@ export default function AgentPerformanceTab({
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-[#263238]">
-                    {agent.count.toLocaleString()}
+                    {(agent.count || 0).toLocaleString()} <span className="text-[10px] text-gray-400 font-medium ml-1">dials</span>
                   </p>
-                  <p className="text-[10px] text-green-500 font-bold uppercase tracking-tighter">
+                  <p className="text-[11px] font-bold text-[#4b33e8]">
+                    {formatDuration(agent.duration || 0)}
+                  </p>
+                  <p className="text-[9px] text-green-500 font-bold uppercase tracking-tighter">
                     {(
-                      (agent.count / (totalDials || 1)) *
+                      ((agent.count || 0) / (totalDials || 1)) *
                       100
                     ).toFixed(1)}
                     % share

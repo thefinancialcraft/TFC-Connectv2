@@ -121,7 +121,7 @@ export default function ProspectTab({
               },
               {
                 title: "Response",
-                val: stats.totalDials.toLocaleString(),
+                val: (stats.totalDials || 0).toLocaleString(),
                 desc: "Tracked",
                 color: "emerald",
               },

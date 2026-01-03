@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
@@ -8,9 +8,8 @@ import TeamManagementModal from "../components/TeamManagementModal";
 export default function Team() {
   const router = useRouter();
   const { user, mounted } = useUser();
-  const [loading, setLoading] = useState(false); // Initial loading false for smoother nav
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [activeNav, setActiveNav] = useState("team");
   const [teams, setTeams] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -18,28 +17,49 @@ export default function Team() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [organizations, setOrganizations] = useState<any[]>([]);
 
+  const teamsAbortControllerRef = useRef<AbortController | null>(null);
+  const depsAbortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchDependencies = async () => {
+  const fetchDependencies = useCallback(async () => {
+    // Prevent duplicate fetching if data already exists
+    if (allUsers.length > 0 && organizations.length > 0) return;
+
+    if (depsAbortControllerRef.current) {
+        depsAbortControllerRef.current.abort();
+    }
+    depsAbortControllerRef.current = new AbortController();
+
     try {
       const [usersRes, orgsRes] = await Promise.all([
-        supabase.from('user_profiles').select('user_id, user_name, email, profile_pic_url, organization_id'),
-        supabase.from('organizations').select('id, company_name')
+        supabase.from('user_profiles')
+          .select('user_id, user_name, email, profile_pic_url, organization_id')
+          .abortSignal(depsAbortControllerRef.current.signal),
+        supabase.from('organizations')
+          .select('id, company_name')
+          .abortSignal(depsAbortControllerRef.current.signal)
       ]);
 
       if (usersRes.data) {
-        setAllUsers(usersRes.data.map(u => ({ ...u, uid: u.user_id })));
+        setAllUsers(usersRes.data.map((u: any) => ({ ...u, uid: u.user_id })));
       }
       if (orgsRes.data) {
         setOrganizations(orgsRes.data);
       }
-    } catch (err) {
-      console.error("Error fetching dependencies:", err);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error("Error fetching dependencies:", err);
+      }
     }
-  };
+  }, [allUsers.length, organizations.length]);
 
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async (isBackground = false) => {
+      if (teamsAbortControllerRef.current) {
+          teamsAbortControllerRef.current.abort();
+      }
+      teamsAbortControllerRef.current = new AbortController();
+
       try {
-          setLoading(true);
+          if (!isBackground) setLoading(true);
           const { data, error } = await supabase
               .from('teams')
               .select(`
@@ -47,31 +67,44 @@ export default function Team() {
                 leader:user_profiles!leader_id(user_name, profile_pic_url),
                 organization:organizations(company_name)
               `)
-              .order('name', { ascending: true });
+              .order('name', { ascending: true })
+              .abortSignal(teamsAbortControllerRef.current.signal);
           
           if (error) throw error;
           setTeams(data || []);
-      } catch (err) {
-          console.error("Error fetching teams:", err);
+      } catch (err: any) {
+          if (err.name !== 'AbortError') {
+            console.error("Error fetching teams:", err);
+          }
       } finally {
-          setLoading(false);
+          if (!isBackground) setLoading(false);
       }
-  };
+  }, []);
 
   useEffect(() => {
     if (mounted && user) {
       fetchTeams();
       fetchDependencies();
     }
-  }, [mounted, user]);
+
+    return () => {
+      if (teamsAbortControllerRef.current) teamsAbortControllerRef.current.abort();
+      if (depsAbortControllerRef.current) depsAbortControllerRef.current.abort();
+    };
+  }, [mounted, user, fetchTeams, fetchDependencies]);
 
 
   // Filter teams based on search
-  const filteredTeams = teams.filter(team => 
-      team.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      team.organization?.company_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      team.leader?.user_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTeams = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return teams;
+    
+    return teams.filter(team => 
+        team.name?.toLowerCase().includes(query) ||
+        team.organization?.company_name?.toLowerCase().includes(query) ||
+        team.leader?.user_name?.toLowerCase().includes(query)
+    );
+  }, [teams, searchQuery]);
 
 
   return (

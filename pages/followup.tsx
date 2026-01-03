@@ -1,138 +1,20 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import AppLayout, { useUser } from "../components/AppLayout";
-import { supabase } from "../lib/supabase";
+import { useFollowUpLeads } from "../hooks/useFollowUpLeads";
 
 export default function FollowUp() {
   const router = useRouter();
-  const { user, mounted } = useUser();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [activeNav] = useState("followup");
-
-  // Data States
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loadingLeads, setLoadingLeads] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [stats, setStats] = useState({
-    total: 0,
-    overdue: 0,
-    upcoming: 0
-  });
-
-
-  const fetchLeads = async () => {
-    if (!user) return;
-    try {
-      setLoadingLeads(true);
-
-      // 1. Fetch leads (customers) first
-      const { data: customerData, error: customerError } = await supabase
-        .from('customers')
-        .select('*')
-        .in('disposition', ['Callback', 'Call Back', 'Follow Up', 'FollowUp'])
-        .order('next_called_at', { ascending: true });
-
-      if (customerError) throw customerError;
-
-      if (customerData) {
-        const now = new Date();
-        let overdueCount = 0;
-        let upcomingCount = 0;
-
-        // 2. Extract IDs for bulk fetching
-        const campaignIds = [...new Set(customerData.map(c => c.campaign_id).filter(Boolean))];
-        const orgIds = [...new Set(customerData.map(c => c.organization_id).filter(Boolean))];
-        const userIds = [...new Set(customerData.map(c => c.assigned_to).filter(Boolean))];
-
-        // 3. Fetch related data in parallel
-        const [campaignsResult, orgsResult, usersResult] = await Promise.all([
-          campaignIds.length > 0 ? supabase.from('campaigns').select('id, name').in('id', campaignIds) : { data: [] },
-          orgIds.length > 0 ? supabase.from('organizations').select('id, company_name').in('id', orgIds) : { data: [] },
-          userIds.length > 0 ? supabase.from('user_profiles').select('user_id, user_name').in('user_id', userIds) : { data: [] }
-        ]);
-
-        // 4. Create Lookup Maps
-        const campaignMap = Object.fromEntries(campaignsResult.data?.map((c: any) => [c.id, c.name]) || []);
-        const orgMap = Object.fromEntries(orgsResult.data?.map((o: any) => [o.id, o.company_name]) || []);
-        const userMap = Object.fromEntries(usersResult.data?.map((u: any) => [u.user_id, u.user_name]) || []);
-
-        // 5. Enrich Data
-        const enrichedLeads = customerData.map((lead) => {
-          let isOverdue = false;
-          let isUpcoming = false;
-          
-          if (lead.next_called_at) {
-            const nextCallDate = new Date(lead.next_called_at);
-            if (nextCallDate < now) {
-              isOverdue = true;
-              overdueCount++;
-            } else {
-              isUpcoming = true;
-              upcomingCount++;
-            }
-          } else {
-             isOverdue = true; 
-             overdueCount++;
-          }
-
-          return {
-            ...lead,
-            isOverdue,
-            isUpcoming,
-            campaign_name: campaignMap[lead.campaign_id] || 'Unknown Campaign',
-            organization_name: orgMap[lead.organization_id] || '—',
-            assigned_name: userMap[lead.assigned_to] || 'Unassigned',
-            status_label: isOverdue ? 'Overdue' : 'Upcoming'
-          };
-        });
-
-        setLeads(enrichedLeads);
-        setStats({
-          total: customerData.length,
-          overdue: overdueCount,
-          upcoming: upcomingCount
-        });
-      }
-
-    } catch (err: any) {
-      console.error("Error fetching follow-up leads:", err);
-    } finally {
-      setLoadingLeads(false);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (mounted && user) {
-      fetchLeads();
-    }
-    
-    // Auto-refresh periodically
-    const interval = setInterval(() => {
-        if(user) fetchLeads();
-    }, 60000); // 1 min
-
-    return () => clearInterval(interval);
-  }, [mounted, user]);
-
-  
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '—';
-    try {
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return '—';
-        return date.toLocaleString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          hour: 'numeric', 
-          minute: '2-digit',
-          hour12: true 
-        });
-    } catch (e) {
-        return '—';
-    }
-  };
+  const { user } = useUser();
+  const {
+    loading,
+    error,
+    filteredLeads,
+    searchQuery,
+    setSearchQuery,
+    stats,
+    fetchLeads,
+    formatDate
+  } = useFollowUpLeads(user?.uid);
 
 
 
@@ -435,21 +317,28 @@ export default function FollowUp() {
                         </button>
                         <button 
                             onClick={() => fetchLeads()}
-                            disabled={loadingLeads}
-                            className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center ${loadingLeads ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                            disabled={loading}
+                            className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
                             title="Refresh Data"
                         >
-                            <i className={`fi flex fi-rr-refresh text-sm text-gray-600 ${loadingLeads ? 'animate-spin' : ''}`}></i>
+                            <i className={`fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`}></i>
                         </button>
                     </div>
                 </div>
 
-                {loadingLeads ? (
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center gap-3">
+                        <i className="fi fi-rr-info"></i>
+                        {error}
+                    </div>
+                )}
+
+                {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-[#4b33e8] mb-4"></div>
                         <p className="text-xs text-gray-400 font-bold">Syncing schedule...</p>
                     </div>
-                ) : leads.length === 0 ? (
+                ) : filteredLeads.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 text-center">
                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                             <i className="fi fi-rr-calendar-check text-2xl text-gray-300"></i>
@@ -478,12 +367,7 @@ export default function FollowUp() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {leads
-                                  .filter(lead => 
-                                    lead.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                    lead.phone_no?.includes(searchQuery)
-                                  )
-                                  .map((lead) => (
+                                {filteredLeads.map((lead: any) => (
                                     <tr key={lead.id} className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0" onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}>
                                         <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center justify-center">

@@ -2,13 +2,16 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 export interface AgentDataPoint {
+  id: string;
   name: string;
   count: number;
+  duration: number;
 }
 
 export interface UseAgentPerformanceReturn {
   agentData: AgentDataPoint[];
   totalDials: number;
+  totalDuration: number;
   loading: boolean;
   error: string | null;
   fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }) => Promise<void>;
@@ -18,6 +21,7 @@ interface CacheEntry {
   data: {
     agentData: AgentDataPoint[];
     totalDials: number;
+    totalDuration: number;
   };
   timestamp: number;
 }
@@ -27,6 +31,7 @@ const CACHE_TTL = 60 * 1000;
 export function useAgentPerformance(): UseAgentPerformanceReturn {
   const [agentData, setAgentData] = useState<AgentDataPoint[]>([]);
   const [totalDials, setTotalDials] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +54,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
         setAgentData(cached.data.agentData);
         setTotalDials(cached.data.totalDials);
+        setTotalDuration(cached.data.totalDuration);
         loading && setLoading(false);
         return;
       }
@@ -56,7 +62,8 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      abortControllerRef.current = new AbortController();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       try {
         setLoading(true);
@@ -71,9 +78,9 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
           ...(customRange && { startDate: customRange.start, endDate: customRange.end }),
         });
 
-        const response = await fetch(`/api/dashboard/agent-performance?${params}`, {
+        const response = await fetch(`/api/dashboard/agent_performance?${params}`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
-          signal: abortControllerRef.current.signal,
+          signal: controller.signal,
         });
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -83,11 +90,13 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
 
         const data = {
             agentData: result.data.agents,
-            totalDials: result.data.totalDials || 0
+            totalDials: result.data.totalDials || 0,
+            totalDuration: result.data.totalDuration || 0
         };
 
         setAgentData(data.agentData);
         setTotalDials(data.totalDials);
+        setTotalDuration(data.totalDuration);
 
         cacheRef.current[cacheKey] = {
            data,
@@ -99,11 +108,13 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
         console.error("Agent Performance Fetch Error:", err);
         setError(err.message || "Unknown error");
       } finally {
-         if (abortControllerRef.current?.signal.aborted) {
+         if (controller.signal.aborted) {
              // Do nothing
          } else {
              setLoading(false);
-             abortControllerRef.current = null;
+             if (abortControllerRef.current === controller) {
+                abortControllerRef.current = null;
+             }
          }
       }
     },
@@ -113,6 +124,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   return {
     agentData,
     totalDials,
+    totalDuration,
     loading,
     error,
     fetchAgentPerformance,

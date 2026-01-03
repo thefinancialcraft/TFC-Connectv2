@@ -96,6 +96,12 @@ function getDateRange(filter: string) {
       start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
       break;
+    case "this_year":
+      start = new Date(now.getFullYear(), 0, 1).toISOString();
+      break;
+    case "multi_year":
+      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
+      break;
     case "all_time":
       start = "2000-01-01T00:00:00.000Z";
       break;

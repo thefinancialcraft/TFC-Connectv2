@@ -1,106 +1,27 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import AppLayout, { useUser } from "../components/AppLayout";
-import { supabase } from "../lib/supabase";
-import { handleLogout } from "../lib/authService";
+import { useState, useCallback, useMemo } from "react";
+import AppLayout from "../components/AppLayout";
+import { useActivityData } from "../hooks/useActivityData";
 
 export default function Activity() {
-  const router = useRouter();
-  const { user, mounted } = useUser();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [activeNav, setActiveNav] = useState("activity");
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const {
+    loading,
+    error,
+    filteredActivities,
+    stats,
+    selectedDate,
+    setSelectedDate,
+    searchQuery,
+    setSearchQuery,
+    formatSeconds,
+    formatTime,
+    formatDisplayDate
+  } = useActivityData();
+
+  const [activeNav] = useState("activity");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activities, setActivities] = useState<any[]>([]);
-  const [stats, setStats] = useState({
-    totalDials: 0,
-    totalTalkTime: 0,
-    contactable: 0,
-    uncontactable: 0,
-    lastCallTime: "N/A",
-    idleFrom: "N/A"
-  });
 
-
-  const fetchActivities = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const startOfDay = `${selectedDate}T00:00:00.000Z`;
-      const endOfDay = `${selectedDate}T23:59:59.999Z`;
-
-      const { data, error: fetchError } = await supabase
-        .from("call_logs")
-        .select(`
-          *,
-          agent:user_profiles!agent_id(user_name, employee_id),
-          customer:customers(customer_name),
-          campaign:campaigns!campaign_id(name)
-        `)
-        .gte("created_at", startOfDay)
-        .lte("created_at", endOfDay)
-        .order("created_at", { ascending: false });
-
-      if (fetchError) throw fetchError;
-
-      setActivities(data || []);
-
-      // Calculate Stats
-      if (data) {
-        const totalTalkTimeSec = data.reduce((acc, curr) => acc + (curr.duration || 0), 0);
-        const contactableCount = data.filter(cl => cl.is_connected === 'contactable').length;
-        const lastCall = data.length > 0 ? new Date(data[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
-        
-        setStats({
-          totalDials: data.length,
-          totalTalkTime: totalTalkTimeSec,
-          contactable: contactableCount,
-          uncontactable: data.length - contactableCount,
-          lastCallTime: lastCall,
-          idleFrom: data.length > 0 ? lastCall : "N/A" // Simplified logic for idle
-        });
-      }
-
-    } catch (err: any) {
-      console.error("Error fetching activities:", err);
-      setError("Failed to load activities");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatSeconds = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
-
-  useEffect(() => {
-    if (mounted && user) {
-      fetchActivities();
-    }
-  }, [mounted, user, selectedDate]);
-
-
-  const formatDisplayDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    return date.toLocaleDateString('en-GB', options);
-  };
-
-  const getDaysInMonth = (date: Date) => {
+  const getDaysInMonth = useCallback((date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -124,34 +45,36 @@ export default function Activity() {
     }
     
     return days;
-  };
+  }, []);
 
-  const formatMonthYear = (date: Date) => {
+  const formatMonthYear = useCallback((date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  };
+  }, []);
 
-  const isSameDay = (date1: Date, date2: string) => {
+  const isSameDay = useCallback((date1: Date, date2: string) => {
     const d2 = new Date(date2);
     return date1.getDate() === d2.getDate() &&
            date1.getMonth() === d2.getMonth() &&
            date1.getFullYear() === d2.getFullYear();
-  };
+  }, []);
 
-  const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-  };
+  const handlePrevMonth = useCallback(() => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
+  }, []);
 
-  const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
-  };
+  const handleNextMonth = useCallback(() => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1));
+  }, []);
 
-  const handleDateSelect = (date: Date) => {
+  const handleDateSelect = useCallback((date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     setSelectedDate(`${year}-${month}-${day}`);
     setShowDatePicker(false);
-  };
+  }, [setSelectedDate]);
+
+  const calendarDays = useMemo(() => getDaysInMonth(currentMonth), [currentMonth, getDaysInMonth]);
 
 
 
@@ -620,7 +543,7 @@ export default function Activity() {
                               ))}
                             </div>
                             <div className="grid grid-cols-7 gap-1">
-                              {getDaysInMonth(currentMonth).map((day, index) => {
+                              {calendarDays.map((day, index) => {
                                 const isSelected = isSameDay(day.date, selectedDate);
                                 return (
                                   <button
@@ -754,7 +677,7 @@ export default function Activity() {
                               ))}
                             </div>
                             <div className="grid grid-cols-7 gap-1">
-                              {getDaysInMonth(currentMonth).map((day, index) => {
+                              {calendarDays.map((day, index) => {
                                 const isSelected = isSameDay(day.date, selectedDate);
                                 return (
                                   <button
@@ -817,12 +740,8 @@ export default function Activity() {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {activities.length > 0 ? (
-                          activities.filter(a => 
-                            a.agent?.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            a.customer?.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            a.agent?.employee_id?.toLowerCase().includes(searchQuery.toLowerCase())
-                          ).map((activity) => (
+                        {filteredActivities.length > 0 ? (
+                          filteredActivities.map((activity) => (
                             <tr key={activity.id} className="hover:bg-gray-50 transition-colors">
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-medium text-gray-900">
                                 {activity.agent?.employee_id || "N/A"}

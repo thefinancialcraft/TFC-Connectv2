@@ -107,7 +107,8 @@ export function useDashboardStats(): UseDashboardStatsReturn {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      abortControllerRef.current = new AbortController();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       try {
         setLoading(true);
@@ -123,7 +124,7 @@ export function useDashboardStats(): UseDashboardStatsReturn {
 
         const response = await fetch(`/api/dashboard/dashboard_overview?${params}`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
-          signal: abortControllerRef.current.signal,
+          signal: controller.signal,
         });
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -153,13 +154,14 @@ export function useDashboardStats(): UseDashboardStatsReturn {
         console.error("Dashboard Stats Fetch Error:", err);
         setError(err.message || "Unknown error");
       } finally {
-        // Only turn off loading if this request wasn't aborted (or if it finished cleanly)
-         if (abortControllerRef.current?.signal.aborted) {
-             // Do nothing if aborted, wait for next request to handle state
-         } else {
-             setLoading(false);
-             abortControllerRef.current = null;
-         }
+        if (controller.signal.aborted) {
+          // Do nothing
+        } else {
+          setLoading(false);
+          if (abortControllerRef.current === controller) {
+            abortControllerRef.current = null;
+          }
+        }
       }
     },
     []

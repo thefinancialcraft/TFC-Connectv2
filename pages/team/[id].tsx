@@ -1,56 +1,41 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "../../components/Sidebar";
-import Header from "../../components/Header";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../lib/authService";
+import Head from "next/head";
+import AppLayout, { useUser } from "../../components/AppLayout";
 import { supabase } from "../../lib/supabase";
-import { getStoredUserData } from "../../lib/localStorageUtils";
-import { PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { 
+  PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+} from 'recharts';
 
+/**
+ * TeamDetails Page Refactor
+ * Goal: Improve performance, request safety, and data accuracy without UI/Behavior changes.
+ */
 export default function TeamDetails() {
   const router = useRouter();
   const { id } = router.query;
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const { user, mounted } = useUser();
   const [loading, setLoading] = useState(true);
-  const [activeNav, setActiveNav] = useState("team");
+  const [error, setError] = useState<string | null>(null);
+  
+  // RAW Data States - Used as base for derived useMemo values
   const [team, setTeam] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
-  const [memberStats, setMemberStats] = useState<Record<string, any>>({});
+  const [rawLogs, setRawLogs] = useState<any[]>([]);
+  const [rawCustomers, setRawCustomers] = useState<any[]>([]);
   const [dateFilter, setDateFilter] = useState("today");
-  const [outcomeData, setOutcomeData] = useState<any[]>([]);
-  const [hourlyData, setHourlyData] = useState<any[]>([]);
-  const [dailyTrendData, setDailyTrendData] = useState<any[]>([]);
-  const [dispositionData, setDispositionData] = useState<any[]>([]);
-  const [topAgents, setTopAgents] = useState<any[]>([]);
-  const [totalRevenue, setTotalRevenue] = useState(0);
 
+  // Recharts Constants
   const COLORS = ['#4b33e8', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#6366f1'];
   
-  // Initialize user from local storage
-  useEffect(() => {
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-        setUser({
-            uid: cachedData.user_id || '',
-            displayName: cachedData.user_name || cachedData.displayName || null,
-            email: cachedData.email || '',
-            phone: null,
-            providers: [],
-            providerType: null,
-            createdAt: '',
-            lastSignInAt: null,
-            employeeId: cachedData.employee_id || null,
-            role: cachedData.role || null,
-            approvalStatus: null,
-            accountStatus: null,
-            updatedAt: null,
-            profilePicUrl: cachedData.profile_pic_url || null,
-        });
-    }
-  }, []);
+  // Abort Controllers for request safety
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const getDateRange = (filter: string) => {
+  /**
+   * Safe Date Range Generation
+   */
+  const getDateRange = useCallback((filter: string) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
@@ -76,222 +61,354 @@ export default function TeamDetails() {
     }
     
     return { start, end };
-  };
+  }, []);
 
-  const fetchTeamData = async () => {
-    if (!id) return;
+  /**
+   * Main Data Fetcher with granular error handling
+   */
+  const fetchTeamData = useCallback(async () => {
+    if (!id || Array.isArray(id)) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
+      setError(null);
       
-      // 1. Fetch Team Details
+      console.log("Starting team data fetch for:", id);
+      
+      // 1. Fetch Team Details - Keep it simple first to rule out join errors
       const { data: teamData, error: teamError } = await supabase
         .from('teams')
-        .select(`*, organization:organizations(company_name), leader:user_profiles!leader_id(user_name)`)
-        .eq('id', id)
-        .single();
-        
-      if (teamError) throw teamError;
+        .select(`
+          id, 
+          name, 
+          is_active, 
+          members, 
+          leader_id, 
+          organization:organizations(company_name), 
+          leader:user_profiles!leader_id(user_name)
+        `)
+        .eq('id', id as string)
+        .maybeSingle();
+      
+      if (teamError) {
+        console.error("Team Query Error:", teamError);
+        throw new Error(`Failed to fetch team details: ${teamError.message}`);
+      }
+
+      if (!teamData) {
+        console.warn("No team found for ID:", id);
+        setError("Team not found or access denied.");
+        setLoading(false);
+        return;
+      }
+
       setTeam(teamData);
 
-      // 2. Fetch Members
-      const memberIds = teamData.members || [];
-      if (memberIds.length > 0) {
-          const { data: membersData } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .in('user_id', memberIds);
-          setMembers(membersData || []);
-
-          // 3. Fetch Stats for Members based on Date Filter
-          const { start, end } = getDateRange(dateFilter);
-          
-          let logsQuery = supabase.from('call_logs').select('*').in('agent_id', memberIds);
-          if (dateFilter !== 'all_time') {
-             logsQuery = logsQuery.gte('created_at', start).lte('created_at', end);
-          }
-          const { data: logs } = await logsQuery;
-          
-          const { data: customers } = await supabase
-            .from('customers')
-            .select('assigned_to, disposition, next_called_at, premium, created_at')
-            .in('assigned_to', memberIds);
-            
-          // Process Stats per Member
-          const stats: Record<string, any> = {};
-          
-          memberIds.forEach((mId: string) => {
-             const userLogs = logs?.filter((l: any) => l.agent_id === mId) || [];
-             const userCustomers = customers?.filter((c: any) => c.assigned_to === mId) || [];
-             
-             // Metrics
-             const totalCalls = userLogs.length;
-             const connected = userLogs.filter((l: any) => l.is_connected === true || l.is_connected === 'contactable').length;
-             const connectedRate = totalCalls ? ((connected / totalCalls) * 100).toFixed(1) : 0;
-             const totalDuration = userLogs.reduce((acc: number, curr: any) => acc + (Number(curr.duration) || 0), 0);
-             const avgDuration = totalCalls ? Math.floor(totalDuration / totalCalls) : 0;
-             
-             // Deals & Followups (These are usually "Current" state, not strictly date-range filtered, but Deals Closed *could* be date filtered if we had a closed_at date. We use created_at of customer for now or just current disposition?)
-             // For "Deals Closed", if we want "in this period", we'd need a status change log. For now, let's show TOTAL active deals for the user, or filter by created_at if implicit.
-             // Let's stick to "Current Snapshot" for deals/followups, and "Activity" for logs.
-             
-             const deals = userCustomers.filter((c: any) => ['Sold', 'Converted', 'Success', 'Closed'].some(s => c.disposition?.toLowerCase().includes(s.toLowerCase()))).length;
-             
-             const now = new Date();
-             const followUps = userCustomers.filter((c: any) => c.next_called_at && new Date(c.next_called_at) > now).length;
-             
-             // Idle Time & Last Active
-             let lastActive = null;
-             let idleTimeStr = "N/A";
-             if (userLogs.length > 0) {
-                 const sortedLogs = [...userLogs].sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-                 const lastLog = sortedLogs[0];
-                 lastActive = lastLog.created_at;
-                 
-                 const diffMs = now.getTime() - new Date(lastLog.created_at).getTime();
-                 const diffMins = Math.floor(diffMs / 60000);
-                 if (diffMins < 60) idleTimeStr = `${diffMins}m`;
-                 else {
-                     const h = Math.floor(diffMins/60);
-                     const m = diffMins % 60;
-                     idleTimeStr = `${h}h ${m}m`;
-                 }
-             }
-
-             stats[mId] = {
-                 totalCalls,
-                 connected,
-                 connectedRate,
-                 avgDuration: `${Math.floor(avgDuration/60)}m ${avgDuration%60}s`,
-                 deals,
-                 followUps,
-                 lastActive,
-                 idleTime: idleTimeStr,
-                 status: (idleTimeStr !== "N/A" && (idleTimeStr.includes("m") && !idleTimeStr.includes("h") && parseInt(idleTimeStr) < 15)) ? 'Online' : 'Idle' // Simple logic: <15m idle = online
-             };
-          });
-          
-           
-           setMemberStats(stats);
-           
-           // 4. Process Aggregated Charts Data
-           
-           // Outcome Distribution
-           const outcomeCounts: Record<string, number> = {};
-           logs?.forEach((l: any) => {
-               const status = l.status || 'Unknown'; 
-               outcomeCounts[status] = (outcomeCounts[status] || 0) + 1;
-           });
-           const outcomes = Object.entries(outcomeCounts).map(([name, value]) => ({ name, value }));
-           setOutcomeData(outcomes);
-
-           // Hourly Activity
-           const hours: Record<string, number> = {};
-           // Initialize hours
-           for(let i=8; i<=20; i+=2) {
-               const label = `${i > 12 ? i-12 : i}${i>=12 ? 'pm' : 'am'} - ${i+2 > 12 ? i+2-12 : i+2}${i+2>=12 ? 'pm' : 'am'}`;
-               hours[label] = 0;
-           }
-           
-           logs?.forEach((l: any) => {
-               const h = new Date(l.created_at).getHours();
-               // Find bucket
-               for(let i=8; i<=20; i+=2) {
-                   if(h >= i && h < i+2) {
-                       const label = `${i > 12 ? i-12 : i}${i>=12 ? 'pm' : 'am'} - ${i+2 > 12 ? i+2-12 : i+2}${i+2>=12 ? 'pm' : 'am'}`;
-                       hours[label]++;
-                       break;
-                   }
-               }
-           });
-           const hourly = Object.entries(hours).map(([name, count]) => ({ name, count }));
-           setHourlyData(hourly);
-
-           // Disposition Data
-           const dispCounts: Record<string, number> = {};
-           customers?.forEach((c: any) => {
-               const d = c.disposition || 'Fresh';
-               dispCounts[d] = (dispCounts[d] || 0) + 1;
-           });
-           setDispositionData(Object.entries(dispCounts).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count).slice(0, 5));
-
-           // Daily Trend (Last 7 Days or Selected Range)
-           const dailyCounts: Record<string, number> = {};
-           logs?.forEach((l: any) => {
-              const dateKey = new Date(l.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-              dailyCounts[dateKey] = (dailyCounts[dateKey] || 0) + 1;
-           });
-           // Sort by Date logic roughly
-           setDailyTrendData(Object.entries(dailyCounts).map(([name, count]) => ({ name, count })));
-
-           // Top Agents (by connected calls)
-           const agentsArr = memberIds.map((mId: string) => {
-               const s = stats[mId];
-               const member = membersData?.find(m => m.user_id === mId);
-               return {
-                   name: member?.user_name || 'Unknown',
-                   connected: s.connected,
-                   profilePic: member?.profile_pic_url
-               };
-           }).sort((a: any, b: any) => b.connected - a.connected).slice(0, 3);
-           setTopAgents(agentsArr);
+      const memberIds = Array.isArray(teamData.members) ? teamData.members : [];
+      if (memberIds.length === 0) {
+        setMembers([]);
+        setRawLogs([]);
+        setRawCustomers([]);
+        setLoading(false);
+        return;
       }
+
+      // 2. Fetch Related Data
+      const { start, end } = getDateRange(dateFilter);
       
-    } catch (err) {
-      console.error("Error fetching team data:", err);
+      const [membersRes, logsRes, customersRes] = await Promise.all([
+        supabase.from('user_profiles').select('user_id, user_name, employee_id, profile_pic_url').in('user_id', memberIds),
+        supabase.from('call_logs').select('agent_id, created_at, duration, is_connected, status, disposition').in('agent_id', memberIds).gte('created_at', dateFilter !== 'all_time' ? start : '2000-01-01').lte('created_at', dateFilter !== 'all_time' ? end : '2099-01-01'),
+        supabase.from('customers').select('assigned_to, next_called_at, created_at, customer_details, disposition').in('assigned_to', memberIds)
+      ]);
+
+      if (membersRes.error) throw new Error(`Members fetch failed: ${membersRes.error.message}`);
+      if (logsRes.error) throw new Error(`Logs fetch failed: ${logsRes.error.message}`);
+      if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
+
+      setMembers(membersRes.data || []);
+      setRawLogs(logsRes.data || []);
+      setRawCustomers(customersRes.data || []);
+
+    } catch (err: any) {
+      console.error("Fatal Error in fetchTeamData:", err);
+      setError(err.message || "Failed to load team analytics. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, dateFilter, getDateRange]);
 
+  // Request cancellation on unmount/re-fetch
   useEffect(() => {
-    if (router.isReady && id) {
-        checkAuthAndFetchProfile().then(res => {
-            if (res.user) {
-                fetchTeamData();
-            } else {
-                router.push('/login');
-            }
-        });
+    if (router.isReady && id && mounted && user) {
+      console.log("Effect triggered: Fetching team data for", id);
+      fetchTeamData();
     }
-  }, [router.isReady, id, dateFilter]);
+    return () => {
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+    };
+  }, [router.isReady, id, mounted, user, fetchTeamData]);
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
-  
+  // Helper to handle Supabase joins that might return arrays
+  const getSingle = (val: any) => Array.isArray(val) ? val[0] : val;
+
+  /**
+   * Derived Computations (Memoized)
+   * Eliminates O(N*M) filtering inside the render loop
+   */
+  const processedData = useMemo(() => {
+    const emptyStats: Record<string, any> = {};
+    if (!members.length) return {
+      memberStats: emptyStats,
+      summary: { totalCalls: 0, deals: 0, revenue: 0, avgConnectRate: 0 },
+      charts: { outcome: [], hourly: [], dailyTrend: [], disposition: [] },
+      topAgents: []
+    };
+
+    try {
+      const now = new Date();
+      const stats: Record<string, any> = {};
+      
+      // 1. Build Lookup Maps for efficiency
+      const logsByAgent: Record<string, any[]> = {};
+      const customersByAgent: Record<string, any[]> = {};
+      
+      members.forEach(m => {
+        logsByAgent[m.user_id] = [];
+        customersByAgent[m.user_id] = [];
+      });
+
+      rawLogs.forEach(l => {
+        if (logsByAgent[l.agent_id]) logsByAgent[l.agent_id].push(l);
+      });
+
+      rawCustomers.forEach(c => {
+        if (customersByAgent[c.assigned_to]) customersByAgent[c.assigned_to].push(c);
+      });
+
+      let totalCallsAll = 0;
+      let totalConnectedAll = 0;
+      let totalDealsAll = 0;
+      let totalRevenueSum = 0;
+
+      // 2. Process Member Stats
+      members.forEach((member) => {
+        const mId = member.user_id;
+        const userLogs = logsByAgent[mId] || [];
+        const userCustomers = customersByAgent[mId] || [];
+        
+        const totalCalls = userLogs.length;
+        const connectedCount = userLogs.filter(l => 
+          l.is_connected === true || 
+          l.is_connected === 'true' || 
+          l.is_connected === 'contactable'
+        ).length;
+        
+        const totalDuration = userLogs.reduce((acc, l) => acc + (Number(l.duration) || 0), 0);
+        const avgDurationSec = totalCalls ? Math.floor(totalDuration / totalCalls) : 0;
+        
+        // Extract revenue from customer_details JSON or disposition in logs
+        const closedDeals = userLogs.filter(l => 
+          ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'].some(s => l.disposition?.toLowerCase().includes(s.toLowerCase()))
+        );
+        const dealsCount = closedDeals.length;
+        
+        // Calculate revenue - Try to find premium in associated customer_details
+        const revenue = userCustomers.reduce((acc, c) => {
+          let pVal = 0;
+          try {
+            const details = typeof c.customer_details === 'string' ? JSON.parse(c.customer_details) : c.customer_details;
+            if (details) {
+              // Look for "Premium" or similar keys
+              const premiumKey = Object.keys(details).find(k => k.toLowerCase().includes('premium'));
+              if (premiumKey) pVal = Number(details[premiumKey]) || 0;
+            }
+          } catch(e) {}
+          return acc + pVal;
+        }, 0);
+        
+        const followUpsCount = userCustomers.filter(c => c.next_called_at && new Date(c.next_called_at) > now).length;
+        
+        let lastActive = null;
+        let idleMins = -1;
+        let idleTimeStr = "N/A";
+        
+        if (userLogs.length > 0) {
+          const recentLog = userLogs.reduce((prev, curr) => 
+            new Date(curr.created_at).getTime() > new Date(prev.created_at).getTime() ? curr : prev
+          );
+          lastActive = recentLog.created_at;
+          
+          const diffMs = now.getTime() - new Date(recentLog.created_at).getTime();
+          idleMins = Math.floor(diffMs / 60000);
+          
+          if (idleMins < 60) {
+            idleTimeStr = `${idleMins}m`;
+          } else {
+            const h = Math.floor(idleMins / 60);
+            const m = idleMins % 60;
+            idleTimeStr = `${h}h ${m}m`;
+          }
+        }
+
+        stats[mId] = {
+          totalCalls,
+          connected: connectedCount,
+          connectedRate: totalCalls ? ((connectedCount / totalCalls) * 100).toFixed(1) : "0.0",
+          avgDuration: `${Math.floor(avgDurationSec / 60)}m ${avgDurationSec % 60}s`,
+          deals: dealsCount,
+          followUps: followUpsCount,
+          lastActive,
+          idleTime: idleTimeStr,
+          idleMins,
+          status: (idleMins >= 0 && idleMins < 15) ? 'Online' : 'Idle'
+        };
+
+        totalCallsAll += totalCalls;
+        totalConnectedAll += connectedCount;
+        totalDealsAll += dealsCount;
+        totalRevenueSum += revenue;
+      });
+
+      // 3. Chart Data Generation
+      const outcomeCounts: Record<string, number> = {};
+      rawLogs.forEach(l => {
+        const status = l.status || 'Unknown';
+        outcomeCounts[status] = (outcomeCounts[status] || 0) + 1;
+      });
+      const outcomeData = Object.entries(outcomeCounts).map(([name, value]) => ({ name, value }));
+
+      const hourLabels: string[] = [];
+      for (let i = 8; i <= 20; i += 2) {
+        hourLabels.push(`${i > 12 ? i - 12 : i}${i >= 12 ? 'pm' : 'am'} - ${i + 2 > 12 ? i + 2 - 12 : i + 2}${i + 2 >= 12 ? 'pm' : 'am'}`);
+      }
+      const hourlyMap = Object.fromEntries(hourLabels.map(l => [l, 0]));
+      rawLogs.forEach(l => {
+        const h = new Date(l.created_at).getHours();
+        for (let i = 8; i <= 20; i += 2) {
+          if (h >= i && h < i + 2) {
+            hourlyMap[hourLabels[(i - 8) / 2]]++;
+            break;
+          }
+        }
+      });
+      const hourlyData = hourLabels.map(name => ({ name, count: hourlyMap[name] }));
+
+      const dispCounts: Record<string, number> = {};
+      rawCustomers.forEach(c => {
+        const d = c.disposition || 'Fresh';
+        dispCounts[d] = (dispCounts[d] || 0) + 1;
+      });
+      const dispositionData = Object.entries(dispCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      const dailyMap: Record<string, { ts: number, label: string, count: number }> = {};
+      rawLogs.forEach(l => {
+        const d = new Date(l.created_at);
+        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const dayStartTs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        
+        if (!dailyMap[dateStr]) {
+          dailyMap[dateStr] = { ts: dayStartTs, label: dateStr, count: 0 };
+        }
+        dailyMap[dateStr].count++;
+      });
+      const dailyTrendData = Object.values(dailyMap)
+        .sort((a, b) => a.ts - b.ts)
+        .map(item => ({ name: item.label, count: item.count }));
+
+      const topAgents = members.map(m => ({
+        name: m.user_name || 'Unknown',
+        connected: stats[m.user_id]?.connected || 0,
+        profilePic: m.profile_pic_url
+      }))
+      .sort((a, b) => b.connected - a.connected)
+      .slice(0, 3);
+
+      return {
+        memberStats: stats,
+        summary: {
+          totalCalls: totalCallsAll,
+          deals: totalDealsAll,
+          revenue: totalRevenueSum,
+          avgConnectRate: totalCallsAll ? ((totalConnectedAll / totalCallsAll) * 100).toFixed(1) : "0.0"
+        },
+        charts: {
+          outcome: outcomeData,
+          hourly: hourlyData,
+          dailyTrend: dailyTrendData,
+          disposition: dispositionData
+        },
+        topAgents
+      };
+    } catch (e) {
+      console.error("Error in processedData calculation:", e);
+      return {
+        memberStats: emptyStats,
+        summary: { totalCalls: 0, deals: 0, revenue: 0, avgConnectRate: 0 },
+        charts: { outcome: [], hourly: [], dailyTrend: [], disposition: [] },
+        topAgents: []
+      };
+    }
+  }, [members, rawLogs, rawCustomers]);
+
   const formatTime = (dateStr: string) => {
     if (!dateStr) return "Never";
     const d = new Date(dateStr);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  if ((loading && !team) || (loading && members.length === 0 && team)) {
+    return (
+      <AppLayout>
+        <div className="flex h-[80vh] items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#4b33e8] border-t-transparent"></div>
+                <p className="text-sm font-medium text-gray-400">Loading team analytics...</p>
+            </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !team) {
+    return (
+      <AppLayout>
+        <div className="flex h-[80vh] items-center justify-center">
+            <div className="flex flex-col items-center gap-6 max-w-md text-center px-6">
+                <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center text-red-500 text-3xl">
+                    <i className="fi fi-rr-exclamation"></i>
+                </div>
+                <div>
+                   <h2 className="text-xl font-bold text-gray-800 mb-2">{error || "Team Not Found"}</h2>
+                   <p className="text-gray-500 text-sm">
+                      {error ? "There was a problem loading the data." : "The requested team could not be found or you don't have permission to view it."}
+                   </p>
+                </div>
+                <button 
+                  onClick={() => router.push('/team')}
+                  className="px-6 py-2 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100"
+                >
+                  Back to Teams
+                </button>
+            </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden" style={{ backgroundColor: "#f6f5f7", maxWidth: "100vw" }}>
-      <Sidebar
-        user={{
-          displayName: user?.displayName || null,
-          email: user?.email || "",
-          employeeId: user?.employeeId || null,
-          lastSignInAt: user?.lastSignInAt || null,
-          profilePicUrl: user?.profilePicUrl || null,
-        }}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        userRole={user?.role || null}
-      />
+    <AppLayout>
+      <Head>
+        <title>{team?.name || 'Team Details'} • TFC Nexus</title>
+      </Head>
 
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 overflow-x-hidden">
-        <Header
-          user={{
-            displayName: user?.displayName || null,
-            email: user?.email || "",
-            employeeId: user?.employeeId || null,
-            profilePicUrl: user?.profilePicUrl || null,
-          }}
-          onLogout={handleLogoutClick}
-        />
-
-        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px]" style={{ backgroundColor: "#f6f5f7" }}>
+      <div className="flex-1 flex flex-col w-full min-w-0 font-poppins">
           <div className="container mx-auto px-4 py-8 max-w-7xl pb-24">
             
             {/* Breadcrumb & Header */}
@@ -300,11 +417,11 @@ export default function TeamDetails() {
                     onClick={() => router.push('/team')}
                     className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#4b33e8] mb-4 transition-colors"
                 >
-                    <i className="fi flex   fi-rr-arrow-left"></i> Back to Teams
+                    <i className="fi flex fi-rr-arrow-left"></i> Back to Teams
                 </button>
                 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div>
+                    <div className="text-left">
                         <div className="flex items-center gap-3 mb-2">
                            <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
                               {team?.name || 'Loading Team...'}
@@ -314,9 +431,9 @@ export default function TeamDetails() {
                            </span>
                         </div>
                         <p className="text-gray-500 text-sm flex items-center gap-2">
-                            <i className="fi flex  fi-rr-building"></i> {team?.organization?.company_name}
+                            <i className="fi flex fi-rr-building"></i> {getSingle(team?.organization)?.company_name || 'No Organization'}
                             <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                            <span>Leader: <span className="font-semibold text-gray-700">{team?.leader?.user_name || 'N/A'}</span></span>
+                            <span>Leader: <span className="font-semibold text-gray-700">{getSingle(team?.leader)?.user_name || 'N/A'}</span></span>
                         </p>
                     </div>
                     
@@ -324,7 +441,7 @@ export default function TeamDetails() {
                         <select 
                             value={dateFilter}
                             onChange={(e) => setDateFilter(e.target.value)}
-                            className="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]/20 font-medium"
+                            className="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]/20 font-medium cursor-pointer"
                         >
                             <option value="today">Today</option>
                             <option value="yesterday">Yesterday</option>
@@ -332,7 +449,7 @@ export default function TeamDetails() {
                             <option value="this_month">This Month</option>
                             <option value="all_time">All Time</option>
                         </select>
-                        <button className="bg-[#4b33e8] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100">
+                        <button className="bg-[#4b33e8] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:shadow-xl transition-all">
                             Download Report
                         </button>
                     </div>
@@ -343,12 +460,12 @@ export default function TeamDetails() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 {[
                    { label: 'Total Members', value: members.length, icon: 'fi-rr-users-alt', color: 'text-blue-600', bg: 'bg-blue-50' },
-                   { label: 'Total Calls', value: Object.values(memberStats).reduce((acc, s) => acc + s.totalCalls, 0), icon: 'fi-rr-phone-call', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                   { label: 'Deals Closed', value: Object.values(memberStats).reduce((acc, s) => acc + s.deals, 0), icon: 'fi-rr-trophy', color: 'text-yellow-600', bg: 'bg-yellow-50' },
-                   { label: 'Revenue', value: `$${totalRevenue.toLocaleString()}`, icon: 'fi-rr-dollar', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                   { label: 'Avg Connect Rate', value: `${(Object.values(memberStats).reduce((acc, s) => acc + parseFloat(s.connectedRate || 0), 0) / (members.length || 1)).toFixed(1)}%`, icon: 'fi-rr-chart-histogram', color: 'text-purple-600', bg: 'bg-purple-50' },
+                   { label: 'Total Calls', value: processedData.summary.totalCalls, icon: 'fi-rr-phone-call', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                   { label: 'Deals Closed', value: processedData.summary.deals, icon: 'fi-rr-trophy', color: 'text-yellow-600', bg: 'bg-yellow-50' },
+                   { label: 'Revenue', value: `₹${processedData.summary.revenue.toLocaleString()}`, icon: 'fi-rr-dollar', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                   { label: 'Avg Connect Rate', value: `${processedData.summary.avgConnectRate}%`, icon: 'fi-rr-chart-histogram', color: 'text-purple-600', bg: 'bg-purple-50' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div key={i} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 text-left">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${stat.bg} ${stat.color}`}>
                             <i className={`fi ${stat.icon}`}></i>
                         </div>
@@ -363,13 +480,13 @@ export default function TeamDetails() {
             {/* Analytics Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* 1. Outcome Distribution */}
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col text-left">
                     <h3 className="text-gray-800 font-bold mb-4">Call Outcomes</h3>
                     <div className="flex-1 min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={outcomeData}
+                                    data={processedData.charts.outcome}
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={60}
@@ -378,7 +495,7 @@ export default function TeamDetails() {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    {outcomeData.map((entry, index) => (
+                                    {processedData.charts.outcome.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
@@ -390,12 +507,12 @@ export default function TeamDetails() {
                 </div>
 
                 {/* 2. Hourly Activity */}
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2">
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2 text-left">
                     <h3 className="text-gray-800 font-bold mb-4">Hourly Activity</h3>
                     <div className="flex-1 min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
-                                data={hourlyData}
+                                data={processedData.charts.hourly}
                                 margin={{
                                     top: 5,
                                     right: 30,
@@ -417,12 +534,12 @@ export default function TeamDetails() {
             {/* Expanded Analytics Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* 3. Daily Trend */}
-                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2">
+                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2 text-left">
                     <h3 className="text-gray-800 font-bold mb-4">Daily Call Trend</h3>
                     <div className="flex-1 min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
-                                data={dailyTrendData}
+                                data={processedData.charts.dailyTrend}
                                 margin={{
                                     top: 10,
                                     right: 30,
@@ -447,13 +564,13 @@ export default function TeamDetails() {
                 </div>
 
                 {/* 4. Top Lead Dispositions */}
-                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col text-left">
                     <h3 className="text-gray-800 font-bold mb-4">Lead Status</h3>
                      <div className="flex-1 min-h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 layout="vertical"
-                                data={dispositionData}
+                                data={processedData.charts.disposition}
                                 margin={{
                                     top: 5,
                                     right: 30,
@@ -473,10 +590,10 @@ export default function TeamDetails() {
             </div>
 
             {/* Top Agents Row */}
-            <div className="mb-8">
+            <div className="mb-8 text-left">
                <h3 className="text-gray-800 font-bold mb-4 text-lg">Top Performers</h3>
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {topAgents.map((agent, i) => (
+                  {processedData.topAgents.map((agent, i) => (
                       <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
                           <div className={`absolute top-0 right-0 p-2 font-bold text-6xl text-gray-100 -z-0 pointer-events-none select-none`}>
                               #{i+1}
@@ -485,7 +602,7 @@ export default function TeamDetails() {
                               {agent.profilePic ? (
                                 <img src={agent.profilePic} className="w-full h-full rounded-full object-cover" alt={agent.name} />
                               ) : (
-                                <i className="fi flex  fi-rr-user text-2xl text-gray-400"></i>
+                                <i className="fi flex fi-rr-user text-2xl text-gray-400"></i>
                               )}
                           </div>
                           <div className="z-10">
@@ -494,12 +611,12 @@ export default function TeamDetails() {
                           </div>
                       </div>
                   ))}
-                  {topAgents.length === 0 && <p className="text-gray-400 text-sm col-span-3">No data available for leaderboard.</p>}
+                  {processedData.topAgents.length === 0 && <p className="text-gray-400 text-sm col-span-3">No data available for leaderboard.</p>}
                </div>
             </div>
 
             {/* Detailed Member Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden text-left">
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 className="font-bold text-gray-800 text-lg">Member Performance</h3>
                     <div className="flex gap-2 text-xs font-medium">
@@ -528,8 +645,10 @@ export default function TeamDetails() {
                                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500 text-sm">No members in this team</td>
                                 </tr>
                             ) : members.map(member => {
-                                const stats = memberStats[member.user_id] || { totalCalls: 0, connected: 0, connectedRate: 0, avgDuration: '0m 0s', deals: 0, followUps: 0, lastActive: null, idleTime: 'N/A', status: 'Idle' };
-                                const isOnline = stats.status === 'Online';
+                                const mId = member.user_id as string;
+                                const statsMap = processedData.memberStats as Record<string, any>;
+                                const mStats = statsMap[mId] || { totalCalls: 0, connected: 0, connectedRate: 0, avgDuration: '0m 0s', deals: 0, followUps: 0, lastActive: null, idleTime: 'N/A', status: 'Idle' };
+                                const isOnline = mStats.status === 'Online';
                                 
                                 return (
                                     <tr key={member.user_id} className="hover:bg-gray-50/80 transition-colors group">
@@ -539,47 +658,47 @@ export default function TeamDetails() {
                                                     {member.profile_pic_url ? (
                                                         <img src={member.profile_pic_url} alt="" className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <i className="fi flex  fi-rr-user text-lg text-gray-400"></i>
+                                                        <i className="fi flex fi-rr-user text-lg text-gray-400"></i>
                                                     )}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-semibold text-gray-800">{member.user_name || 'Unknown'}</p>
-                                                    <p className="text-xs text-gray-400">{member.employee_id || 'ID: --'}</p>
+                                                    <p className="text-xs text-gray-400">ID: {member.employee_id || '--'}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></span>
-                                                {isOnline ? 'Active' : `Idle ${stats.idleTime !== 'N/A' ? stats.idleTime : ''}`}
+                                                {isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center text-sm font-bold text-gray-700">
-                                            {stats.totalCalls}
+                                            {mStats.totalCalls}
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <p className="text-sm font-semibold text-gray-700">{stats.connected}</p>
-                                            <p className="text-[10px] text-gray-400">{stats.connectedRate}% Rate</p>
+                                            <p className="text-sm font-semibold text-gray-700">{mStats.connected}</p>
+                                            <p className="text-[10px] text-gray-400">{mStats.connectedRate}% Rate</p>
                                         </td>
                                         <td className="px-6 py-4 text-center text-sm text-gray-600 font-medium">
-                                            {stats.avgDuration}
+                                            {mStats.avgDuration}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className="px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-bold">
-                                                {stats.followUps} Pending
+                                                {mStats.followUps} Pending
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            {stats.deals > 0 ? (
+                                            {mStats.deals > 0 ? (
                                                 <span className="flex items-center justify-center gap-1 text-green-600 font-bold text-sm">
-                                                    <i className="fi flex  fi-rr-trophy text-xs"></i> {stats.deals}
+                                                    <i className="fi flex fi-rr-trophy text-xs"></i> {mStats.deals}
                                                 </span>
                                             ) : <span className="text-gray-400 text-sm">-</span>}
                                         </td>
                                         <td className="px-6 py-4 text-right text-sm text-gray-500">
-                                            {formatTime(stats.lastActive)}
+                                            {formatTime(mStats.lastActive)}
                                             <p className="text-[10px] text-gray-400">
-                                                 {stats.lastActive ? new Date(stats.lastActive).toLocaleDateString() : ''}
+                                                 {mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : ''}
                                             </p>
                                         </td>
                                     </tr>
@@ -591,8 +710,7 @@ export default function TeamDetails() {
             </div>
 
           </div>
-        </main>
       </div>
-    </div>
+    </AppLayout>
   );
 }

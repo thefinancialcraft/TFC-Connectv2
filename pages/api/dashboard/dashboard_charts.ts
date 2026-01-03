@@ -111,6 +111,12 @@ function getDateRange(filter: string) {
       start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
       break;
+    case "this_year":
+      start = new Date(now.getFullYear(), 0, 1).toISOString();
+      break;
+    case "multi_year":
+      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
+      break;
     case "all_time":
       start = "2000-01-01T00:00:00.000Z";
       break;
@@ -382,7 +388,17 @@ export default async function handler(
     }
 
     if (isAggregateMode) {
-      labels.push(...["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+      // Default to last 7 days for better visualization in aggregate mode
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        labels.push(
+          d.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })
+        );
+      }
     }
 
     const timeSlots = [
@@ -401,7 +417,7 @@ export default async function handler(
       timeSlots.forEach((t) => (heatmapMap[l][t] = 0));
     });
 
-    callLogs.forEach((log) => {
+    callLogs.forEach((log: any) => {
       const date = new Date(log.created_at);
       const hour = date.getHours();
 
@@ -415,17 +431,12 @@ export default async function handler(
       else if (hour >= 20 && hour < 22) slot = "8 PM - 10 PM";
 
       if (slot) {
-        let rowLabel = "";
-        if (isAggregateMode) {
-           const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-           rowLabel = days[date.getDay() === 0 ? 6 : date.getDay() - 1];
-        } else {
-           rowLabel = date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          });
-        }
+        let rowLabel = date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
 
+        // In aggregate mode, we only track logs that fall into our 7-day window
         if (heatmapMap[rowLabel]) {
           heatmapMap[rowLabel][slot]++;
         }

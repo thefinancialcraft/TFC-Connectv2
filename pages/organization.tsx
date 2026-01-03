@@ -1,124 +1,85 @@
-// pages/organization.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/router";
-import Head from "next/head";
 import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
-import { handleLogout } from "../lib/authService";
 import ExpiryBadge from "../components/ExpiryBadge";
-
-interface Organization {
-  id: string;
-  company_name: string;
-  company_type: string | null;
-  company_joined: string | null;
-  owner_name: string | null;
-  owner_phone_no: string | null;
-  gst_no: string | null;
-  address: string | null;
-  email: string | null;
-  description: string | null;
-  is_active: boolean;
-  renewal_date: string | null;
-  expiry_date: string | null;
-  org_code: string | null;
-  company_code: string | null;
-  member_count?: number;
-  member_avatars?: (string | null)[];
-}
+import { useOrganizationData, Organization } from "../hooks/useOrganizationData";
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "—";
-  // Extract only YYYY-MM-DD part
-  const datePart = dateString.split('T')[0];
-  if (!datePart.includes('-')) return "—";
-  const [year, month, day] = datePart.split('-');
-  return `${day}/${month}/${year}`;
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "—";
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    return "—";
+  }
 };
 
 export default function OrganizationPage() {
   const router = useRouter();
-  const { user, mounted } = useUser();
+  const { user } = useUser();
+  const {
+    loading,
+    searchQuery,
+    setSearchQuery,
+    stats,
+    filteredOrgs,
+    fetchOrganizations
+  } = useOrganizationData(user?.uid);
 
-  const [loading, setLoading] = useState(true);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    inactive: 0,
-    recent: 0,
-  });
-
+  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
-  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [assigningLoading, setAssigningLoading] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false);
 
+  const userAbortRef = useRef<AbortController | null>(null);
 
-  const fetchOrganizations = async () => {
+  const fetchUsers = useCallback(async () => {
+    if (userAbortRef.current) userAbortRef.current.abort();
+    userAbortRef.current = new AbortController();
+
     try {
-      setLoading(true);
-      const { data: orgData, error: orgError } = await supabase
-        .from("organizations")
-        .select("*")
-        .order("company_joined", { ascending: false });
-
-      if (orgError) throw orgError;
-
-      // Fetch member data for each organization
-      const { data: memberData, error: memberError } = await supabase
+      const { data, error } = await supabase
         .from("user_profiles")
-        .select("organization_id, profile_pic_url")
-        .not("organization_id", "is", null);
+        .select("id, user_name, employee_id, profile_pic_url, organization_id")
+        .order("user_name")
+        .abortSignal(userAbortRef.current.signal);
 
-      if (memberError) {
-        console.error("Error fetching member data:", memberError);
+      if (error) throw error;
+      setAvailableUsers(data || []);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error("Error fetching users:", err);
       }
-
-      const counts: Record<string, number> = {};
-      const avatars: Record<string, (string | null)[]> = {};
-      
-      memberData?.forEach((m: { organization_id: string; profile_pic_url: string | null }) => {
-        counts[m.organization_id] = (counts[m.organization_id] || 0) + 1;
-        
-        if (!avatars[m.organization_id]) avatars[m.organization_id] = [];
-        if (avatars[m.organization_id].length < 3) {
-          avatars[m.organization_id].push(m.profile_pic_url);
-        }
-      });
-
-      const orgs = (orgData as Organization[]).map(org => ({
-        ...org,
-        member_count: counts[org.id] || 0,
-        member_avatars: avatars[org.id] || []
-      })) || [];
-
-      setOrganizations(orgs);
-
-      // Simple stats calculation
-      setStats({
-        total: orgs.length,
-        active: orgs.filter(o => o.is_active).length,
-        inactive: orgs.filter(o => !o.is_active).length,
-        recent: orgs.filter(o => {
-          const joined = new Date(o.company_joined || "");
-          const monthAgo = new Date();
-          monthAgo.setMonth(monthAgo.getMonth() - 1);
-          return joined > monthAgo;
-        }).length,
-      });
-    } catch (err) {
-      console.error("Error fetching organizations:", err);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, []);
 
-  const handleDeleteOrganization = async (id: string, name: string) => {
+  useEffect(() => {
+    if (user?.uid) {
+      fetchUsers();
+    }
+    return () => {
+        if (userAbortRef.current) userAbortRef.current.abort();
+    };
+  }, [user?.uid, fetchUsers]);
+
+  // Reset modal state when closing
+  useEffect(() => {
+    if (!showAssignModal) {
+      setSelectedUserIds([]);
+      setUserSearchQuery("");
+      setShowOnlyUnassigned(false);
+    }
+  }, [showAssignModal]);
+
+  const handleDeleteOrganization = useCallback(async (id: string, name: string) => {
     if (!window.confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
       return;
     }
@@ -130,41 +91,20 @@ export default function OrganizationPage() {
         .eq("id", id);
 
       if (error) throw error;
-      
-      // Refresh list
       fetchOrganizations();
     } catch (err) {
       console.error("Error deleting organization:", err);
       alert("Failed to delete organization. Please try again.");
     }
-  };
+  }, [fetchOrganizations]);
 
-  const fetchUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("user_profiles")
-        .select("id, user_name, employee_id, profile_pic_url, organization_id")
-        .order("user_name");
-
-      if (error) throw error;
-      setAvailableUsers(data || []);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (mounted && user) {
-      fetchOrganizations();
-      fetchUsers();
-    }
-  }, [mounted, user]);
-
-  const handleAssignUsers = async () => {
+  const handleAssignUsers = useCallback(async () => {
     if (!selectedOrg || selectedUserIds.length === 0) return;
 
     try {
       setAssigningLoading(true);
+      
+      // Perform task in smaller batches or ensure atomic nature
       const { error } = await supabase
         .from("user_profiles")
         .update({ organization_id: selectedOrg.id })
@@ -174,21 +114,27 @@ export default function OrganizationPage() {
 
       alert(`Successfully assigned ${selectedUserIds.length} members to ${selectedOrg.company_name}`);
       setShowAssignModal(false);
-      setSelectedUserIds([]);
       fetchOrganizations();
       fetchUsers();
     } catch (err) {
       console.error("Error assigning users:", err);
-      alert("Failed to assign users. Please try again.");
+      alert("Failed to assign users. Some assignments might not have completed.");
     } finally {
       setAssigningLoading(false);
     }
-  };
+  }, [selectedOrg, selectedUserIds, fetchOrganizations, fetchUsers]);
 
-  const filteredOrgs = organizations.filter(org =>
-    org.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    org.owner_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Memoized user filter for the modal to avoid expensive computations on every keystroke
+  const filteredUsers = useMemo(() => {
+    const query = userSearchQuery.toLowerCase().trim();
+    return availableUsers.filter(u => {
+      const matchesSearch = !query || 
+        u.user_name?.toLowerCase().includes(query) ||
+        u.employee_id?.toLowerCase().includes(query);
+      const matchesUnassigned = showOnlyUnassigned ? !u.organization_id : true;
+      return matchesSearch && matchesUnassigned;
+    });
+  }, [availableUsers, userSearchQuery, showOnlyUnassigned]);
 
 
   return (
@@ -546,17 +492,12 @@ export default function OrganizationPage() {
               {/* Users List */}
               <div className="max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                 <div className="grid grid-cols-1 gap-3">
-                  {availableUsers
-                    .filter(u => {
-                      const matchesSearch = u.user_name?.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
-                        u.employee_id?.toLowerCase().includes(userSearchQuery.toLowerCase());
-                      const matchesUnassigned = showOnlyUnassigned ? !u.organization_id : true;
-                      return matchesSearch && matchesUnassigned;
-                    })
-                    .map((targetUser) => {
+                  {filteredUsers
+                    .map((targetUser: any) => {
                       const isSelected = selectedUserIds.includes(targetUser.id);
                       const isAlreadyInOrg = targetUser.organization_id === selectedOrg.id;
-                      const otherOrg = organizations.find(o => o.id === targetUser.organization_id);
+                      // Optimized lookup using hook data
+                      const otherOrg = targetUser.organization_id ? filteredOrgs.find((o: Organization) => o.id === targetUser.organization_id) : null;
                       
                       return (
                         <div 

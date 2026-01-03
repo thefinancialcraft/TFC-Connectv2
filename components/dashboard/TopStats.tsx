@@ -24,23 +24,23 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
     // ... same cards
     {
       label: "Active Leads",
-      value: stats.totalCustomers.toLocaleString(),
+      value: (stats.totalCustomers || 0).toLocaleString(),
       sub: "+12%",
       color: "#4b33e8",
       icon: "fi-rr-users",
       chartType: "bar" as const,
     },
     {
-      label: "Total Premium",
-      value: `₹${stats.totalPremium.toLocaleString()}`,
+      label: "Total Dials",
+      value: (stats.totalDials || 0).toLocaleString(),
       sub: "+9%",
       color: "#f97316",
-      icon: "fi-rr-earnings",
+      icon: "fi-rr-phone-call",
       chartType: "area" as const,
     },
     {
       label: "Deals Closed",
-      value: stats.totalConverted.toLocaleString(),
+      value: (stats.totalConverted || 0).toLocaleString(),
       sub: "+7%",
       color: "#10b981",
       icon: "fi-rr-check-circle",

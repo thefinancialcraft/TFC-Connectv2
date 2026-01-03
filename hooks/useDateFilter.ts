@@ -7,6 +7,8 @@ export type DateFilterType =
   | "last_7_days"
   | "this_month"
   | "last_month"
+  | "this_year"
+  | "multi_year"
   | "all_time";
 
 export interface DateRange {
@@ -91,6 +93,10 @@ export function useDateFilter(
         59,
         59
       ).toISOString();
+    } else if (selectedFilter === "this_year") {
+      start = new Date(now.getFullYear(), 0, 1).toISOString();
+    } else if (selectedFilter === "multi_year") {
+      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
     } else if (selectedFilter === "all_time") {
       start = "2000-01-01T00:00:00.000Z";
     }
@@ -114,6 +120,8 @@ export function useDateFilter(
         case "last_7_days": return "Last 7 Days";
         case "this_month": return "This Month";
         case "last_month": return "Last Month";
+        case "this_year": return "1 Year Report";
+        case "multi_year": return "Multi-Year Report";
         case "all_time": return "All Time";
         default: return filter;
     }

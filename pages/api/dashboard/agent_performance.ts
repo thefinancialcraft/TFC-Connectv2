@@ -8,14 +8,17 @@ import { supabase, supabaseAdmin } from "../../../lib/supabase";
  * 
  * Security: Validates user session and org access
  * 
- * @route GET /api/dashboard/agent-performance
+ * @route GET /api/dashboard/agent_performance
  * @query dateFilter - Date range filter
  * @query orgId - Organization ID (validated)
  */
+ 
 
 interface AgentDataPoint {
+  id: string;
   name: string;
   count: number;
+  duration: number;
 }
 
 interface AgentPerformanceResponse {
@@ -23,6 +26,7 @@ interface AgentPerformanceResponse {
   data?: {
     agents: AgentDataPoint[];
     totalDials: number;
+    totalDuration: number;
   };
   error?: string;
 }
@@ -77,6 +81,12 @@ function getDateRange(filter: string) {
     case "last_month":
       start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
+      break;
+    case "this_year":
+      start = new Date(now.getFullYear(), 0, 1).toISOString();
+      break;
+    case "multi_year":
+      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
       break;
     case "all_time":
       start = "2000-01-01T00:00:00.000Z";
@@ -239,13 +249,13 @@ export default async function handler(
 
     // Prepare agent map with all users initialized to 0
     const { data: profiles } = await profilesQuery;
-    const agentMap: Record<string, { name: string; count: number }> = {};
+    const agentMap: Record<string, { id: string; name: string; count: number; duration: number }> = {};
     
     if (profiles) {
       profiles.forEach((p) => {
         // Optional: Filter out specific roles if needed, e.g. "client"
         const name = p.user_name || "Unknown Agent";
-        agentMap[p.user_id] = { name, count: 0 };
+        agentMap[p.user_id] = { id: p.user_id, name, count: 0, duration: 0 };
       });
     }
 
@@ -253,7 +263,7 @@ export default async function handler(
     const callLogs = await fetchAllRows(
       dbClient,
       "call_logs",
-      "agent_id", // Only need ID now
+      "agent_id, duration", // Need duration now
       {
         orgId: targetOrgId,
         startDate: start,
@@ -261,17 +271,22 @@ export default async function handler(
       }
     );
 
-    // 3. Aggregate counts
+    // 3. Aggregate counts and duration
+    let totalDuration = 0;
     callLogs.forEach((log: any) => {
+      const duration = Number(log.duration) || 0;
+      totalDuration += duration;
+
       if (log.agent_id && agentMap[log.agent_id]) {
         agentMap[log.agent_id].count++;
+        agentMap[log.agent_id].duration += duration;
       } else if (log.agent_id) {
         // Handle case where agent exists in logs but not in profiles fetch (e.g. deleted user)
-        // We generally skip or add as "Unknown"
          if (!agentMap[log.agent_id]) {
-             agentMap[log.agent_id] = { name: "Unknown/Deleted", count: 0 };
+             agentMap[log.agent_id] = { id: log.agent_id, name: "Unknown/Deleted", count: 0, duration: 0 };
          }
          agentMap[log.agent_id].count++;
+         agentMap[log.agent_id].duration += duration;
       }
     });
 
@@ -289,6 +304,7 @@ export default async function handler(
       data: {
         agents,
         totalDials,
+        totalDuration,
       },
     });
   } catch (error) {
