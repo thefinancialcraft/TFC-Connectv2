@@ -133,12 +133,12 @@ export default function FlutterBridgeTab() {
   const openDevMode = () => {
     if (window.flutter_inappwebview?.callHandler) {
       console.log("📤 [Web] Opening Dev Mode");
-      const payload = { type: 'isDevMode_open', value: true };
+      const payload = { type: 'isdevmode_open', value: true };
       window.flutter_inappwebview.callHandler('fromWebApp', payload);
-      addMessage('out', 'isDevMode_open', true);
+      addMessage('out', 'isdevmode_open', true);
     } else {
        console.warn("⚠️ Flutter InAppWebView not detected.");
-       addMessage('out', 'isDevMode_open', { error: 'Bridge not detected' });
+       addMessage('out', 'isdevmode_open', { error: 'Bridge not detected' });
     }
   };
 
