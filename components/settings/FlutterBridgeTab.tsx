@@ -18,11 +18,16 @@ declare global {
   }
 }
 
+import { sendToFlutter } from '../../lib/bridgeUtils';
+
 export default function FlutterBridgeTab() {
   const [messages, setMessages] = useState<BridgeMessage[]>([]);
   const [testType, setTestType] = useState('test_event');
   const [testValue, setTestValue] = useState('');
   const [isBridgeActive, setIsBridgeActive] = useState(false);
+
+  // Sync User Info Hook
+  const { user } = useAuthGuard();
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -81,26 +86,33 @@ export default function FlutterBridgeTab() {
     };
   }, []);
 
-  const sendToFlutter = () => {
-    const payload = { type: testType, value: testValue };
-    
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Sending to Flutter:", payload);
-      window.flutter_inappwebview.callHandler('bridge', payload);
-      addMessage('out', testType, testValue);
-    } else {
-      console.warn("⚠️ Flutter InAppWebView not detected.");
-      addMessage('out', testType, { ...payload, error: 'Bridge not detected' });
-    }
+  const sendToFlutterHandler = (type: string, value: any) => {
+    sendToFlutter(type, value, 
+      (logMsg: string) => {
+         // This is a debug log from the utility
+         console.log(logMsg);
+      },
+      (statusUpdate: any) => {
+        if (statusUpdate.status === 'error') {
+          addMessage('out', type, { ...value, error: statusUpdate.error });
+        } else {
+          // Success is assumed, we already optimistic added the message locally usually
+          // or we can add it here if we prefer strictly after success
+        }
+      }
+    );
+    // Optimistic log
+    addMessage('out', type, value);
+  };
+
+  const handleSendToFlutter = () => {
+    sendToFlutterHandler(testType, testValue);
   };
 
   const clearLogs = () => {
     setMessages([]);
     localStorage.removeItem('flutter_bridge_logs');
   };
-
-  // Sync User Info Hook
-  const { user } = useAuthGuard();
 
   const syncUserInfoToFlutter = () => {
     if (!user) {
@@ -113,38 +125,18 @@ export default function FlutterBridgeTab() {
       employee_id: user.employeeId,
       email: user.email,
       role: user.role,
-      designation: user.role, // Mapping role to designation as designation is not explicit
-      department: null, // Schema does not currently have department
+      designation: user.role, 
+      department: null,
       createdAt: user.createdAt,
       lastSignInAt: user.lastSignInAt,
       profilePicUrl: user.profilePicUrl
     };
 
-    const messagePayload = {
-      type: 'sync_user_info',
-      value: userInfoPayload
-    };
-
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Syncing User Info to Flutter:", messagePayload);
-      window.flutter_inappwebview.callHandler('bridge', messagePayload);
-      addMessage('out', 'sync_user_info', userInfoPayload);
-    } else {
-      console.warn("⚠️ Flutter InAppWebView not detected.");
-      addMessage('out', 'sync_user_info', { ...userInfoPayload, error: 'Bridge not detected' });
-    }
+    sendToFlutterHandler('sync_user_info', userInfoPayload);
   };
 
   const openDevMode = () => {
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Opening Dev Mode");
-      const payload = { type: 'isdevmode_open', value: true };
-      window.flutter_inappwebview.callHandler('bridge', payload);
-      addMessage('out', 'isdevmode_open', true);
-    } else {
-       console.warn("⚠️ Flutter InAppWebView not detected.");
-       addMessage('out', 'isdevmode_open', { error: 'Bridge not detected' });
-    }
+    sendToFlutterHandler('isdevmode_open', true);
   };
 
   return (
@@ -185,7 +177,7 @@ export default function FlutterBridgeTab() {
                />
              </div>
              <button 
-                onClick={sendToFlutter}
+                onClick={handleSendToFlutter}
                 className="px-4 py-2 bg-[#4b33e8] text-white rounded-md text-sm font-medium hover:bg-[#3b25b8] transition-colors"
              >
                 Send
