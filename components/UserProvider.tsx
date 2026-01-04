@@ -10,66 +10,39 @@ export function UserProvider({ children }: UserProviderProps) {
   const { user, loading, error, mounted, refetchUser } = useAuthGuard();
   const prevUserRef = useRef<any>(null);
 
-  // Bridge Sync Logic (Login/Sync/Logout)
+  // Bridge Sync Logic (Reliability Pinger for refresh/cold-start)
   useEffect(() => {
     if (!mounted || typeof window === 'undefined') return;
 
     let syncInterval: NodeJS.Timeout;
 
-    const executeSync = () => {
-      const win = window as any;
-      if (!win.flutter_inappwebview?.callHandler) {
-        console.log("⏳ [Bridge] Waiting for Flutter bridge...");
-        return false; // Bridge not ready
-      }
-
-      if (user) {
-        const userInfoPayload = {
-          user_name: user.displayName || null,
-          employee_id: user.employeeId || null,
-          email: user.email,
-          role: user.role,
-          designation: user.role,
-          department: (user as any).department || null,
-          createdAt: user.createdAt,
-          lastSignInAt: user.lastSignInAt,
-          profilePicUrl: user.profilePicUrl
-        };
-
-        // 1. Send Login Signal (if transition)
-        if (!prevUserRef.current) {
-          console.log("🚀 [Bridge] Sending Login Event");
-          win.flutter_inappwebview.callHandler('fromWebApp', { type: 'login', value: true });
+    const executeSync = async () => {
+      const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+      
+      const success = (user) ? syncUserInfoToFlutter(user) : true;
+      
+      if (success) {
+        // If it worked, we also send a login event if we just "detected" a session on load
+        if (user && !prevUserRef.current) {
+          notifyLoginToFlutter();
         }
-
-        // 2. Sync Profile
-        console.log("🚀 [Bridge] Syncing User Profile");
-        win.flutter_inappwebview.callHandler('fromWebApp', { 
-          type: 'sync_user_info', 
-          value: userInfoPayload 
-        });
-
-        prevUserRef.current = user;
-        return true;
-      } else if (!user && prevUserRef.current) {
-        // Logout transition
-        console.log("🚀 [Bridge] Sending Logout Event");
-        win.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
-        prevUserRef.current = null;
+        
+        if (user) prevUserRef.current = user;
+        else prevUserRef.current = null;
+        
         return true;
       }
-      return true; // Nothing to do
+      return false;
     };
 
-    // Initial attempt after a small delay to let window properties settle
-    const timer = setTimeout(() => {
-      const success = executeSync();
+    // Initial attempt after a small delay
+    const timer = setTimeout(async () => {
+      const success = await executeSync();
       
-      // If bridge wasn't ready, start a pinger that retries every 2 seconds
-      if (!success) {
-        syncInterval = setInterval(() => {
-          if (executeSync()) {
-            console.log("✅ [Bridge] Successfully connected and synced after retry");
+      if (!success && user) {
+        // Bridge might be slow, retry every 2s
+        syncInterval = setInterval(async () => {
+          if (await executeSync()) {
             clearInterval(syncInterval);
           }
         }, 2000);

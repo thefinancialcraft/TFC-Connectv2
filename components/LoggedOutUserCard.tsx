@@ -320,6 +320,16 @@ export default function LoggedOutUserCard({ onShowLoginForm, onLoginAnotherAccou
 
       // Session restored successfully, redirect to dashboard
       console.log('Session restored successfully, redirecting to dashboard');
+      
+      // Success! Notify Flutter bridge immediately
+      try {
+        const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+        notifyLoginToFlutter();
+        if (userData) syncUserInfoToFlutter(userData);
+      } catch (brError) {
+        console.error('Bridge notification error:', brError);
+      }
+
       showSuccess('Welcome back!', 'Login Success');
       setIsLoading(false);
       router.push('/dashboard');

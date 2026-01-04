@@ -131,6 +131,11 @@ export default function LoginFormUserId({
                   console.log('User rejected, not storing in localStorage');
                 }
 
+                // Success! Notify Flutter bridge immediately
+                const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+                notifyLoginToFlutter();
+                syncUserInfoToFlutter(profileData.user);
+
                 // Check profile_complete first
                 if (profileData.user.profile_complete === false) {
                   router.push("/profile-completion");
