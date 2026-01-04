@@ -12,14 +12,17 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Auto-sync user data to Flutter when user logs in
   useEffect(() => {
-    if (typeof window !== 'undefined' && user) {
+    // Only proceed when mounted and we have a valid window/bridge
+    if (!mounted || typeof window === 'undefined') return;
+
+    if (user) {
       const userInfoPayload = {
-        user_name: user.displayName,
-        employee_id: user.employeeId,
+        user_name: user.displayName || user.displayName || null,
+        employee_id: user.employeeId || null,
         email: user.email,
         role: user.role,
-        designation: user.role, // Mapping role to designation
-        department: null,
+        designation: user.role || user.role, // Use explicit designation if it exists
+        department: (user as any).department || null,
         createdAt: user.createdAt,
         lastSignInAt: user.lastSignInAt,
         profilePicUrl: user.profilePicUrl
@@ -27,27 +30,33 @@ export function UserProvider({ children }: UserProviderProps) {
 
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
-        // 1. Send sync_user_info
+        // 1. Sync full user info
         const syncPayload = {
           type: 'sync_user_info',
           value: userInfoPayload
         };
-        console.log("🚀 [Auto-Sync] Syncing User Info:", syncPayload);
+        console.log("🚀 [Bridge] Auto-syncing User Profile:", syncPayload);
         win.flutter_inappwebview.callHandler('fromWebApp', syncPayload);
 
-        // 2. Send login: true if this is a fresh login or first detection
+        // 2. Identify and send Login Event (login: true)
+        // This triggers when user goes from null/undefined to a valid user object
         if (!prevUserRef.current) {
           const loginPayload = { type: 'login', value: true };
-          console.log("🚀 [Auto-Sync] Sending Login Event:", loginPayload);
+          console.log("🚀 [Bridge] Login Detected (Email/ID/Card) - Sending Login Event:", loginPayload);
           win.flutter_inappwebview.callHandler('fromWebApp', loginPayload);
         }
       }
       prevUserRef.current = user;
     } else if (!user && prevUserRef.current) {
-      // User logged out
+      // Transition from user to null (Logout)
+      console.log("🚀 [Bridge] Logout Detected - Sending Logout Event");
+      const win = window as any;
+      if (win.flutter_inappwebview?.callHandler) {
+        win.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
+      }
       prevUserRef.current = null;
     }
-  }, [user]);
+  }, [user, mounted]);
 
   const contextValue = useMemo(() => ({
     user,
