@@ -143,7 +143,27 @@ export default function FlutterBridgeTab() {
       addMessage('out', 'isdevmode_open', true);
     } else {
        console.warn("⚠️ Flutter InAppWebView not detected.");
-       addMessage('out', 'isdevmode_open', { error: 'Bridge not detected' });
+       addMessage('out', 'isDevMode_open', { error: 'Bridge not detected' });
+    }
+  };
+
+  const sendLoginEvent = () => {
+    if (window.flutter_inappwebview?.callHandler) {
+      console.log("📤 [Web] Sending Manual Login Event");
+      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'login', value: true });
+      addMessage('out', 'login', true);
+    } else {
+      addMessage('out', 'login', { error: 'Bridge not detected' });
+    }
+  };
+
+  const sendLogoutEvent = () => {
+    if (window.flutter_inappwebview?.callHandler) {
+      console.log("📤 [Web] Sending Manual Logout Event");
+      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
+      addMessage('out', 'logout', true);
+    } else {
+      addMessage('out', 'logout', { error: 'Bridge not detected' });
     }
   };
 
@@ -212,6 +232,20 @@ export default function FlutterBridgeTab() {
              >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                 Open Dev Mode
+             </button>
+
+             <button 
+                onClick={sendLoginEvent}
+                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
+             >
+                Manual Login
+             </button>
+
+             <button 
+                onClick={sendLogoutEvent}
+                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-2"
+             >
+                Manual Logout
              </button>
            </div>
         </div>

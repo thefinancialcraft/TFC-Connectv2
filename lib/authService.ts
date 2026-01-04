@@ -367,6 +367,15 @@ export async function handleLogout(router: NextRouter): Promise<void> {
   // Clear user data from localStorage (but keep it for logged out user card)
   // We don't clear it here so user card can be shown after logout
   try {
+    // Notify Flutter bridge of logout
+    if (typeof window !== 'undefined') {
+      const win = window as any;
+      if (win.flutter_inappwebview?.callHandler) {
+        console.log("📤 [Bridge] Sending Logout Event to Flutter");
+        win.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
+      }
+    }
+
     // Get current session before signing out
     const { data: { session } } = await supabase.auth.getSession();
     

@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useEffect, useRef } from "react";
 import { UserContext } from "../context/UserContext";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 
@@ -8,9 +8,10 @@ interface UserProviderProps {
 
 export function UserProvider({ children }: UserProviderProps) {
   const { user, loading, error, mounted, refetchUser } = useAuthGuard();
+  const prevUserRef = useRef<any>(null);
 
   // Auto-sync user data to Flutter when user logs in
-  useMemo(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined' && user) {
       const userInfoPayload = {
         user_name: user.displayName,
@@ -24,19 +25,27 @@ export function UserProvider({ children }: UserProviderProps) {
         profilePicUrl: user.profilePicUrl
       };
 
-      const messagePayload = {
-        type: 'sync_user_info',
-        value: userInfoPayload
-      };
-
-      // Check if running inside Flutter WebView
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
-        console.log("🚀 [Auto-Sync] Syncing User Info to Flutter:", messagePayload);
-        win.flutter_inappwebview.callHandler('fromWebApp', messagePayload)
-          .then((result: any) => console.log("✅ [Auto-Sync] Success:", result))
-          .catch((err: any) => console.error("❌ [Auto-Sync] Failed:", err));
+        // 1. Send sync_user_info
+        const syncPayload = {
+          type: 'sync_user_info',
+          value: userInfoPayload
+        };
+        console.log("🚀 [Auto-Sync] Syncing User Info:", syncPayload);
+        win.flutter_inappwebview.callHandler('fromWebApp', syncPayload);
+
+        // 2. Send login: true if this is a fresh login or first detection
+        if (!prevUserRef.current) {
+          const loginPayload = { type: 'login', value: true };
+          console.log("🚀 [Auto-Sync] Sending Login Event:", loginPayload);
+          win.flutter_inappwebview.callHandler('fromWebApp', loginPayload);
+        }
       }
+      prevUserRef.current = user;
+    } else if (!user && prevUserRef.current) {
+      // User logged out
+      prevUserRef.current = null;
     }
   }, [user]);
 
