@@ -79,6 +79,7 @@ export interface UserProfile {
     status: 'assigned' | 'active' | 'disposition_pending' | 'closed';
     call_start_at: string;
   } | null;
+  allTimeActive?: boolean;
 }
 
 export interface AuthResult {
@@ -94,9 +95,40 @@ export interface AuthResult {
  */
 export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
   try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+    let session = currentSession;
 
-    if (sessionError || !session) {
+    // "All time active" feature: If no active session, try to restore from localStorage tokens
+    if (!session || sessionError) {
+      console.log("🔍 [Auth] No active session found, checking for stored tokens...");
+      const { getStoredUserData, storeUserData } = await import("./localStorageUtils");
+      const storedData = getStoredUserData();
+      
+      if (storedData?.refresh_token) {
+        try {
+          console.log("🚀 [Auth] Attempting auto-restoration with refresh token...");
+          const { data, error: refreshError } = await supabase.auth.refreshSession({
+            refresh_token: storedData.refresh_token,
+          });
+          
+          if (data.session && !refreshError) {
+            console.log("✅ [Auth] Session restored automatically!");
+            session = data.session;
+            
+            // Update stored data with new tokens
+            storeUserData({
+              ...storedData,
+              session_token: session.access_token,
+              refresh_token: session.refresh_token,
+            });
+          }
+        } catch (err) {
+          console.error("❌ [Auth] Auto-restoration failed:", err);
+        }
+      }
+    }
+
+    if (!session) {
       return {
         user: null,
         error: "No session found",
@@ -201,6 +233,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             status: userData.accountStatus || undefined,
             updated_at: userData.updatedAt || undefined,
             profile_pic_url: userData.profilePicUrl || undefined,
+            all_time_active: userData.allTimeActive,
           };
           addUserToStore(profileData);
         }

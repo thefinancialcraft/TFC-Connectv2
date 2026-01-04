@@ -19,6 +19,7 @@ export interface StoredUserData {
   status_reason?: string | null;
   hold_start_date?: string | null;
   hold_end_date?: string | null;
+  all_time_active?: boolean;
 }
 
 const STORAGE_KEY = 'tfc_user_data';
@@ -38,6 +39,7 @@ export function storeUserData(userData: StoredUserData): void {
       // Explicitly ensure session tokens are present (even if undefined, they'll be stored)
       session_token: userData.session_token || undefined,
       refresh_token: userData.refresh_token || undefined,
+      all_time_active: userData.all_time_active ?? true,
     };
     
     console.log('storeUserData called with:', {

@@ -35,6 +35,7 @@ type Data = {
     statusReason: string | null;
     holdStartDate: string | null;
     holdEndDate: string | null;
+    allTimeActive: boolean;
   };
 };
 
@@ -156,6 +157,7 @@ export default async function handler(
         statusReason: profile?.status_reason || null,
         holdStartDate: profile?.hold_start_date || null,
         holdEndDate: profile?.hold_end_date || null,
+        allTimeActive: profile?.all_time_active ?? true,
       },
     });
   } catch (error: any) {

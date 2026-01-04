@@ -47,6 +47,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         statusReason: cachedData.status_reason || null,
         holdStartDate: cachedData.hold_start_date || null,
         holdEndDate: cachedData.hold_end_date || null,
+        allTimeActive: cachedData.all_time_active ?? true,
       };
     }
     return null;
@@ -124,7 +125,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
           prevUser.profilePicUrl !== latestUserData.profilePicUrl ||
           prevUser.statusReason !== latestUserData.statusReason ||
           prevUser.holdStartDate !== latestUserData.holdStartDate ||
-          prevUser.holdEndDate !== latestUserData.holdEndDate;
+          prevUser.holdEndDate !== latestUserData.holdEndDate ||
+          prevUser.allTimeActive !== latestUserData.allTimeActive;
 
         if (hasChanged) {
           updateLocalStorage(latestUserData);
@@ -177,6 +179,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         approval_status: userData.approvalStatus || null,
         status: userData.accountStatus || null,
         updated_at: userData.updatedAt || null,
+        all_time_active: userData.allTimeActive ?? true,
       };
       storeUserData(userDataToStore);
     }
