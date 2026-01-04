@@ -24,7 +24,7 @@ export default function FlutterBridgeTab() {
   const [testValue, setTestValue] = useState('');
   const [isBridgeActive, setIsBridgeActive] = useState(false);
 
-  // Load messages from localStorage on mount and listen for new ones
+  // Load messages from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedMessages = localStorage.getItem('flutter_bridge_logs');
@@ -32,53 +32,35 @@ export default function FlutterBridgeTab() {
         try {
           const parsed = JSON.parse(savedMessages).map((m: any) => ({
             ...m,
-            timestamp: new Date(m.timestamp)
+            timestamp: new Date(m.timestamp) // Revive dates
           }));
           setMessages(parsed);
         } catch (e) {
           console.error("Failed to load bridge logs", e);
         }
       }
-
-      // Listen for global messages from UserProvider's receiver
-      const handleGlobalMessage = (event: any) => {
-        const logEntry = event.detail;
-        if (logEntry && logEntry.direction === 'in') {
-          setMessages(prev => [{
-            ...logEntry,
-            timestamp: new Date(logEntry.timestamp)
-          }, ...prev]);
-        }
-      };
-
-      window.addEventListener('from-flutter' as any, handleGlobalMessage);
-      return () => window.removeEventListener('from-flutter' as any, handleGlobalMessage);
     }
   }, []);
 
-  // Save outgoing messages to global logs
-  const persistMessage = (msg: BridgeMessage) => {
-    try {
-      const existingLogs = JSON.parse(localStorage.getItem('flutter_bridge_logs') || '[]');
-      const updatedLogs = [msg, ...existingLogs].slice(0, 100);
-      localStorage.setItem('flutter_bridge_logs', JSON.stringify(updatedLogs));
-    } catch (e) {}
-  };
-
-  // Helper to add message to log (Outgoing)
-  const addMessage = (direction: 'in' | 'out', type: string, payload: any) => {
-    const newMsg: BridgeMessage = {
-      id: Math.random().toString(36).substr(2, 9),
-      direction,
-      type,
-      payload,
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [newMsg, ...prev]);
-    if (direction === 'out') {
-      persistMessage(newMsg);
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('flutter_bridge_logs', JSON.stringify(messages));
     }
+  }, [messages]);
+
+  // Helper to add message to log
+  const addMessage = (direction: 'in' | 'out', type: string, payload: any) => {
+    setMessages(prev => {
+      const newMessages = [{
+        id: Math.random().toString(36).substr(2, 9),
+        direction,
+        type,
+        payload,
+        timestamp: new Date()
+      }, ...prev];
+      return newMessages;
+    });
   };
 
   useEffect(() => {
@@ -86,6 +68,17 @@ export default function FlutterBridgeTab() {
     if (typeof window !== 'undefined' && window.flutter_inappwebview) {
       setIsBridgeActive(true);
     }
+
+    // Mount receiving handler
+    window.fromFlutter = (data: any) => {
+      console.log("🔔 [Web] Received from Flutter:", data);
+      
+      // Parse payload based on expected Dart structure: {'type': type, 'value': value}
+      const type = data?.type || 'unknown';
+      const value = data?.value;
+      
+      addMessage('in', type, value);
+    };
   }, []);
 
   const sendToFlutter = () => {
