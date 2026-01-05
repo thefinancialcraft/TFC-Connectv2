@@ -5,6 +5,7 @@ import Header from "../../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../../lib/authService";
 import { supabase } from "../../../lib/supabase";
 import BottomNav from "../../../components/BottomNav";
+import { notifyFlutter } from "../../../lib/flutterBridge";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -568,6 +569,10 @@ export default function CallingPage() {
         // ----------------------------
 
         if (customer?.phone_no) {
+            // Trigger Flutter bridge call event
+            notifyFlutter('call', customer.phone_no);
+            
+            // Fallback for non-bridge environments
             window.location.href = `tel:${customer.phone_no}`;
         }
 
