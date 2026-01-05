@@ -168,128 +168,186 @@ export default function FlutterBridgeTab() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg border bg-white p-4 sm:p-6" style={{ borderColor: "#E0E0E0" }}>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base sm:text-lg font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-            Flutter Bridge Debugger
-          </h3>
-          <div className="flex items-center gap-2">
-            <span className={`h-3 w-3 rounded-full ${isBridgeActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
-            <span className="text-xs text-gray-500 font-medium">
-              {isBridgeActive ? 'Bridge Active' : 'Bridge Not Detected'}
-            </span>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#4b33e8]/10 flex items-center justify-center text-[#4b33e8]">
+                <i className="fi fi-rr-data-transfer text-lg" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#263238]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                  Bridge Debugger
+                </h3>
+                <p className="text-xs text-[#787E9D]">Monitor web-to-app communication</p>
+              </div>
+            </div>
+            
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+              isBridgeActive 
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
+                : 'bg-rose-50 text-rose-600 border border-rose-100'
+            }`}>
+              <span className={`h-2 w-2 rounded-full animate-pulse ${isBridgeActive ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+              {isBridgeActive ? 'Bridge Active' : 'Native Bridge Missing'}
+            </div>
           </div>
-        </div>
 
-        {/* Test Sender */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-           <h4 className="text-sm font-bold text-gray-700 mb-3">Send Message to Flutter</h4>
-           <div className="flex flex-col sm:flex-row gap-3">
-             <div className="flex-1">
-               <input 
-                  type="text" 
-                  placeholder="Type (e.g. user_id)"
-                  className="w-full px-3 text-gray-700 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
-                  value={testType}
-                  onChange={(e) => setTestType(e.target.value)}
-               />
+          {/* Test Sender */}
+          <div className="bg-gray-50/50 p-5 rounded-2xl mb-8 border border-gray-100">
+             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+               <i className="fi fi-rr-paper-plane text-[10px]" />
+               Send Message to Flutter
+             </h4>
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+               <div className="md:col-span-1">
+                 <input 
+                    type="text" 
+                    placeholder="Event Type"
+                    className="w-full h-11 px-4 bg-white text-gray-700 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#4b33e8]/20 outline-none transition-all"
+                    value={testType}
+                    onChange={(e) => setTestType(e.target.value)}
+                 />
+               </div>
+               <div className="md:col-span-2">
+                 <input 
+                    type="text" 
+                    placeholder="Payload Value"
+                    className="w-full h-11 px-4 bg-white text-gray-700 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#4b33e8]/20 outline-none transition-all"
+                    value={testValue}
+                    onChange={(e) => setTestValue(e.target.value)}
+                 />
+               </div>
+               <button 
+                  onClick={sendToFlutter}
+                  className="h-11 px-6 bg-[#4b33e8] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#4b33e8]/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+               >
+                  <i className="fi fi-rr-paper-plane-top flex" />
+                  Send
+               </button>
              </div>
-             <div className="flex-[2]">
-               <input 
-                  type="text" 
-                  placeholder="Value (e.g. 12345)"
-                  className="w-full px-3 text-gray-700 py-2 border rounded-md text-sm focus:outline-none focus:border-[#4b33e8]"
-                  value={testValue}
-                  onChange={(e) => setTestValue(e.target.value)}
-               />
+          </div>
+
+          
+          {/* Action Buttons Grid */}
+          <div className="mb-8">
+             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+               <i className="fi fi-rr-bolt text-[10px]" />
+               Quick Actions
+             </h4>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+               <button 
+                  onClick={syncUserInfoToFlutter}
+                  className="px-4 py-3 bg-white border border-gray-100 text-[#4b33e8] rounded-xl text-xs font-bold hover:border-[#4b33e8] hover:bg-gray-50 transition-all flex items-center gap-3 group"
+               >
+                  <div className="w-8 h-8 rounded-lg bg-[#4b33e8]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i className="fi fi-rr-refresh flex" />
+                  </div>
+                  Sync User Info
+               </button>
+
+               <button 
+                  onClick={openDevMode}
+                  className="px-4 py-3 bg-white border border-gray-100 text-indigo-600 rounded-xl text-xs font-bold hover:border-indigo-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+               >
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i className="fi fi-rr-code-compare flex" />
+                  </div>
+                  Toggle Dev Mode
+               </button>
+
+               <button 
+                  onClick={sendLoginEvent}
+                  className="px-4 py-3 bg-white border border-gray-100 text-emerald-600 rounded-xl text-xs font-bold hover:border-emerald-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+               >
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i className="fi fi-rr-sign-in-alt flex" />
+                  </div>
+                  Manual Login
+               </button>
+
+               <button 
+                  onClick={sendLogoutEvent}
+                  className="px-4 py-3 bg-white border border-gray-100 text-rose-600 rounded-xl text-xs font-bold hover:border-rose-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+               >
+                  <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i className="fi fi-rr-sign-out-alt flex" />
+                  </div>
+                  Manual Logout
+               </button>
              </div>
-             <button 
-                onClick={sendToFlutter}
-                className="px-4 py-2 bg-[#4b33e8] text-white rounded-md text-sm font-medium hover:bg-[#3b25b8] transition-colors"
-             >
-                Send
-             </button>
-           </div>
-        </div>
+          </div>
 
-        
-        {/* Sync Actions */}
-        <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
-           <h4 className="text-sm font-bold text-blue-900 mb-3">Sync Actions</h4>
-           <div className="flex gap-3">
-             <button 
-                onClick={syncUserInfoToFlutter}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
-             >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                Sync User Info to Flutter
-             </button>
-
-             <button 
-                onClick={openDevMode}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center gap-2"
-             >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                Open Dev Mode
-             </button>
-
-             <button 
-                onClick={sendLoginEvent}
-                className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
-             >
-                Manual Login
-             </button>
-
-             <button 
-                onClick={sendLogoutEvent}
-                className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-2"
-             >
-                Manual Logout
-             </button>
-           </div>
-        </div>
-
-        {/* Console Log */}
-        <div className="border rounded-lg overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
-           <div className="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
-              <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">Communication Log</span>
-              <button onClick={clearLogs} className="text-xs text-[#4b33e8] hover:underline">Clear</button>
-           </div>
-           <div className="h-[400px] overflow-y-auto p-4 space-y-3 bg-[#f8f9fa] font-mono text-xs">
-              {messages.length === 0 && (
-                <div className="text-center text-gray-400 italic py-10">No messages logged yet...</div>
-              )}
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.direction === 'out' ? 'justify-end' : 'justify-start'}`}>
-                   <div className={`max-w-[80%] rounded-lg p-3 border ${
-                     msg.direction === 'out' 
-                       ? 'bg-blue-50 border-blue-100 text-blue-900' 
-                       : 'bg-green-50 border-green-100 text-green-900'
-                   }`}>
-                      <div className="flex items-center gap-2 mb-1 border-b border-black/5 pb-1">
-                        <span className="font-bold uppercase text-[10px] opacity-70">
-                          {msg.direction === 'out' ? '📤 To Flutter' : '📥 From Flutter'}
-                        </span>
-                        <span className="text-[10px] opacity-50 ml-auto">
-                          {msg.timestamp.toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <div className="mb-1">
-                        <span className="font-bold text-black/60 mr-2">Type:</span> 
-                        <span className="font-bold">{msg.type}</span>
-                      </div>
-                      <div className="break-all whitespace-pre-wrap">
-                        <span className="font-bold text-black/60 mr-2">Value:</span>
-                        {typeof msg.payload === 'object' ? JSON.stringify(msg.payload, null, 2) : String(msg.payload)}
-                      </div>
-                   </div>
+          {/* Console Log */}
+          <div className="border border-gray-100 rounded-[20px] overflow-hidden bg-white shadow-sm">
+             <div className="bg-gray-50 px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Communication Log</span>
+                  <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-[10px] font-bold">{messages.length}</span>
                 </div>
-              ))}
-           </div>
+                <button 
+                  onClick={clearLogs} 
+                  className="text-[10px] font-bold text-[#4b33e8] hover:underline flex items-center gap-1"
+                >
+                  <i className="fi fi-rr-trash text-[10px]" />
+                  Clear Logs
+                </button>
+             </div>
+             
+             <div className="h-[450px] overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/30">
+                {messages.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-60 py-10">
+                    <i className="fi fi-rr-layer-group text-4xl mb-4" />
+                    <p className="text-sm font-medium italic">Waiting for communications...</p>
+                  </div>
+                ) : (
+                  messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.direction === 'out' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-top-1`}>
+                       <div className={`max-w-[90%] sm:max-w-[80%] rounded-2xl p-4 shadow-sm border transition-all ${
+                         msg.direction === 'out' 
+                           ? 'bg-white border-[#4b33e8]/10 text-gray-700' 
+                           : 'bg-[#4b33e8] border-[#4b33e8] text-white'
+                       }`}>
+                          <div className={`flex items-center gap-3 mb-3 pb-2 border-b ${
+                            msg.direction === 'out' ? 'border-gray-100' : 'border-white/10'
+                          }`}>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] ${
+                              msg.direction === 'out' ? 'bg-[#4b33e8]/10 text-[#4b33e8]' : 'bg-white/20 text-white'
+                            }`}>
+                              <i className={`fi ${msg.direction === 'out' ? 'fi-rr-arrow-up' : 'fi-rr-arrow-down'} flex`} />
+                            </div>
+                            <span className="font-black uppercase text-[10px] tracking-wider opacity-80">
+                              {msg.direction === 'out' ? 'Sent to Native' : 'Received from Native'}
+                            </span>
+                            <span className="text-[10px] font-bold opacity-60 ml-auto">
+                              {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-[10px] font-bold uppercase ${msg.direction === 'out' ? 'text-gray-400' : 'text-white/60'}`}>Type</span>
+                              <span className="text-xs font-black tracking-wide">{msg.type}</span>
+                            </div>
+                            
+                            <div className="flex flex-col gap-1.5">
+                              <span className={`text-[10px] font-bold uppercase ${msg.direction === 'out' ? 'text-gray-400' : 'text-white/60'}`}>Payload</span>
+                              <div className={`p-3 rounded-xl font-mono text-[11px] overflow-x-auto break-all whitespace-pre-wrap ${
+                                msg.direction === 'out' ? 'bg-gray-50 text-gray-600' : 'bg-white/10 text-white'
+                              }`}>
+                                {typeof msg.payload === 'object' ? JSON.stringify(msg.payload, null, 2) : String(msg.payload)}
+                              </div>
+                            </div>
+                          </div>
+                       </div>
+                    </div>
+                  ))
+                )}
+             </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
