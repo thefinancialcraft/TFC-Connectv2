@@ -67,15 +67,16 @@ export default function Dashboard() {
       <DashboardErrorBoundary>
         <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]">
           {/* Header / Welcome Row */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
+          {/* Header / Welcome Row */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6">
+            <div className="flex-1">
               <h1
                 className="text-2xl sm:text-3xl font-bold text-[#263238]"
                 style={{ fontFamily: "'Poppins', sans-serif" }}
               >
                 Dashboard Overview
               </h1>
-              <p className="text-sm text-[#787E9D] mt-1">
+              <p className="text-sm text-[#787E9D] mt-1 line-clamp-1 sm:line-clamp-none">
                 Welcome back,{" "}
                 <span className="font-semibold text-[#4b33e8]">
                   {mounted ? user?.displayName || "User" : "User"}
@@ -83,14 +84,14 @@ export default function Dashboard() {
                 . Here's what's happening today.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               {/* Org Filter */}
-              <div className="relative group">
+              <div className="relative flex-1 sm:flex-none min-w-[140px] sm:min-w-[180px]">
                 <select
                   value={selectedOrgId}
                   onChange={(e) => setSelectedOrgId(e.target.value)}
-                  className="appearance-none pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none"
-                  style={{ minWidth: "180px" }}
+                  className="w-full appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none"
                   disabled={loading}
                 >
                   <option value="all">Global (All Orgs)</option>
@@ -100,17 +101,16 @@ export default function Dashboard() {
                     </option>
                   ))}
                 </select>
-                <i className="fi fi-rr-building absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                <i className="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                <i className="fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
               </div>
 
               {/* Date Filter */}
-              <div className="relative group">
+              <div className="relative flex-1 sm:flex-none min-w-[110px] sm:min-w-[140px]">
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="appearance-none pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none"
-                  style={{ minWidth: "140px" }}
+                  className="w-full appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none"
                   disabled={loading}
                 >
                   <option value="today">Today</option>
@@ -123,26 +123,29 @@ export default function Dashboard() {
                   <option value="multi_year">Multi-Year</option>
                   <option value="all_time">All Time</option>
                 </select>
-                <i className="fi fi-rr-calendar absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                <i className="fi fi-rr-angle-small-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                <i className="fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
               </div>
 
-              <div className="px-4 py-2 bg-[#4b33e8] rounded-xl text-sm font-bold text-white cursor-default flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full bg-white ${loading ? '' : 'animate-pulse'}`}></span>
-                {loading ? "Updating..." : "Live Updates"}
+              <div className="flex items-center gap-2">
+                <div className="px-3 sm:px-4 py-2 bg-[#4b33e8] rounded-xl text-xs sm:text-sm font-bold text-white cursor-default flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full bg-white ${loading ? '' : 'animate-pulse'}`}></span>
+                  <span className="hidden sm:inline">{loading ? "Updating..." : "Live Updates"}</span>
+                  <span className="sm:hidden">{loading ? "..." : "Live"}</span>
+                </div>
+                
+                <button
+                    onClick={() => {
+                        const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
+                        const dFilter = dateFilter;
+                        window.open(`/dashboard_report?orgId=${oid}&dateFilter=${dFilter}`, '_blank');
+                    }}
+                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all"
+                    title="Generate Report"
+                >
+                    <i className="fi flex fi-rr-print"></i>
+                </button>
               </div>
-              
-              <button
-                  onClick={() => {
-                      const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
-                      const dFilter = dateFilter;
-                      window.open(`/dashboard_report?orgId=${oid}&dateFilter=${dFilter}`, '_blank');
-                  }}
-                  className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all"
-                  title="Generate Report"
-              >
-                  <i className="fi flex fi-rr-print"></i>
-              </button>
             </div>
           </div>
 
@@ -155,20 +158,22 @@ export default function Dashboard() {
           {/* Analytics Tab Selection */}
           <div className="bg-gray-100/50 p-1 rounded-2xl inline-flex gap-1 w-full sm:w-auto">
             {[
-              { id: "prospect", label: "Prospect Wise Performance" },
-              { id: "callDetails", label: "Call Hourly Analytics" },
-              { id: "agentPerf", label: "Agent Performance" },
+              { id: "prospect", label: "Prospect Wise Performance", short: "Prospects" },
+              { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
+              { id: "agentPerf", label: "Agent Performance", short: "Agents" },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                   activeTab === tab.id
-                    ? "bg-white text-[#4b33e8] shadow-sm"
-                    : "text-gray-500 hover:bg-white/50"
+                    ? "bg-white text-[#4b33e8] shadow-sm scale-[1.02]"
+                    : "text-gray-500 hover:text-gray-900"
                 }`}
+                style={{ fontFamily: "'Poppins', sans-serif" }}
               >
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.short}</span>
               </button>
             ))}
           </div>
