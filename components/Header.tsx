@@ -136,7 +136,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
               className="text-xs leading-tight"
               style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}
             >
-              Signify - Growwik Media
+             {mounted ? (displayUser?.email?.split("@")[0] || "User") : "User"}
             </p>
           </div>
 
