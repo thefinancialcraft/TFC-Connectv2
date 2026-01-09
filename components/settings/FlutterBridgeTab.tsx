@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
+import { notifyFlutter } from '../../lib/flutterBridge';
 
 interface BridgeMessage {
   id: string;
@@ -168,12 +169,18 @@ export default function FlutterBridgeTab() {
   };
 
   const sendDummyEvent = () => {
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Sending Dummy Event");
-      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'dummy_action', value: { timestamp: new Date().toISOString(), status: 'test' } });
-      addMessage('out', 'dummy_action', { status: 'test' });
+    const testNumber = "198";
+    console.log("📤 [Web] Triggering Test Call to:", testNumber);
+    
+    // Check if flutter bridge is connected, if so send call_to event
+    const bridgeConnected = notifyFlutter('call_to', testNumber);
+    
+    if (bridgeConnected) {
+      addMessage('out', 'call_to', testNumber);
     } else {
-      addMessage('out', 'dummy_action', { error: 'Bridge not detected' });
+      // Fallback for non-bridge environments (normal web behavior)
+      window.location.href = `tel:${testNumber}`;
+      addMessage('out', 'tel_fallback', testNumber);
     }
   };
 
@@ -292,9 +299,9 @@ export default function FlutterBridgeTab() {
                    className="px-4 py-3 bg-white border border-gray-100 text-amber-600 rounded-xl text-xs font-bold hover:border-amber-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
                 >
                    <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                     <i className="fi fi-rr-rocket flex" />
+                     <i className="fi fi-rr-phone-call flex" />
                    </div>
-                   Dummy Action
+                   Place Test Call (198)
                 </button>
              </div>
           </div>
