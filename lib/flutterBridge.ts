@@ -57,9 +57,36 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
   if (!employeeId) return;
   
   try {
-    console.log(`📡 [Bridge] Syncing ${type} to DB for: ${employeeId}`);
+    // 1. Fetch current device status to check if it's online
+    const { data: device, error: fetchError } = await supabase
+      .from('sync_meta')
+      .select('last_seen, status')
+      .eq('employee_id', employeeId)
+      .eq('is_primary', true)
+      .maybeSingle();
+
+    if (fetchError || !device) {
+      console.warn("⚠️ [Bridge] Cannot sync status: Primary device not found");
+      return;
+    }
+
+    // 2. Check if device is actually online (15 second timeout like Header)
+    if (device.last_seen) {
+      const lastSeen = new Date(device.last_seen).getTime();
+      const diffSeconds = (Date.now() - lastSeen) / 1000;
+      
+      if (diffSeconds >= 15) {
+        console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s ago). Skipping ${type} update.`);
+        return;
+      }
+    } else {
+      console.warn("⚠️ [Bridge] Device has never sent a heartbeat. Skipping update.");
+      return;
+    }
+
+    console.log(`📡 [Bridge] Device is online. Syncing ${type} to DB...`);
     
-    // Update the record where employee_id matches and is_primary is true
+    // 3. Perform the update
     const { error } = await supabase
       .from('sync_meta')
       .update({ 

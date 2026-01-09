@@ -145,10 +145,10 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     // Send initial heartbeat
     sendHeartbeat(empId);
 
-    // Set up interval for every 30 seconds
+    // Set up interval for every 10 seconds (for 15s timeout)
     const interval = setInterval(() => {
       sendHeartbeat(empId);
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [isBridgeActive, displayUser?.employeeId]);
@@ -159,9 +159,10 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     
     const lastSeen = new Date(deviceStatus.last_seen).getTime();
     const now = Date.now();
-    const diffMinutes = (now - lastSeen) / 1000 / 60;
+    const diffSeconds = (now - lastSeen) / 1000;
     
-    return diffMinutes < 2 ? 'online' : 'offline';
+    // Mark offline if no heartbeat for 15 seconds
+    return diffSeconds < 15 ? 'online' : 'offline';
   }, [deviceStatus?.last_seen]);
 
   // Ghost update: Only update if props actually changed
