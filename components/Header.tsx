@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
 import { supabase } from "../lib/supabase";
-import { notifyFlutter } from "../lib/flutterBridge";
+import { notifyFlutter, sendHeartbeat } from "../lib/flutterBridge";
 
 interface HeaderProps {
   user?: {
@@ -20,7 +20,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [serverStatus, setServerStatus] = useState<'online' | 'offline' | 'checking'>('online');
   const [showFullStatus, setShowFullStatus] = useState<boolean>(true);
   const [mounted, setMounted] = useState(false);
-  const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string } | null>(null);
+  const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
   
   // Initialize with cached data, then update with props if different (ghost update)
@@ -76,7 +76,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     const fetchPrimaryStatus = async () => {
       const { data: primaryDevice, error } = await supabase
         .from('sync_meta')
-        .select('id, entry_id, on_call, device_model, android_id, status, is_primary')
+        .select('id, entry_id, on_call, device_model, android_id, status, is_primary, last_seen')
         .eq('employee_id', displayUser.employeeId)
         .eq('is_primary', true)
         .maybeSingle();
@@ -90,7 +90,8 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
         setDeviceStatus({
           on_call: primaryDevice.on_call || false,
           device_model: primaryDevice.device_model || 'Unknown Device',
-          android_id: primaryDevice.android_id || 'N/A'
+          android_id: primaryDevice.android_id || 'N/A',
+          last_seen: primaryDevice.last_seen
         });
       } else {
         setDeviceStatus(null);
@@ -134,7 +135,34 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [mounted, displayUser?.employeeId]);
+  }, [mounted, displayUser?.employeeId, isBridgeActive]);
+
+  // SENDER: Heartbeat Loop (Only if bridge is active)
+  useEffect(() => {
+    const empId = displayUser?.employeeId;
+    if (!isBridgeActive || !empId) return;
+
+    // Send initial heartbeat
+    sendHeartbeat(empId);
+
+    // Set up interval for every 30 seconds
+    const interval = setInterval(() => {
+      sendHeartbeat(empId);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [isBridgeActive, displayUser?.employeeId]);
+
+  // Logic: Check if device is actually online based on last_seen
+  const deviceOnlineStatus = useMemo(() => {
+    if (!deviceStatus?.last_seen) return 'offline';
+    
+    const lastSeen = new Date(deviceStatus.last_seen).getTime();
+    const now = Date.now();
+    const diffMinutes = (now - lastSeen) / 1000 / 60;
+    
+    return diffMinutes < 2 ? 'online' : 'offline';
+  }, [deviceStatus?.last_seen]);
 
   // Ghost update: Only update if props actually changed
   useEffect(() => {
@@ -276,18 +304,30 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
             {deviceStatus && (
               <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50/50 rounded-2xl border border-gray-100/50">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                  deviceStatus.on_call ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
+                  deviceOnlineStatus === 'offline' 
+                    ? 'bg-gray-100 text-gray-400' 
+                    : (deviceStatus.on_call ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600')
                 }`}>
-                  <i className={`fi flex ${deviceStatus.on_call ? 'fi-rr-phone-call animate-pulse' : 'fi-rr-smartphone'} text-sm`} />
+                  <i className={`fi flex ${
+                    deviceOnlineStatus === 'online' && deviceStatus.on_call 
+                      ? 'fi-rr-phone-call animate-pulse' 
+                      : 'fi-rr-smartphone'
+                  } text-sm`} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
                     {deviceStatus.device_model}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className={`w-1 h-1 rounded-full ${deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                    <span className={`w-1 h-1 rounded-full ${
+                      deviceOnlineStatus === 'online' 
+                        ? (deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500') 
+                        : 'bg-gray-400'
+                    }`} />
                     <span className="text-[11px] font-bold text-gray-700 leading-none">
-                      {deviceStatus.on_call ? 'In Call' : 'Idle'}
+                      {deviceOnlineStatus === 'online' 
+                        ? (deviceStatus.on_call ? 'In Call' : 'Online') 
+                        : 'Offline'}
                     </span>
                   </div>
                 </div>

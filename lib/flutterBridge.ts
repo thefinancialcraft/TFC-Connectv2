@@ -78,3 +78,25 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
     console.error("❌ [Bridge] SyncMeta connection error:", err);
   }
 };
+
+/**
+ * Send a heartbeat update to the sync_meta table
+ */
+export const sendHeartbeat = async (employeeId: string) => {
+  if (!employeeId) return;
+  
+  try {
+    const { error } = await supabase
+      .from('sync_meta')
+      .update({ 
+        last_seen: new Date().toISOString()
+      })
+      .eq('employee_id', employeeId)
+      .eq('is_primary', true)
+      .eq('status', 'connected');
+
+    if (error) console.error("❌ [Heartbeat] Update failed:", error);
+  } catch (err) {
+    console.error("❌ [Heartbeat] Error:", err);
+  }
+};
