@@ -20,6 +20,18 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
   const [devices, setDevices] = useState<DeviceMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [localDeviceInfo, setLocalDeviceInfo] = useState<any>(null);
+  const [isBridgeActive, setIsBridgeActive] = useState(false);
+
+  useEffect(() => {
+    const checkBridge = () => {
+      const active = !!(window as any).flutter_inappwebview?.callHandler;
+      if (active !== isBridgeActive) setIsBridgeActive(active);
+    };
+
+    checkBridge();
+    const interval = setInterval(checkBridge, 1000);
+    return () => clearInterval(interval);
+  }, [isBridgeActive]);
 
   useEffect(() => {
     fetchDevices();
@@ -252,14 +264,16 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
                   </div>
 
                   <div className="mt-5 flex items-center gap-2">
-                    {/* Accept Connection for this specific device if it's yours and pending */}
+                    {/* Accept Connection for this specific device if it's yours, pending, AND bridge is active */}
                     {device.is_primary && device.status === 'pending' && 
-                     localDeviceInfo && (device.android_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) && (
+                     isBridgeActive && localDeviceInfo && 
+                     (device.android_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) && (
                       <button 
                         onClick={() => acceptConnection(device.id)}
-                        className="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition-all shadow-md shadow-emerald-600/20"
+                        className="flex-1 py-1 px-3 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 group"
                       >
-                        Accept Connection
+                        <i className="fi fi-rr-check-circle flex text-sm animate-bounce" />
+                        Activate Device
                       </button>
                     )}
 
