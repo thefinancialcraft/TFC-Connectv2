@@ -659,6 +659,11 @@ export default function CallingPage() {
         setPostCall(true);
         setCallAlive(false);
 
+        // Notify Flutter bridge to disconnect the call
+        if (customer?.phone_no) {
+            notifyFlutter('call disconnect', customer.phone_no);
+        }
+
         // Update state to disposition_pending in call_sessions table
         if (user?.uid) {
             const { data: { session: authSession } } = await supabase.auth.getSession();

@@ -184,6 +184,19 @@ export default function FlutterBridgeTab() {
     }
   };
 
+  const sendDisconnectEvent = () => {
+    const testNumber = "198";
+    console.log("📤 [Web] Sending Manual Disconnect for:", testNumber);
+    
+    const bridgeConnected = notifyFlutter('call_disconnect', testNumber);
+    
+    if (bridgeConnected) {
+      addMessage('out', 'call_disconnect', testNumber);
+    } else {
+      addMessage('out', 'call_disconnect_failed', { number: testNumber, error: 'Bridge not detected' });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
@@ -302,6 +315,16 @@ export default function FlutterBridgeTab() {
                      <i className="fi fi-rr-phone-call flex" />
                    </div>
                    Place Test Call (198)
+                </button>
+
+                <button 
+                   onClick={sendDisconnectEvent}
+                   className="px-4 py-3 bg-white border border-gray-100 text-rose-500 rounded-xl text-xs font-bold hover:border-rose-500 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+                >
+                   <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <i className="fi fi-rr-phone-slash flex" />
+                   </div>
+                   Disconnect Call (198)
                 </button>
              </div>
           </div>
