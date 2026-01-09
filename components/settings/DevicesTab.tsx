@@ -136,6 +136,7 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
 
   const acceptConnection = async (targetId: string, email: string) => {
     try {
+      setVerifyingDeviceId(targetId);
       setIsVerifying(true);
       setOtpError(null);
       
@@ -363,10 +364,15 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
                       <>
                         <button 
                           onClick={() => acceptConnection(device.id, device.email)}
-                          className="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                          disabled={isVerifying}
+                          className="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          <i className="fi flex fi-rr-check flex" />
-                          Confirm
+                          {isVerifying && verifyingDeviceId === device.id ? (
+                            <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <i className="fi flex fi-rr-check flex" />
+                          )}
+                          {isVerifying && verifyingDeviceId === device.id ? 'Sending...' : 'Confirm'}
                         </button>
                         <button 
                           onClick={() => declineConnection(device.id)}
