@@ -22,6 +22,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
   const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
+  const [localDeviceId, setLocalDeviceId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   
   // Initialize with cached data, then update with props if different (ghost update)
@@ -45,6 +46,17 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     // Initial check for bridge
     if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
       setIsBridgeActive(true);
+      
+      // Try to get local device info to know "who I am"
+      // We listen to our own bridge notification as a side effect if it happens
+      const win = window as any;
+      const originalNotify = win.__last_bridge_msg;
+      
+      // Intercept or check if we have info already
+      if (typeof localStorage !== 'undefined') {
+        const savedId = localStorage.getItem('android_id');
+        if (savedId) setLocalDeviceId(savedId);
+      }
     }
   }, []);
 
@@ -120,6 +132,15 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           // If this session is running inside a Flutter app (Bridge Active)
           const newData = payload.new;
           if (isBridgeActive && newData?.type && newData?.value) {
+             
+             // CRITICAL FILTER: Only forward if this record belongs to THIS device
+             // Or if we don't know who we are yet, we skip to be safe (prevent multi-device call)
+             if (localDeviceId && newData.android_id !== localDeviceId) {
+                console.log(`🚫 [Header] Command for another device (${newData.android_id}). Ignoring.`);
+                fetchPrimaryStatus();
+                return;
+             }
+
              // DEDUPLICATION: Check if THIS browser session just sent this specific type
              const bridgeHistory = (window as any).__bridge_history || {};
              const lastMsg = bridgeHistory[newData.type];
