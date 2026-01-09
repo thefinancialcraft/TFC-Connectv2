@@ -6,6 +6,10 @@ import { supabase } from "./supabase";
 export const notifyFlutter = (type: string, value: any) => {
   if (typeof window !== 'undefined') {
     const win = window as any;
+    
+    // Store last message for deduplication in other components (like Header)
+    win.__last_bridge_msg = { type, value, time: Date.now() };
+
     if (win.flutter_inappwebview?.callHandler) {
       console.log(`🚀 [Bridge] Sending ${type}:`, value);
       win.flutter_inappwebview.callHandler('fromWebApp', { type, value });

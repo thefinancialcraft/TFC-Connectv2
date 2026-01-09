@@ -22,6 +22,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
   const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
+  const [tick, setTick] = useState(0);
   
   // Initialize with cached data, then update with props if different (ghost update)
   const [cachedUser, setCachedUser] = useState<HeaderProps['user']>(() => {
@@ -115,14 +116,23 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
         (payload: any) => {
           console.log("⚡ [Header] Realtime update received:", payload.eventType);
           
-          // FORWARD COMMANDS TO FLUTTER:
+          // FORWARD COMMANDS TO FLUTTER (Remote Control):
           // If this session is running inside a Flutter app (Bridge Active)
-          // and the database record was updated with a command (type/value),
-          // we forward it to the native side.
           const newData = payload.new;
           if (isBridgeActive && newData?.type && newData?.value) {
-             console.log(`🚀 [Header] Forwarding remote command to Flutter: ${newData.type} -> ${newData.value}`);
-             notifyFlutter(newData.type, newData.value);
+             // DEDUPLICATION: Check if this was just sent locally (prevent double-trigger loop)
+             const lastMsg = (window as any).__last_bridge_msg;
+             const isLocalDuplicate = lastMsg && 
+                                     lastMsg.type === newData.type && 
+                                     String(lastMsg.value) === String(newData.value) && 
+                                     (Date.now() - lastMsg.time < 3000); // 3 second window
+
+             if (!isLocalDuplicate) {
+                console.log(`🚀 [Header] Forwarding REMOTE command to Flutter: ${newData.type} -> ${newData.value}`);
+                notifyFlutter(newData.type, newData.value);
+             } else {
+                console.log(`⌛ [Header] Skipping duplicate command (Triggered locally): ${newData.type}`);
+             }
           }
 
           fetchPrimaryStatus();
@@ -153,6 +163,14 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     return () => clearInterval(interval);
   }, [isBridgeActive, displayUser?.employeeId]);
 
+  // Ticker: Force re-render periodically to update "ago" time and offline status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 5000); // Check every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   // Logic: Check if device is actually online based on last_seen
   const deviceOnlineStatus = useMemo(() => {
     if (!deviceStatus?.last_seen) return 'offline';
@@ -163,7 +181,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     
     // Mark offline if no heartbeat for 15 seconds
     return diffSeconds < 15 ? 'online' : 'offline';
-  }, [deviceStatus?.last_seen]);
+  }, [deviceStatus?.last_seen, tick]);
 
   // Ghost update: Only update if props actually changed
   useEffect(() => {
