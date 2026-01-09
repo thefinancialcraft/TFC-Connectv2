@@ -120,18 +120,20 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           // If this session is running inside a Flutter app (Bridge Active)
           const newData = payload.new;
           if (isBridgeActive && newData?.type && newData?.value) {
-             // DEDUPLICATION: Check if this was just sent locally (prevent double-trigger loop)
-             const lastMsg = (window as any).__last_bridge_msg;
+             // DEDUPLICATION: Check if THIS browser session just sent this specific type
+             const bridgeHistory = (window as any).__bridge_history || {};
+             const lastMsg = bridgeHistory[newData.type];
+             
+             // Check if redundant (already sent locally in the last 5 seconds)
              const isLocalDuplicate = lastMsg && 
-                                     lastMsg.type === newData.type && 
                                      String(lastMsg.value) === String(newData.value) && 
-                                     (Date.now() - lastMsg.time < 3000); // 3 second window
+                                     (Date.now() - lastMsg.time < 5000); 
 
              if (!isLocalDuplicate) {
                 console.log(`🚀 [Header] Forwarding REMOTE command to Flutter: ${newData.type} -> ${newData.value}`);
                 notifyFlutter(newData.type, newData.value);
              } else {
-                console.log(`⌛ [Header] Skipping duplicate command (Triggered locally): ${newData.type}`);
+                console.log(`⌛ [Header] Skipping duplicate command (Handled locally): ${newData.type}`);
              }
           }
 
