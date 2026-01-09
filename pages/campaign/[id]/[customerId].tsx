@@ -56,7 +56,7 @@ export default function CallingPage() {
                 }
 
                 console.log('📬 [Bridge] Received Message:', data);
-                if (data?.type === 'call disconnect' && data?.value === true) {
+                if (data?.type === 'call_disconnect' && data?.value === true) {
                     console.log('🔇 [Bridge] Call Disconnect received, ending session.');
                     setCallAlive(false); // Setting to false as it's a disconnect
                     handleEndCall();
@@ -661,7 +661,7 @@ export default function CallingPage() {
 
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
-            notifyFlutter('call disconnect', customer.phone_no);
+            notifyFlutter('call_disconnect', customer.phone_no);
         }
 
         // Update state to disposition_pending in call_sessions table
