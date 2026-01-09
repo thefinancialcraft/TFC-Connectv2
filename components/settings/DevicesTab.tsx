@@ -139,28 +139,38 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
       setIsVerifying(true);
       setOtpError(null);
       
-      // 1. Send OTP via Google Apps Script
       const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPSCRIPT_WEBAPP_URL;
-      if (!scriptUrl) throw new Error("Verification service not configured");
+      
+      if (!scriptUrl) {
+        console.error("❌ [Devices] NEXT_PUBLIC_GOOGLE_APPSCRIPT_WEBAPP_URL is not defined");
+        throw new Error("Verification service not configured");
+      }
 
-      const response = await fetch(scriptUrl, {
+      console.log("🚀 [Devices] Sending OTP request to:", scriptUrl, "for:", email);
+
+      // We use a simple fetch. Google Apps Script requires a redirect, 
+      // and 'no-cors' treats redirects as opaque but usually succeeds.
+      // However, for debugging we'll try to get more info.
+      await fetch(scriptUrl, {
         method: 'POST',
-        mode: 'no-cors', // Apps Script requires no-cors sometimes, or we handle it in doOptions
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          // Using text/plain avoids preflight triggers in some browser environments
+          'Content-Type': 'text/plain;charset=utf-8' 
+        },
         body: JSON.stringify({
           email: email,
           purpose: 'device_activation'
         })
       });
 
-      // Since no-cors won't give us the body, we assume it sent or wait for user to input
+      // We proceed to modal even if fetch status is 0 (opaque)
       setVerifyingDeviceId(targetId);
       setShowOTPModal(true);
       setIsVerifying(false);
-    } catch (err) {
-      console.error('Error starting activation:', err);
+    } catch (err: any) {
+      console.error('❌ [Devices] Activation error:', err);
       setIsVerifying(false);
-      alert("Failed to send verification code. Please try again.");
+      alert(`Failed to send verification code: ${err.message || 'Unknown error'}`);
     }
   };
 
