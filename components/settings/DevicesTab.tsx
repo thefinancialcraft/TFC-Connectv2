@@ -16,7 +16,7 @@ interface DeviceMeta {
   on_call: boolean;
 }
 
-export default function DevicesTab({ employeeId }: { employeeId?: string }) {
+export default function DevicesTab({ employeeId }: { employeeId?: string | null }) {
   const [devices, setDevices] = useState<DeviceMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [localDeviceInfo, setLocalDeviceInfo] = useState<any>(null);
