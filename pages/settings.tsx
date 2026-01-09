@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
 import FlutterBridgeTab from "../components/settings/FlutterBridgeTab";
+import DevicesTab from "../components/settings/DevicesTab";
 
 interface SettingsFormData {
   email: string;
@@ -49,7 +50,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav] = useState("settings");
-  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices">("profile");
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
   // Form state
@@ -278,6 +279,7 @@ export default function Settings() {
             {[
               { id: "profile", label: "Profile", icon: "fi-rr-user" },
               { id: "security", label: "Security", icon: "fi-rr-lock" },
+              { id: "devices", label: "Devices", icon: "fi-rr-devices" },
               { id: "flutter_bridge", label: "Bridge", icon: "fi-rr-smartphone" },
             ].map((tab) => (
               <button
@@ -425,6 +427,12 @@ export default function Settings() {
           {activeTab === "flutter_bridge" && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
               <FlutterBridgeTab />
+            </div>
+          )}
+
+          {activeTab === "devices" && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <DevicesTab employeeId={user?.employeeId} />
             </div>
           )}
         </div>
