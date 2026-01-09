@@ -570,10 +570,12 @@ export default function CallingPage() {
 
         if (customer?.phone_no) {
             // Trigger Flutter bridge call event
-            notifyFlutter('call', customer.phone_no);
+            const bridgeConnected = notifyFlutter('call_to', customer.phone_no);
             
-            // Fallback for non-bridge environments
-            window.location.href = `tel:${customer.phone_no}`;
+            if (!bridgeConnected) {
+                // Fallback for non-bridge environments (normally work)
+                window.location.href = `tel:${customer.phone_no}`;
+            }
         }
 
         setDisposition("");
