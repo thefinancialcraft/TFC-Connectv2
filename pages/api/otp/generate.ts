@@ -40,7 +40,7 @@ export default async function handler(
     }
 
     // Validate purpose
-    const validPurposes = ['forgot_user_id', 'forgot_password', 'email_verification'];
+    const validPurposes = ['forgot_user_id', 'forgot_password', 'email_verification', 'device_activation'];
     if (!validPurposes.includes(purpose)) {
       return res.status(400).json({ 
         error: 'Invalid purpose. Must be one of: forgot_user_id, forgot_password, email_verification' 
