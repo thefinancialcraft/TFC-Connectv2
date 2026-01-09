@@ -22,6 +22,13 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
   const [loading, setLoading] = useState(true);
   const [localDeviceInfo, setLocalDeviceInfo] = useState<any>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
+  
+  // OTP Verification State
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [verifyingDeviceId, setVerifyingDeviceId] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkBridge = () => {
@@ -127,17 +134,83 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
     }
   };
 
-  const acceptConnection = async (targetId: string) => {
+  const acceptConnection = async (targetId: string, email: string) => {
     try {
-      const { error } = await supabase
+      setIsVerifying(true);
+      setOtpError(null);
+      
+      // 1. Send OTP via Google Apps Script
+      const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPSCRIPT_WEBAPP_URL;
+      if (!scriptUrl) throw new Error("Verification service not configured");
+
+      const response = await fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors', // Apps Script requires no-cors sometimes, or we handle it in doOptions
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          purpose: 'device_activation'
+        })
+      });
+
+      // Since no-cors won't give us the body, we assume it sent or wait for user to input
+      setVerifyingDeviceId(targetId);
+      setShowOTPModal(true);
+      setIsVerifying(false);
+    } catch (err) {
+      console.error('Error starting activation:', err);
+      setIsVerifying(false);
+      alert("Failed to send verification code. Please try again.");
+    }
+  };
+
+  const verifyOTPAndConnect = async () => {
+    if (!verifyingDeviceId || otpValue.length !== 6) return;
+    
+    try {
+      setIsVerifying(true);
+      setOtpError(null);
+
+      // Verify OTP in Supabase
+      const { data, error } = await supabase
+        .from('otp_verifications')
+        .select('*')
+        .eq('otp_code', otpValue)
+        .eq('purpose', 'device_activation')
+        .eq('is_used', false)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
+        setOtpError("Invalid or expired code");
+        setIsVerifying(false);
+        return;
+      }
+
+      // Mark OTP as used
+      await supabase
+        .from('otp_verifications')
+        .update({ is_used: true, used_at: new Date().toISOString() })
+        .eq('id', data[0].id);
+
+      // Finalize device connection
+      const { error: updateError } = await supabase
         .from('sync_meta')
         .update({ status: 'connected' })
-        .eq('id', targetId);
+        .eq('id', verifyingDeviceId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      setShowOTPModal(false);
+      setOtpValue('');
+      setVerifyingDeviceId(null);
       fetchDevices();
     } catch (err) {
-      console.error('Error accepting connection:', err);
+      console.error('Error verifying OTP:', err);
+      setOtpError("Verification failed");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -284,10 +357,10 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
                      (device.entry_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) ? (
                       <>
                         <button 
-                          onClick={() => acceptConnection(device.id)}
+                          onClick={() => acceptConnection(device.id, device.email)}
                           className="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
                         >
-                          <i className="fi flex  fi-rr-check flex" />
+                          <i className="fi flex fi-rr-check flex" />
                           Confirm
                         </button>
                         <button 
@@ -323,6 +396,68 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
           )}
         </div>
       </div>
+
+      {/* OTP Verification Modal */}
+      {showOTPModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl border border-gray-100 animate-in zoom-in-95 duration-200">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i className="fi fi-rr-shield-check text-2xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Device</h3>
+              <p className="text-sm text-gray-500 mb-8">
+                Enter the 6-digit code sent to your email to activate this device.
+              </p>
+              
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={otpValue}
+                  onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  className={`w-full text-center text-3xl font-black tracking-[12px] py-4 rounded-2xl border-2 transition-all outline-none ${
+                    otpError ? 'border-rose-200 bg-rose-50 text-rose-500' : 'border-gray-100 bg-gray-50 text-gray-900 focus:border-[#4b33e8]/30'
+                  }`}
+                />
+                
+                {otpError && (
+                  <p className="text-xs font-bold text-rose-500 animate-bounce">{otpError}</p>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => {
+                      setShowOTPModal(false);
+                      setOtpValue('');
+                      setOtpError(null);
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-50 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={verifyOTPAndConnect}
+                    disabled={otpValue.length !== 6 || isVerifying}
+                    className={`flex-[1.5] py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                      otpValue.length === 6 && !isVerifying
+                        ? 'bg-[#4b33e8] text-white shadow-lg shadow-[#4b33e8]/20 hover:scale-[1.02]'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {isVerifying ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>Verify & Connect</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
