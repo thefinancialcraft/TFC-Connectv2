@@ -35,6 +35,7 @@ export default function CallingPage() {
     const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
     const [isAssignPickerOpen, setIsAssignPickerOpen] = useState(false);
     const [calendarViewDate, setCalendarViewDate] = useState(new Date());
+    const [callAlive, setCallAlive] = useState(false);
     
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
@@ -42,6 +43,31 @@ export default function CallingPage() {
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
+
+    // Bridge Message Listener
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const originalFromFlutter = (window as any).fromFlutter;
+            
+            (window as any).fromFlutter = (data: any) => {
+                // Call previous handler if it exists (e.g. for logs)
+                if (typeof originalFromFlutter === 'function') {
+                    originalFromFlutter(data);
+                }
+
+                console.log('📬 [Bridge] Received Message:', data);
+                if (data?.type === 'call disconnect' && data?.value === true) {
+                    console.log('🔇 [Bridge] Call Disconnect received, ending session.');
+                    setCallAlive(false); // Setting to false as it's a disconnect
+                    handleEndCall();
+                }
+            };
+
+            return () => {
+                (window as any).fromFlutter = originalFromFlutter;
+            };
+        }
+    }, [user, campaignId, customerId]); // Re-bind if context changes to ensure handleEndCall has latest IDs
 
     // Track lead changes for notification
     useEffect(() => {
@@ -572,7 +598,9 @@ export default function CallingPage() {
             // Trigger Flutter bridge call event
             const bridgeConnected = notifyFlutter('call_to', customer.phone_no);
             
-            if (!bridgeConnected) {
+            if (bridgeConnected) {
+                setCallAlive(true);
+            } else {
                 // Fallback for non-bridge environments (normally work)
                 window.location.href = `tel:${customer.phone_no}`;
             }
@@ -629,6 +657,7 @@ export default function CallingPage() {
     const handleEndCall = async () => {
         setIsCalling(false);
         setPostCall(true);
+        setCallAlive(false);
 
         // Update state to disposition_pending in call_sessions table
         if (user?.uid) {

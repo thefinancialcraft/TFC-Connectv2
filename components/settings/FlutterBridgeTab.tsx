@@ -167,6 +167,16 @@ export default function FlutterBridgeTab() {
     }
   };
 
+  const sendDummyEvent = () => {
+    if (window.flutter_inappwebview?.callHandler) {
+      console.log("📤 [Web] Sending Dummy Event");
+      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'dummy_action', value: { timestamp: new Date().toISOString(), status: 'test' } });
+      addMessage('out', 'dummy_action', { status: 'test' });
+    } else {
+      addMessage('out', 'dummy_action', { error: 'Bridge not detected' });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
@@ -276,6 +286,16 @@ export default function FlutterBridgeTab() {
                   </div>
                   Manual Logout
                </button>
+
+                <button 
+                   onClick={sendDummyEvent}
+                   className="px-4 py-3 bg-white border border-gray-100 text-amber-600 rounded-xl text-xs font-bold hover:border-amber-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+                >
+                   <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <i className="fi fi-rr-rocket flex" />
+                   </div>
+                   Dummy Action
+                </button>
              </div>
           </div>
 
