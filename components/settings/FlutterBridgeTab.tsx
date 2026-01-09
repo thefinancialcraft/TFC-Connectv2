@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
-import { notifyFlutter } from '../../lib/flutterBridge';
+import { notifyFlutter, requestDeviceInfoFromFlutter } from '../../lib/flutterBridge';
 
 interface BridgeMessage {
   id: string;
@@ -197,6 +197,16 @@ export default function FlutterBridgeTab() {
     }
   };
 
+  const handleRequestDeviceInfo = () => {
+    console.log("📤 [Web] Manually Requesting Device Info");
+    const bridgeConnected = requestDeviceInfoFromFlutter();
+    if (bridgeConnected) {
+      addMessage('out', 'request', 'device_info');
+    } else {
+       addMessage('out', 'request_failed', { error: 'Bridge not detected' });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
@@ -325,6 +335,16 @@ export default function FlutterBridgeTab() {
                      <i className="fi fi-rr-phone-slash flex" />
                    </div>
                    Disconnect Call (198)
+                </button>
+
+                <button 
+                   onClick={handleRequestDeviceInfo}
+                   className="px-4 py-3 bg-white border border-gray-100 text-blue-600 rounded-xl text-xs font-bold hover:border-blue-600 hover:bg-gray-50 transition-all flex items-center gap-3 group"
+                >
+                   <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <i className="fi fi-rr-mobile-button flex" />
+                   </div>
+                   Request Device Info
                 </button>
              </div>
           </div>

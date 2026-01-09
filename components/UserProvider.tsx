@@ -17,11 +17,13 @@ export function UserProvider({ children }: UserProviderProps) {
     let syncInterval: NodeJS.Timeout;
 
     const executeSync = async () => {
-      const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+      const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
       
       const success = (user) ? syncUserInfoToFlutter(user) : true;
       
       if (success) {
+        // Request device info if bridge is active
+        requestDeviceInfoFromFlutter();
         // If it worked, we also send a login event if we just "detected" a session on load
         if (user && !prevUserRef.current) {
           notifyLoginToFlutter();
@@ -54,6 +56,29 @@ export function UserProvider({ children }: UserProviderProps) {
       if (syncInterval) clearInterval(syncInterval);
     };
   }, [user, mounted]);
+
+  // Global Bridge Message Listener for Device Info
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const originalFromFlutter = (window as any).fromFlutter;
+
+    (window as any).fromFlutter = (data: any) => {
+      // Call previous handler to maintain existing logs/logic
+      if (typeof originalFromFlutter === 'function') {
+        originalFromFlutter(data);
+      }
+
+      if (data?.type === 'device_info' && data?.value) {
+        console.log('📱 [Bridge] Received Device Info, saving to localStorage:', data.value);
+        localStorage.setItem('flutter_device_info', JSON.stringify(data.value));
+      }
+    };
+
+    return () => {
+      (window as any).fromFlutter = originalFromFlutter;
+    };
+  }, []);
 
   const contextValue = useMemo(() => ({
     user,

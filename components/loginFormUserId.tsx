@@ -132,9 +132,10 @@ export default function LoginFormUserId({
                 }
 
                 // Success! Notify Flutter bridge immediately
-                const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+                const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
                 notifyLoginToFlutter();
                 syncUserInfoToFlutter(profileData.user);
+                requestDeviceInfoFromFlutter();
 
                 // Check profile_complete first
                 if (profileData.user.profile_complete === false) {

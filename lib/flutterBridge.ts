@@ -43,3 +43,8 @@ export const syncUserInfoToFlutter = (user: any) => {
   console.log("🚀 [Bridge] Syncing User Profile");
   return notifyFlutter('sync_user_info', userInfoPayload);
 };
+
+export const requestDeviceInfoFromFlutter = () => {
+  console.log("🚀 [Bridge] Requesting Device Info");
+  return notifyFlutter('request', 'device_info');
+};

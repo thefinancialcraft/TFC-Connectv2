@@ -5,7 +5,7 @@ import Header from "../../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../../lib/authService";
 import { supabase } from "../../../lib/supabase";
 import BottomNav from "../../../components/BottomNav";
-import { notifyFlutter } from "../../../lib/flutterBridge";
+import { notifyFlutter, requestDeviceInfoFromFlutter } from "../../../lib/flutterBridge";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -63,11 +63,14 @@ export default function CallingPage() {
                 }
             };
 
+            // Request device info as soon as bridge is ready
+            requestDeviceInfoFromFlutter();
+
             return () => {
                 (window as any).fromFlutter = originalFromFlutter;
             };
         }
-    }, [user, campaignId, customerId]); // Re-bind if context changes to ensure handleEndCall has latest IDs
+    }, [user, campaignId, customerId]);
 
     // Track lead changes for notification
     useEffect(() => {
