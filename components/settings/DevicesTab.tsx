@@ -6,6 +6,7 @@ interface DeviceMeta {
   device_id: string;
   device_model: string;
   android_id: string;
+  entry_id: string;
   last_seen: string;
   is_primary: boolean;
   type: string;
@@ -140,6 +141,20 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
     }
   };
 
+  const declineConnection = async (targetId: string) => {
+    try {
+      const { error } = await supabase
+        .from('sync_meta')
+        .update({ status: 'inactive' })
+        .eq('id', targetId);
+
+      if (error) throw error;
+      fetchDevices();
+    } catch (err) {
+      console.error('Error declining connection:', err);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
@@ -147,7 +162,7 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                <i className="fi fi-rr-devices text-lg" />
+                <i className="fi flex  fi-rr-devices text-lg" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-[#263238]" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -161,7 +176,7 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
               onClick={fetchDevices}
               className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-xs font-bold transition-all border border-gray-100"
             >
-              <i className="fi fi-rr-refresh flex" />
+              <i className="fi flex  fi-rr-refresh flex" />
               Refresh
             </button>
           </div>
@@ -170,7 +185,7 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
           {localDeviceInfo && (
             <div className="mb-8 p-4 bg-[#4b33e8]/5 border border-[#4b33e8]/10 rounded-2xl flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-[#4b33e8] flex items-center justify-center text-white shrink-0">
-                <i className="fi fi-rr-smartphone" />
+                <i className="fi flex  fi-rr-smartphone" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-black text-[#4b33e8] uppercase tracking-wider">Current Session Device</p>
@@ -190,7 +205,7 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
           ) : devices.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center text-gray-400 opacity-60">
               <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-4">
-                <i className="fi fi-rr-search-alt text-3xl" />
+                <i className="fi flex  fi-rr-search-alt text-3xl" />
               </div>
               <p className="text-sm font-medium italic">No devices found for this account</p>
             </div>
@@ -264,35 +279,43 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
                   </div>
 
                   <div className="mt-5 flex items-center gap-2">
-                    {/* Accept Connection for this specific device if it's yours, pending, AND bridge is active */}
-                    {device.is_primary && device.status === 'pending' && 
-                     isBridgeActive && localDeviceInfo && 
-                     (device.android_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) && (
-                      <button 
-                        onClick={() => acceptConnection(device.id)}
-                        className="flex-1 py-1 px-3 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 group"
-                      >
-                        <i className="fi fi-rr-check-circle flex text-sm animate-bounce" />
-                        Activate Device
-                      </button>
+                    {/* Primary Activation: Accept/Reject for current session's device */}
+                    {device.is_primary && device.status === 'pending' && isBridgeActive && localDeviceInfo && 
+                     (device.entry_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) ? (
+                      <>
+                        <button 
+                          onClick={() => acceptConnection(device.id)}
+                          className="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                        >
+                          <i className="fi flex  fi-rr-check flex" />
+                          Confirm
+                        </button>
+                        <button 
+                          onClick={() => declineConnection(device.id)}
+                          className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                        >
+                          <i className="fi flex  fi-rr-cross-small flex" />
+                          Decline
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {!device.is_primary && (
+                          <button 
+                            onClick={() => setPrimary(device.id)}
+                            className="flex-1 py-2 bg-[#4b33e8] text-white rounded-lg text-[11px] font-bold hover:bg-[#3b27b8] transition-all"
+                          >
+                            Set Primary
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => deleteDevice(device.id)}
+                          className={`py-2 px-4 border border-rose-100 text-rose-500 rounded-lg text-[11px] font-bold hover:bg-rose-50 transition-all ${!device.is_primary ? '' : 'flex-1'}`}
+                        >
+                          Remove
+                        </button>
+                      </>
                     )}
-
-                    {!device.is_primary && (
-                      <button 
-                        onClick={() => setPrimary(device.id)}
-                        className="flex-1 py-2 bg-[#4b33e8] text-white rounded-lg text-[11px] font-bold hover:bg-[#3b27b8] transition-all"
-                      >
-                        Set Primary
-                      </button>
-                    )}
-                    <button 
-                      onClick={() => deleteDevice(device.id)}
-                      className={`py-2 px-4 border border-rose-100 text-rose-500 rounded-lg text-[11px] font-bold hover:bg-rose-50 transition-all ${
-                        (device.is_primary && device.status === 'pending' && localDeviceInfo && device.android_id === `${employeeId}_${localDeviceInfo.android_id || localDeviceInfo.androidId}`) || !device.is_primary ? '' : 'flex-1'
-                      }`}
-                    >
-                      Remove
-                    </button>
                   </div>
                 </div>
               ))}
