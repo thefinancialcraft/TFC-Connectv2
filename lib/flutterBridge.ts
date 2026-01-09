@@ -1,6 +1,7 @@
 /**
  * Utility to communicate with Flutter InAppWebView bridge
  */
+import { supabase } from "./supabase";
 
 export const notifyFlutter = (type: string, value: any) => {
   if (typeof window !== 'undefined') {
@@ -47,4 +48,33 @@ export const syncUserInfoToFlutter = (user: any) => {
 export const requestDeviceInfoFromFlutter = () => {
   console.log("🚀 [Bridge] Requesting Device Info");
   return notifyFlutter('request', 'device_info');
+};
+
+/**
+ * Update the call status in sync_meta for the primary connected device
+ */
+export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string) => {
+  if (!employeeId) return;
+  
+  try {
+    console.log(`📡 [Bridge] Syncing ${type} to DB for: ${employeeId}`);
+    
+    // Update the record where employee_id matches and is_primary is true
+    const { error } = await supabase
+      .from('sync_meta')
+      .update({ 
+        type: type,
+        value: value,
+        updated_at: new Date().toISOString()
+      })
+      .eq('employee_id', employeeId)
+      .eq('is_primary', true)
+      .eq('status', 'connected');
+
+    if (error) {
+      console.error("❌ [Bridge] SyncMeta update error:", error);
+    }
+  } catch (err) {
+    console.error("❌ [Bridge] SyncMeta connection error:", err);
+  }
 };

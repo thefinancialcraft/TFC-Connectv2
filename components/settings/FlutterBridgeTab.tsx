@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
 import { notifyFlutter, requestDeviceInfoFromFlutter } from '../../lib/flutterBridge';
 
@@ -51,10 +51,10 @@ export default function FlutterBridgeTab() {
   }, [messages]);
 
   // Helper to add message to log
-  const addMessage = (direction: 'in' | 'out', type: string, payload: any) => {
+  const addMessage = useCallback((direction: 'in' | 'out', type: string, payload: any) => {
     setMessages(prev => {
       const newMessages = [{
-        id: Math.random().toString(36).substr(2, 9),
+        id: Math.random().toString(36).substring(2, 11),
         direction,
         type,
         payload,
@@ -62,25 +62,39 @@ export default function FlutterBridgeTab() {
       }, ...prev];
       return newMessages;
     });
-  };
+  }, []);
 
   useEffect(() => {
-    // Check if bridge exists
-    if (typeof window !== 'undefined' && window.flutter_inappwebview) {
-      setIsBridgeActive(true);
+    // Check if bridge exists and keep checking for a few seconds if it doesn't
+    const checkBridge = () => {
+      if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
+        setIsBridgeActive(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (!checkBridge()) {
+      const interval = setInterval(() => {
+        if (checkBridge()) clearInterval(interval);
+      }, 500);
+      setTimeout(() => clearInterval(interval), 5000);
     }
 
     // Mount receiving handler
-    window.fromFlutter = (data: any) => {
+    (window as any).fromFlutter = (data: any) => {
       console.log("🔔 [Web] Received from Flutter:", data);
       
-      // Parse payload based on expected Dart structure: {'type': type, 'value': value}
       const type = data?.type || 'unknown';
       const value = data?.value;
       
       addMessage('in', type, value);
     };
-  }, []);
+
+    return () => {
+      (window as any).fromFlutter = undefined;
+    };
+  }, [addMessage]);
 
   const sendToFlutter = () => {
     const payload = { type: testType, value: testValue };
@@ -144,7 +158,7 @@ export default function FlutterBridgeTab() {
       addMessage('out', 'isdevmode_open', true);
     } else {
        console.warn("⚠️ Flutter InAppWebView not detected.");
-       addMessage('out', 'isDevMode_open', { error: 'Bridge not detected' });
+       addMessage('out', 'isdevmode_open', { error: 'Bridge not detected' });
     }
   };
 

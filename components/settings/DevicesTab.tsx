@@ -234,6 +234,21 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
     }
   };
 
+  const disconnectDevice = async (targetId: string) => {
+    if (!window.confirm("Disconnect this device? It will stop receiving call notifications.")) return;
+    try {
+      const { error } = await supabase
+        .from('sync_meta')
+        .update({ status: 'inactive', is_primary: false })
+        .eq('id', targetId);
+
+      if (error) throw error;
+      fetchDevices();
+    } catch (err) {
+      console.error('Error disconnecting device:', err);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="rounded-[24px] border border-gray-100 bg-white shadow-sm overflow-hidden" style={{ borderColor: "#E0E0E0" }}>
@@ -392,9 +407,17 @@ export default function DevicesTab({ employeeId }: { employeeId?: string | null 
                             Set Primary
                           </button>
                         )}
+                        {device.status === 'connected' && (
+                          <button 
+                            onClick={() => disconnectDevice(device.id)}
+                            className="flex-1 py-2 bg-gray-50 text-gray-500 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-all border border-gray-100"
+                          >
+                            Disconnect
+                          </button>
+                        )}
                         <button 
                           onClick={() => deleteDevice(device.id)}
-                          className={`py-2 px-4 border border-rose-100 text-rose-500 rounded-lg text-[11px] font-bold hover:bg-rose-50 transition-all ${!device.is_primary ? '' : 'flex-1'}`}
+                          className={`py-2 px-4 border border-rose-100 text-rose-500 rounded-lg text-[11px] font-bold hover:bg-rose-50 transition-all ${!device.is_primary && device.status !== 'connected' ? '' : 'flex-1'}`}
                         >
                           Remove
                         </button>

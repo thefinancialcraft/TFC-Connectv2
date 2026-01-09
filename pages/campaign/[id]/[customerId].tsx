@@ -5,7 +5,7 @@ import Header from "../../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../../lib/authService";
 import { supabase } from "../../../lib/supabase";
 import BottomNav from "../../../components/BottomNav";
-import { notifyFlutter, requestDeviceInfoFromFlutter } from "../../../lib/flutterBridge";
+import { notifyFlutter, requestDeviceInfoFromFlutter, updateSyncMetaCallStatus } from "../../../lib/flutterBridge";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -604,8 +604,12 @@ export default function CallingPage() {
             if (bridgeConnected) {
                 setCallAlive(true);
             } else {
-                // Fallback for non-bridge environments (normally work)
                 window.location.href = `tel:${customer.phone_no}`;
+            }
+
+            // Sync to SyncMeta table for real-time header reflection
+            if (user?.employeeId) {
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', customer.phone_no);
             }
         }
 
@@ -665,6 +669,11 @@ export default function CallingPage() {
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
             notifyFlutter('call_disconnect', customer.phone_no);
+            
+            // Sync disconnect to SyncMeta table
+            if (user?.employeeId) {
+                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+            }
         }
 
         // Update state to disposition_pending in call_sessions table
