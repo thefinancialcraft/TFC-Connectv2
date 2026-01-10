@@ -22,7 +22,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
   const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
-  const [localDeviceId, setLocalDeviceId] = useState<string | null>(null);
+  const [localEntryId, setLocalEntryId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   
   // Initialize with cached data, then update with props if different (ghost update)
@@ -43,22 +43,45 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   // Set mounted and check for Flutter Bridge
   useEffect(() => {
     setMounted(true);
-    // Initial check for bridge
+    
     if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
       setIsBridgeActive(true);
       
-      // Try to get local device info to know "who I am"
-      // We listen to our own bridge notification as a side effect if it happens
-      const win = window as any;
-      const originalNotify = win.__last_bridge_msg;
-      
-      // Intercept or check if we have info already
-      if (typeof localStorage !== 'undefined') {
-        const savedId = localStorage.getItem('android_id');
-        if (savedId) setLocalDeviceId(savedId);
-      }
+      // Request initial device info
+      requestDeviceInfoFromFlutter();
+
+      // Listen for incoming device info from Flutter bridge
+      (window as any).fromFlutter = (payload: any) => {
+        if (payload?.type === 'device_info' && payload?.value?.androidId) {
+          const androidId = payload.value.androidId;
+          const employeeId = displayUser?.employeeId;
+          
+          if (employeeId) {
+             const entryId = `${employeeId}_${androidId}`;
+             console.log(`🆔 [Header] Identity established: ${entryId}`);
+             setLocalEntryId(entryId);
+             localStorage.setItem('android_id', androidId);
+             localStorage.setItem('entry_id', entryId);
+          }
+        }
+      };
+
+      // Set up periodic identity refresh every 30 minutes
+      const refreshInterval = setInterval(() => {
+        console.log("🔄 [Header] Periodic device info refresh");
+        requestDeviceInfoFromFlutter();
+      }, 30 * 60 * 1000);
+
+      return () => {
+        clearInterval(refreshInterval);
+        (window as any).fromFlutter = undefined;
+      };
+    } else {
+       // Fallback for non-bridge (desktop) - read from storage if exists
+       const savedEntryId = localStorage.getItem('entry_id');
+       if (savedEntryId) setLocalEntryId(savedEntryId);
     }
-  }, []);
+  }, [displayUser?.employeeId]);
 
   // Use cached user for display (prevents "User / Not assigned" flicker)
   // Memoize displayUser to prevent recalculation on every render
@@ -87,12 +110,17 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     if (!mounted || !displayUser?.employeeId) return;
 
     const fetchPrimaryStatus = async () => {
-      const { data: primaryDevice, error } = await supabase
-        .from('sync_meta')
-        .select('id, entry_id, on_call, device_model, android_id, status, is_primary, last_seen')
-        .eq('employee_id', displayUser.employeeId)
-        .eq('is_primary', true)
-        .maybeSingle();
+      // Fetch specifically by localEntryId if we have it, else fallback to primary discover
+      const query = supabase.from('sync_meta').select('id, entry_id, on_call, device_model, android_id, status, is_primary, last_seen');
+      
+      let finalResult;
+      if (localEntryId) {
+        finalResult = await query.eq('entry_id', localEntryId).maybeSingle();
+      } else {
+        finalResult = await query.eq('employee_id', displayUser.employeeId).eq('is_primary', true).maybeSingle();
+      }
+      
+      const { data: device, error } = finalResult;
 
       if (error) {
         console.error("Error fetching primary device:", error);
@@ -114,47 +142,42 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     // Initial fetch
     fetchPrimaryStatus();
 
-    // Subscribe to ANY changes for this employee's devices
+    // Subscribe specifically to THIS device's entry_id
+    // If we don't have entryId yet, we subscribe to all for safety until identity is confirmed
+    const filter = localEntryId 
+                   ? `entry_id=eq.${localEntryId}` 
+                   : `employee_id=eq.${displayUser.employeeId}`;
+
     const channel = supabase
-      .channel(`user_devices_${displayUser.employeeId}`)
+      .channel(`device_sync_${localEntryId || displayUser.employeeId}`)
       .on(
         'postgres_changes',
         {
           event: '*', 
           schema: 'public',
           table: 'sync_meta',
-          filter: `employee_id=eq.${displayUser.employeeId}`
+          filter: filter
         },
         (payload: any) => {
-          console.log("⚡ [Header] Realtime update received:", payload.eventType);
+          console.log("⚡ [Header] Real-time sync received for:", localEntryId || "Account");
           
-          // FORWARD COMMANDS TO FLUTTER (Remote Control):
-          // If this session is running inside a Flutter app (Bridge Active)
           const newData = payload.new;
           if (isBridgeActive && newData?.type && newData?.value) {
              
-             // CRITICAL FILTER: Only forward if this record belongs to THIS device
-             // Or if we don't know who we are yet, we skip to be safe (prevent multi-device call)
-             if (localDeviceId && newData.android_id !== localDeviceId) {
-                console.log(`🚫 [Header] Command for another device (${newData.android_id}). Ignoring.`);
-                fetchPrimaryStatus();
-                return;
-             }
-
-             // DEDUPLICATION: Check if THIS browser session just sent this specific type
+             // FORWARDING LOGIC
+             // Deduplication: Check if this session just sent this specific type
              const bridgeHistory = (window as any).__bridge_history || {};
              const lastMsg = bridgeHistory[newData.type];
              
-             // Check if redundant (already sent locally in the last 5 seconds)
              const isLocalDuplicate = lastMsg && 
                                      String(lastMsg.value) === String(newData.value) && 
                                      (Date.now() - lastMsg.time < 5000); 
 
              if (!isLocalDuplicate) {
-                console.log(`🚀 [Header] Forwarding REMOTE command to Flutter: ${newData.type} -> ${newData.value}`);
+                console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
                 notifyFlutter(newData.type, newData.value);
              } else {
-                console.log(`⌛ [Header] Skipping duplicate command (Handled locally): ${newData.type}`);
+                console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
              }
           }
 
