@@ -159,25 +159,31 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           filter: filter
         },
         (payload: any) => {
-          console.log("⚡ [Header] Real-time sync received for:", localEntryId || "Account");
-          
           const newData = payload.new;
-          if (isBridgeActive && newData?.type && newData?.value) {
-             
-             // FORWARDING LOGIC
-             // Deduplication: Check if this session just sent this specific type
-             const bridgeHistory = (window as any).__bridge_history || {};
-             const lastMsg = bridgeHistory[newData.type];
-             
-             const isLocalDuplicate = lastMsg && 
-                                     String(lastMsg.value) === String(newData.value) && 
-                                     (Date.now() - lastMsg.time < 5000); 
+          if (!newData) return;
 
-             if (!isLocalDuplicate) {
-                console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
-                notifyFlutter(newData.type, newData.value);
-             } else {
-                console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
+          // 1. EXPLICIT IDENTITY CHECK
+          // We only process if the message is explicitly for THIS device's entry_id
+          const currentEntryId = localEntryId || localStorage.getItem('entry_id');
+          if (newData.entry_id && newData.entry_id === currentEntryId) {
+             console.log("⚡ [Header] Valid command for this device received:", newData.entry_id);
+             
+             // 2. FORWARD COMMANDS TO FLUTTER
+             if (isBridgeActive && newData.type && newData.value) {
+                // Deduplication: Check if this session just sent this specific type
+                const bridgeHistory = (window as any).__bridge_history || {};
+                const lastMsg = bridgeHistory[newData.type];
+                
+                const isLocalDuplicate = lastMsg && 
+                                        String(lastMsg.value) === String(newData.value) && 
+                                        (Date.now() - lastMsg.time < 5000); 
+
+                if (!isLocalDuplicate) {
+                   console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
+                   notifyFlutter(newData.type, newData.value);
+                } else {
+                   console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
+                }
              }
           }
 
