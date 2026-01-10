@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useMemo, useCallback } from "react";
+import { useState, useEffect, memo, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
@@ -24,6 +24,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [isBridgeActive, setIsBridgeActive] = useState(false);
   const [localEntryId, setLocalEntryId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  const lastProcessedRef = useRef<{ type: string; value: any; time: number } | null>(null);
   
   // Initialize with cached data, then update with props if different (ghost update)
   const [cachedUser, setCachedUser] = useState<HeaderProps['user']>(() => {
@@ -170,17 +171,27 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
              
              // 2. FORWARD COMMANDS TO FLUTTER
              if (isBridgeActive && newData.type && newData.value) {
-                // Deduplication: Check if this session just sent this specific type
+                // Deduplication A: Check if this was just sent locally (prevent local loop)
                 const bridgeHistory = (window as any).__bridge_history || {};
-                const lastMsg = bridgeHistory[newData.type];
-                
-                const isLocalDuplicate = lastMsg && 
-                                        String(lastMsg.value) === String(newData.value) && 
-                                        (Date.now() - lastMsg.time < 5000); 
+                const lastLocalMsg = bridgeHistory[newData.type];
+                const isLocalDuplicate = lastLocalMsg && 
+                                        String(lastLocalMsg.value) === String(newData.value) && 
+                                        (Date.now() - lastLocalMsg.time < 5000); 
 
-                if (!isLocalDuplicate) {
+                // Deduplication B: Check if this REMOTE command was already processed (prevent double-fire)
+                const isRemoteDuplicate = lastProcessedRef.current &&
+                                         lastProcessedRef.current.type === newData.type &&
+                                         String(lastProcessedRef.current.value) === String(newData.value) &&
+                                         (Date.now() - lastProcessedRef.current.time < 2000); // 2 second window
+
+                if (!isLocalDuplicate && !isRemoteDuplicate) {
                    console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
+                   
+                   // Update ref BEFORE notifying to block immediate re-fires
+                   lastProcessedRef.current = { type: newData.type, value: newData.value, time: Date.now() };
                    notifyFlutter(newData.type, newData.value);
+                } else if (isRemoteDuplicate) {
+                   console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
                 } else {
                    console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
                 }
@@ -197,7 +208,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [mounted, displayUser?.employeeId, isBridgeActive]);
+  }, [mounted, displayUser?.employeeId, isBridgeActive, localEntryId]);
 
   // SENDER: Heartbeat Loop (Only if bridge is active)
   useEffect(() => {
