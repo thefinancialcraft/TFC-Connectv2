@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
 import { supabase } from "../lib/supabase";
-import { notifyFlutter, sendHeartbeat } from "../lib/flutterBridge";
+import { notifyFlutter, sendHeartbeat, requestDeviceInfoFromFlutter } from "../lib/flutterBridge";
 
 interface HeaderProps {
   user?: {
@@ -39,6 +39,28 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     }
     return undefined;
   });
+
+  // Use cached user for display (prevents "User / Not assigned" flicker)
+  // Memoize displayUser to prevent recalculation on every render
+  const displayUser = useMemo(() => {
+    return mounted ? (cachedUser || user) : user;
+  }, [mounted, cachedUser, user]);
+
+  const initials = useMemo(() => {
+    if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
+    if (displayUser?.displayName) {
+      return displayUser.displayName.trim().charAt(0).toUpperCase();
+    }
+    if (displayUser?.email) {
+      return displayUser.email.slice(0, 2).toUpperCase();
+    }
+    return "U";
+  }, [mounted, displayUser]);
+
+  // Only use profilePicUrl after mount to prevent hydration mismatch
+  const profilePicUrl = useMemo(() => {
+    return mounted ? displayUser?.profilePicUrl : null;
+  }, [mounted, displayUser]);
 
   // Set mounted and check for Flutter Bridge
   useEffect(() => {
@@ -83,28 +105,6 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
     }
   }, [displayUser?.employeeId]);
 
-  // Use cached user for display (prevents "User / Not assigned" flicker)
-  // Memoize displayUser to prevent recalculation on every render
-  const displayUser = useMemo(() => {
-    return mounted ? (cachedUser || user) : user;
-  }, [mounted, cachedUser, user]);
-
-  const initials = useMemo(() => {
-    if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
-    if (displayUser?.displayName) {
-      return displayUser.displayName.trim().charAt(0).toUpperCase();
-    }
-    if (displayUser?.email) {
-      return displayUser.email.slice(0, 2).toUpperCase();
-    }
-    return "U";
-  }, [mounted, displayUser]);
-
-  // Only use profilePicUrl after mount to prevent hydration mismatch
-  const profilePicUrl = useMemo(() => {
-    return mounted ? displayUser?.profilePicUrl : null;
-  }, [mounted, displayUser]);
-
   // Fetch and Subscribe to Device Status
   useEffect(() => {
     if (!mounted || !displayUser?.employeeId) return;
@@ -127,12 +127,12 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
         return;
       }
 
-      if (primaryDevice) {
+      if (device) {
         setDeviceStatus({
-          on_call: primaryDevice.on_call || false,
-          device_model: primaryDevice.device_model || 'Unknown Device',
-          android_id: primaryDevice.android_id || 'N/A',
-          last_seen: primaryDevice.last_seen
+          on_call: device.on_call || false,
+          device_model: device.device_model || 'Unknown Device',
+          android_id: device.android_id || 'N/A',
+          last_seen: device.last_seen
         });
       } else {
         setDeviceStatus(null);
