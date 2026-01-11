@@ -56,9 +56,9 @@ export default function CallingPage() {
                 }
 
                 console.log('📬 [Bridge] Received Message:', data);
-                if (data?.type === 'call_disconnect' && data?.value === true) {
+                if ((data?.type === 'call_disconnect' && data?.value === true) || data?.type === 'call_disconected') {
                     console.log('🔇 [Bridge] Call Disconnect received, ending session.');
-                    setCallAlive(false); // Setting to false as it's a disconnect
+                    setCallAlive(false); 
                     handleEndCall();
                 }
             };
@@ -670,9 +670,28 @@ export default function CallingPage() {
         if (customer?.phone_no) {
             notifyFlutter('call_disconnect', customer.phone_no);
             
-            // Sync disconnect to SyncMeta table
-            if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+            // Sync disconnect to SyncMeta table only if currently 'call_to'
+            const empId = user?.employeeId;
+            const phone = customer?.phone_no;
+
+            if (empId && phone) {
+                const checkAndSync = async () => {
+                   const androidId = localStorage.getItem('android_id');
+                   const entryId = androidId ? `${empId}_${androidId}` : null;
+                   
+                   if (entryId) {
+                       const { data } = await supabase.from('sync_meta').select('type').eq('entry_id', entryId).maybeSingle();
+                       if (data?.type === 'call_to') {
+                           console.log("🔄 [Session] Syncing disconnect as current state is 'call_to'");
+                           updateSyncMetaCallStatus(empId, 'call_disconnect', phone);
+                       } else {
+                           console.log("ℹ️ [Session] Skipping SyncMeta update: Current state is not 'call_to'");
+                       }
+                   } else {
+                       updateSyncMetaCallStatus(empId, 'call_disconnect', phone);
+                   }
+                };
+                checkAndSync();
             }
         }
 
@@ -680,18 +699,20 @@ export default function CallingPage() {
         if (user?.uid) {
             const { data: { session: authSession } } = await supabase.auth.getSession();
             if (authSession) {
-                await fetch("/api/auth/update-call-session", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${authSession.access_token}`,
-                    },
-                    body: JSON.stringify({
-                        campaign_id: campaignId,
-                        customer_id: customerId,
-                        status: 'disposition_pending'
-                    })
-                });
+                if (campaignId && customerId) {
+                    await fetch("/api/auth/update-call-session", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authSession.access_token}`,
+                        },
+                        body: JSON.stringify({
+                            campaign_id: campaignId as string,
+                            customer_id: customerId as string,
+                            status: 'disposition_pending'
+                        })
+                    });
+                }
             }
         }
     };
