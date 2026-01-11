@@ -25,6 +25,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [localEntryId, setLocalEntryId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const lastProcessedRef = useRef<{ type: string; value: any; time: number } | null>(null);
+  const lastSentCommandRef = useRef<{ type: string; value: any } | null>(null);
   const isOnCallRef = useRef(false);
   
   // Initialize with cached data, then update with props if different (ghost update)
@@ -88,6 +89,18 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
              localStorage.setItem('android_id', androidId);
              localStorage.setItem('entry_id', entryId);
           }
+        }
+
+        // --- Persistent Lock Release ---
+        // Clear the last sent command lock when a disconnect message is received from Flutter
+        const isDisconnectMsg = payload?.type === 'call_disconected' || 
+                                payload?.type === 'call_disconnect' || 
+                                payload?.type === 'call_disconnected';
+        
+        if (isDisconnectMsg) {
+          console.log("🛡️ [Header] Disconnect received from bridge. Clearing command lock.");
+          lastSentCommandRef.current = null;
+          lastProcessedRef.current = null; // Also clear short-term deduplication
         }
       };
       
@@ -197,12 +210,22 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
                                          String(lastProcessedRef.current.value) === String(newData.value) &&
                                          (Date.now() - lastProcessedRef.current.time < 2000); // 2 second window
 
-                if (!isLocalDuplicate && !isRemoteDuplicate) {
+                // Deduplication C: MASTER PERSISTENT CHECKPOINT
+                // Don't send the same command again until we get a disconnect signal from the bridge
+                const isStickyDuplicate = lastSentCommandRef.current &&
+                                         lastSentCommandRef.current.type === newData.type &&
+                                         String(lastSentCommandRef.current.value) === String(newData.value);
+
+                if (!isLocalDuplicate && !isRemoteDuplicate && !isStickyDuplicate) {
                    console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
                    
-                   // Update ref BEFORE notifying to block immediate re-fires
+                   // Update refs BEFORE notifying
                    lastProcessedRef.current = { type: newData.type, value: newData.value, time: Date.now() };
+                   lastSentCommandRef.current = { type: newData.type, value: newData.value };
+                   
                    notifyFlutter(newData.type, newData.value);
+                } else if (isStickyDuplicate) {
+                   console.log(`🛡️ [Header] Persistent lock: Command ${newData.type} already sent once. Waiting for disconnect.`);
                 } else if (isRemoteDuplicate) {
                    console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
                 } else {
