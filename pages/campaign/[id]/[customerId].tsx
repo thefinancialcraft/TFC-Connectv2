@@ -56,10 +56,22 @@ export default function CallingPage() {
                 }
 
                 console.log('📬 [Bridge] Received Message:', data);
-                if ((data?.type === 'call_disconnect' && data?.value === true) || data?.type === 'call_disconected') {
-                    console.log('🔇 [Bridge] Call Disconnect received, ending session.');
-                    setCallAlive(false); 
-                    handleEndCall();
+                
+                // --- Master Move: Auto-Disconnect on Phone Hang-up ---
+                // Handle both spellings (one 'n' or two) for robustness
+                const isDisconnectMsg = data?.type === 'call_disconected' || data?.type === 'call_disconnect';
+                
+                if (isDisconnectMsg && data?.value) {
+                    const disconnectedPhone = String(data.value);
+                    const currentPhone = String(customer?.phone_no || "");
+
+                    // Only trigger if this is the SAME phone number and we are actually in a call
+                    if (disconnectedPhone === currentPhone && isCalling) {
+                        console.log('🔇 [Bridge] Call hung up on device. Closing UI for:', disconnectedPhone);
+                        handleEndCall();
+                    } else {
+                        console.log('⌛ [Bridge] Disconnect received but number mismatch or not in active state.');
+                    }
                 }
             };
 
@@ -70,7 +82,7 @@ export default function CallingPage() {
                 (window as any).fromFlutter = originalFromFlutter;
             };
         }
-    }, [user, campaignId, customerId]);
+    }, [user, campaignId, customerId, customer?.phone_no, isCalling]);
 
     // Track lead changes for notification
     useEffect(() => {
@@ -670,28 +682,9 @@ export default function CallingPage() {
         if (customer?.phone_no) {
             notifyFlutter('call_disconnect', customer.phone_no);
             
-            // Sync disconnect to SyncMeta table only if currently 'call_to'
-            const empId = user?.employeeId;
-            const phone = customer?.phone_no;
-
-            if (empId && phone) {
-                const checkAndSync = async () => {
-                   const androidId = localStorage.getItem('android_id');
-                   const entryId = androidId ? `${empId}_${androidId}` : null;
-                   
-                   if (entryId) {
-                       const { data } = await supabase.from('sync_meta').select('type').eq('entry_id', entryId).maybeSingle();
-                       if (data?.type === 'call_to') {
-                           console.log("🔄 [Session] Syncing disconnect as current state is 'call_to'");
-                           updateSyncMetaCallStatus(empId, 'call_disconnect', phone);
-                       } else {
-                           console.log("ℹ️ [Session] Skipping SyncMeta update: Current state is not 'call_to'");
-                       }
-                   } else {
-                       updateSyncMetaCallStatus(empId, 'call_disconnect', phone);
-                   }
-                };
-                checkAndSync();
+            // Sync disconnect to SyncMeta table
+            if (user?.employeeId) {
+                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
             }
         }
 
@@ -699,20 +692,18 @@ export default function CallingPage() {
         if (user?.uid) {
             const { data: { session: authSession } } = await supabase.auth.getSession();
             if (authSession) {
-                if (campaignId && customerId) {
-                    await fetch("/api/auth/update-call-session", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${authSession.access_token}`,
-                        },
-                        body: JSON.stringify({
-                            campaign_id: campaignId as string,
-                            customer_id: customerId as string,
-                            status: 'disposition_pending'
-                        })
-                    });
-                }
+                await fetch("/api/auth/update-call-session", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${authSession.access_token}`,
+                    },
+                    body: JSON.stringify({
+                        campaign_id: campaignId,
+                        customer_id: customerId,
+                        status: 'disposition_pending'
+                    })
+                });
             }
         }
     };
