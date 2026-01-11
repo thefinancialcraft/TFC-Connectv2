@@ -83,6 +83,14 @@ export const requestDeviceInfoFromFlutter = () => {
  */
 export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string) => {
   if (!employeeId) return;
+
+  // 0. Master Move: If we are on mobile (bridge active), DO NOT update type/value columns.
+  // These columns are reserved for remote commands from Desktop to Mobile.
+  // Mobile device should only be updated from here via calling_status or native sync.
+  if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
+    console.log("📱 [Bridge] Mobile context. Skipping command sync (type/value) to DB.");
+    return;
+  }
   
   try {
     // 1. Fetch current device status to check if it's online
