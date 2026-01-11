@@ -45,47 +45,73 @@ export default function CallingPage() {
     const assignPickerRef = useRef<HTMLDivElement>(null);
 
     const handleEndCall = useCallback(async (isFromBridge = false) => {
+        console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
+        
         setIsCalling(false);    
         setPostCall(true);
         setCallAlive(false);
+        console.log('🤙 [EndCall] State flags updated: isCalling=false, postCall=true, callAlive=false');
 
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
+            console.log(`🤙 [EndCall] Customer phone detected: ${customer.phone_no}`);
             // Only send command to flutter if we initiated it from UI
             if (!isFromBridge) {
+                console.log('🤙 [EndCall] Notifying Flutter to disconnect...');
                 notifyFlutter('call_disconnect', customer.phone_no);
+            } else {
+                console.log('🤙 [EndCall] Skipping Flutter notification (already disconnected on native side)');
             }
             
             // Sync disconnect to SyncMeta table
             if (user?.employeeId) {
                 if (isFromBridge) {
+                    console.log(`🤙 [EndCall] Clearing SyncMeta busy status for employee: ${user.employeeId}`);
                     // If bridge already disconnected, just clear the busy state in DB
                     updateSyncMetaCallStatus(user.employeeId, '', "");
                 } else {
+                    console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect for: ${user.employeeId}`);
                     updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
                 }
+            } else {
+                console.warn('🤙 [EndCall] Employee ID missing, skipping SyncMeta update');
             }
+        } else {
+            console.warn('🤙 [EndCall] Customer phone number missing');
         }
 
         // Update state to disposition_pending in call_sessions table
         if (user?.uid) {
+            console.log('🤙 [EndCall] Fetching auth session for API update...');
             const { data: { session: authSession } } = await supabase.auth.getSession();
             if (authSession) {
-                await fetch("/api/auth/update-call-session", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${authSession.access_token}`,
-                    },
-                    body: JSON.stringify({
-                        campaign_id: campaignId,
-                        customer_id: customerId,
-                        status: 'disposition_pending'
-                    })
-                });
+                console.log(`🤙 [EndCall] Auth session found. Updating session status for campaign ${campaignId}, customer ${customerId}`);
+                try {
+                    const response = await fetch("/api/auth/update-call-session", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authSession.access_token}`,
+                        },
+                        body: JSON.stringify({
+                            campaign_id: campaignId,
+                            customer_id: customerId,
+                            status: 'disposition_pending'
+                        })
+                    });
+                    const resData = await response.json();
+                    console.log('🤙 [EndCall] API Update Response:', resData);
+                } catch (error) {
+                    console.error('🤙 [EndCall] Failed to update call session via API:', error);
+                }
+            } else {
+                console.error('🤙 [EndCall] No auth session found, cannot update session status');
             }
+        } else {
+            console.warn('🤙 [EndCall] User UID missing, skipping call_sessions update');
         }
-    }, [campaignId, customerId, customer?.phone_no, user?.uid, user?.employeeId]);
+        console.log('🤙 [EndCall] Process complete.');
+    }, [campaignId, customerId, customer?.phone_no, user?.uid, user?.employeeId, user?.employeeId]);
 
     // Bridge Message Listener
     useEffect(() => {
@@ -106,18 +132,23 @@ export default function CallingPage() {
                                         eventType === 'call_disconnect' || 
                                         eventType === 'call_disconnected';
                 
-                if (isDisconnectMsg && data?.value) {
-                    const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
-                    const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
+                if (isDisconnectMsg) {
+                    console.log('📬 [Bridge] Disconnect event detected:', eventType);
+                    if (data?.value) {
+                        const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
+                        const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
 
-                    console.log(`🔍 [Bridge] Checking Disconnect: Received=${disconnectedPhone}, Current=${currentPhone}, UI_Calling=${isCalling}`);
+                        console.log(`📬 [Bridge] Comparing numbers: Received=${disconnectedPhone}, PageTarget=${currentPhone}`);
 
-                    // Only trigger if this is the SAME phone number
-                    if (disconnectedPhone && disconnectedPhone === currentPhone) {
-                        console.log('🔇 [Bridge] Match found! Ending call session for:', data.value);
-                        handleEndCall(true);
+                        // Only trigger if this is the SAME phone number
+                        if (disconnectedPhone && disconnectedPhone === currentPhone) {
+                            console.log('📬 [Bridge] ✅ MATCH! Triggering handleEndCall(true)...');
+                            handleEndCall(true);
+                        } else {
+                            console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring disconnect event.');
+                        }
                     } else {
-                        console.log('⌛ [Bridge] Number mismatch or empty phone. Ignoring disconnect.');
+                        console.warn('📬 [Bridge] ⚠️ Disconnect event received but value (phone) is missing.');
                     }
                 }
             };
