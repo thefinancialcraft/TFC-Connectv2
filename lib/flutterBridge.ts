@@ -2,6 +2,27 @@
  * Utility to communicate with Flutter InAppWebView bridge
  */
 import { supabase } from "./supabase";
+import { globalBridgeLogger } from "./bridgeLogger";
+
+// Global receiver for Flutter messages to ensure they are logged even if UI is not active
+if (typeof window !== 'undefined') {
+  const win = window as any;
+  if (!win.__bridge_initialized) {
+    const originalFromFlutter = win.fromFlutter;
+    win.fromFlutter = (data: any) => {
+      // Log the incoming message
+      const type = data?.type || 'unknown';
+      const value = data?.value;
+      globalBridgeLogger.addLog('in', type, value);
+
+      // Call original handler if it exists
+      if (typeof originalFromFlutter === 'function') {
+        originalFromFlutter(data);
+      }
+    };
+    win.__bridge_initialized = true;
+  }
+}
 
 export const notifyFlutter = (type: string, value: any) => {
   if (typeof window !== 'undefined') {
@@ -10,6 +31,9 @@ export const notifyFlutter = (type: string, value: any) => {
     // Keyed Deduplication: Store last message per type to prevent overwriting during rapid syncs
     if (!win.__bridge_history) win.__bridge_history = {};
     win.__bridge_history[type] = { value, time: Date.now() };
+
+    // Log the outgoing message
+    globalBridgeLogger.addLog('out', type, value);
 
     if (win.flutter_inappwebview?.callHandler) {
       console.log(`🚀 [Bridge] Sending ${type}:`, value);

@@ -1,14 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
 import { notifyFlutter, requestDeviceInfoFromFlutter } from '../../lib/flutterBridge';
-
-interface BridgeMessage {
-  id: string;
-  direction: 'in' | 'out';
-  type: string;
-  payload: any;
-  timestamp: Date;
-}
+import { globalBridgeLogger, BridgeLogEntry } from '../../lib/bridgeLogger';
 
 declare global {
   interface Window {
@@ -20,48 +13,30 @@ declare global {
 }
 
 export default function FlutterBridgeTab() {
-  const [messages, setMessages] = useState<BridgeMessage[]>([]);
+  const [messages, setMessages] = useState<BridgeLogEntry[]>([]);
   const [testType, setTestType] = useState('test_event');
   const [testValue, setTestValue] = useState('');
   const [isBridgeActive, setIsBridgeActive] = useState(false);
 
-  // Load messages from localStorage on mount
+  // Load messages from globalBridgeLogger on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedMessages = localStorage.getItem('flutter_bridge_logs');
-      if (savedMessages) {
-        try {
-          const parsed = JSON.parse(savedMessages).map((m: any) => ({
-            ...m,
-            timestamp: new Date(m.timestamp) // Revive dates
-          }));
-          setMessages(parsed);
-        } catch (e) {
-          console.error("Failed to load bridge logs", e);
-        }
-      }
-    }
-  }, []);
+    setMessages(globalBridgeLogger.getLogs());
 
-  // Save messages to localStorage whenever they change
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('flutter_bridge_logs', JSON.stringify(messages));
-    }
-  }, [messages]);
+    const handleNewLog = () => {
+      setMessages(globalBridgeLogger.getLogs());
+    };
 
-  // Helper to add message to log
-  const addMessage = useCallback((direction: 'in' | 'out', type: string, payload: any) => {
-    setMessages(prev => {
-      const newMessages = [{
-        id: Math.random().toString(36).substring(2, 11),
-        direction,
-        type,
-        payload,
-        timestamp: new Date()
-      }, ...prev];
-      return newMessages;
-    });
+    const handleCleared = () => {
+      setMessages([]);
+    };
+
+    window.addEventListener('tfc-new-bridge-log' as any, handleNewLog);
+    window.addEventListener('tfc-bridge-logs-cleared' as any, handleCleared);
+
+    return () => {
+      window.removeEventListener('tfc-new-bridge-log' as any, handleNewLog);
+      window.removeEventListener('tfc-bridge-logs-cleared' as any, handleCleared);
+    };
   }, []);
 
   useEffect(() => {
@@ -80,38 +55,14 @@ export default function FlutterBridgeTab() {
       }, 500);
       setTimeout(() => clearInterval(interval), 5000);
     }
-
-    // Mount receiving handler
-    (window as any).fromFlutter = (data: any) => {
-      console.log("🔔 [Web] Received from Flutter:", data);
-      
-      const type = data?.type || 'unknown';
-      const value = data?.value;
-      
-      addMessage('in', type, value);
-    };
-
-    return () => {
-      (window as any).fromFlutter = undefined;
-    };
-  }, [addMessage]);
+  }, []);
 
   const sendToFlutter = () => {
-    const payload = { type: testType, value: testValue };
-    
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Sending to Flutter:", payload);
-      window.flutter_inappwebview.callHandler('fromWebApp', payload);
-      addMessage('out', testType, testValue);
-    } else {
-      console.warn("⚠️ Flutter InAppWebView not detected.");
-      addMessage('out', testType, { ...payload, error: 'Bridge not detected' });
-    }
+    notifyFlutter(testType, testValue);
   };
 
   const clearLogs = () => {
-    setMessages([]);
-    localStorage.removeItem('flutter_bridge_logs');
+    globalBridgeLogger.clearLogs();
   };
 
   // Sync User Info Hook
@@ -119,10 +70,11 @@ export default function FlutterBridgeTab() {
 
   const syncUserInfoToFlutter = () => {
     if (!user) {
-      addMessage('out', 'sync_user_info_error', 'No user data available to sync');
+      globalBridgeLogger.addLog('out', 'sync_user_info_error', 'No user data available to sync');
       return;
     }
-
+    
+    // notifyFlutter handles the logging and sending
     const userInfoPayload = {
       user_name: user.displayName,
       employee_id: user.employeeId,
@@ -135,90 +87,38 @@ export default function FlutterBridgeTab() {
       profilePicUrl: user.profilePicUrl
     };
 
-    const messagePayload = {
-      type: 'sync_user_info',
-      value: userInfoPayload
-    };
-
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Syncing User Info to Flutter:", messagePayload);
-      window.flutter_inappwebview.callHandler('fromWebApp', messagePayload);
-      addMessage('out', 'sync_user_info', userInfoPayload);
-    } else {
-      console.warn("⚠️ Flutter InAppWebView not detected.");
-      addMessage('out', 'sync_user_info', { ...userInfoPayload, error: 'Bridge not detected' });
-    }
+    notifyFlutter('sync_user_info', userInfoPayload);
   };
 
   const openDevMode = () => {
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Opening Dev Mode");
-      const payload = { type: 'isdevmode_open', value: true };
-      window.flutter_inappwebview.callHandler('fromWebApp', payload);
-      addMessage('out', 'isdevmode_open', true);
-    } else {
-       console.warn("⚠️ Flutter InAppWebView not detected.");
-       addMessage('out', 'isdevmode_open', { error: 'Bridge not detected' });
-    }
+    notifyFlutter('isdevmode_open', true);
   };
 
   const sendLoginEvent = () => {
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Sending Manual Login Event");
-      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'login', value: true });
-      addMessage('out', 'login', true);
-    } else {
-      addMessage('out', 'login', { error: 'Bridge not detected' });
-    }
+    notifyFlutter('login', true);
   };
 
   const sendLogoutEvent = () => {
-    if (window.flutter_inappwebview?.callHandler) {
-      console.log("📤 [Web] Sending Manual Logout Event");
-      window.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
-      addMessage('out', 'logout', true);
-    } else {
-      addMessage('out', 'logout', { error: 'Bridge not detected' });
-    }
+    notifyFlutter('logout', true);
   };
 
   const sendDummyEvent = () => {
     const testNumber = "198";
     console.log("📤 [Web] Triggering Test Call to:", testNumber);
-    
-    // Check if flutter bridge is connected, if so send call_to event
     const bridgeConnected = notifyFlutter('call_to', testNumber);
     
-    if (bridgeConnected) {
-      addMessage('out', 'call_to', testNumber);
-    } else {
-      // Fallback for non-bridge environments (normal web behavior)
+    if (!bridgeConnected) {
       window.location.href = `tel:${testNumber}`;
-      addMessage('out', 'tel_fallback', testNumber);
     }
   };
 
   const sendDisconnectEvent = () => {
     const testNumber = "198";
-    console.log("📤 [Web] Sending Manual Disconnect for:", testNumber);
-    
-    const bridgeConnected = notifyFlutter('call_disconnect', testNumber);
-    
-    if (bridgeConnected) {
-      addMessage('out', 'call_disconnect', testNumber);
-    } else {
-      addMessage('out', 'call_disconnect_failed', { number: testNumber, error: 'Bridge not detected' });
-    }
+    notifyFlutter('call_disconnect', testNumber);
   };
 
   const handleRequestDeviceInfo = () => {
-    console.log("📤 [Web] Manually Requesting Device Info");
-    const bridgeConnected = requestDeviceInfoFromFlutter();
-    if (bridgeConnected) {
-      addMessage('out', 'request', 'device_info');
-    } else {
-       addMessage('out', 'request_failed', { error: 'Bridge not detected' });
-    }
+    requestDeviceInfoFromFlutter();
   };
 
   return (
@@ -405,7 +305,7 @@ export default function FlutterBridgeTab() {
                               {msg.direction === 'out' ? 'Sent to Native' : 'Received from Native'}
                             </span>
                             <span className="text-[10px] font-bold opacity-60 ml-auto">
-                              {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
                           
