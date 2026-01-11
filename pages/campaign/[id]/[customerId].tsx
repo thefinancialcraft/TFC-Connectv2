@@ -662,7 +662,7 @@ export default function CallingPage() {
     };
 
     const handleEndCall = async () => {
-        setIsCalling(false);
+        setIsCalling(false);    
         setPostCall(true);
         setCallAlive(false);
 
