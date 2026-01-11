@@ -107,8 +107,8 @@ export default function CallingPage() {
         "Language barrier": [],
         "DND": [],
         "Wrong NO": [],
-        "Not Contactable": ["hang up", "busy", "Ring", "not reacable", "others"],
-        "Call Back": ["intrested", "follow up", "busy", "busy", "Ring", "not reacable", "others"],
+        "Not Contactable": ["hang up", "busy","Switch off", "Ring", "not reacable", "others"],
+        "Call Back": ["intrested", "follow up","Switch off", "busy", "Ring", "not reacable", "others"],
         "Deal Done": [],
     };
 

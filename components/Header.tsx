@@ -25,6 +25,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [localEntryId, setLocalEntryId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const lastProcessedRef = useRef<{ type: string; value: any; time: number } | null>(null);
+  const isOnCallRef = useRef(false);
   
   // Initialize with cached data, then update with props if different (ghost update)
   const [cachedUser, setCachedUser] = useState<HeaderProps['user']>(() => {
@@ -135,8 +136,10 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           android_id: device.android_id || 'N/A',
           last_seen: device.last_seen
         });
+        isOnCallRef.current = device.on_call || false;
       } else {
         setDeviceStatus(null);
+        isOnCallRef.current = false;
       }
     };
 
@@ -171,6 +174,13 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
              
              // 2. FORWARD COMMANDS TO FLUTTER
              if (isBridgeActive && newData.type && newData.value) {
+                // 3. MASTER MOVE: Reject call_to if already on a call
+                if (newData.type === 'call_to' && isOnCallRef.current) {
+                   console.log("🛡️ [Header] MASTER MOVE: Call rejected! Device is already busy.");
+                   fetchPrimaryStatus();
+                   return;
+                }
+
                 // Deduplication A: Check if this was just sent locally (prevent local loop)
                 const bridgeHistory = (window as any).__bridge_history || {};
                 const lastLocalMsg = bridgeHistory[newData.type];
