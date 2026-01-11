@@ -74,8 +74,9 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
       // Request initial device info
       requestDeviceInfoFromFlutter();
 
-      // Listen for incoming device info from Flutter bridge
-      (window as any).fromFlutter = (payload: any) => {
+      // Listen for incoming bridge messages from Flutter
+      const handleMessage = (e: any) => {
+        const payload = e.detail;
         if (payload?.type === 'device_info' && payload?.value?.androidId) {
           const androidId = payload.value.androidId;
           const employeeId = displayUser?.employeeId;
@@ -89,6 +90,8 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           }
         }
       };
+      
+      window.addEventListener('tfc-bridge-message' as any, handleMessage);
 
       // Set up periodic identity refresh every 30 minutes
       const refreshInterval = setInterval(() => {
@@ -97,8 +100,8 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
       }, 30 * 60 * 1000);
 
       return () => {
+        window.removeEventListener('tfc-bridge-message' as any, handleMessage);
         clearInterval(refreshInterval);
-        (window as any).fromFlutter = undefined;
       };
     } else {
        // Fallback for non-bridge (desktop) - read from storage if exists

@@ -115,51 +115,47 @@ export default function CallingPage() {
 
     // Bridge Message Listener
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const originalFromFlutter = (window as any).fromFlutter;
+        if (typeof window === 'undefined') return;
+
+        const handleMessage = (e: any) => {
+            const data = e.detail;
+            console.log('📬 [Bridge] Received Message:', data);
             
-            (window as any).fromFlutter = (data: any) => {
-                // Call previous handler if it exists (e.g. for logs)
-                if (typeof originalFromFlutter === 'function') {
-                    originalFromFlutter(data);
-                }
+            // --- Master Move: Auto-Disconnect on Phone Hang-up ---
+            const eventType = data?.type;
+            const isDisconnectMsg = eventType === 'call_disconected' || 
+                                    eventType === 'call_disconnect' || 
+                                    eventType === 'call_disconnected';
+            
+            if (isDisconnectMsg) {
+                console.log('📬 [Bridge] Disconnect event detected:', eventType);
+                if (data?.value) {
+                    const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
+                    const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
 
-                console.log('📬 [Bridge] Received Message:', data);
-                
-                // --- Master Move: Auto-Disconnect on Phone Hang-up ---
-                const eventType = data?.type;
-                const isDisconnectMsg = eventType === 'call_disconected' || 
-                                        eventType === 'call_disconnect' || 
-                                        eventType === 'call_disconnected';
-                
-                if (isDisconnectMsg) {
-                    console.log('📬 [Bridge] Disconnect event detected:', eventType);
-                    if (data?.value) {
-                        const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
-                        const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
+                    console.log(`📬 [Bridge] Comparing numbers: Received=${disconnectedPhone}, PageTarget=${currentPhone}`);
 
-                        console.log(`📬 [Bridge] Comparing numbers: Received=${disconnectedPhone}, PageTarget=${currentPhone}`);
-
-                        // Only trigger if this is the SAME phone number
-                        if (disconnectedPhone && disconnectedPhone === currentPhone) {
-                            console.log('📬 [Bridge] ✅ MATCH! Triggering handleEndCall(true)...');
-                            handleEndCall(true);
-                        } else {
-                            console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring disconnect event.');
-                        }
+                    // Only trigger if this is the SAME phone number
+                    if (disconnectedPhone && disconnectedPhone === currentPhone) {
+                        console.log('📬 [Bridge] ✅ MATCH! Triggering handleEndCall(true)...');
+                        handleEndCall(true);
                     } else {
-                        console.warn('📬 [Bridge] ⚠️ Disconnect event received but value (phone) is missing.');
+                        console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring disconnect event.');
                     }
+                } else {
+                    console.warn('📬 [Bridge] ⚠️ Disconnect event received but value (phone) is missing.');
                 }
-            };
+            }
+        };
 
-            // Request device info as soon as bridge is ready
-            requestDeviceInfoFromFlutter();
+        window.addEventListener('tfc-bridge-message' as any, handleMessage);
 
-            return () => {
-                (window as any).fromFlutter = originalFromFlutter;
-            };
-        }
+        // Request device info as soon as bridge is ready
+        requestDeviceInfoFromFlutter();
+
+        return () => {
+            window.removeEventListener('tfc-bridge-message' as any, handleMessage);
+        };
     }, [user, campaignId, customerId, customer?.phone_no, isCalling, handleEndCall]);
 
     // Track lead changes for notification

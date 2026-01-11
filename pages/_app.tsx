@@ -7,6 +7,7 @@ import { UserProvider } from "../components/UserProvider";
 
 import { globalLogger } from "../lib/logger";
 import LogPip from "../components/LogPip";
+import "../lib/flutterBridge"; // Initialize bridge listeners
 
 if (typeof window !== 'undefined') {
   globalLogger.init();

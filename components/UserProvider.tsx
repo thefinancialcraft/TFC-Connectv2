@@ -61,22 +61,17 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const originalFromFlutter = (window as any).fromFlutter;
-
-    (window as any).fromFlutter = (data: any) => {
-      // Call previous handler to maintain existing logs/logic
-      if (typeof originalFromFlutter === 'function') {
-        originalFromFlutter(data);
-      }
-
+    const handleMessage = (e: any) => {
+      const data = e.detail;
       if (data?.type === 'device_info' && data?.value) {
         console.log('📱 [Bridge] Received Device Info, saving to localStorage:', data.value);
         localStorage.setItem('flutter_device_info', JSON.stringify(data.value));
       }
     };
 
+    window.addEventListener('tfc-bridge-message' as any, handleMessage);
     return () => {
-      (window as any).fromFlutter = originalFromFlutter;
+      window.removeEventListener('tfc-bridge-message' as any, handleMessage);
     };
   }, []);
 

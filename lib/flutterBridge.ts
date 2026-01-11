@@ -4,21 +4,20 @@
 import { supabase } from "./supabase";
 import { globalBridgeLogger } from "./bridgeLogger";
 
-// Global receiver for Flutter messages to ensure they are logged even if UI is not active
+// Global receiver for Flutter messages to ensure they are logged and dispatched via events
 if (typeof window !== 'undefined') {
   const win = window as any;
   if (!win.__bridge_initialized) {
-    const originalFromFlutter = win.fromFlutter;
     win.fromFlutter = (data: any) => {
-      // Log the incoming message
+      // 1. Log the incoming message
       const type = data?.type || 'unknown';
       const value = data?.value;
       globalBridgeLogger.addLog('in', type, value);
 
-      // Call original handler if it exists
-      if (typeof originalFromFlutter === 'function') {
-        originalFromFlutter(data);
-      }
+      // 2. Dispatch as a CustomEvent so multiple components can listen without overwriting
+      window.dispatchEvent(new CustomEvent('tfc-bridge-message', { detail: data }));
+      
+      console.log("🔔 [Bridge] Received & Dispatched:", data);
     };
     win.__bridge_initialized = true;
   }
