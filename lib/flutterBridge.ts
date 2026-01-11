@@ -58,11 +58,11 @@ export const requestDeviceInfoFromFlutter = () => {
 /**
  * Update the call status in sync_meta for the primary connected device
  */
-export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string) => {
+export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string, callingStatus?: string) => {
   if (!employeeId) return;
   
   try {
-    // 1. Fetch current device status to check if it's online
+    // 1. Fetch current device status...
     const { data: device, error: fetchError } = await supabase
       .from('sync_meta')
       .select('last_seen, status')
@@ -75,7 +75,7 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
       return;
     }
 
-    // 2. Check if device is actually online (15 second timeout like Header)
+    // 2. Check if device is actually online...
     if (device.last_seen) {
       const lastSeen = new Date(device.last_seen).getTime();
       const diffSeconds = (Date.now() - lastSeen) / 1000;
@@ -84,21 +84,24 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
         console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s ago). Skipping ${type} update.`);
         return;
       }
-    } else {
-      console.warn("⚠️ [Bridge] Device has never sent a heartbeat. Skipping update.");
-      return;
     }
 
-    console.log(`📡 [Bridge] Device is online. Syncing ${type} to DB...`);
+    console.log(`📡 [Bridge] Device is online. Syncing ${type} (${callingStatus || 'N/A'}) to DB...`);
     
     // 3. Perform the update
+    const updatePayload: any = { 
+      type: type,
+      value: value,
+      updated_at: new Date().toISOString()
+    };
+    
+    if (callingStatus) {
+      updatePayload.calling_status = callingStatus;
+    }
+
     const { error } = await supabase
       .from('sync_meta')
-      .update({ 
-        type: type,
-        value: value,
-        updated_at: new Date().toISOString()
-      })
+      .update(updatePayload)
       .eq('employee_id', employeeId)
       .eq('is_primary', true)
       .eq('status', 'connected');

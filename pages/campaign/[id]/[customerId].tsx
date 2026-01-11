@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../../../components/Sidebar";
 import Header from "../../../components/Header";
@@ -38,11 +38,53 @@ export default function CallingPage() {
     const [callAlive, setCallAlive] = useState(false);
     
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
+    const [callingStatus, setCallingStatus] = useState<string | null>(null); // initiate, connecting, connected
+    const [isDeviceOnline, setIsDeviceOnline] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
 
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
+
+    const handleEndCall = useCallback(async () => {
+        setIsCalling(false);
+        setPostCall(true);
+        setCallAlive(false);
+
+        // Notify Flutter bridge to disconnect the call
+        if (customer?.phone_no) {
+            notifyFlutter('call_disconnect', customer.phone_no);
+            
+            // Sync disconnect to SyncMeta table
+            if (user?.employeeId) {
+                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+            }
+        }
+
+        // Update state to disposition_pending in call_sessions table
+        setCallingStatus(null);
+        if (user?.uid) {
+            try {
+                const { data: { session: authSession } } = await supabase.auth.getSession();
+                if (authSession) {
+                    await fetch("/api/auth/update-call-session", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authSession.access_token}`,
+                        },
+                        body: JSON.stringify({
+                            campaign_id: campaignId,
+                            customer_id: customerId,
+                            status: 'disposition_pending'
+                        })
+                    });
+                }
+            } catch (err) {
+                console.error('[Session-End] Failed to update session status:', err);
+            }
+        }
+    }, [customer?.phone_no, user?.employeeId, user?.uid, campaignId, customerId]);
 
     // Bridge Message Listener
     useEffect(() => {
@@ -55,11 +97,29 @@ export default function CallingPage() {
                     originalFromFlutter(data);
                 }
 
-                console.log('📬 [Bridge] Received Message:', data);
-                if (data?.type === 'call_disconnect' && data?.value === true) {
-                    console.log('🔇 [Bridge] Call Disconnect received, ending session.');
-                    setCallAlive(false); // Setting to false as it's a disconnect
-                    handleEndCall();
+                if (data?.type === 'call_disconnect') {
+                    // Logic: Trigger end if value is true (generic) OR matches current number OR we are calling
+                    const isOurCall = data.value === true || String(data.value) === String(customer?.phone_no);
+                    
+                    if (isOurCall && (isCalling || callAlive)) {
+                        console.log('🔇 [Bridge] Call Disconnect received for active customer session, ending...');
+                        handleEndCall();
+                    }
+                }
+
+                if (data?.type === 'calling_status') {
+                    console.log('📶 [Bridge] Call Status Transition:', data.value);
+                    setCallingStatus(data.value);
+                    
+                    // If connected, sync to DB
+                    if (user?.employeeId) {
+                        updateSyncMetaCallStatus(user.employeeId, 'call_status_update', customer?.phone_no || 'unknown', data.value);
+                    }
+                    
+                    // Start timer on connected
+                    if (data.value === 'connected' && !callStartTime) {
+                        setCallStartTime(Date.now() + serverTimeOffset);
+                    }
                 }
             };
 
@@ -70,7 +130,45 @@ export default function CallingPage() {
                 (window as any).fromFlutter = originalFromFlutter;
             };
         }
-    }, [user, campaignId, customerId]);
+    }, [user, campaignId, customerId, customer?.phone_no, isCalling, callAlive, handleEndCall, callStartTime, serverTimeOffset]);
+
+    // Monitor Primary Device Online Status
+    useEffect(() => {
+        if (!user?.employeeId) return;
+
+        const checkStatus = async () => {
+             const { data } = await supabase
+                .from('sync_meta')
+                .select('last_seen')
+                .eq('employee_id', user.employeeId)
+                .eq('is_primary', true)
+                .maybeSingle();
+             
+             if (data?.last_seen) {
+                 const diff = (Date.now() - new Date(data.last_seen).getTime()) / 1000;
+                 setIsDeviceOnline(diff < 15);
+             }
+        };
+
+        checkStatus();
+        const interval = setInterval(checkStatus, 10000);
+        
+        const channel = supabase.channel(`online_tracker_${user.employeeId}`)
+            .on('postgres_changes', { 
+                event: 'UPDATE', 
+                schema: 'public', 
+                table: 'sync_meta', 
+                filter: `employee_id=eq.${user.employeeId}` 
+            }, () => {
+                checkStatus();
+            })
+            .subscribe();
+
+        return () => {
+            clearInterval(interval);
+            supabase.removeChannel(channel);
+        };
+    }, [user?.employeeId]);
 
     // Track lead changes for notification
     useEffect(() => {
@@ -589,12 +687,10 @@ export default function CallingPage() {
         }
 
         // --- Optimistic UI Update ---
-        // Set state immediately using local time so the timer starts without waiting for API
-        const localNow = new Date();
-        setCallStartTime(localNow.getTime());
         setIsCalling(true);
         setPostCall(false);
         setCallDuration(0);
+        setCallingStatus('initiate');
         // ----------------------------
 
         if (customer?.phone_no) {
@@ -609,7 +705,7 @@ export default function CallingPage() {
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', customer.phone_no);
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', customer.phone_no, 'initiate');
             }
         }
 
@@ -661,40 +757,6 @@ export default function CallingPage() {
         }
     };
 
-    const handleEndCall = async () => {
-        setIsCalling(false);
-        setPostCall(true);
-        setCallAlive(false);
-
-        // Notify Flutter bridge to disconnect the call
-        if (customer?.phone_no) {
-            notifyFlutter('call_disconnect', customer.phone_no);
-            
-            // Sync disconnect to SyncMeta table
-            if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
-            }
-        }
-
-        // Update state to disposition_pending in call_sessions table
-        if (user?.uid) {
-            const { data: { session: authSession } } = await supabase.auth.getSession();
-            if (authSession) {
-                await fetch("/api/auth/update-call-session", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${authSession.access_token}`,
-                    },
-                    body: JSON.stringify({
-                        campaign_id: campaignId,
-                        customer_id: customerId,
-                        status: 'disposition_pending'
-                    })
-                });
-            }
-        }
-    };
 
     const handleSaveDisposition = async () => {
         if (!disposition) {
@@ -1305,7 +1367,9 @@ export default function CallingPage() {
                                                         </span>
                                                     </div>
                                                     <h4 className={`text-2xl sm:text-3xl font-black tracking-tight leading-tight ${isCalling ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                                        {isCalling ? 'Call Active' : postCall ? 'Session Ended' : 'Ready to Connect'}
+                                                        {isCalling 
+                                                            ? (callingStatus === 'initiate' || callingStatus === 'connecting' ? 'Connecting Call...' : 'Call Active') 
+                                                            : postCall ? 'Session Ended' : (isDeviceOnline ? 'Ready to Call' : 'Ready to Connect')}
                                                     </h4>
                                                     <p className={`text-[11px] font-semibold opacity-70 ${isCalling ? 'text-indigo-100' : 'text-slate-400'}`}>
                                                         {isCalling ? 'System is transmitting secure digital voice data...' : 'Waiting for operator to initiate lead engagement.'}
@@ -1318,12 +1382,14 @@ export default function CallingPage() {
                                                 {isCalling ? (
                                                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
                                                         {/* Modern Timer Card */}
-                                                        <div className="flex-1 lg:flex-none py-3 px-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center lg:text-right min-w-[140px]">
-                                                            <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums tracking-tighter leading-none mb-1">
-                                                                {formatTime(callDuration)}
-                                                            </p>
-                                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-200">Session Time</p>
-                                                        </div>
+                                                         <div className="flex-1 lg:flex-none py-3 px-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center lg:text-right min-w-[140px]">
+                                                             <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums tracking-tighter leading-none mb-1">
+                                                                 {callingStatus === 'connected' ? formatTime(callDuration) : '00:00'}
+                                                             </p>
+                                                             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-200">
+                                                                {callingStatus === 'connected' ? 'Session Time' : (callingStatus === 'connecting' ? 'Ringing...' : 'Initializing...')}
+                                                             </p>
+                                                         </div>
 
                                                         {/* End Call Action */}
                                                         <button 
@@ -1335,15 +1401,16 @@ export default function CallingPage() {
                                                         </button>
                                                     </div>
                                                 ) : !postCall ? (
-                                                    <button 
-                                                        onClick={handleStartCall}
-                                                        className="w-full sm:w-auto px-3 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
-                                                    >
-                                                        <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                                            <i className="fi flex fi-rr-phone-call text-sm"></i>
-                                                        </div>
-                                                        Initialize Connection
-                                                    </button>
+                                                     <button 
+                                                         onClick={handleStartCall}
+                                                         disabled={callingStatus === 'initiate'}
+                                                         className="w-full sm:w-auto px-6 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
+                                                     >
+                                                         <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                                             <i className={`fi flex fi-rr-${callingStatus === 'initiate' ? 'spinner animate-spin' : 'phone-call'} text-sm`}></i>
+                                                         </div>
+                                                         {callingStatus === 'initiate' ? 'Connecting...' : (isDeviceOnline ? 'Place Call Now' : 'Initialize Connection')}
+                                                     </button>
                                                 ) : (
                                                     <div className="px-6 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
                                                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
