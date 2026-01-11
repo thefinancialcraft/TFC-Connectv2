@@ -129,23 +129,25 @@ export default function LogPip() {
             </div>
 
             {/* Logs List */}
-            <div className="flex-1 overflow-y-auto p-2 font-mono text-[9px] space-y-1 bg-black/50">
-                {filteredLogs.map((log) => (
-                    <div key={log.id} className="flex gap-2">
-                        <span className={`shrink-0 font-bold ${
-                            log.level === 'error' ? 'text-red-500' :
-                            log.level === 'warn' ? 'text-amber-500' :
-                            log.level === 'info' ? 'text-blue-500' :
-                            'text-gray-500'
-                        }`}>
-                            [{log.level[0].toUpperCase()}]
-                        </span>
-                        <span className="text-[8px] text-gray-600 font-bold shrink-0">
-                            {(!log.category || log.category === '/') ? 'HOME' : (log.category.split('/').pop()?.toUpperCase() || 'GLOBAL')}
-                        </span>
-                        <span className="text-gray-400 break-all">{log.message.substring(0, 150)}{log.message.length > 150 ? '...' : ''}</span>
-                    </div>
-                ))}
+            <div className="flex-1 overflow-auto p-2 bg-black/50">
+                <div className="min-w-full inline-block font-mono text-[9px] space-y-1">
+                    {filteredLogs.map((log) => (
+                        <div key={log.id} className="flex gap-2 hover:bg-white/5 p-0.5 rounded group">
+                            <span className={`shrink-0 font-bold ${
+                                log.level === 'error' ? 'text-red-500' :
+                                log.level === 'warn' ? 'text-amber-500' :
+                                log.level === 'info' ? 'text-blue-500' :
+                                'text-gray-500'
+                            }`}>
+                                [{log.level[0].toUpperCase()}]
+                            </span>
+                            <span className="text-[8px] text-gray-600 font-bold shrink-0">
+                                {(!log.category || log.category === '/') ? 'HOME' : (log.category.split('/').pop()?.toUpperCase() || 'GLOBAL')}
+                            </span>
+                            <span className="text-gray-400 whitespace-pre">{log.message}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* PIP Footer */}
@@ -163,6 +165,21 @@ export default function LogPip() {
                     ))}
                 </select>
                 <div className="flex gap-2 items-center">
+                    <button 
+                        onClick={() => {
+                            const text = logs.map(l => `[${new Date(l.timestamp).toLocaleString()}] [${l.level.toUpperCase()}] [${l.category}] ${l.message}`).join('\n');
+                            const blob = new Blob([text], { type: 'text/plain' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `tfc_pip_logs_${new Date().getTime()}.txt`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="text-[8px] text-blue-500 font-bold hover:underline"
+                    >
+                        DL
+                    </button>
                     <button 
                         onClick={() => globalLogger.clearLogs()}
                         className="text-[8px] text-red-500 font-bold hover:underline"

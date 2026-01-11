@@ -110,6 +110,22 @@ export default function ConsoleLogsTab() {
                         <i className="fi fi-rr-copy flex text-xs" />
                     </button>
                     <button 
+                        onClick={() => {
+                            const text = filteredLogs.map(l => `[${new Date(l.timestamp).toLocaleString()}] [${l.level.toUpperCase()}] [${l.category}] ${l.message}`).join('\n');
+                            const blob = new Blob([text], { type: 'text/plain' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `tfc_logs_${new Date().getTime()}.txt`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="p-2.5 bg-white border rounded-lg text-gray-500 hover:text-[#4b33e8] transition-all"
+                        title="Download logs"
+                    >
+                        <i className="fi fi-rr-download flex text-xs" />
+                    </button>
+                    <button 
                         onClick={() => globalLogger.clearLogs()}
                         className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold border border-red-100 hover:bg-red-100 transition-all"
                     >
@@ -119,11 +135,12 @@ export default function ConsoleLogsTab() {
             </div>
 
             {/* Log Display */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-[11px] bg-[#0d1117]">
-                {filteredLogs.length > 0 ? (
-                    filteredLogs.map((log) => (
-                        <div key={log.id} className="flex gap-3 group animate-in slide-in-from-left duration-200">
-                            <span className="text-gray-500 shrink-0 w-32">
+            <div className="flex-1 overflow-auto p-4 bg-[#0d1117]">
+                <div className="min-w-full inline-block space-y-2 font-mono text-[11px]">
+                    {filteredLogs.length > 0 ? (
+                        filteredLogs.map((log) => (
+                            <div key={log.id} className="flex gap-3 group animate-in slide-in-from-left duration-200 hover:bg-white/5 p-1 rounded transition-colors group">
+                                <span className="text-gray-500 shrink-0 w-32">
                                 {new Date(log.timestamp).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                                 <span className="text-[9px] opacity-50 ml-1">.{new Date(log.timestamp).getMilliseconds()}</span>
                             </span>
@@ -138,7 +155,7 @@ export default function ConsoleLogsTab() {
                             <span className="text-[9px] px-1.5 py-0.5 bg-gray-600/30 text-gray-400 rounded font-bold shrink-0 h-fit uppercase">
                                 {(!log.category || log.category === '/') ? 'Home' : (log.category.split('/').pop() || 'Global')}
                             </span>
-                            <span className={`break-all whitespace-pre-wrap leading-relaxed ${
+                            <span className={`break-all whitespace-pre leading-relaxed ${
                                 log.level === 'error' ? 'text-red-300' :
                                 log.level === 'warn' ? 'text-amber-200' :
                                 log.level === 'info' ? 'text-blue-200' :
@@ -154,6 +171,7 @@ export default function ConsoleLogsTab() {
                         <p className="italic uppercase tracking-widest text-[10px]">No logs to display</p>
                     </div>
                 )}
+                </div>
             </div>
 
             {/* Footer Stats */}
