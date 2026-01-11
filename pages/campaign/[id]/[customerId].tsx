@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../../../components/Sidebar";
 import Header from "../../../components/Header";
@@ -44,45 +44,6 @@ export default function CallingPage() {
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
 
-    const handleEndCall = useCallback(async () => {
-        setIsCalling(false);
-        setPostCall(true);
-        setCallAlive(false);
-
-        // Notify Flutter bridge to disconnect the call
-        if (customer?.phone_no) {
-            notifyFlutter('call_disconnect', customer.phone_no);
-            
-            // Sync disconnect to SyncMeta table
-            if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
-            }
-        }
-
-        // Update state to disposition_pending in call_sessions table
-        if (user?.uid) {
-            try {
-                const { data: { session: authSession } } = await supabase.auth.getSession();
-                if (authSession) {
-                    await fetch("/api/auth/update-call-session", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${authSession.access_token}`,
-                        },
-                        body: JSON.stringify({
-                            campaign_id: campaignId,
-                            customer_id: customerId,
-                            status: 'disposition_pending'
-                        })
-                    });
-                }
-            } catch (err) {
-                console.error('[Session-End] Failed to update session status:', err);
-            }
-        }
-    }, [customer?.phone_no, user?.employeeId, user?.uid, campaignId, customerId]);
-
     // Bridge Message Listener
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -95,14 +56,10 @@ export default function CallingPage() {
                 }
 
                 console.log('📬 [Bridge] Received Message:', data);
-                if (data?.type === 'call_disconnect') {
-                    // Logic: Trigger end if value is true (generic) OR matches current number OR we are calling
-                    const isOurCall = data.value === true || String(data.value) === String(customer?.phone_no);
-                    
-                    if (isOurCall && (isCalling || callAlive)) {
-                        console.log('🔇 [Bridge] Call Disconnect received for active customer session, ending...');
-                        handleEndCall();
-                    }
+                if (data?.type === 'call_disconnect' && data?.value === true) {
+                    console.log('🔇 [Bridge] Call Disconnect received, ending session.');
+                    setCallAlive(false); // Setting to false as it's a disconnect
+                    handleEndCall();
                 }
             };
 
@@ -113,7 +70,7 @@ export default function CallingPage() {
                 (window as any).fromFlutter = originalFromFlutter;
             };
         }
-    }, [user, campaignId, customerId, customer?.phone_no, isCalling, callAlive, handleEndCall]);
+    }, [user, campaignId, customerId]);
 
     // Track lead changes for notification
     useEffect(() => {
@@ -144,7 +101,6 @@ export default function CallingPage() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-    
 
     const dispositionHierarchy: Record<string, string[]> = {
         "Not Intrested": [],
@@ -705,6 +661,42 @@ export default function CallingPage() {
         }
     };
 
+    const handleEndCall = async () => {
+        setIsCalling(false);
+        setPostCall(true);
+        setCallAlive(false);
+
+        // Notify Flutter bridge to disconnect the call
+        if (customer?.phone_no) {
+            notifyFlutter('call_disconnect', customer.phone_no);
+            
+            // Sync disconnect to SyncMeta table
+            if (user?.employeeId) {
+                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+            }
+        }
+
+        // Update state to disposition_pending in call_sessions table
+        if (user?.uid) {
+            const { data: { session: authSession } } = await supabase.auth.getSession();
+            if (authSession) {
+                await fetch("/api/auth/update-call-session", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${authSession.access_token}`,
+                    },
+                    body: JSON.stringify({
+                        campaign_id: campaignId,
+                        customer_id: customerId,
+                        status: 'disposition_pending'
+                    })
+                });
+            }
+        }
+    };
+
+    
 
     const handleSaveDisposition = async () => {
         if (!disposition) {
