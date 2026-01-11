@@ -6,6 +6,7 @@ export default function ConsoleLogsTab() {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [filter, setFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState<'all' | 'error' | 'warn' | 'info'>('all');
+    const [catFilter, setCatFilter] = useState('all');
 
     useEffect(() => {
         setLogs(globalLogger.getLogs());
@@ -27,10 +28,13 @@ export default function ConsoleLogsTab() {
         };
     }, []);
 
+    const categories = Array.from(new Set(logs.map(l => l.category || 'Global')));
+
     const filteredLogs = logs.filter(log => {
         const matchesSearch = log.message.toLowerCase().includes(filter.toLowerCase());
         const matchesLevel = levelFilter === 'all' || log.level === levelFilter;
-        return matchesSearch && matchesLevel;
+        const matchesCat = catFilter === 'all' || (log.category || 'Global') === catFilter;
+        return matchesSearch && matchesLevel && matchesCat;
     });
 
     const getLevelColor = (level: string) => {
@@ -68,14 +72,36 @@ export default function ConsoleLogsTab() {
                         onChange={(e) => setLevelFilter(e.target.value as any)}
                         className="h-10 px-3 bg-white border border-gray-200 rounded-xl text-xs font-bold outline-none cursor-pointer"
                     >
-                        <option value="all">All Levels</option>
-                        <option value="error">Errors Only</option>
-                        <option value="warn">Warnings Only</option>
-                        <option value="info">Info Only</option>
+                        <option value="all">Levels</option>
+                        <option value="error">Errors</option>
+                        <option value="warn">Warnings</option>
+                        <option value="info">Info</option>
+                    </select>
+                    <select 
+                        value={catFilter}
+                        onChange={(e) => setCatFilter(e.target.value)}
+                        className="h-10 px-3 bg-white border border-gray-200 rounded-xl text-xs font-bold outline-none cursor-pointer max-w-[150px]"
+                    >
+                        <option value="all">All Pages</option>
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>
+                                {(cat === '/' ? 'Home' : cat.split('/').pop()) || 'Global'}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => {
+                            const current = localStorage.getItem('tfc_log_pip_open') === 'true';
+                            window.dispatchEvent(new CustomEvent('tfc-toggle-log-pip', { detail: !current }));
+                        }}
+                        className="p-2.5 bg-white border rounded-lg text-gray-500 hover:text-[#4b33e8] transition-all"
+                        title="Floating Logs (PIP)"
+                    >
+                        <i className="fi fi-rr-expand flex text-xs" />
+                    </button>
                     <button 
                         onClick={copyToClipboard}
                         className="p-2.5 bg-white border rounded-lg text-gray-500 hover:text-[#4b33e8] transition-all"

@@ -6,6 +6,7 @@ import SessionRedirect from "../components/SessionRedirect";
 import { UserProvider } from "../components/UserProvider";
 
 import { globalLogger } from "../lib/logger";
+import LogPip from "../components/LogPip";
 
 if (typeof window !== 'undefined') {
   globalLogger.init();
@@ -16,6 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <UserProvider>
       <DialogProvider>
         <SessionRedirect />
+        <LogPip />
         <Component {...pageProps} />
       </DialogProvider>
     </UserProvider>
