@@ -44,18 +44,26 @@ export default function CallingPage() {
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
 
-    const handleEndCall = useCallback(async () => {
+    const handleEndCall = useCallback(async (isFromBridge = false) => {
         setIsCalling(false);    
         setPostCall(true);
         setCallAlive(false);
 
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
-            notifyFlutter('call_disconnect', customer.phone_no);
+            // Only send command to flutter if we initiated it from UI
+            if (!isFromBridge) {
+                notifyFlutter('call_disconnect', customer.phone_no);
+            }
             
             // Sync disconnect to SyncMeta table
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+                if (isFromBridge) {
+                    // If bridge already disconnected, just clear the busy state in DB
+                    updateSyncMetaCallStatus(user.employeeId, '', "");
+                } else {
+                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+                }
             }
         }
 
@@ -107,7 +115,7 @@ export default function CallingPage() {
                     // Only trigger if this is the SAME phone number
                     if (disconnectedPhone && disconnectedPhone === currentPhone) {
                         console.log('🔇 [Bridge] Match found! Ending call session for:', data.value);
-                        handleEndCall();
+                        handleEndCall(true);
                     } else {
                         console.log('⌛ [Bridge] Number mismatch or empty phone. Ignoring disconnect.');
                     }
@@ -1346,7 +1354,7 @@ export default function CallingPage() {
 
                                                         {/* End Call Action */}
                                                         <button 
-                                                            onClick={handleEndCall}
+                                                            onClick={() => handleEndCall(false)}
                                                             className="w-full sm:w-auto h-14 sm:h-auto sm:aspect-square sm:p-5 rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-2xl shadow-red-500/30 transition-all hover:scale-105 active:scale-95 group flex items-center justify-center gap-3 sm:gap-0"
                                                         >
                                                             <i className="fi flex fi-rr-phone-slash text-xl transform group-hover:rotate-12 transition-transform"></i>
