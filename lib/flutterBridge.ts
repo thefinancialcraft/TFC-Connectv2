@@ -135,6 +135,31 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
 };
 
 /**
+ * Update specifically the calling_status column in sync_meta
+ */
+export const updateSyncMetaCallingStatus = async (employeeId: string, callingStatus: string | null) => {
+  if (!employeeId) return;
+  
+  try {
+    console.log(`📡 [Bridge] Syncing calling_status: ${callingStatus} to DB...`);
+    const { error } = await supabase
+      .from('sync_meta')
+      .update({ 
+        calling_status: callingStatus,
+        updated_at: new Date().toISOString()
+      })
+      .eq('employee_id', employeeId)
+      .eq('is_primary', true);
+
+    if (error) {
+      console.error("❌ [Bridge] SyncMeta calling_status update error:", error);
+    }
+  } catch (err) {
+    console.error("❌ [Bridge] SyncMeta calling_status connection error:", err);
+  }
+};
+
+/**
  * Send a heartbeat update to the sync_meta table
  */
 export const sendHeartbeat = async (employeeId: string) => {

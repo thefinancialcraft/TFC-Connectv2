@@ -5,7 +5,7 @@ import Header from "../../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../../lib/authService";
 import { supabase } from "../../../lib/supabase";
 import BottomNav from "../../../components/BottomNav";
-import { notifyFlutter, requestDeviceInfoFromFlutter, updateSyncMetaCallStatus } from "../../../lib/flutterBridge";
+import { notifyFlutter, requestDeviceInfoFromFlutter, updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "../../../lib/flutterBridge";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -121,7 +121,6 @@ export default function CallingPage() {
             const data = e.detail;
             console.log('📬 [Bridge] Received Message:', data);
             
-            // --- Master Move: Auto-Disconnect on Phone Hang-up ---
             const eventType = data?.type;
             const isDisconnectMsg = eventType === 'call_disconected' || 
                                     eventType === 'call_disconnect' || 
@@ -129,6 +128,12 @@ export default function CallingPage() {
             
             if (isDisconnectMsg) {
                 console.log('📬 [Bridge] Disconnect event detected:', eventType);
+                
+                // Clear calling_status on disconnect
+                if (user?.employeeId) {
+                    updateSyncMetaCallingStatus(user.employeeId, null);
+                }
+
                 if (data?.value) {
                     const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
                     const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
@@ -144,6 +149,11 @@ export default function CallingPage() {
                     }
                 } else {
                     console.warn('📬 [Bridge] ⚠️ Disconnect event received but value (phone) is missing.');
+                }
+            } else if (eventType === 'connecting' || eventType === 'connected') {
+                // Per user request: Show 'connecting' for both connecting and connected bridge events
+                if (user?.employeeId) {
+                    updateSyncMetaCallingStatus(user.employeeId, 'connecting');
                 }
             }
         };
@@ -696,6 +706,7 @@ export default function CallingPage() {
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
                 updateSyncMetaCallStatus(user.employeeId, 'call_to', customer.phone_no);
+                updateSyncMetaCallingStatus(user.employeeId, 'preparing');
             }
         }
 
