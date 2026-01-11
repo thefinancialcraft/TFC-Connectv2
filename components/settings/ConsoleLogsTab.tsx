@@ -6,8 +6,6 @@ export default function ConsoleLogsTab() {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [filter, setFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState<'all' | 'error' | 'warn' | 'info'>('all');
-    const [isAutoScroll, setIsAutoScroll] = useState(true);
-    const logEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setLogs(globalLogger.getLogs());
@@ -28,12 +26,6 @@ export default function ConsoleLogsTab() {
             window.removeEventListener('tfc-logs-cleared' as any, handleCleared);
         };
     }, []);
-
-    useEffect(() => {
-        if (isAutoScroll && logEndRef.current) {
-            logEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [logs, isAutoScroll]);
 
     const filteredLogs = logs.filter(log => {
         const matchesSearch = log.message.toLowerCase().includes(filter.toLowerCase());
@@ -85,12 +77,6 @@ export default function ConsoleLogsTab() {
 
                 <div className="flex items-center gap-2">
                     <button 
-                        onClick={() => setIsAutoScroll(!isAutoScroll)}
-                        className={`px-3 py-2 rounded-lg text-[10px] font-bold transition-all ${isAutoScroll ? 'bg-[#4b33e8] text-white' : 'bg-white border text-gray-500'}`}
-                    >
-                        Auto-scroll: {isAutoScroll ? 'ON' : 'OFF'}
-                    </button>
-                    <button 
                         onClick={copyToClipboard}
                         className="p-2.5 bg-white border rounded-lg text-gray-500 hover:text-[#4b33e8] transition-all"
                         title="Copy all logs"
@@ -123,6 +109,9 @@ export default function ConsoleLogsTab() {
                             }`}>
                                 {log.level}
                             </span>
+                            <span className="text-[9px] px-1.5 py-0.5 bg-gray-600/30 text-gray-400 rounded font-bold shrink-0 h-fit uppercase">
+                                {(!log.category || log.category === '/') ? 'Home' : (log.category.split('/').pop() || 'Global')}
+                            </span>
                             <span className={`break-all whitespace-pre-wrap leading-relaxed ${
                                 log.level === 'error' ? 'text-red-300' :
                                 log.level === 'warn' ? 'text-amber-200' :
@@ -139,7 +128,6 @@ export default function ConsoleLogsTab() {
                         <p className="italic uppercase tracking-widest text-[10px]">No logs to display</p>
                     </div>
                 )}
-                <div ref={logEndRef} />
             </div>
 
             {/* Footer Stats */}

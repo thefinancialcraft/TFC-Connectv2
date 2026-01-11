@@ -12,6 +12,7 @@ export interface LogEntry {
   timestamp: string;
   level: 'log' | 'info' | 'warn' | 'error' | 'debug';
   message: string;
+  category: string;
 }
 
 class Logger {
@@ -60,7 +61,8 @@ class Logger {
         id: Math.random().toString(36).substr(2, 9),
         timestamp: new Date().toISOString(),
         level,
-        message
+        message,
+        category: window.location.pathname
       };
 
       const existingLogs = this.getLogs();
