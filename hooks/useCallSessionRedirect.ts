@@ -14,20 +14,20 @@ export function useCallSessionRedirect(userId: string | undefined) {
                     .from('call_sessions')
                     .select('*')
                     .eq('user_id', userId)
-                    .single();
+                    .in('status', ['active', 'disposition_pending'])
+                    .order('updated_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
 
-                if (error) {
-                    if (error.code === 'PGRST116') return; // No session found
-                    throw error;
-                }
+                if (error) throw error;
 
-                if (session && (session.status === 'active' || session.status === 'disposition_pending')) {
+                if (session) {
                     const currentPath = router.asPath;
                     const expectedPath = `/campaign/${session.campaign_id}/${session.customer_id}`;
                     
                     // Only redirect if not already on the destination page
                     if (!currentPath.includes(expectedPath)) {
-                        console.log(`[Session-Manager] Redirecting to active session: ${expectedPath}`);
+                        console.log(`[Session-Manager] Redirecting to most recent active session: ${expectedPath}`);
                         router.push(expectedPath);
                     }
                 }

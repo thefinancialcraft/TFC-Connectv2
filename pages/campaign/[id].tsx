@@ -55,6 +55,7 @@ interface AnalyticsData {
     }[];
     caller_performance: {
         caller: string;
+        employee_id: string;
         total_calls: number;
         connected_calls: number;
         outgoing_calls: number;
@@ -527,18 +528,31 @@ export default function CampaignDetails() {
         try {
             setCalling(true);
 
-            // 0. Check if user already has an active or assigned session
-            const { data: sRows } = await supabase
+            // 0. Check for active/pending sessions across ALL campaigns first
+            const { data: allSessions } = await supabase
                 .from('call_sessions')
                 .select('*')
                 .eq('user_id', user.uid)
-                .limit(1);
+                .in('status', ['active', 'disposition_pending']);
 
-            const existingSession = sRows ? sRows[0] : null;
+            if (allSessions && allSessions.length > 0) {
+                const activeSession = allSessions[0];
+                console.log('[Session] Found active session in cross-campaign check, redirecting...', activeSession);
+                router.push(`/campaign/${activeSession.campaign_id}/${activeSession.customer_id}`);
+                return;
+            }
 
-            if (existingSession && (existingSession.status === 'assigned' || existingSession.status === 'active' || existingSession.status === 'disposition_pending')) {
-                console.log('[Session] Found existing session, resuming...', existingSession);
-                router.push(`/campaign/${existingSession.campaign_id}/${existingSession.customer_id}`);
+            // 1. Check if user already has a session for THIS campaign
+            const { data: campaignSession } = await supabase
+                .from('call_sessions')
+                .select('*')
+                .eq('user_id', user.uid)
+                .eq('campaign_id', id)
+                .maybeSingle();
+
+            if (campaignSession && campaignSession.status === 'assigned') {
+                console.log('[Session] Found existing assigned session for this campaign, resuming...', campaignSession);
+                router.push(`/campaign/${campaignSession.campaign_id}/${campaignSession.customer_id}`);
                 return;
             }
             
@@ -909,7 +923,14 @@ export default function CampaignDetails() {
                                 <div className="flex-1 w-full min-h-0">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart 
-                                            data={analytics.agent_performance.slice(0, expandedChart === 'users' ? 20 : 5)} 
+                                            data={analytics.agent_performance
+                                                .filter(row => 
+                                                    campaign?.users?.some(u => 
+                                                        (u.employee_id && u.employee_id === row.employee_id) || 
+                                                        (u.name && u.name.toLowerCase() === row.name.toLowerCase())
+                                                    )
+                                                )
+                                                .slice(0, expandedChart === 'users' ? 20 : 5)} 
                                             layout="vertical"
                                             barSize={12}
                                             margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
@@ -1049,8 +1070,20 @@ export default function CampaignDetails() {
                                        </tr>
                                    </thead>
                                    <tbody className="divide-y divide-gray-50">
-                                       {analytics.caller_performance.length > 0 ? (
-                                            analytics.caller_performance.map((row, index) => (
+                                       {analytics.caller_performance.filter(row => 
+                                            campaign?.users?.some(u => 
+                                                (u.employee_id && u.employee_id === row.employee_id) || 
+                                                (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
+                                            )
+                                        ).length > 0 ? (
+                                            analytics.caller_performance
+                                                .filter(row => 
+                                                    campaign?.users?.some(u => 
+                                                        (u.employee_id && u.employee_id === row.employee_id) || 
+                                                        (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
+                                                    )
+                                                )
+                                                .map((row, index) => (
                                                 <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                                                     <td className="px-6 py-4 text-xs font-bold text-gray-700 capitalize">
                                                         {row.caller}

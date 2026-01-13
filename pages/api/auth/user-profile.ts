@@ -122,11 +122,14 @@ export default async function handler(
     const displayName = userMetadata.display_name || userMetadata.user_name || profile?.user_name || null;
     const phone = userMetadata.phone || userMetadata.contact_no || profile?.contact_no || null;
 
-    // Fetch call session
+    // Fetch most important call session (active or disposition_pending)
     const { data: callSession } = await clientToUse
       .from('call_sessions')
       .select('campaign_id, customer_id, status, call_start_at')
       .eq('user_id', authUser.id)
+      .in('status', ['active', 'disposition_pending'])
+      .order('updated_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     return res.status(200).json({

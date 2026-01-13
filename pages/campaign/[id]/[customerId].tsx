@@ -430,8 +430,9 @@ export default function CallingPage() {
                     .from('call_sessions')
                     .select('*')
                     .eq('user_id', user.uid)
-                    .limit(1);
-                const sessionData = sData ? sData[0] : null;
+                    .eq('campaign_id', campaignId)
+                    .maybeSingle();
+                const sessionData = sData;
 
                 // If user has a session for THIS missing customer, clear and re-assign
                 if (sessionData && sessionData.customer_id === idToFetch) {
@@ -440,7 +441,8 @@ export default function CallingPage() {
                     await supabase
                         .from('call_sessions')
                         .delete()
-                        .eq('user_id', user.uid);
+                        .eq('user_id', user.uid)
+                        .eq('campaign_id', campaignId);
 
                     const { data: nextLeadId } = await supabase.rpc('assign_next_lead', {
                         p_campaign_id: campaignId,
@@ -455,7 +457,7 @@ export default function CallingPage() {
                             customer_id: nextLeadId,
                             status: 'assigned',
                             updated_at: new Date().toISOString()
-                        });
+                        }, { onConflict: 'user_id,campaign_id' });
                         router.push(`/campaign/${targetCampaignId}/${nextLeadId}`);
                         return;
                     } else if (targetCampaignId) {

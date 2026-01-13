@@ -57,7 +57,8 @@ export default async function handler(
         .from('call_sessions')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .eq('campaign_id', campaign_id)
+        .maybeSingle();
 
     let updatedSession;
 
@@ -119,6 +120,7 @@ export default async function handler(
                 ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
             })
             .eq('user_id', user.id)
+            .eq('campaign_id', campaign_id)
             .select('campaign_id, customer_id, status, call_start_at, is_manual')
             .single();
 
@@ -140,7 +142,7 @@ export default async function handler(
             is_manual: false,
             updated_at: new Date().toISOString(),
             ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
-          }, { onConflict: 'user_id' })
+          }, { onConflict: 'user_id,campaign_id' })
           .select('campaign_id, customer_id, status, call_start_at, is_manual')
           .single();
 
