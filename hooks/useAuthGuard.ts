@@ -48,6 +48,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         holdStartDate: cachedData.hold_start_date || null,
         holdEndDate: cachedData.hold_end_date || null,
         allTimeActive: cachedData.all_time_active ?? true,
+        isCaller: cachedData.is_caller ?? false,
       };
     }
     return null;
@@ -180,6 +181,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         status: userData.accountStatus || null,
         updated_at: userData.updatedAt || null,
         all_time_active: userData.allTimeActive ?? true,
+        is_caller: userData.isCaller ?? false,
       };
       storeUserData(userDataToStore);
     }

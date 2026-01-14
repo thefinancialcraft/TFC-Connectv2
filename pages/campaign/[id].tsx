@@ -89,6 +89,7 @@ export default function CampaignDetails() {
                 accountStatus: null,
                 updatedAt: null,
                 profilePicUrl: cachedData.profile_pic_url || null,
+                isCaller: cachedData.is_caller ?? false,
             };
         }
         return null;

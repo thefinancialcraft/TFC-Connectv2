@@ -36,6 +36,7 @@ type Data = {
     holdStartDate: string | null;
     holdEndDate: string | null;
     allTimeActive: boolean;
+    isCaller: boolean;
   };
 };
 
@@ -76,7 +77,7 @@ export default async function handler(
       // Use admin client - bypasses RLS
       const result = await supabaseAdmin
         .from('user_profiles')
-        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active')
+        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller')
         .eq('user_id', authUser.id)
         .maybeSingle();
       profile = result.data;
@@ -92,7 +93,7 @@ export default async function handler(
       if (!sessionError && sessionData.session) {
         const result = await supabase
           .from('user_profiles')
-          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active')
+          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller')
           .eq('user_id', authUser.id)
           .maybeSingle();
         profile = result.data;
@@ -161,6 +162,7 @@ export default async function handler(
         holdStartDate: profile?.hold_start_date || null,
         holdEndDate: profile?.hold_end_date || null,
         allTimeActive: profile?.all_time_active ?? true,
+        isCaller: profile?.is_caller ?? false,
       },
     });
   } catch (error: any) {

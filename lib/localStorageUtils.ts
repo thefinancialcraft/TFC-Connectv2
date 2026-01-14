@@ -20,6 +20,7 @@ export interface StoredUserData {
   hold_start_date?: string | null;
   hold_end_date?: string | null;
   all_time_active?: boolean;
+  is_caller?: boolean;
 }
 
 const STORAGE_KEY = 'tfc_user_data';

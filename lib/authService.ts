@@ -80,6 +80,7 @@ export interface UserProfile {
     call_start_at: string;
   } | null;
   allTimeActive?: boolean;
+  isCaller?: boolean;
 }
 
 export interface AuthResult {
@@ -234,6 +235,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             updated_at: userData.updatedAt || undefined,
             profile_pic_url: userData.profilePicUrl || undefined,
             all_time_active: userData.allTimeActive,
+            is_caller: userData.isCaller,
           };
           addUserToStore(profileData);
         }
@@ -320,6 +322,7 @@ export interface UserProfileData {
   expire_at?: string;
   created_at?: string;
   updated_at?: string;
+  is_caller?: boolean;
   [key: string]: any; // Allow additional fields
 }
 
