@@ -5,9 +5,17 @@ interface AddUserModalProps {
   show: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  isAuthorised?: boolean;
+  organizationId?: string | null;
 }
 
-export function AddUserModal({ show, onClose, onSuccess }: AddUserModalProps) {
+export function AddUserModal({ 
+  show, 
+  onClose, 
+  onSuccess,
+  isAuthorised = true,
+  organizationId = null
+}: AddUserModalProps) {
   const [signupError, setSignupError] = useState("");
 
   const handleClose = () => {
@@ -72,6 +80,8 @@ export function AddUserModal({ show, onClose, onSuccess }: AddUserModalProps) {
           )}
           <SignupForm
             fromAdminPanel={true}
+            isAuthorised={isAuthorised}
+            organizationId={organizationId}
             onError={(error: string) => setSignupError(error)}
             onSuccess={() => {
               handleClose();

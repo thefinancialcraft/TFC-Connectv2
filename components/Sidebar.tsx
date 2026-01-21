@@ -13,6 +13,8 @@ interface SidebarProps {
     employeeId?: string | null;
     lastSignInAt?: string | null;
     profilePicUrl?: string | null;
+    isClient?: boolean;
+    designation?: string | null;
   };
   activeNav?: string;
   onNavChange?: (nav: string) => void;
@@ -42,6 +44,8 @@ const Sidebar = memo(function Sidebar({
         employeeId: cached.employee_id || null,
         lastSignInAt: null, 
         profilePicUrl: cached.profile_pic_url || null,
+        isClient: cached.is_client,
+        designation: cached.designation,
       };
     }
     return undefined;
@@ -124,10 +128,47 @@ const Sidebar = memo(function Sidebar({
 
   // Memoize filtered navigation items
   const navItems = useMemo(() => {
-    return mounted
-      ? NAV_ITEMS.filter(item => !item.adminOnly || isAdmin)
-      : NAV_ITEMS;
-  }, [mounted, isAdmin]);
+    // Visibility logic for User and Org Pages (Strict Visibility)
+    const currentUser = (mounted && user) ? user : cachedUser;
+    
+    // Only allow visibility if we are mounted AND meet the criteria
+    // If not mounted, remains false to prevent flicker
+    const allowedDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
+    const currentDesignation = currentUser?.designation?.toLowerCase() || '';
+
+    const isUserPageVisible = mounted && (
+      currentUser?.isClient === false || 
+      (currentUser?.isClient === true && ['ceo', 'developer'].includes(currentDesignation))
+    );
+
+    const isOrgVisible = mounted && (
+      currentUser?.isClient === false || 
+      (currentUser?.isClient === true && ['ceo', 'developer'].includes(currentDesignation))
+    );
+
+    const isTeamPageVisible = mounted && (
+      currentUser?.isClient === false || 
+      (currentUser?.isClient === true && ['manager', 'team_leader', 'ceo', 'developer'].includes(currentDesignation))
+    );
+
+    const isAdminState = mounted && isAdmin;
+
+    return NAV_ITEMS.filter(item => {
+      // Admin check
+      if (item.adminOnly && !isAdminState) return false;
+      
+      // User page visibility check (Hidden by default until confirmed)
+      if (item.path === '/users' && !isUserPageVisible) return false;
+
+      // Org page visibility check (Hidden by default until confirmed)
+      if (item.path === '/organization' && !isOrgVisible) return false;
+
+      // Team page visibility check (Hidden by default until confirmed)
+      if (item.path === '/team' && !isTeamPageVisible) return false;
+      
+      return true;
+    });
+  }, [mounted, isAdmin, user, cachedUser]);
 
   const handleNavClick = useCallback((path: string) => {
     onNavChange?.(path);

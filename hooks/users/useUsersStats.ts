@@ -2,7 +2,11 @@ import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { UserStats } from "../../components/users/types";
 
-export function useUsersStats(userTypeToggle: "all" | "employee" | "posp_agent") {
+export function useUsersStats(
+  userTypeToggle: "all" | "employee" | "posp_agent",
+  organizationId: string | null = null,
+  isAuthorised: boolean = false
+) {
   const [userStats, setUserStats] = useState<UserStats>({
     activeUsers: 0,
     totalUsers: 0,
@@ -45,6 +49,17 @@ export function useUsersStats(userTypeToggle: "all" | "employee" | "posp_agent")
         query = query.eq("user_type", "employee");
       } else if (userTypeToggle === "posp_agent") {
         query = query.eq("user_type", "posp_agent");
+      }
+
+      // Filter by organization if the user is not a global authoriser
+      if (!isAuthorised) {
+        if (organizationId) {
+          query = query.eq("organization_id", organizationId);
+        } else {
+          // If restricted but no organizationId provided, don't fetch anything to prevent leak
+          setLoadingStats(false);
+          return;
+        }
       }
 
       const { data: allUsersData, error: fetchError } = await query;
@@ -109,6 +124,16 @@ export function useUsersStats(userTypeToggle: "all" | "employee" | "posp_agent")
         query = query.eq("user_type", "posp_agent");
       }
 
+      // Filter by organization if the user is not a global authoriser
+      if (!isAuthorised) {
+        if (organizationId) {
+          query = query.eq("organization_id", organizationId);
+        } else {
+          // If restricted but no organizationId provided, don't fetch anything to prevent leak
+          return;
+        }
+      }
+
       const { data: allUsersData, error: fetchError } = await query;
       if (fetchError) throw fetchError;
 
@@ -152,6 +177,16 @@ export function useUsersStats(userTypeToggle: "all" | "employee" | "posp_agent")
         query = query.eq("user_type", "employee");
       } else if (userTypeToggle === "posp_agent") {
         query = query.eq("user_type", "posp_agent");
+      }
+
+      // Filter by organization if the user is not a global authoriser
+      if (!isAuthorised) {
+        if (organizationId) {
+          query = query.eq("organization_id", organizationId);
+        } else {
+          // If restricted but no organizationId provided, don't fetch anything to prevent leak
+          return;
+        }
       }
 
       const { data, error } = await query;

@@ -29,7 +29,9 @@ const formatDate = (dateString: string | null) => {
 
 export default function CreateOrganization() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(() => {
+    if (typeof window === 'undefined') return null;
     const cachedData = getStoredUserData();
     if (cachedData) {
       return {
@@ -47,6 +49,8 @@ export default function CreateOrganization() {
         accountStatus: null,
         updatedAt: null,
         profilePicUrl: cachedData.profile_pic_url || null,
+        isClient: cachedData.is_client,
+        designation: cachedData.designation,
       };
     }
     return null;
@@ -86,6 +90,7 @@ export default function CreateOrganization() {
 
   const fetchAuth = async () => {
     const result = await checkAuthAndFetchProfile();
+    setMounted(true);
     if (result.shouldRedirect) {
       router.push("/login");
       return;
@@ -94,6 +99,19 @@ export default function CreateOrganization() {
       setUser(result.user);
     }
   };
+
+  // Page level protection logic (Strict: Hidden by default)
+  useEffect(() => {
+    if (mounted && user) {
+      const isOrgVisible = user.isClient === false || 
+                          (user.isClient === true && user.designation?.toLowerCase() === 'ceo');
+      
+      if (!isOrgVisible) {
+        console.warn("Unauthorized access to organization create, redirecting...");
+        router.replace('/dashboard');
+      }
+    }
+  }, [mounted, user, router]);
 
   useEffect(() => {
     fetchAuth();

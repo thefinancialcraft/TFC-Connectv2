@@ -3,7 +3,10 @@ import { supabase } from "../../lib/supabase";
 import { UserFilters } from "../../components/users/types";
 import { useRouter } from "next/router";
 
-export function useUsersFilters() {
+export function useUsersFilters(
+  organizationId: string | null = null,
+  isAuthorised: boolean = false
+) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -32,13 +35,27 @@ export function useUsersFilters() {
   }, [router.isReady, router.query.organization]);
 
   const fetchOrgs = async () => {
-    const { data } = await supabase.from("organizations").select("id, company_name").order("company_name");
+    let query = supabase.from("organizations").select("id, company_name").order("company_name");
+    
+    // Filter by organization if the user is not a global authoriser
+    if (!isAuthorised) {
+      if (organizationId) {
+        query = query.eq("id", organizationId);
+      } else {
+        // If restricted but no organizationId provided, don't fetch anything to prevent leak
+        return;
+      }
+    }
+
+    const { data } = await query;
     if (data) setOrganizations(data);
   };
 
   useEffect(() => {
-    fetchOrgs();
-  }, []);
+    if (isAuthorised !== undefined) {
+      fetchOrgs();
+    }
+  }, [isAuthorised, organizationId]);
 
   return {
     searchQuery,

@@ -8,6 +8,24 @@ import TeamManagementModal from "../components/TeamManagementModal";
 export default function Team() {
   const router = useRouter();
   const { user, mounted } = useUser();
+  
+  // Page level protection logic (Strict: Hidden by default)
+  useEffect(() => {
+    if (mounted && user) {
+      // Allowed designations for clients
+      const allowedClientDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
+      const userDesignation = user.designation?.toLowerCase() || '';
+      
+      const isTeamPageVisible = user.isClient === false || 
+                                (user.isClient === true && allowedClientDesignations.includes(userDesignation));
+      
+      if (!isTeamPageVisible) {
+        console.warn("Unauthorized access to team page, redirecting...");
+        router.replace('/dashboard');
+      }
+    }
+  }, [mounted, user, router]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [teams, setTeams] = useState<any[]>([]);

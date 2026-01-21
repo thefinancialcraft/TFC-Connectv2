@@ -49,6 +49,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
         holdEndDate: cachedData.hold_end_date || null,
         allTimeActive: cachedData.all_time_active ?? true,
         isCaller: cachedData.is_caller ?? false,
+        isClient: cachedData.is_client ?? false,
+        designation: cachedData.designation || null,
       };
     }
     return null;
@@ -127,7 +129,9 @@ export function useAuthGuard(): UseAuthGuardReturn {
           prevUser.statusReason !== latestUserData.statusReason ||
           prevUser.holdStartDate !== latestUserData.holdStartDate ||
           prevUser.holdEndDate !== latestUserData.holdEndDate ||
-          prevUser.allTimeActive !== latestUserData.allTimeActive;
+          prevUser.allTimeActive !== latestUserData.allTimeActive ||
+          prevUser.isClient !== latestUserData.isClient ||
+          prevUser.designation !== latestUserData.designation;
 
         if (hasChanged) {
           updateLocalStorage(latestUserData);
@@ -182,6 +186,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
         updated_at: userData.updatedAt || null,
         all_time_active: userData.allTimeActive ?? true,
         is_caller: userData.isCaller ?? false,
+        is_client: userData.isClient ?? false,
+        designation: userData.designation || null,
       };
       storeUserData(userDataToStore);
     }

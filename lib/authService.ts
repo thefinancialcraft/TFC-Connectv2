@@ -81,6 +81,9 @@ export interface UserProfile {
   } | null;
   allTimeActive?: boolean;
   isCaller?: boolean;
+  isClient?: boolean;
+  designation?: string | null;
+  organization_id?: string | null;
 }
 
 export interface AuthResult {
@@ -323,6 +326,7 @@ export interface UserProfileData {
   created_at?: string;
   updated_at?: string;
   is_caller?: boolean;
+  designation?: string;
   [key: string]: any; // Allow additional fields
 }
 

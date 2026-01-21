@@ -32,3 +32,6 @@ export type {
   DateRange,
   UseDateFilterReturn,
 } from './useDateFilter';
+
+export { useOrganizationDetailData } from './useOrganizationDetailData';
+export type { OrgUser } from './useOrganizationDetailData';

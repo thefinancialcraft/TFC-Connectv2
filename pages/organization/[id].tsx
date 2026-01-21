@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react"; 
 import { useRouter } from "next/router";
 import Head from "next/head";
 import AppLayout, { useUser } from "../../components/AppLayout";
@@ -6,13 +6,26 @@ import { supabase } from "../../lib/supabase";
 import ExpiryBadge from "../../components/ExpiryBadge";
 import SignupForm from "../../components/SignupForm";
 import ImportCustomersModal from "../../components/ImportCustomersModal";
-import { useOrganizationDetailData } from "../../hooks/useOrganizationDetailData";
+import { useOrganizationDetailData, OrgUser } from "@/hooks";
 import { formatDate, calculateNewExpiryDate, calculateMonthsToTarget } from "../../lib/dateUtils";
 
 export default function OrganizationDetail() {
   const router = useRouter();
   const { id } = router.query;
-  const { user } = useUser();
+  const { user, mounted } = useUser();
+
+  // Page level protection logic (Strict: Hidden by default)
+  useEffect(() => {
+    if (mounted && user) {
+      const isOrgVisible = user.isClient === false || 
+                          (user.isClient === true && user.designation?.toLowerCase() === 'ceo');
+      
+      if (!isOrgVisible) {
+        console.warn("Unauthorized access to organization detail, redirecting...");
+        router.replace('/dashboard');
+      }
+    }
+  }, [mounted, user, router]);
   const {
     loading,
     organization,
@@ -122,7 +135,7 @@ export default function OrganizationDetail() {
       if (error) throw error;
       
       // Optimistic update
-      setOrgUsers(prev => prev.filter(u => u.id !== userId));
+      setOrgUsers((prev: OrgUser[]) => prev.filter((u: OrgUser) => u.id !== userId));
       fetchUnassignedUsers();
     } catch (err) {
       console.error("Error removing user:", err);
@@ -140,7 +153,7 @@ export default function OrganizationDetail() {
       if (error) throw error;
       
       // Optimistically update local state & stats (requirement 5)
-      setOrgUsers(prev => prev.map(u => 
+      setOrgUsers((prev: OrgUser[]) => prev.map((u: OrgUser) => 
         u.id === userId ? { ...u, status: newStatus } : u
       ));
     } catch (err) {
@@ -556,7 +569,7 @@ export default function OrganizationDetail() {
                                          </tr>
                                      </thead>
                                      <tbody className="divide-y divide-slate-50">
-                                         {filteredUsers.map((u: any) => (
+                                         {filteredUsers.map((u: OrgUser) => (
                                              <tr key={u.id} className="group hover:bg-indigo-50/10 transition-colors">
                                                  <td className="p-4">
                                                      <div className="flex items-center gap-3 text-left">

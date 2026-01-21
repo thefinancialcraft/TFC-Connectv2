@@ -29,6 +29,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         employeeId: cached.employee_id || null,
         lastSignInAt: null,
         profilePicUrl: cached.profile_pic_url || null,
+        isClient: cached.is_client,
+        designation: cached.designation,
       };
     }
     return null;
@@ -45,6 +47,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
             employeeId: user.employeeId || null,
             lastSignInAt: user.lastSignInAt || null,
             profilePicUrl: user.profilePicUrl || null,
+            isClient: user.isClient,
+            designation: user.designation,
           };
         }
 
@@ -53,7 +57,9 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           prev.email !== (user.email || "") ||
           prev.employeeId !== (user.employeeId || null) ||
           prev.lastSignInAt !== (user.lastSignInAt || null) ||
-          prev.profilePicUrl !== (user.profilePicUrl || null);
+          prev.profilePicUrl !== (user.profilePicUrl || null) ||
+          prev.isClient !== user.isClient ||
+          prev.designation !== user.designation;
 
         if (hasChanged) {
           return {
@@ -62,6 +68,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
             employeeId: user.employeeId || null,
             lastSignInAt: user.lastSignInAt || null,
             profilePicUrl: user.profilePicUrl || null,
+            isClient: user.isClient,
+            designation: user.designation,
           };
         }
         return prev;
@@ -153,7 +161,12 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
 
       {/* Bottom Navigation - Mobile Only */}
       {!hideSidebar && (
-        <BottomNav activeNav={router.pathname.replace('/', '') || 'dashboard'} userRole={userRole} />
+        <BottomNav 
+          activeNav={router.pathname.replace('/', '') || 'dashboard'} 
+          userRole={userRole} 
+          isClient={stableUser?.isClient}
+          designation={stableUser?.designation}
+        />
       )}
     </div>
   );

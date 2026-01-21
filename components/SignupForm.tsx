@@ -6,10 +6,19 @@ interface SignupFormProps {
   onError?: (error: string) => void;
   onSuccess?: () => void;
   fromAdminPanel?: boolean; // Flag to indicate this is from admin panel
-  defaultOrganizationId?: string; // Optional prop to pre-select organization
+  isAuthorised?: boolean; // New prop for admin panel restriction
+  organizationId?: string | null; // New prop for admin panel restriction
+  defaultOrganizationId?: string;
 }
 
-export default function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganizationId }: SignupFormProps) {
+export default function SignupForm({ 
+  onError, 
+  onSuccess, 
+  fromAdminPanel = false, 
+  defaultOrganizationId,
+  isAuthorised = true,
+  organizationId = null
+}: SignupFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -22,7 +31,7 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false,
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<'employee' | 'posp_agent'>('employee');
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [selectedOrgId, setSelectedOrgId] = useState<string>(defaultOrganizationId || "");
+  const [selectedOrgId, setSelectedOrgId] = useState<string>(defaultOrganizationId || organizationId || "");
   const [loadingOrgs, setLoadingOrgs] = useState(false);
   const [isClient, setIsClient] = useState(true);
   const [isCaller, setIsCaller] = useState(true);
@@ -50,14 +59,24 @@ export default function SignupForm({ onError, onSuccess, fromAdminPanel = false,
     const fetchOrgs = async () => {
       try {
         setLoadingOrgs(true);
-        const { data, error } = await supabase
+        let query = supabase
           .from("organizations")
           .select("id, company_name, org_code")
           .eq("is_active", true)
           .order("company_name");
+
+        if (!isAuthorised && organizationId) {
+          query = query.eq("id", organizationId);
+        }
+        
+        const { data, error } = await query;
         
         if (!error && data) {
           setOrganizations(data);
+          // If not authorised and we have a specific org, ensure it's selected
+          if (!isAuthorised && organizationId && !selectedOrgId) {
+            setSelectedOrgId(organizationId);
+          }
         }
       } catch (err) {
         console.error("Error fetching orgs:", err);

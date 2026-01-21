@@ -1,17 +1,21 @@
 import { useRouter } from "next/router";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 // Removed unnecessary supabase import as we rely on props
 
 interface BottomNavProps {
   activeNav?: string;
   userRole?: string | null;
   isSuperAdmin?: boolean;
+  isClient?: boolean;
+  designation?: string | null;
 }
 
 const BottomNav = memo(function BottomNav({
   activeNav,
   userRole,
   isSuperAdmin,
+  isClient,
+  designation,
 }: BottomNavProps) {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
@@ -79,10 +83,45 @@ const BottomNav = memo(function BottomNav({
     },
   ];
 
-  // Filter nav items based on admin status
-  const navItems = mounted
-    ? allNavItems.filter((item) => !item.adminOnly || isAdmin)
-    : allNavItems;
+  // Filter nav items based on admin status and client designation
+  const navItems = useMemo(() => {
+    // Visibility logic for User and Org Pages (Strict: Hidden by default until mounted and verified)
+    const allowedDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
+    const currentDesignation = designation?.toLowerCase() || '';
+
+    const isUserPageVisible = mounted && (
+      isClient === false || 
+      (isClient === true && ['ceo', 'developer'].includes(currentDesignation))
+    );
+
+    const isOrgVisible = mounted && (
+      isClient === false || 
+      (isClient === true && designation?.toLowerCase() === 'ceo')
+    );
+
+    const isTeamPageVisible = mounted && (
+      isClient === false || 
+      (isClient === true && ['manager', 'team_leader', 'ceo', 'developer'].includes(currentDesignation))
+    );
+
+    const isAdminState = mounted && isAdmin;
+
+    return allNavItems.filter((item) => {
+      // Admin check
+      if (item.adminOnly && !isAdminState) return false;
+      
+      // User page visibility check
+      if (item.id === 'users' && !isUserPageVisible) return false;
+
+      // Org page visibility check
+      if (item.id === 'organization' && !isOrgVisible) return false;
+
+      // Team page visibility check
+      if (item.id === 'team' && !isTeamPageVisible) return false;
+      
+      return true;
+    });
+  }, [mounted, isAdmin, isClient, designation, allNavItems]);
 
   useEffect(() => {
     const handleScroll = () => {

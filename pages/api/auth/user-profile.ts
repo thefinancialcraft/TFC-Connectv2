@@ -37,6 +37,9 @@ type Data = {
     holdEndDate: string | null;
     allTimeActive: boolean;
     isCaller: boolean;
+    isClient: boolean;
+    designation: string | null;
+    organization_id: string | null;
   };
 };
 
@@ -77,7 +80,7 @@ export default async function handler(
       // Use admin client - bypasses RLS
       const result = await supabaseAdmin
         .from('user_profiles')
-        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller')
+        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id')
         .eq('user_id', authUser.id)
         .maybeSingle();
       profile = result.data;
@@ -93,7 +96,7 @@ export default async function handler(
       if (!sessionError && sessionData.session) {
         const result = await supabase
           .from('user_profiles')
-          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller')
+          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id')
           .eq('user_id', authUser.id)
           .maybeSingle();
         profile = result.data;
@@ -163,6 +166,9 @@ export default async function handler(
         holdEndDate: profile?.hold_end_date || null,
         allTimeActive: profile?.all_time_active ?? true,
         isCaller: profile?.is_caller ?? false,
+        isClient: profile?.is_client ?? false,
+        designation: profile?.designation || null,
+        organization_id: profile?.organization_id || null,
       },
     });
   } catch (error: any) {

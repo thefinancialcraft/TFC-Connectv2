@@ -21,7 +21,7 @@ const formatDate = (dateString: string | null) => {
 
 export default function OrganizationPage() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, mounted } = useUser();
   const {
     loading,
     searchQuery,
@@ -30,6 +30,19 @@ export default function OrganizationPage() {
     filteredOrgs,
     fetchOrganizations
   } = useOrganizationData(user?.uid);
+
+  // Page level protection logic (Strict: Hidden by default)
+  useEffect(() => {
+    if (mounted && user) {
+      const isOrgVisible = user.isClient === false || 
+                          (user.isClient === true && user.designation?.toLowerCase() === 'ceo');
+      
+      if (!isOrgVisible) {
+        console.warn("Unauthorized access to organization page, redirecting...");
+        router.replace('/dashboard');
+      }
+    }
+  }, [mounted, user, router]);
 
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [showAssignModal, setShowAssignModal] = useState(false);

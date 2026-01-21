@@ -2,7 +2,11 @@ import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { AllUser, PendingUser } from "../../components/users/types";
 
-export function useUsersList(userTypeToggle: "all" | "employee" | "posp_agent") {
+export function useUsersList(
+  userTypeToggle: "all" | "employee" | "posp_agent",
+  organizationId: string | null = null,
+  isAuthorised: boolean = false
+) {
   const [allUsers, setAllUsers] = useState<AllUser[]>([]);
   const [loadingAllUsers, setLoadingAllUsers] = useState(true);
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
@@ -30,6 +34,18 @@ export function useUsersList(userTypeToggle: "all" | "employee" | "posp_agent") 
         query = query.eq("user_type", "employee");
       } else if (userTypeToggle === "posp_agent") {
         query = query.eq("user_type", "posp_agent");
+      }
+
+      // Filter by organization if the user is not a global authoriser
+      if (!isAuthorised) {
+        if (organizationId) {
+          query = query.eq("organization_id", organizationId);
+        } else {
+          // If restricted but no organizationId provided, don't fetch anything to prevent leak
+          setAllUsers([]);
+          setLoadingAllUsers(false);
+          return;
+        }
       }
 
       const { data, error } = await query;
@@ -75,6 +91,18 @@ export function useUsersList(userTypeToggle: "all" | "employee" | "posp_agent") 
         query = query.eq("user_type", "employee");
       } else if (userTypeToggle === "posp_agent") {
         query = query.eq("user_type", "posp_agent");
+      }
+
+      // Filter by organization if the user is not a global authoriser
+      if (!isAuthorised) {
+        if (organizationId) {
+          query = query.eq("organization_id", organizationId);
+        } else {
+          // If restricted but no organizationId provided, don't fetch anything to prevent leak
+          setPendingUsers([]);
+          setLoadingPendingUsers(false);
+          return;
+        }
       }
 
       const { data, error } = await query;

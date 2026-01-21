@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import AppLayout, { useUser } from "../components/AppLayout"; // Global Layout
 import { useUsersFilters } from "../hooks/users/useUsersFilters";
 import { useUsersList } from "../hooks/users/useUsersList";
@@ -22,7 +23,33 @@ import { ImportModal } from "../components/users/modals/ImportModal";
 const Users = () => {
   // 1. Global User Context (provides user object for data fetching triggers)
   const { user, mounted } = useUser();
+  const router = useRouter();
+
+  // Page level protection logic
+  useEffect(() => {
+    if (mounted && user) {
+      // Visibility logic (Strict: Hidden by default)
+      const allowedClientDesignations = ['ceo', 'developer'];
+      const userDesignation = user.designation?.toLowerCase() || '';
+      
+      const isUserPageVisible = user.isClient === false || 
+                               (user.isClient === true && allowedClientDesignations.includes(userDesignation));
+      
+      if (!isUserPageVisible) {
+        console.warn("Unauthorized access to users page, redirecting...");
+        router.replace('/dashboard');
+      }
+    }
+  }, [mounted, user, router]);
   
+  // 1.5 Auth state for data filtering
+  const isAuthorisedUser = useMemo(() => {
+    if (!user) return false;
+    // Internal staff (isClient === false) are authorised to see all data
+    // Client users (isClient === true) only see their own organization data
+    return user.isClient === false;
+  }, [user]);
+
   // 2. Filters Hook
   const {
     searchQuery,
@@ -37,7 +64,7 @@ const Users = () => {
     setFilters,
     organizations,
     fetchOrgs,
-  } = useUsersFilters();
+  } = useUsersFilters(user?.organization_id, isAuthorisedUser);
 
   // 3. User List Hook (fetches users based on userTypeToggle)
   const {
@@ -48,7 +75,7 @@ const Users = () => {
     fetchAllUsers,
     fetchPendingUsers,
     checkAndApproveExpiredHolds,
-  } = useUsersList(userTypeToggle);
+  } = useUsersList(userTypeToggle, user?.organization_id, isAuthorisedUser);
 
   // 4. Stats Hook (fetches stats based on userTypeToggle)
   const {
@@ -62,7 +89,7 @@ const Users = () => {
     fetchUserStats,
     fetchMonthlyUserData,
     fetchCategoryStats,
-  } = useUsersStats(userTypeToggle);
+  } = useUsersStats(userTypeToggle, user?.organization_id, isAuthorisedUser);
 
   // 5. Actions Hook
   // Pass a single refresh function that executes all fetches in parallel
@@ -126,12 +153,16 @@ const Users = () => {
 
   // Initial Data Fetch
   useEffect(() => {
-    if (user) {
-      refreshData();
-      fetchOrgs();
-      checkAndApproveExpiredHolds();
+    if (mounted && user) {
+      // Only fetch if we are authorised (internal) OR if we have the organization_id (client)
+      // This prevents fetching all users before the organization_id is loaded
+      if (isAuthorisedUser || user.organization_id) {
+        refreshData();
+        fetchOrgs();
+        checkAndApproveExpiredHolds();
+      }
     }
-  }, [user, userTypeToggle]); // Re-fetch when user or toggle changes
+  }, [mounted, user, userTypeToggle, isAuthorisedUser]); // Re-fetch when user or toggle changes
 
   // Filter Users Logic
   const filteredUsers = React.useMemo(() => {
@@ -341,6 +372,8 @@ const Users = () => {
         onSuccess={() => {
           refreshData();
         }}
+        isAuthorised={isAuthorisedUser}
+        organizationId={user?.organization_id}
       />
 
       <InviteModal
