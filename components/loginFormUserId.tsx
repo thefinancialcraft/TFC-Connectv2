@@ -56,8 +56,8 @@ export default function LoginFormUserId({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          userId, 
-          password,
+          userId: userId.trim(), 
+          password: password,
           location: location || undefined, // Send location if available
         }),
       });

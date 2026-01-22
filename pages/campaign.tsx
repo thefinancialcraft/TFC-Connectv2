@@ -1,6 +1,6 @@
-	import { useEffect, useState } from "react";
+	import { useEffect, useState, useMemo } from "react";
 	import { useRouter } from "next/router";
-	import AppLayout from "../components/AppLayout";
+	import AppLayout, { useUser } from "../components/AppLayout";
 	import { supabase } from "../lib/supabase";
 
 	import CampaignCard, { type Campaign } from "../components/CampaignCard";
@@ -36,6 +36,7 @@
 
 	export default function Campaign() {
 		const router = useRouter();
+		const { user, mounted } = useUser();
 
 		const [activeNav] = useState("campaign");
 
@@ -49,15 +50,149 @@
 		const [loadingUsers, setLoadingUsers] = useState(false);
 
 
+
+		const permissionFlags = useMemo(() => {
+			if (!mounted || !user) return {
+				isCreateCampaginButtonVisible: false,
+				isCampaginEditButtonVisible: false,
+				isCampaginDeleteButtonVisible: false,
+			};
+
+			// Level 1: Client Agent
+			if (user.isClient && (user.designation === 'agent' || !user.designation)) {
+				return {
+					isCreateCampaginButtonVisible: false,
+					isCampaginEditButtonVisible: false,
+					isCampaginDeleteButtonVisible: false,
+				};
+			}
+
+			// Level 2: Team Leader
+			if (user.isClient && user.designation === 'team_leader') {
+				return {
+					isCreateCampaginButtonVisible: false,
+					isCampaginEditButtonVisible: false,
+					isCampaginDeleteButtonVisible: false,
+				};
+			}
+
+			// Level 3: Client Admin (CEO/Developer)
+			if (user.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
+				return {
+					isCreateCampaginButtonVisible: true,
+					isCampaginEditButtonVisible: true,
+					isCampaginDeleteButtonVisible: true,
+				};
+			}
+
+
+
+			// Level 4: Internal Staff (Global Admin)
+			// !isClient implies internal staff
+			return {
+				isCreateCampaginButtonVisible: true,
+				isCampaginEditButtonVisible: true,
+				isCampaginDeleteButtonVisible: true,
+			};
+		}, [user, mounted]);
+
 		const fetchCampaigns = async () => {
+			if (!user) return; // Wait for user
+
 			try {
 				setLoadingCampaigns(true);
 				
-				// 1. Fetch all campaigns with organization details
-				const { data: campaignData, error: campaignError } = await supabase
+				// 1. Base Query
+				let query = supabase
 					.from("campaigns")
 					.select("*, organizations(id, company_name, org_code)")
 					.order("created_at", { ascending: false });
+
+				// Apply Filters
+				// Level 1: Client Agent
+				if (user.isClient && (user.designation === 'agent' || !user.designation)) {
+					// 1. Own Organization
+					if (user.organization_id) {
+						query = query.eq('organization_id', user.organization_id);
+					} else {
+						// Fail-secure
+						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
+					}
+
+					// 2. Active Only
+					query = query.eq('status', 'active');
+
+					// 3. Self Assigned (Check if user_id is in the users JSON array)
+					// Assuming users column is JSONB array of objects [{id: "..."}]
+					// We construct a partial object to match.
+					// Note: Supabase JSONB containment operator @>
+					// This requires the object in the array to contain the checking object.
+					// If users = [{id: 123, name: "..."}], searching for [{id: 123}] works.
+					if (user.uid) { 
+						// Search by user_id which is the actual field in the JSON array based on data inspection
+                        // The structure is [{"user_id": "...", "id": "...", ...}]
+						query = query.contains('users', JSON.stringify([{ user_id: user.uid }]));
+					}
+				}
+				// Level 2: Team Leader
+				else if (user.isClient && user.designation === 'team_leader') {
+					// 1. Own Organization
+					if (user.organization_id) {
+						query = query.eq('organization_id', user.organization_id);
+					} else {
+						// Fail-secure
+						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
+					}
+
+					// 2. Fetch Team Members
+                    // Reuse team fetching logic from customer page pattern
+					let teamMemberIds: string[] = [user.uid]; // Include self
+					
+					const { data: teamData } = await supabase
+						.from('teams')
+						.select('members')
+						.eq('leader_id', user.uid)
+						.eq('is_active', true);
+
+					if (teamData) {
+						teamData.forEach(team => {
+							if (Array.isArray(team.members)) {
+								team.members.forEach((member: any) => {
+									if (typeof member === 'string') teamMemberIds.push(member);
+								});
+							} else if (typeof team.members === 'string') {
+								try {
+									const parsedIds = JSON.parse(team.members);
+									if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => teamMemberIds.push(String(id))); 
+								} catch (e) {}
+							}
+						});
+					}
+					// Unique IDs
+					teamMemberIds = [...new Set(teamMemberIds)];
+
+					// 3. Filter by Team Assignment
+					// Show campaign if ANY team member is assigned
+                    // Construct OR filter: users.cs.[{"user_id":"ID1"}],users.cs.[{"user_id":"ID2"}]
+					if (teamMemberIds.length > 0) {
+						const orFilter = teamMemberIds.map(id => `users.cs.[{"user_id":"${id}"}]`).join(',');
+						query = query.or(orFilter);
+					}
+				}
+				// Level 3: Client Admin
+				else if (user.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
+					// 1. Own Organization
+					if (user.organization_id) {
+						query = query.eq('organization_id', user.organization_id);
+					} else {
+						// Fail-secure
+						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
+					}
+				}
+				// Level 4: Internal Staff (Global Admin)
+				// No filters applied - fetch all campaigns across all organizations
+
+				const { data: campaignData, error: campaignError } = await query;
 				
 				if (campaignError) throw campaignError;
 				
@@ -128,14 +263,16 @@
 		};
 
 		useEffect(() => {
-			fetchCampaigns();
-			const handleFocus = () => {
+			if (mounted && user) {
 				fetchCampaigns();
+			}
+			const handleFocus = () => {
+				if (mounted && user) fetchCampaigns();
 			};
 			window.addEventListener("focus", handleFocus);
 			return () => window.removeEventListener("focus", handleFocus);
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [router]);
+		}, [router, user, mounted]);
 
 
 		const handleCampaignSaved = () => {
@@ -323,17 +460,19 @@
 												<i className="fi flex fi-rr-filter text-xs sm:text-sm"></i>
 												<span className="hidden xs:inline">Filters</span>
 											</button>
-											<button
-												onClick={() => {
-													setShowAddCampaignModal(true);
-													fetchUsers();
-												}}
-												className="px-6 h-[42px] text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2 hover:opacity-90"
-												style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: "#4b33e8" }}
-											>
-												<i className="fi flex fi-rr-plus text-base"></i>
-												<span className="hidden sm:inline">Add Campaign</span>
-											</button>
+											{permissionFlags.isCreateCampaginButtonVisible && (
+												<button
+													onClick={() => {
+														setShowAddCampaignModal(true);
+														fetchUsers();
+													}}
+													className="px-6 h-[42px] text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2 hover:opacity-90"
+													style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: "#4b33e8" }}
+												>
+													<i className="fi flex fi-rr-plus text-base"></i>
+													<span className="hidden sm:inline">Add Campaign</span>
+												</button>
+											)}
 										</div>
 									</div>
 								</div>
@@ -350,6 +489,8 @@
 												campaign={c}
 												onEdit={handleEditCampaign}
 												onDelete={handleDeleteCampaign}
+												isEditVisible={permissionFlags.isCampaginEditButtonVisible}
+												isDeleteVisible={permissionFlags.isCampaginDeleteButtonVisible}
 											/>
 										)))}
 								</div>

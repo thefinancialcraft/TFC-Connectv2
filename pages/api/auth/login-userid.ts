@@ -20,7 +20,8 @@ export default async function handler(
   }
 
   try {
-    const { userId, password, location: clientLocation } = req.body;
+    const { userId: rawUserId, password, location: clientLocation } = req.body;
+    const userId = rawUserId?.toString().trim();
 
     if (!userId || !password) {
       return res.status(400).json({ error: 'User ID and password are required' });
@@ -28,6 +29,10 @@ export default async function handler(
 
     // Use admin client if available, otherwise use regular client
     const clientToUse = supabaseAdmin || supabase;
+    
+    if (!supabaseAdmin) {
+      console.warn('supabaseAdmin is not configured! Falling back to anon client, which may fail due to RLS.');
+    }
 
     // Find user by employee_id in user_profiles table
     const { data: profileData, error: profileError } = await clientToUse
@@ -37,24 +42,29 @@ export default async function handler(
       .single();
 
     if (profileError || !profileData) {
+      console.error('Profile fetch error for userId:', userId, profileError);
       return res.status(401).json({ error: 'Invalid User ID' });
     }
 
-    if (!profileData.email) {
+    const email = profileData.email?.trim();
+    if (!email) {
+      console.error('Email not found for Employee ID:', userId);
       return res.status(401).json({ error: 'Email not found for this Employee ID' });
     }
 
     // Use email to sign in with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: profileData.email,
+      email: email,
       password,
     });
 
     if (error) {
+      console.error('Supabase Auth error:', error.message);
       return res.status(401).json({ error: error.message || 'Invalid password' });
     }
 
     if (!data.session) {
+      console.error('Session creation failed: no session returned');
       return res.status(401).json({ error: 'Failed to create session' });
     }
 

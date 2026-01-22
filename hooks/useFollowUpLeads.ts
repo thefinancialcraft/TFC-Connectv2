@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import { useUser } from "../context/UserContext";
 
 export interface FollowUpLead {
   id: string;
@@ -18,7 +19,8 @@ export interface FollowUpLead {
   status_label: string;
 }
 
-export function useFollowUpLeads(userId: string | undefined) {
+export function useFollowUpLeads() {
+  const { user, mounted } = useUser();
   const [leads, setLeads] = useState<FollowUpLead[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -26,7 +28,7 @@ export function useFollowUpLeads(userId: string | undefined) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchLeads = useCallback(async (isBackground = false) => {
-    if (!userId) return;
+    if (!mounted || !user) return;
 
     // Abort previous request
     if (abortControllerRef.current) {
@@ -41,12 +43,65 @@ export function useFollowUpLeads(userId: string | undefined) {
       const now = new Date();
 
       // Fetch customers first (Joins disabled due to missing FKs on campaign_id/assigned_to)
-      const { data: customerData, error: customerError } = await supabase
+      let query = supabase
         .from('customers')
         .select('*')
         .in('disposition', ['Callback', 'Call Back', 'Follow Up', 'FollowUp'])
         .order('next_called_at', { ascending: true })
         .abortSignal(abortControllerRef.current.signal);
+
+      // Apply Security Levels
+      if (user.isClient) {
+        // Level 1: Client Agent (Own leads only)
+        if (user.designation === 'agent' || !user.designation) {
+           if (user.uid) {
+             query = query.eq('assigned_to', user.uid);
+           }
+        }
+        // Level 2: Team Leader (Own + Team's leads)
+        else if (user.designation === 'team_leader') {
+           let teamMemberIds = [user.uid];
+           if (user.uid) {
+               const { data: teamData } = await supabase
+                 .from('teams')
+                 .select('members')
+                 .eq('leader_id', user.uid)
+                 .eq('is_active', true);
+                 
+               if (teamData) {
+                  teamData.forEach((team: any) => {
+                     // Parse members JSONB consistent with other pages
+                     if (Array.isArray(team.members)) {
+                        team.members.forEach((m: any) => { if (typeof m === 'string') teamMemberIds.push(m); });
+                     } else if (typeof team.members === 'string') {
+                        try {
+                           const parsed = JSON.parse(team.members);
+                           if(Array.isArray(parsed)) parsed.forEach((id: any) => teamMemberIds.push(String(id)));
+                        } catch(e){}
+                     }
+                  });
+               }
+           }
+           teamMemberIds = [...new Set(teamMemberIds)]; // Unique keys
+           if (teamMemberIds.length > 0) {
+              query = query.in('assigned_to', teamMemberIds);
+           } else {
+              query = query.eq('assigned_to', user.uid);
+           }
+        }
+        // Level 3: Client Admin (Organization Wide)
+        else if (['ceo', 'developer'].includes(user.designation || '')) {
+            if (user.organization_id) {
+               query = query.eq('organization_id', user.organization_id);
+            } else {
+               // Fail secure
+               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+            }
+        }
+      }
+      // Level 4: Internal Staff (!isClient) gets explicit Global Access (no filters applied)
+
+      const { data: customerData, error: customerError } = await query;
 
       if (customerError) {
         if (customerError.name === 'AbortError') return;
@@ -109,22 +164,26 @@ export function useFollowUpLeads(userId: string | undefined) {
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [userId]);
+  }, [user, mounted]);
 
   useEffect(() => {
-    fetchLeads();
-    
-    const interval = setInterval(() => {
-      fetchLeads(true);
-    }, 60000);
+    let interval: NodeJS.Timeout;
+
+    if (mounted && user) {
+        fetchLeads();
+        
+        interval = setInterval(() => {
+          fetchLeads(true);
+        }, 60000);
+    }
 
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
-  }, [fetchLeads]);
+  }, [fetchLeads, mounted, user]);
 
   const stats = useMemo(() => {
     return leads.reduce((acc, lead) => {

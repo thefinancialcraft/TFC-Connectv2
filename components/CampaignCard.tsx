@@ -25,9 +25,11 @@ interface CampaignCardProps {
     campaign: Campaign;
     onEdit?: (campaign: Campaign) => void;
     onDelete?: (id: string) => void;
+    isEditVisible?: boolean;
+    isDeleteVisible?: boolean;
 }
 
-const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete }) => {
+const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete, isEditVisible = true, isDeleteVisible = true }) => {
     const router = useRouter();
 
     const handleCardClick = () => {
@@ -171,26 +173,31 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete 
                         >
                             <i className="fi flex  fi-rr-phone text-base"></i>
                         </button>
-                        <button
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all focus:outline-none"
-                            title="Edit"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onEdit?.(campaign);
-                            }}
-                        >
-                            <i className="fi flex  fi-rr-edit text-base"></i>
-                        </button>
-                        <button
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all focus:outline-none"
-                            title="Delete"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete?.(campaign.id);
-                            }}
-                        >
-                            <i className="fi flex  fi-rr-trash text-base"></i>
-                        </button>
+
+                        {isEditVisible && (
+                            <button
+                                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all focus:outline-none"
+                                title="Edit"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit?.(campaign);
+                                }}
+                            >
+                                <i className="fi flex  fi-rr-edit text-base"></i>
+                            </button>
+                        )}
+                        {isDeleteVisible && (
+                            <button
+                                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all focus:outline-none"
+                                title="Delete"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete?.(campaign.id);
+                                }}
+                            >
+                                <i className="fi flex  fi-rr-trash text-base"></i>
+                            </button>
+                        )}
                     </div>
                 </div>
 

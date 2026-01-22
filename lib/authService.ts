@@ -125,9 +125,21 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
               session_token: session.access_token,
               refresh_token: session.refresh_token,
             });
+          } else if (refreshError) {
+            console.error("❌ [Auth] Auto-restoration failed:", refreshError);
+            // If it's a 400 (Bad Request) or 401 (Unauthorized), the refresh token is likely invalid/expired
+            // We must clear it to prevent infinite loops of 429 (Too Many Requests)
+            if (refreshError.status === 400 || refreshError.status === 401 || refreshError.message?.toLowerCase().includes("invalid")) {
+              console.warn("🗑️ [Auth] Refresh token is invalid, clearing from storage to stop restart loop");
+              storeUserData({
+                ...storedData,
+                session_token: undefined,
+                refresh_token: undefined,
+              });
+            }
           }
         } catch (err) {
-          console.error("❌ [Auth] Auto-restoration failed:", err);
+          console.error("❌ [Auth] Auto-restoration exception:", err);
         }
       }
     }

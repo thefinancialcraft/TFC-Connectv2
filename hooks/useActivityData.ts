@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import { useUser } from "../context/UserContext";
 
 export interface ActivityStats {
   totalDials: number;
@@ -11,6 +12,7 @@ export interface ActivityStats {
 }
 
 export function useActivityData() {
+  const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activities, setActivities] = useState<any[]>([]);
@@ -31,6 +33,8 @@ export function useActivityData() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchActivities = useCallback(async (isBackground = false) => {
+    if (!mounted || !user) return;
+
     // Abort previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -44,17 +48,71 @@ export function useActivityData() {
       const startOfDay = `${selectedDate}T00:00:00.000Z`;
       const endOfDay = `${selectedDate}T23:59:59.999Z`;
 
-      const { data, error: fetchError } = await supabase
+      // Base query
+      // Note: We use !inner on agent join to allow filtering by agent's organization_id for Level 3
+      let query = supabase
         .from("call_logs")
         .select(`
           *,
-          agent:user_profiles!agent_id(user_name, employee_id),
+          agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
           customer:customers(customer_name),
           campaign:campaigns!campaign_id(name)
         `)
         .gte("created_at", startOfDay)
         .lte("created_at", endOfDay)
         .order("created_at", { ascending: false });
+
+      // Apply Security Levels
+      if (user.isClient) {
+        // Level 1: Client Agent (Own activities only)
+        if (user.designation === 'agent' || !user.designation) {
+           if (user.uid) {
+             query = query.eq('agent_id', user.uid);
+           }
+        }
+        // Level 2: Team Leader (Own + Team's activities)
+        else if (user.designation === 'team_leader') {
+           let teamMemberIds = [user.uid];
+           if (user.uid) {
+               const { data: teamData } = await supabase
+                 .from('teams')
+                 .select('members')
+                 .eq('leader_id', user.uid)
+                 .eq('is_active', true);
+                 
+               if (teamData) {
+                  teamData.forEach((team: any) => {
+                     // Parse members JSONB similar to other pages
+                     if (Array.isArray(team.members)) {
+                        team.members.forEach((m: any) => { if(typeof m === 'string') teamMemberIds.push(m); });
+                     } else if (typeof team.members === 'string') {
+                        try {
+                           const parsed = JSON.parse(team.members);
+                           if(Array.isArray(parsed)) parsed.forEach((id: any) => teamMemberIds.push(String(id)));
+                        } catch(e){}
+                     }
+                  });
+               }
+           }
+           teamMemberIds = [...new Set(teamMemberIds)]; // Unique keys
+           if (teamMemberIds.length > 0) {
+              query = query.in('agent_id', teamMemberIds);
+           }
+        }
+        // Level 3: Client Admin (Organization Wide)
+        else if (['ceo', 'developer'].includes(user.designation || '')) {
+            if (user.organization_id) {
+               // Filter by agent's organization_id (using the !inner join alias)
+               query = query.eq('agent.organization_id', user.organization_id);
+            } else {
+               // Fail secure
+               query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+            }
+        }
+      }
+      // Level 4: Internal Staff (!isClient) gets explicit Global Access (no filters added)
+
+      const { data, error: fetchError } = await query;
 
       if (fetchError) {
         if (fetchError.name === 'AbortError') return;
@@ -87,14 +145,16 @@ export function useActivityData() {
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [selectedDate]);
+  }, [selectedDate, user, mounted]);
 
   useEffect(() => {
-    fetchActivities();
+    if (mounted && user) {
+      fetchActivities();
+    }
     
     // Focus-based refetch
     const handleFocus = () => {
-      fetchActivities(true); // Fetch in background on focus
+       if (mounted && user) fetchActivities(true); // Fetch in background on focus
     };
     window.addEventListener("focus", handleFocus);
 
@@ -104,7 +164,7 @@ export function useActivityData() {
       }
       window.removeEventListener("focus", handleFocus);
     };
-  }, [fetchActivities]);
+  }, [fetchActivities, mounted, user]);
 
   const filteredActivities = useMemo(() => {
     const query = searchQuery.toLowerCase();

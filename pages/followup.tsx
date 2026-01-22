@@ -14,7 +14,7 @@ export default function FollowUp() {
     stats,
     fetchLeads,
     formatDate
-  } = useFollowUpLeads(user?.uid);
+  } = useFollowUpLeads();
 
 
 
