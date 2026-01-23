@@ -178,24 +178,11 @@ export default function Customer() {
     if (!mounted || !dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      const day = date.getDate();
-      const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      const month = monthNames[date.getMonth()];
+      if (isNaN(date.getTime())) return "N/A";
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
-      return `${day} ${month} ${year}`;
+      return `${day}/${month}/${year}`;
     } catch (error) {
       return "N/A";
     }

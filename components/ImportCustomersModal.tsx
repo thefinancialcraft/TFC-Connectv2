@@ -233,24 +233,66 @@ export default function ImportCustomersModal({
           let parsedExpiryDate: string | null = null;
           if (expiryDate) {
             try {
-              let dateStr = expiryDate.replace(/₹/g, "").trim();
-              const yearRegex = /\b(19|20)\d{2}\b/;
-              if (!yearRegex.test(dateStr)) {
-                const defaultYear = 2024; // Default to previous year as per original code logic
-                // Simple parser for common formats
-                const parts = dateStr.split(/[\s\-/]+/);
+              const cleanDate = expiryDate.replace(/₹/g, "").trim();
+              
+              // Helper to parse DD/MM/YYYY or DD/MM/YY
+              const parseDMY = (str: string) => {
+                const match = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+                if (match) {
+                  let d = match[1].padStart(2, '0');
+                  let m = match[2].padStart(2, '0');
+                  let y = match[3];
+                  if (y.length === 2) y = "20" + y;
+                  return `${y}-${m}-${d}`;
+                }
+                return null;
+              };
+
+              // Helper to parse YYYY-MM-DD
+              const parseYMD = (str: string) => {
+                const match = str.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
+                if (match) {
+                  let y = match[1];
+                  let m = match[2].padStart(2, '0');
+                  let d = match[3].padStart(2, '0');
+                  return `${y}-${m}-${d}`;
+                }
+                return null;
+              };
+              
+              const format1 = parseDMY(cleanDate);
+              const format2 = parseYMD(cleanDate);
+              
+              if (format1) {
+                parsedExpiryDate = format1;
+              } else if (format2) {
+                parsedExpiryDate = format2;
+              } else {
+                // Fallback for word-based months like "23 Jan 2024"
                 const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-                let d = "", m = "";
+                const parts = cleanDate.split(/[\s\-/]+/);
+                let d = "", m = "", y = "";
                 parts.forEach(p => {
                   const mIdx = months.findIndex(name => p.toLowerCase().startsWith(name));
                   if (mIdx !== -1) m = String(mIdx + 1).padStart(2, "0");
+                  else if (/^\d{4}$/.test(p)) y = p;
                   else if (/^\d{1,2}$/.test(p)) d = p.padStart(2, "0");
                 });
-                if (d && m) dateStr = `${defaultYear}-${m}-${d}`;
+                
+                if (d && m) {
+                  if (!y) y = new Date().getFullYear().toString();
+                  parsedExpiryDate = `${y}-${m}-${d}`;
+                } else {
+                  // Final fallback to native Date
+                  const date = new Date(cleanDate);
+                  if (!isNaN(date.getTime())) {
+                    parsedExpiryDate = date.toISOString().split("T")[0];
+                  }
+                }
               }
-              const date = new Date(dateStr);
-              if (!isNaN(date.getTime())) parsedExpiryDate = date.toISOString().split("T")[0];
-            } catch (e) {}
+            } catch (e) {
+              console.error("Date parsing error:", e);
+            }
           }
 
           customers.push({
