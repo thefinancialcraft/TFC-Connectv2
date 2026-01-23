@@ -525,6 +525,7 @@ export default function CallingPage() {
             setCallDuration(0);
             setIsCalling(false);
             setPostCall(false);
+            setLocalCallingStatus(null);
             setError("");
             
             fetchData();
@@ -1066,6 +1067,10 @@ export default function CallingPage() {
                     
                     // Redirect to the next lead automatically
                     console.log('[Disposition] Redirecting to next lead:', nextLeadId);
+                    
+                    // Reset calling status before redirect
+                    setLocalCallingStatus(null);
+                    
                     router.push(`/campaign/${effectiveCampaignId}/${nextLeadId}`);
                     // Note: useEffect will handle fetchData() for the new lead
                     setSaving(false);
@@ -1073,10 +1078,12 @@ export default function CallingPage() {
                 } else if (effectiveCampaignId) {
                     // No more leads or No user, go to dashboard
                     console.log('[Disposition] No more leads. Returning to campaign dashboard.');
+                    setLocalCallingStatus(null);
                     router.push(`/campaign/${effectiveCampaignId}`);
                     setSaving(false);
                     return;
                 } else {
+                    setLocalCallingStatus(null);
                     router.push('/campaign');
                     setSaving(false);
                     return;
@@ -1086,6 +1093,7 @@ export default function CallingPage() {
             // If we reached here, no automatic redirection happened (standard fallback or different flow)
             fetchData();
             setPostCall(false);
+            setLocalCallingStatus(null);
             setDisposition("");
             setSubDisposition("");
             setNotes("");
@@ -1363,63 +1371,61 @@ export default function CallingPage() {
                                     <div className="relative z-10 p-6 sm:p-10">
                                         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 text-center lg:text-left">
                                             
-                                            {/* LEFT: Branding & Status (Mobile: Centered) */}
-                                            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                                            {/* LEFT: Branding & Status */}
+                                            <div className="flex flex-col md:flex-row items-center gap-5 lg:gap-6 text-center md:text-left">
                                                 {/* Calling Hub Icon */}
-                                                <div className="relative">
-                                                    {/* Pulse animations only show when calling */}
+                                                <div className="relative shrink-0 group">
+                                                    {/* Pulse animations */}
                                                     {isCalling && (
-                                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%]">
+                                                        <>
                                                             <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-50" />
-                                                            <div className="absolute inset-4 rounded-full border border-white/10 animate-[ping_3s_linear_infinite] opacity-30" />
-                                                        </div>
+                                                            <div className="absolute inset-2 rounded-full border border-white/10 animate-[ping_3s_linear_infinite] opacity-30" />
+                                                        </>
                                                     )}
 
-                                                    <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] flex items-center justify-center transition-all duration-500 border ${
+                                                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg ${
                                                         isCalling 
-                                                        ? 'bg-white text-indigo-600 border-white/20 scale-105 rotate-2' 
-                                                        : 'bg-indigo-50 text-indigo-600 border-indigo-100'
+                                                        ? 'bg-white text-indigo-600 shadow-indigo-500/20 rotate-3 scale-105' 
+                                                        : 'bg-white text-indigo-500 shadow-indigo-100 group-hover:scale-105 group-hover:rotate-3'
                                                     }`}>
                                                         <i className={`fi flex fi-rr-${isCalling ? 'headset' : 'phone-call'} text-2xl sm:text-3xl`}></i>
                                                     </div>
 
-                                                    {/* Online Indicator */}
-                                                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-4 ${isCalling ? 'bg-emerald-400 border-indigo-600' : 'bg-indigo-600 border-white'} flex items-center justify-center shadow-md`}>
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                                    {/* Status Dot */}
+                                                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-[3px] border-white flex items-center justify-center shadow-sm ${
+                                                        isCalling ? 'bg-emerald-500' : 'bg-indigo-500'
+                                                    }`}>
+                                                        <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-1.5">
-                                                    <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
-                                                        <span className={`px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border ${
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-center md:justify-start gap-2">
+                                                        <div className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border flex items-center gap-1.5 ${
                                                             isCalling 
                                                             ? 'bg-white/10 text-white border-white/20' 
                                                             : 'bg-indigo-50 text-indigo-600 border-indigo-100'
                                                         }`}>
-                                                            {isCalling ? 'Live Session' : 'Standby Mode'}
-                                                        </span>
-                                                        <div className={`w-1 h-1 rounded-full ${isCalling ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+                                                            <div className={`w-1.5 h-1.5 rounded-full ${isCalling ? 'bg-emerald-400' : 'bg-slate-400'}`} />
+                                                            {isCalling ? 'Live Audio' : 'Ready'}
+                                                        </div>
                                                         <span className={`text-[9px] font-bold uppercase tracking-widest ${isCalling ? 'text-indigo-200' : 'text-slate-400'}`}>
-                                                            Encrypted Voice
+                                                            VoIP Secure
                                                         </span>
                                                     </div>
-                                                    <h4 className={`text-2xl sm:text-3xl font-black tracking-tight leading-tight ${isCalling ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                                        {localCallingStatus === 'preparing' 
-                                                            ? 'Preparing Call' 
-                                                            : localCallingStatus === 'connecting' 
-                                                            ? 'Connecting Call' 
-                                                            : isCalling 
-                                                            ? 'Call Active' 
-                                                            : postCall 
-                                                            ? 'Session Ended' 
-                                                            : 'Ready to Connect'}
+                                                    
+                                                    <h4 className={`text-xl sm:text-2xl font-bold tracking-tight ${isCalling ? 'text-white' : 'text-slate-900'}`}>
+                                                        {localCallingStatus === 'preparing' ? 'Preparing...' :
+                                                         localCallingStatus === 'connecting' ? 'Connecting...' :
+                                                         isCalling ? 'Call in Progress' :
+                                                         postCall ? 'Session Ended' : 
+                                                         'Ready to Call'}
                                                     </h4>
-                                                    <p className={`text-[11px] font-semibold opacity-70 ${isCalling ? 'text-indigo-100' : 'text-slate-400'}`}>
-                                                        {localCallingStatus === 'preparing' || localCallingStatus === 'connecting'
-                                                            ? 'System is establishing a secure connection to the native bridge...'
-                                                            : isCalling 
-                                                            ? 'System is transmitting secure digital voice data...' 
-                                                            : 'Waiting for operator to initiate lead engagement.'}
+                                                    
+                                                    <p className={`text-[11px] font-medium max-w-[200px] sm:max-w-md mx-auto md:mx-0 leading-relaxed ${isCalling ? 'text-indigo-100/80' : 'text-slate-400'}`}>
+                                                        {isCalling 
+                                                            ? 'Secure line established. Recording active.' 
+                                                            : 'Initiate connection to start assignment.'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -1437,7 +1443,7 @@ export default function CallingPage() {
                                                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-200">Session Time</p>
                                                             </div>
                                                         ) : (
-                                                            <div className="flex-1 lg:flex-none py-3 px-6 rounded-2xl bg-white/5 border border-white/10 text-center lg:text-right min-w-[140px]">
+                                                            <div className="flex-1 lg:flex h-14 py-3 px-6 rounded-2xl bg-white/5 border border-white/10 text-center lg:text-right min-w-[140px]">
                                                                 <div className="flex items-center justify-center lg:justify-end gap-2 text-white">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                                                                     <p className="text-xs font-black uppercase tracking-widest italic opacity-80">Establishing...</p>
@@ -1455,15 +1461,34 @@ export default function CallingPage() {
                                                         </button>
                                                     </div>
                                                 ) : !postCall ? (
-                                                    <button 
-                                                        onClick={handleStartCall}
-                                                        className="w-full sm:w-auto px-3 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
-                                                    >
-                                                        <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                                            <i className="fi flex fi-rr-phone-call text-sm"></i>
-                                                        </div>
-                                                        Initialize Connection
-                                                    </button>
+                                                    <div className="flex flex-row gap-3 w-full sm:w-auto">
+                                                        <button 
+                                                            onClick={handleStartCall}
+                                                            className="flex-1 sm:flex-none w-auto sm:w-auto px-6 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
+                                                        >
+                                                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                                                <i className="fi flex fi-rr-phone-call text-sm"></i>
+                                                            </div>
+                                                            <span className="whitespace-nowrap">Call Now</span>
+                                                        </button>
+
+                                                        <button 
+                                                            onClick={() => {
+                                                                if (customer?.phone_no) {
+                                                                    const cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                    window.open(`https://wa.me/${cleanNumber}`, '_blank');
+                                                                } else {
+                                                                    alert("No phone number available");
+                                                                }
+                                                            }}
+                                                            className="w-16 sm:w-auto px-0 sm:px-4 h-16 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group shrink-0"
+                                                            title="Chat on WhatsApp"
+                                                        >
+                                                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                                                <i className="fi flex fi-brands-whatsapp text-lg"></i>
+                                                            </div>
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <div className="px-6 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
                                                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

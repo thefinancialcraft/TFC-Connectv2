@@ -14,6 +14,10 @@ export default function Document() {
           rel="stylesheet"
           href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
         />
+        <link
+          rel="stylesheet"
+          href="https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css"
+        />
       </Head>
       <body>
         <Main />
