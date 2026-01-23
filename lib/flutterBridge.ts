@@ -172,6 +172,16 @@ export const updateSyncMetaCallingStatus = async (employeeId: string, callingSta
  */
 export const sendHeartbeat = async (employeeId: string) => {
   if (!employeeId) return;
+
+  // Retrieve android_id from localStorage (set by Header.tsx)
+  const androidId = typeof localStorage !== 'undefined' ? localStorage.getItem('android_id') : null;
+
+  if (!androidId) {
+      console.log("⚠️ [Heartbeat] No android_id found, skipping precise heartbeat.");
+      return;
+  }
+
+  const entryId = `${employeeId}_${androidId}`;
   
   try {
     const { error } = await supabase
@@ -179,7 +189,7 @@ export const sendHeartbeat = async (employeeId: string) => {
       .update({ 
         last_seen: new Date().toISOString()
       })
-      .eq('employee_id', employeeId)
+      .eq('entry_id', entryId)
       .eq('is_primary', true)
       .eq('status', 'connected');
 
@@ -188,3 +198,5 @@ export const sendHeartbeat = async (employeeId: string) => {
     console.error("❌ [Heartbeat] Error:", err);
   }
 };
+
+
