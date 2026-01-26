@@ -163,13 +163,20 @@ export function UserCard({
         >
           {user.user_name || "N/A"}
         </h3>
-        {/* Role - Desktop only (shown below name) */}
-        <p
-          className="hidden md:block text-xs text-gray-600 text-center"
+        {/* Role & Designation - Desktop only (shown below name) */}
+        <div
+          className="hidden mb-1 md:flex items-center justify-center text-xs text-gray-600 px-1"
           style={{ fontFamily: "'Roboto', sans-serif" }}
         >
-          {user.role || "Employee"}
-        </p>
+          <span>{user.role || "Employee"}</span>
+          {user.designation && (
+            <>
+              <span className="mx-1 text-gray-400 text-lg leading-none pt-0.5">•</span>
+              <span className="text-gray-500">{user.designation}</span>
+            </>
+          )}
+        </div>
+
         {(user.is_client || user.expire_at || user.is_caller) && (
           <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
             {user.is_client && (
@@ -190,15 +197,21 @@ export function UserCard({
         )}
       </div>
 
-      {/* Employee ID . Role - Mobile (one row with dot separator) */}
+      {/* Employee ID . Role . Designation - Mobile (one row with dot separator) */}
       <div className="text-center mb-2 md:mb-0">
         <div
-          className="text-[10px] font-medium flex items-center justify-center gap-1 md:hidden"
+          className="text-[10px] font-medium flex flex-wrap items-center justify-center gap-1 md:hidden"
           style={{ fontFamily: "'Roboto', sans-serif" }}
         >
           <span className="text-gray-700">{user.employee_id || "N/A"}</span>
-          <span className="text-gray-400">•</span>
+          <span className="text-gray-400 text-lg leading-none">•</span>
           <span className="text-gray-700">{user.role || "Employee"}</span>
+          {user.designation && (
+            <>
+              <span className="text-gray-400 text-lg leading-none">•</span>
+              <span className="text-gray-700">{user.designation}</span>
+            </>
+          )}
         </div>
       </div>
 

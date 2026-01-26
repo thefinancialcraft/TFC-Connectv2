@@ -14,6 +14,8 @@ import {
     PieChart, Pie, Legend
 } from 'recharts';
 import ImportCustomersModal from "../../components/ImportCustomersModal";
+import CampaignStatsGrid from "../../components/campaign/CampaignStatsGrid";
+import CampaignHeader from "../../components/campaign/CampaignHeader";
 
 interface Campaign {
     id: string;
@@ -28,6 +30,11 @@ interface Campaign {
     users?: { id: string, name: string, email: string, employee_id?: string }[];
     organization_id?: string | null;
     organizations?: { id: string, company_name: string, org_code: string } | null;
+    ishourlyactivitywidgevisible?: boolean;
+    istopagentvwidgetvisible?: boolean;
+    iscalloutcomeswidgetvisible?: boolean;
+    isaddbulkbuttonvisible?: boolean;
+    isaddleadbuttonvisible?: boolean;
 }
 
 interface CampaignStats {
@@ -176,58 +183,67 @@ export default function CampaignDetails() {
             setCampaign(campaignData);
 
             const now = new Date().toISOString();
-
-            // 2. Fetch Stats
-            // Total Customers
-            const { count: totalCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id);
-
-            // Follow-up Count
-            const { count: followupCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .eq('status', 'followup');
-
-            // Overdue Count (Followup + Expiry Date < Now)
-            const { count: overdueCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .eq('status', 'followup')
-                .lt('expiry_date', now);
-
-            // Fresh Prospects (Not assigned to any user)
-            const { count: freshCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .is('assigned_to', null);
-
-            // Upcoming Prospects (Followup + Expiry Date >= Now)
-            const { count: upcomingCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .eq('status', 'followup')
-                .gte('expiry_date', now);
-
-            // Recent Activity Count (Last 24h)
             const twentyFourHoursAgoCount = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            const { count: recentCount } = await supabase
-                .from('call_logs')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .gte('created_at', twentyFourHoursAgoCount);
 
-            // Managed Count (Managed By is not null)
-            const { count: managedCount } = await supabase
-                .from('customers')
-                .select('*', { count: 'exact', head: true })
-                .eq('campaign_id', id)
-                .not('managed_by', 'is', null);
+            // 2. Fetch Stats & Analytics in Parallel
+            // Determine user constraints
+            const isLevel1User = user?.isClient === true && user?.designation?.toLowerCase() === 'agent';
+            const userId = user?.uid;
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+            // Prepare Queries based on User Level
+            // Total Customers
+            let qTotal = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id);
+            if (isLevel1User && userId) qTotal = qTotal.eq('assigned_to', userId);
+
+            // Follow-ups
+            let qFollowup = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup');
+            if (isLevel1User && userId) qFollowup = qFollowup.eq('assigned_to', userId);
+
+            // Overdue
+            let qOverdue = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup').lt('expiry_date', now);
+            if (isLevel1User && userId) qOverdue = qOverdue.eq('assigned_to', userId);
+
+            // Upcoming
+            let qUpcoming = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup').gte('expiry_date', now);
+            if (isLevel1User && userId) qUpcoming = qUpcoming.eq('assigned_to', userId);
+
+            // Managed
+            let qManaged = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).not('managed_by', 'is', null);
+            if (isLevel1User && userId) qManaged = qManaged.eq('assigned_to', userId); // OR managed_by if they were managers, but for Agents it's assigned_to
+            
+            // Recent (Calls made by specific user if L1)
+            let qRecentCount = supabase.from('call_logs').select('*', { count: 'exact', head: true }).eq('campaign_id', id).gte('created_at', twentyFourHoursAgoCount);
+            if (isLevel1User && userId) qRecentCount = qRecentCount.eq('agent_id', userId);
+
+            // Analytics (Always fetch so breakdown tables work for everyone)
+            const analyticsPromise = supabase.rpc('get_campaign_analytics', { campaign_id_input: id });
+            
+            const [
+                { count: totalCount },
+                { count: followupCount },
+                { count: overdueCount },
+                { count: freshCount },
+                { count: upcomingCount },
+                { count: recentCount },
+                { count: managedCount },
+                analyticsResponse,
+                todayStatsResponse
+            ] = await Promise.all([
+                qTotal,
+                qFollowup,
+                qOverdue,
+                supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).is('assigned_to', null), // Fresh is always unassigned
+                qUpcoming,
+                qRecentCount,
+                qManaged,
+                analyticsPromise,
+                supabase.from('call_logs')
+                    .select('duration, created_at, is_connected, disposition, sub_disposition, agent_id')
+                    .eq('campaign_id', id)
+                    .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
+                    .match(isLevel1User && userId ? { agent_id: userId } : {})
+            ]);
 
             setStats({
                 totalCustomers: totalCount || 0,
@@ -239,14 +255,43 @@ export default function CampaignDetails() {
                 managedCount: managedCount || 0
             });
 
-            // 2.5 Fetch Analytics (RPC)
-            // Use Supabase RPC to fetch aggregated analytics data
-            // We'll use a simple `any` cast if the type definition isn't updated yet in the library
-            const { data: analyticsResult, error: analyticsError } = await supabase
-                .rpc('get_campaign_analytics', { campaign_id_input: id });
+            // Process Analytics
+            const { data: analyticsResult, error: analyticsError } = analyticsResponse;
+            const { data: todayStatsData } = todayStatsResponse;
 
-            if (!analyticsError && analyticsResult) {
-                // Ensure data structure matches
+            if (isLevel1User && todayStatsData) {
+                // Calculate Hourly Stats for the specific Agent
+                const hoursMap: Record<number, any> = {};
+                todayStatsData.forEach((log: any) => {
+                    const hour = new Date(log.created_at).getHours();
+                    if (!hoursMap[hour]) {
+                        hoursMap[hour] = { 
+                            hour, total_calls: 0, connected_calls: 0, outgoing_calls: 0, 
+                            incoming_calls: 0, missed_calls: 0, total_duration: 0 
+                        };
+                    }
+                    hoursMap[hour].total_calls++;
+                    if (log.is_connected) hoursMap[hour].connected_calls++;
+                    hoursMap[hour].total_duration += (log.duration || 0);
+                });
+
+                const myHourlyDetailed = Object.values(hoursMap).sort((a: any, b: any) => a.hour - b.hour);
+                const myHourlyCalls = myHourlyDetailed.map(h => ({ hour: h.hour, count: h.total_calls }));
+
+                // Filter Caller Performance for current user
+                const myCallerPerformance = (analyticsResult?.caller_performance || []).filter((row: any) => 
+                    (user?.employeeId && row.employee_id === user.employeeId) || 
+                    (user?.displayName && row.caller && row.caller.toLowerCase() === user.displayName.toLowerCase())
+                );
+
+                setAnalytics({
+                    hourly_calls: myHourlyCalls,
+                    agent_performance: (analyticsResult?.agent_performance || []).filter((row: any) => row.employee_id === user?.employeeId),
+                    disposition_stats: analyticsResult?.disposition_stats || [], // Group-by on frontend would be better but keeping it simple
+                    hourly_detailed: myHourlyDetailed,
+                    caller_performance: myCallerPerformance
+                });
+            } else if (!analyticsError && analyticsResult) {
                 setAnalytics({
                     hourly_calls: analyticsResult.hourly_calls || [],
                     agent_performance: analyticsResult.agent_performance || [],
@@ -254,17 +299,12 @@ export default function CampaignDetails() {
                     hourly_detailed: analyticsResult.hourly_detailed || [],
                     caller_performance: analyticsResult.caller_performance || []
                 });
-            } else {
-                console.error("Analytics fetch error:", analyticsError);
+            } else if (analyticsError) {
+                 console.error("Analytics fetch error:", analyticsError);
             }
 
-            // 2.6 Fetch Today's Campaign Stats (Talk Time & Total Dials)
-            const { data: todayStats } = await supabase
-                .from('call_logs')
-                .select('duration')
-                .eq('campaign_id', id)
-                .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
-
+            // Process Campaign Stats
+            const todayStats = todayStatsData;
             if (todayStats) {
                 const totalDuration = todayStats.reduce((sum, log) => sum + (log.duration || 0), 0);
                 const hours = Math.floor(totalDuration / 3600);
@@ -275,89 +315,98 @@ export default function CampaignDetails() {
                 });
             }
 
-            // 3. Fetch Tile Data (Recent, Overdue, Upcoming)
-            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-            
-            // a. Recent Calls (Limit 3)
-            const { data: recentData } = await supabase
-                .from('call_logs')
-                .select(`
-                    id, 
-                    disposition, 
-                    sub_disposition,
-                    created_at, 
-                    customer_id,
-                    customers (customer_name, expiry_date)
-                `)
-                .eq('campaign_id', id)
-                .gte('created_at', twentyFourHoursAgo)
-                .order('created_at', { ascending: false })
-                .limit(3);
-            setRecentCalls(recentData || []);
+            // 3. Fetch Tile Data (Recent, Overdue, Upcoming, Managed) in Parallel
+            // Prepare Tile Queries
+            let qRecentLogs = supabase.from('call_logs').select(`id, disposition, sub_disposition, created_at, agent_id, customer_id, customers (customer_name, expiry_date)`).eq('campaign_id', id).gte('created_at', twentyFourHoursAgo).order('created_at', { ascending: false }).limit(3);
+            if (isLevel1User && userId) qRecentLogs = qRecentLogs.eq('agent_id', userId);
 
-            // b. Overdue (Limit 3)
-            const { data: overdueData } = await supabase
-                .from('customers')
-                .select('id, customer_name, disposition, sub_disposition, expiry_date')
-                .eq('campaign_id', id)
-                .eq('status', 'followup')
-                .lt('expiry_date', now)
-                .order('expiry_date', { ascending: true })
-                .limit(3);
-            setOverdueLeads(overdueData || []);
+            let qOverdueLeads = supabase.from('customers').select('id, customer_name, disposition, sub_disposition, expiry_date, assigned_to, managed_by').eq('campaign_id', id).eq('status', 'followup').lt('expiry_date', now).order('expiry_date', { ascending: true }).limit(3);
+            if (isLevel1User && userId) qOverdueLeads = qOverdueLeads.eq('assigned_to', userId);
 
-            // c. Upcoming (Limit 3)
-            const { data: upcomingData } = await supabase
-                .from('customers')
-                .select('id, customer_name, disposition, sub_disposition, expiry_date')
-                .eq('campaign_id', id)
-                .eq('status', 'followup')
-                .gte('expiry_date', now)
-                .order('expiry_date', { ascending: true })
-                .limit(3);
-            setUpcomingLeads(upcomingData || []);
+            let qUpcomingLeads = supabase.from('customers').select('id, customer_name, disposition, sub_disposition, expiry_date, assigned_to, managed_by').eq('campaign_id', id).eq('status', 'followup').gte('expiry_date', now).order('expiry_date', { ascending: true }).limit(3);
+            if (isLevel1User && userId) qUpcomingLeads = qUpcomingLeads.eq('assigned_to', userId);
 
-            // d. Managed Leads (Limit 3)
-            const { data: managedData } = await supabase
-                .from('customers')
-                .select('id, customer_name, managed_by, assigned_to')
-                .eq('campaign_id', id)
-                .not('managed_by', 'is', null)
-                .order('created_at', { ascending: false })
-                .limit(3);
+            let qManagedLeads = supabase.from('customers').select('id, customer_name, managed_by, assigned_to').eq('campaign_id', id).not('managed_by', 'is', null).order('created_at', { ascending: false }).limit(3);
+            if (isLevel1User && userId) qManagedLeads = qManagedLeads.eq('assigned_to', userId);
 
-            // Fetch manager and agent names for these leads
-            let enrichedManagedLeads: any[] = [];
-            if (managedData && managedData.length > 0) {
-                const userIds = [
-                    ...new Set([
-                        ...managedData.map((d: any) => d.managed_by),
-                        ...managedData.map((d: any) => d.assigned_to)
-                    ])
-                ].filter(Boolean);
-                
-                // Fetch profiles where either user_id OR id matches
-                const { data: userProfiles } = await supabase
+            const [recentRes, overdueRes, upcomingRes, managedRes] = await Promise.all([
+                 qRecentLogs,
+                 qOverdueLeads,
+                 qUpcomingLeads,
+                 qManagedLeads
+            ]);
+
+            const recentData = recentRes.data || [];
+            const overdueData = overdueRes.data || [];
+            const upcomingData = upcomingRes.data || [];
+            const managedData = managedRes.data || [];
+
+            // 4. Collect all User IDs for enrichment
+            const allTileUserIds = [
+                ...new Set([
+                    ...recentData.map((d: any) => d.agent_id),
+                    ...overdueData.map((d: any) => d.assigned_to),
+                    ...overdueData.map((d: any) => d.managed_by),
+                    ...upcomingData.map((d: any) => d.assigned_to),
+                    ...upcomingData.map((d: any) => d.managed_by),
+                    ...managedData.map((d: any) => d.managed_by),
+                    ...managedData.map((d: any) => d.assigned_to)
+                ])
+            ].filter(Boolean);
+
+            let userProfiles: any[] = [];
+            if (allTileUserIds.length > 0) {
+                const { data: profiles } = await supabase
                     .from('user_profiles')
                     .select('id, user_id, user_name, employee_id')
-                    .or(`user_id.in.(${userIds.join(',')}),id.in.(${userIds.join(',')})`);
-                
-                enrichedManagedLeads = managedData.map((lead: any) => {
-                    // Resolve Manager
-                    const manager = userProfiles?.find((p: any) => p.user_id === lead.managed_by || p.id === lead.managed_by);
-                    // Resolve Agent
-                    const agent = userProfiles?.find((p: any) => p.user_id === lead.assigned_to || p.id === lead.assigned_to);
-
-                    return {
-                        ...lead,
-                        manager_name: manager?.user_name || 'Unknown',
-                        manager_emp_id: manager?.employee_id || 'N/A',
-                        agent_name: agent?.user_name || 'Unassigned',
-                        agent_emp_id: agent?.employee_id || '—'
-                    };
-                });
+                    .or(`user_id.in.(${allTileUserIds.join(',')}),id.in.(${allTileUserIds.join(',')})`);
+                userProfiles = profiles || [];
             }
-            setManagedLeads(enrichedManagedLeads);
+
+            const findUser = (id: string) => userProfiles.find((p: any) => p.user_id === id || p.id === id);
+
+            // Enrich Recent Calls
+            setRecentCalls(recentData.map((log: any) => {
+                const caller = findUser(log.agent_id);
+                return {
+                    ...log,
+                    caller_name: caller?.user_name || 'System',
+                    caller_emp_id: caller?.employee_id || 'N/A'
+                };
+            }));
+
+            // Enrich Overdue
+            setOverdueLeads(overdueData.map((lead: any) => {
+                const agent = findUser(lead.assigned_to);
+                return {
+                    ...lead,
+                    agent_name: agent?.user_name || 'Unassigned',
+                    agent_emp_id: agent?.employee_id || '—'
+                };
+            }));
+
+            // Enrich Upcoming
+            setUpcomingLeads(upcomingData.map((lead: any) => {
+                const agent = findUser(lead.assigned_to);
+                return {
+                    ...lead,
+                    agent_name: agent?.user_name || 'Unassigned',
+                    agent_emp_id: agent?.employee_id || '—'
+                };
+            }));
+            
+            // Enrich Managed Leads
+            setManagedLeads(managedData.map((lead: any) => {
+                const manager = findUser(lead.managed_by);
+                const agent = findUser(lead.assigned_to);
+                return {
+                    ...lead,
+                    manager_name: manager?.user_name || 'Unknown',
+                    manager_emp_id: manager?.employee_id || 'N/A',
+                    agent_name: agent?.user_name || 'Unassigned',
+                    agent_emp_id: agent?.employee_id || '—'
+                };
+            }));
 
             // 2. Fetch Leads
             fetchLeads();
@@ -369,6 +418,8 @@ export default function CampaignDetails() {
             setLoading(false);
         }
     };
+
+    const isLevel1User = user?.isClient === true && user?.designation?.toLowerCase() === 'agent';
 
     const fetchLeads = async (pageOverride?: number) => {
         if (!id) return;
@@ -384,6 +435,10 @@ export default function CampaignDetails() {
                 .select('*', { count: 'exact', head: true })
                 .eq('campaign_id', id);
             
+            if (isLevel1User && user?.uid) {
+                countQuery = countQuery.eq('assigned_to', user.uid);
+            }
+
             if (searchQuery) {
                 countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
             }
@@ -400,6 +455,10 @@ export default function CampaignDetails() {
                 .from('customers')
                 .select('*')
                 .eq('campaign_id', id);
+
+            if (isLevel1User && user?.uid) {
+                dataQuery = dataQuery.eq('assigned_to', user.uid);
+            }
 
             if (searchQuery) {
                 dataQuery = dataQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
@@ -670,445 +729,277 @@ export default function CampaignDetails() {
                         </div>
 
                         {/* Top Banner */}
-                        <div className="relative overflow-hidden rounded-3xl bg-white p-6 md:p-8 shadow-sm border border-gray-100 mb-8 group">
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-700"  />
-                            <div className="absolute top-0 right-0 p-8 opacity-[0.03] transform group-hover:scale-110 transition-transform duration-700">
-                                <i className="fi flex fi-rr-megaphone text-9xl"></i>
-                            </div>
-
-                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                <div className="max-w-3xl">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#4b33e8] shadow-sm">
-                                            <i className="fi flex fi-rr-megaphone text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h1 className="text-xl  md:text-xl   font-black text-gray-800" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>
-                                                {campaign?.name}
-                                            </h1>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${campaign?.status === 'active' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-orange-100 text-orange-700 border border-orange-200'
-                                                    }`}>
-                                                    {campaign?.status}
-                                                </span>
-                                                <div className="w-1 h-1 rounded-full bg-gray-300 mx-1"></div>
-                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Campaign ID: <span className="text-gray-600">{id}</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-500 text-sm leading-relaxed mb-6 font-medium">
-                                        {campaign?.description || 'No description provided for this campaign.'}
-                                    </p>
-                                    <div className="flex flex-wrap items-center gap-6">
-                                        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
-                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-                                                <i className="fi flex fi-rr-calendar"></i>
-                                            </div>
-                                            <span>Created: {campaign?.created_at ? new Date(campaign.created_at).toLocaleDateString() : 'N/A'}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
-                                            <div className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-                                                <i className="fi flex fi-rr-user"></i>
-                                            </div>
-                                            <span>Creator: {campaign?.created_by || 'System'} {campaign?.employee_id ? `(#${campaign.employee_id})` : ''}</span>
-                                        </div>
-                                        {campaign?.organizations && (
-                                            <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-tight">
-                                                <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                                    <i className="fi flex fi-rr-building"></i>
-                                                </div>
-                                                <span className="text-blue-600">Org: {campaign.organizations.company_name} {campaign.organizations.org_code ? `(${campaign.organizations.org_code})` : ''}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-wrap gap-4 items-center self-start lg:self-center">
-                                    {/* Talk Time Tile */}
-                                    <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm transition-transform hover:scale-110">
-                                            <i className="fi flex fi-rr-microphone-alt text-base"></i>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Talk Time</span>
-                                            <span className="text-base font-black text-gray-800 leading-none">{campaignStats.talkTime}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Dials Tile */}
-                                    <div className="flex items-center gap-3 bg-white px-5 py-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                                        <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shadow-sm transition-transform hover:scale-110">
-                                            <i className="fi flex fi-rr-phone-call text-base"></i>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1.5">Total Dials</span>
-                                            <span className="text-base font-black text-gray-800 leading-none">{campaignStats.totalDials}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Start Calling Tile */}
-                                    <button
-                                        onClick={handleStartCalling}
-                                        disabled={calling}
-                                        className={`flex items-center gap-4 px-7 py-4 rounded-2xl border border-white/10 shadow-xl shadow-indigo-200/50 transition-all hover:scale-[1.03] active:scale-95 group/btn relative overflow-hidden h-18 ${calling ? 'opacity-80' : ''}`}
-                                        style={{
-                                            background: 'linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)'
-                                        }}
-                                    >
-                                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
-                                        
-                                        <div className="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover/btn:bg-white/30 transition-colors shadow-sm ring-1 ring-white/30">
-                                            {calling ? (
-                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            ) : (
-                                                <i className="fi flex fi-rr-play text-sm ml-0.5"></i>
-                                            )}
-                                        </div>
-                                        <div className="relative z-10 flex flex-col items-start translate-y-[1px]">
-                                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mb-1.5">{calling ? 'Assigning...' : 'Mission'}</span>
-                                            <span className="text-base font-black text-white leading-none">{calling ? 'Finding Lead' : 'Start Calling'}</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <CampaignHeader 
+                            id={id}
+                            campaign={campaign}
+                            campaignStats={campaignStats}
+                            calling={calling}
+                            onStartCalling={handleStartCalling}
+                        />
 
                            {/* Stats Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 mb-8">
-                            {/* Total Leads */}
-                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
-                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(59, 130, 246, 0.12), transparent 60%)" }}></div>
-                                <div className="absolute -right-2 -bottom-2">
-                                    <i className="fi flex fi-rr-users text-5xl" style={{ color: "#3b82f6", opacity: 0.15 }}></i>
-                                </div>
-                                <div className="relative flex flex-col h-full z-10">
-                                    <div className="flex items-start justify-between mb-auto">
-                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Total Leads</p>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.totalCustomers}</p>
-                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Assigned to campaign</p>
-                                    </div>
-                                </div>
+                        <CampaignStatsGrid stats={stats} />
+
+                        {/* ANALYTICS SECTION - Hidden for Level 1 Users */}
+                        {!isLevel1User && (
+                        <>
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                                 {/* 1. Hourly Activity (Area Chart) */}
+                                 {campaign?.ishourlyactivitywidgevisible && (
+                                     <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
+                                         expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
+                                     }`}>
+                                         <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                             <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
+                                             Hourly Activity (Today)
+                                         </h3>
+                                         <div className="flex-1 w-full min-h-0">
+                                             <ResponsiveContainer width="100%" height="100%">
+                                                 <AreaChart data={analytics.hourly_calls}>
+                                                     <defs>
+                                                         <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                                             <stop offset="5%" stopColor="#4b33e8" stopOpacity={0.3}/>
+                                                             <stop offset="95%" stopColor="#4b33e8" stopOpacity={0}/>
+                                                         </linearGradient>
+                                                     </defs>
+                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                                     <XAxis 
+                                                         dataKey="hour" 
+                                                         tick={{fontSize: 10, fill: '#9ca3af'}} 
+                                                         axisLine={false}
+                                                         tickLine={false}
+                                                         tickFormatter={(tick) => `${tick}:00`}
+                                                     />
+                                                     <YAxis hide />
+                                                     <Tooltip 
+                                                         contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                                                         labelStyle={{color: '#6b7280', fontSize: '10px', fontWeight: 'bold'}}
+                                                     />
+                                                     <Area 
+                                                         type="monotone" 
+                                                         dataKey="count" 
+                                                         stroke="#4b33e8" 
+                                                         strokeWidth={3}
+                                                         fillOpacity={1} 
+                                                         fill="url(#colorCount)" 
+                                                     />
+                                                 </AreaChart>
+                                             </ResponsiveContainer>
+                                         </div>
+                                         <button 
+                                             onClick={() => setExpandedChart(expandedChart === 'hourly' ? null : 'hourly')}
+                                             className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
+                                         >
+                                             <i className={`fi ${expandedChart === 'hourly' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
+                                         </button>
+                                     </div>
+                                 )}
+
+                                {/* 2. Agent Performance (Bar Chart) */}
+                                 {campaign?.istopagentvwidgetvisible && (
+                                     <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
+                                         expandedChart === 'users' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
+                                     }`}>
+                                         <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                             <i className="fi fi-rr-trophy text-yellow-500"></i>
+                                             Top Agents (Today)
+                                         </h3>
+                                         <div className="flex-1 w-full min-h-0">
+                                             <ResponsiveContainer width="100%" height="100%">
+                                                 <BarChart 
+                                                     data={analytics.agent_performance
+                                                         .filter(row => 
+                                                             campaign?.users?.some(u => 
+                                                                 (u.employee_id && u.employee_id === row.employee_id) || 
+                                                                 (u.name && u.name.toLowerCase() === row.name.toLowerCase())
+                                                             )
+                                                         )
+                                                         .slice(0, expandedChart === 'users' ? 20 : 5)} 
+                                                     layout="vertical"
+                                                     barSize={12}
+                                                     margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                                                 >
+                                                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                                                     <XAxis type="number" hide />
+                                                     <YAxis 
+                                                         dataKey="name" 
+                                                         type="category" 
+                                                         tick={{fontSize: 10, fill: '#4b5563', fontWeight: 600}} 
+                                                         width={60}
+                                                         axisLine={false}
+                                                         tickLine={false}
+                                                         tickFormatter={(val) => val.split(' ')[0]} 
+                                                     />
+                                                     <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}}/>
+                                                     <Bar dataKey="calls" fill="#00C49F" radius={[0, 4, 4, 0]} background={{ fill: '#f9fafb', radius: 4 }} />
+                                                 </BarChart>
+                                             </ResponsiveContainer>
+                                         </div>
+                                         <button 
+                                             onClick={() => setExpandedChart(expandedChart === 'users' ? null : 'users')}
+                                             className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
+                                         >
+                                             <i className={`fi ${expandedChart === 'users' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
+                                         </button>
+                                     </div>
+                                 )}
+
+                                {/* 3. Outcomes (Pie Chart) */}
+                                 {campaign?.iscalloutcomeswidgetvisible && (
+                                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 col-span-1 lg:col-span-1 flex flex-col h-[300px]">
+                                         <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                             <i className="fi fi-rr-pie-chart text-pink-500"></i>
+                                             Call Outcomes
+                                         </h3>
+                                         <div className="flex-1 w-full min-h-0 relative">
+                                             <ResponsiveContainer width="100%" height="100%">
+                                                 <PieChart>
+                                                     <Pie
+                                                         data={analytics.disposition_stats}
+                                                         cx="50%"
+                                                         cy="50%"
+                                                         innerRadius={60}
+                                                         outerRadius={80}
+                                                         paddingAngle={5}
+                                                         dataKey="value"
+                                                     >
+                                                         {analytics.disposition_stats.map((entry, index) => (
+                                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
+                                                         ))}
+                                                     </Pie>
+                                                     <Tooltip contentStyle={{borderRadius: '8px'}} />
+                                                     <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" iconSize={8} wrapperStyle={{fontSize: '10px'}} />
+                                                 </PieChart>
+                                             </ResponsiveContainer>
+                                             {/* Center Label */}
+                                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none pr-14">
+                                                 <div className="text-center">
+                                                     <span className="text-xs text-gray-400 font-bold block">TOTAL</span>
+                                                     <span className="text-xl font-black text-gray-800">
+                                                         {analytics.disposition_stats.reduce((acc, curr) => acc + curr.value, 0)}
+                                                     </span>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 )}
                             </div>
+                        </>
+                        )}
 
-                            {/* Fresh Prospects */}
-                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
-                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(139, 92, 246, 0.12), transparent 60%)" }}></div>
-                                <div className="absolute -right-2 -bottom-2">
-                                    <i className="fi flex fi-rr-bulb text-5xl" style={{ color: "#8b5cf6", opacity: 0.15 }}></i>
+                        {/* Performance Breakdown Tables - Visible to All */}
+                        <div className="space-y-8 mb-8">
+                             {/* Detailed Hourly Analytics Table */}
+                             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                                <div className="p-6 border-b border-gray-50">
+                                        <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                            <i className="fi fi-rr-time-check text-[#4b33e8]"></i>
+                                            Hourly Performance Breakdown
+                                        </h3>
                                 </div>
-                                <div className="relative flex flex-col h-full z-10">
-                                    <div className="flex items-start justify-between mb-auto">
-                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Fresh</p>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.freshProspects}</p>
-                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Not yet assigned</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Follow-ups */}
-                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
-                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(249, 115, 22, 0.12), transparent 60%)" }}></div>
-                                <div className="absolute -right-2 -bottom-2">
-                                    <i className="fi flex fi-rr-phone-call text-5xl" style={{ color: "#f97316", opacity: 0.15 }}></i>
-                                </div>
-                                <div className="relative flex flex-col h-full z-10">
-                                    <div className="flex items-start justify-between mb-auto">
-                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Follow-ups</p>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.followupCount}</p>
-                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Pending action</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Upcoming */}
-                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
-                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(16, 185, 129, 0.12), transparent 60%)" }}></div>
-                                <div className="absolute -right-2 -bottom-2">
-                                    <i className="fi flex fi-rr-calendar-clock text-5xl" style={{ color: "#10b981", opacity: 0.15 }}></i>
-                                </div>
-                                <div className="relative flex flex-col h-full z-10">
-                                    <div className="flex items-start justify-between mb-auto">
-                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Upcoming</p>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-xl   sm:text-4xl font-semibold" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.upcomingProspects}</p>
-                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-[#787E9D]">Scheduled leads</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Overdue */}
-                            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-32 sm:h-38 bg-white border border-gray-100">
-                                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at right top, rgba(185, 22, 16, 0.12), transparent 60%)" }}></div>
-                                <div className="absolute -right-2 -bottom-2">
-                                    <i className="fi flex fi-rr-time-watch-calendar text-5xl" style={{ color: "#ef4444", opacity: 0.15 }}></i>
-                                </div>
-                                <div className="relative flex flex-col h-full z-10">
-                                    <div className="flex items-start justify-between mb-auto">
-                                        <p className="text-xs sm:text-sm font-medium" style={{color: "#787E9D", fontFamily: "'Roboto', sans-serif"  }}>Overdue</p>
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-xl   sm:text-4xl font-semibold text-red-600" style={{color: "#263238", fontFamily: "'Poppins', sans-serif"  }}>{stats.overdueCount}</p>
-                                        <p className="text-[10px] sm:text-[11px] mt-1 font-bold text-red-400">Past due date</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        {/* ANALYTICS SECTION */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                            {/* 1. Hourly Activity (Area Chart) */}
-                            <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
-                                expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
-                            }`}>
-                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                    <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
-                                    Hourly Activity (Today)
-                                </h3>
-                                <div className="flex-1 w-full min-h-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={analytics.hourly_calls}>
-                                            <defs>
-                                                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#4b33e8" stopOpacity={0.3}/>
-                                                    <stop offset="95%" stopColor="#4b33e8" stopOpacity={0}/>
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                            <XAxis 
-                                                dataKey="hour" 
-                                                tick={{fontSize: 10, fill: '#9ca3af'}} 
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tickFormatter={(tick) => `${tick}:00`}
-                                            />
-                                            <YAxis hide />
-                                            <Tooltip 
-                                                contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                                                labelStyle={{color: '#6b7280', fontSize: '10px', fontWeight: 'bold'}}
-                                            />
-                                            <Area 
-                                                type="monotone" 
-                                                dataKey="count" 
-                                                stroke="#4b33e8" 
-                                                strokeWidth={3}
-                                                fillOpacity={1} 
-                                                fill="url(#colorCount)" 
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <button 
-                                    onClick={() => setExpandedChart(expandedChart === 'hourly' ? null : 'hourly')}
-                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
-                                >
-                                    <i className={`fi ${expandedChart === 'hourly' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
-                                </button>
-                            </div>
-
-                            {/* 2. Agent Performance (Bar Chart) */}
-                            <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
-                                expandedChart === 'users' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
-                            }`}>
-                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                    <i className="fi fi-rr-trophy text-yellow-500"></i>
-                                    Top Agents (Today)
-                                </h3>
-                                <div className="flex-1 w-full min-h-0">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart 
-                                            data={analytics.agent_performance
-                                                .filter(row => 
-                                                    campaign?.users?.some(u => 
-                                                        (u.employee_id && u.employee_id === row.employee_id) || 
-                                                        (u.name && u.name.toLowerCase() === row.name.toLowerCase())
-                                                    )
-                                                )
-                                                .slice(0, expandedChart === 'users' ? 20 : 5)} 
-                                            layout="vertical"
-                                            barSize={12}
-                                            margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
-                                        >
-                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
-                                            <XAxis type="number" hide />
-                                            <YAxis 
-                                                dataKey="name" 
-                                                type="category" 
-                                                tick={{fontSize: 10, fill: '#4b5563', fontWeight: 600}} 
-                                                width={60}
-                                                axisLine={false}
-                                                tickLine={false}
-                                                tickFormatter={(val) => val.split(' ')[0]} 
-                                            />
-                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '8px'}}/>
-                                            <Bar dataKey="calls" fill="#00C49F" radius={[0, 4, 4, 0]} background={{ fill: '#f9fafb', radius: 4 }} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <button 
-                                    onClick={() => setExpandedChart(expandedChart === 'users' ? null : 'users')}
-                                    className="absolute bottom-4 right-4 text-gray-400 hover:text-[#4b33e8] transition-colors p-2 hover:bg-gray-50 rounded-lg"
-                                >
-                                    <i className={`fi ${expandedChart === 'users' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`}></i>
-                                </button>
-                            </div>
-
-                            {/* 3. Outcomes (Pie Chart) */}
-                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 col-span-1 lg:col-span-1 flex flex-col h-[300px]">
-                                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                    <i className="fi fi-rr-pie-chart text-pink-500"></i>
-                                    Call Outcomes
-                                </h3>
-                                <div className="flex-1 w-full min-h-0 relative">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={analytics.disposition_stats}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={60}
-                                                outerRadius={80}
-                                                paddingAngle={5}
-                                                dataKey="value"
-                                            >
-                                                {analytics.disposition_stats.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip contentStyle={{borderRadius: '8px'}} />
-                                            <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" iconSize={8} wrapperStyle={{fontSize: '10px'}} />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                    {/* Center Label */}
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none pr-14">
-                                        <div className="text-center">
-                                            <span className="text-xs text-gray-400 font-bold block">TOTAL</span>
-                                            <span className="text-xl font-black text-gray-800">
-                                                {analytics.disposition_stats.reduce((acc, curr) => acc + curr.value, 0)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Detailed Hourly Analytics Table */}
-                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
-                           <div className="p-6 border-b border-gray-50">
-                                <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                                    <i className="fi fi-rr-time-check text-[#4b33e8]"></i>
-                                    Hourly Performance Breakdown
-                                </h3>
-                           </div>
-                           <div className="overflow-x-auto">
-                               <table className="w-full text-left">
-                                   <thead className="bg-[#f9fafb]">
-                                       <tr>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hour</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
-                                       </tr>
-                                   </thead>
-                                   <tbody className="divide-y divide-gray-50">
-                                       {analytics.hourly_detailed.length > 0 ? (
-                                            analytics.hourly_detailed.map((row, index) => (
-                                                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-6 py-4 text-xs font-bold text-gray-700">
-                                                        Time - {row.hour % 12 === 0 ? 12 : row.hour % 12} {row.hour >= 12 ? 'pm' : 'am'}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">
-                                                        {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-[#f9fafb]">
+                                            <tr>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hour</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {analytics.hourly_detailed.length > 0 ? (
+                                                    analytics.hourly_detailed.map((row, index) => (
+                                                        <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                                            <td className="px-6 py-4 text-xs font-bold text-gray-700">
+                                                                Time - {row.hour % 12 === 0 ? 12 : row.hour % 12} {row.hour >= 12 ? 'pm' : 'am'}
+                                                            </td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">
+                                                                {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
+                                                        No data available for today
                                                     </td>
                                                 </tr>
-                                            ))
-                                       ) : (
-                                           <tr>
-                                               <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
-                                                   No data available for today
-                                               </td>
-                                           </tr>
-                                       )}
-                                   </tbody>
-                               </table>
-                           </div>
-                        </div>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                        {/* Caller Performance Breakdown Table */}
-                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
-                           <div className="p-6 border-b border-gray-50">
-                                <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                                    <i className="fi fi-rr-headset text-[#4b33e8]"></i>
-                                    Caller Performance Breakdown
-                                </h3>
-                           </div>
-                           <div className="overflow-x-auto">
-                               <table className="w-full text-left">
-                                   <thead className="bg-[#f9fafb]">
-                                       <tr>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Caller</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
-                                           <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
-                                       </tr>
-                                   </thead>
-                                   <tbody className="divide-y divide-gray-50">
-                                       {analytics.caller_performance.filter(row => 
-                                            campaign?.users?.some(u => 
-                                                (u.employee_id && u.employee_id === row.employee_id) || 
-                                                (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
-                                            )
-                                        ).length > 0 ? (
-                                            analytics.caller_performance
-                                                .filter(row => 
+                            {/* Caller Performance Breakdown Table */}
+                            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
+                                <div className="p-6 border-b border-gray-50">
+                                        <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                            <i className="fi fi-rr-headset text-[#4b33e8]"></i>
+                                            Caller Performance Breakdown
+                                        </h3>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-[#f9fafb]">
+                                            <tr>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Caller</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Connected Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Outgoing Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Incoming Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Missed Calls</th>
+                                                <th className="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Talktime</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {analytics.caller_performance.filter(row => 
                                                     campaign?.users?.some(u => 
                                                         (u.employee_id && u.employee_id === row.employee_id) || 
                                                         (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
                                                     )
-                                                )
-                                                .map((row, index) => (
-                                                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-6 py-4 text-xs font-bold text-gray-700 capitalize">
-                                                        {row.caller}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
-                                                    <td className="px-6 py-4 text-xs font-medium text-gray-600">
-                                                        {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                ).length > 0 ? (
+                                                    analytics.caller_performance
+                                                        .filter(row => 
+                                                            campaign?.users?.some(u => 
+                                                                (u.employee_id && u.employee_id === row.employee_id) || 
+                                                                (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
+                                                            )
+                                                        )
+                                                        .map((row, index) => (
+                                                        <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                                                            <td className="px-6 py-4 text-xs font-bold text-gray-700 capitalize">
+                                                                {row.caller}
+                                                            </td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.outgoing_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
+                                                            <td className="px-6 py-4 text-xs font-medium text-gray-600">
+                                                                {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
+                                                        No data available for today
                                                     </td>
                                                 </tr>
-                                            ))
-                                       ) : (
-                                           <tr>
-                                               <td colSpan={7} className="px-6 py-10 text-center text-xs text-gray-400 font-medium">
-                                                   No data available for today
-                                               </td>
-                                           </tr>
-                                       )}
-                                   </tbody>
-                               </table>
-                           </div>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
                      
@@ -1148,25 +1039,22 @@ export default function CampaignDetails() {
                                                      <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-gray-50 bg-gray-50/30 hover:bg-white hover:border-gray-200 transition-all group/item">
                                                          <div className="flex flex-col min-w-0 pr-2">
                                                              <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customers?.customer_name || 'Anonymous'}</span>
-                                                             <div className="flex flex-col gap-1.5">
+                                                              <div className="flex flex-col gap-1.5">
                                                                  <div className="flex items-center gap-2 flex-wrap">
                                                                      <span className="text-[9px] font-black text-[#4b33e8] bg-indigo-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         {item.caller_name?.split(' ')[0]} ({item.caller_emp_id})
+                                                                     </span>
+                                                                     <span className="text-[9px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
                                                                          {item.disposition || 'Call'}
                                                                          {item.sub_disposition && ` > ${item.sub_disposition}`}
                                                                      </span>
-                                                                     {item.customers?.expiry_date && (
-                                                                         <div className="flex items-center gap-1 text-[9px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded uppercase tracking-tighter">
-                                                                             <i className="fi fi-rr-calendar-check text-[8px]"></i>
-                                                                             <span>{formatDate(item.customers.expiry_date)}</span>
-                                                                         </div>
-                                                                     )}
                                                                  </div>
                                                                  <div className="flex items-center gap-1.5 text-gray-400">
                                                                      <i className="fi fi-rr-clock text-[8px]"></i>
                                                                      <span className="text-[9px] font-bold leading-none">{formatDate(item.created_at)}</span>
                                                                      <span className="text-[8px] font-medium leading-none">{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                                  </div>
-                                                             </div>
+                                                              </div>
                                                          </div>
                                                          <button 
                                                              onClick={() => {
@@ -1216,9 +1104,12 @@ export default function CampaignDetails() {
                                                      <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-red-50 bg-red-50/10 hover:bg-white hover:border-red-200 transition-all group/item shadow-[0_0_15px_-10px_rgba(239,68,68,0.2)]">
                                                          <div className="flex flex-col min-w-0 pr-2">
                                                              <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customer_name || 'Anonymous'}</span>
-                                                             <div className="flex flex-col gap-1.5">
-                                                                 <div className="flex items-center gap-2">
-                                                                     <span className="text-[9px] font-black text-red-500 bg-red-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                              <div className="flex flex-col gap-1.5">
+                                                                 <div className="flex items-center gap-2 flex-wrap">
+                                                                     <span className="text-[9px] font-black text-red-600 bg-red-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         {item.agent_name?.split(' ')[0]} ({item.agent_emp_id})
+                                                                     </span>
+                                                                     <span className="text-[9px] font-black text-red-400 border border-red-100 px-2 py-1 rounded inline-block uppercase tracking-tighter">
                                                                          {item.disposition || 'Follow Up'}
                                                                          {item.sub_disposition && ` > ${item.sub_disposition}`}
                                                                      </span>
@@ -1228,7 +1119,7 @@ export default function CampaignDetails() {
                                                                      <span className="text-[9px] font-bold leading-none">{formatDate(item.expiry_date)}</span>
                                                                      <span className="text-[8px] font-medium leading-none">{item.expiry_date && String(item.expiry_date).includes('T') ? new Date(item.expiry_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No Time'}</span>
                                                                  </div>
-                                                             </div>
+                                                              </div>
                                                          </div>
                                                          <button 
                                                              onClick={() => router.push(`/campaign/${id}/${item.id}`)}
@@ -1274,9 +1165,12 @@ export default function CampaignDetails() {
                                                      <div key={item.id} className="flex items-center justify-between p-3 rounded-2xl border border-blue-50 bg-blue-50/10 hover:bg-white hover:border-blue-200 transition-all group/item">
                                                          <div className="flex flex-col min-w-0 pr-2">
                                                              <span className="text-[11px] font-bold text-gray-800 truncate leading-none mb-2 capitalize">{item.customer_name || 'Anonymous'}</span>
-                                                             <div className="flex flex-col gap-1.5">
-                                                                 <div className="flex items-center gap-2">
-                                                                     <span className="text-[9px] font-black text-blue-500 bg-blue-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                              <div className="flex flex-col gap-1.5">
+                                                                 <div className="flex items-center gap-2 flex-wrap">
+                                                                     <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block uppercase tracking-tighter">
+                                                                         Agent: {item.agent_name?.split(' ')[0]} ({item.agent_emp_id})
+                                                                     </span>
+                                                                     <span className="text-[9px] font-black text-blue-400 border border-blue-100 px-2 py-1 rounded inline-block uppercase tracking-tighter">
                                                                          {item.disposition || 'Scheduled'}
                                                                          {item.sub_disposition && ` > ${item.sub_disposition}`}
                                                                      </span>
@@ -1286,7 +1180,7 @@ export default function CampaignDetails() {
                                                                      <span className="text-[9px] font-bold leading-none">{formatDate(item.expiry_date)}</span>
                                                                      <span className="text-[8px] font-medium leading-none">{item.expiry_date && String(item.expiry_date).includes('T') ? new Date(item.expiry_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'No Time'}</span>
                                                                  </div>
-                                                             </div>
+                                                              </div>
                                                          </div>
                                                          <button 
                                                              onClick={() => router.push(`/campaign/${id}/${item.id}`)}
@@ -1300,7 +1194,7 @@ export default function CampaignDetails() {
                                          )}
                                      </div>
                                  </div>
-
+ 
                                  {/* Managed By */}
                                  <div className="bg-white rounded-2xl p-6  border border-gray-100 flex flex-col min-h-[320px] relative overflow-hidden group hover:shadow-lg transition-all">
                                      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, rgb(20, 184, 166) 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
@@ -1404,19 +1298,23 @@ export default function CampaignDetails() {
                                         
 
                                         {/* Add Bulk Button */}
-                                        <button 
-                                            onClick={() => setShowImportModal(true)}
-                                            className="flex items-center gap-2 px-6 h-[42px] bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest"
-                                        >
-                                            <i className="fi flex fi-rr-upload"></i>
-                                            Add Bulk
-                                        </button>
+                                         {!isLevel1User && campaign?.isaddbulkbuttonvisible && (
+                                             <button 
+                                                 onClick={() => setShowImportModal(true)}
+                                                 className="flex items-center gap-2 px-6 h-[42px] bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest"
+                                             >
+                                                 <i className="fi flex fi-rr-upload"></i>
+                                                 Add Bulk
+                                             </button>
+                                         )}
 
-                                        {/* Add Lead Button */}
-                                        <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
-                                            <i className="fi flex fi-rr-plus"></i>
-                                            Add Lead
-                                        </button>
+                                         {/* Add Lead Button */}
+                                         {!isLevel1User && campaign?.isaddleadbuttonvisible && (
+                                             <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
+                                                 <i className="fi flex fi-rr-plus"></i>
+                                                 Add Lead
+                                             </button>
+                                         )}
                                     </div>
                                 </div>
 
