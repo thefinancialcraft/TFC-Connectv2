@@ -104,13 +104,14 @@ export function storeUserData(userData: StoredUserData): void {
             if (matchingAccount) {
                 saveAccount({
                     ...matchingAccount,
-                    access_token: dataToStore.session_token,
-                    refresh_token: dataToStore.refresh_token,
+                    access_token: dataToStore.session_token || matchingAccount.access_token || "",
+                    refresh_token: dataToStore.refresh_token || matchingAccount.refresh_token || "",
                     token_id: dataToStore.token_id || matchingAccount.token_id,
                     user_name: dataToStore.user_name || matchingAccount.user_name,
                     profile_pic_url: dataToStore.profile_pic_url || matchingAccount.profile_pic_url,
                     role: dataToStore.role || matchingAccount.role
                 });
+
                 console.log("🔄 [LocalStorage] Synced login data to sessionManager");
             }
         });
