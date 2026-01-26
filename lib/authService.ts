@@ -487,23 +487,35 @@ export async function handleLogout(router: NextRouter, tokenId?: string): Promis
     }
 
     // 2. Clear server-side session status (Mark is_active = false)
+    // 2. Clear server-side session status (Mark is_active = false)
     try {
       const { getStoredUserData } = await import("./localStorageUtils");
       const activeUser = getStoredUserData();
       const { getStoredAccounts } = await import("./sessionManager");
       const accounts = getStoredAccounts();
       
+      // PRIORITY 1: Use provided tokenId (if from specific revoke action)
+      // PRIORITY 2: Use token_id from currently active UserProfileData in local storage (standard logout)
       let finalTokenId = tokenId || activeUser?.token_id;
+
+      if (finalTokenId) {
+         console.log(`🔍 [Auth] Found token_id from ${tokenId ? 'arguments' : 'UserProfileData local storage'}: ${finalTokenId}`);
+      }
 
       if (!finalTokenId) {
         // Fallback: Check if we can find it by current user_id in accounts
         if (activeUser?.user_id) {
             finalTokenId = accounts.find(a => a.user_id === activeUser.user_id)?.token_id;
+            if (finalTokenId) console.log(`🔍 [Auth] Found token_id from account list fallback: ${finalTokenId}`);
         }
         
         // Final fallback: Use the first available account if we can't match user
-        if (!finalTokenId) finalTokenId = accounts[0]?.token_id;
+        if (!finalTokenId) {
+             finalTokenId = accounts[0]?.token_id;
+             if (finalTokenId) console.log(`🔍 [Auth] Found token_id from first available account: ${finalTokenId}`);
+        }
       }
+
 
       if (finalTokenId) {
         console.log(`📡 [Auth] Requesting deactivation for token: ${finalTokenId}`);

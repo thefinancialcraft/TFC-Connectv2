@@ -490,7 +490,9 @@ export default function Settings() {
 
                             <div className="flex items-center gap-3">
                               <div className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-colors ${
-                                isCurrentSession ? 'bg-white text-[#4b33e8] border-[#4b33e8]' : 'bg-white text-gray-400 border-gray-100'
+                                s.is_active 
+                                  ? 'bg-green-50 text-green-600 border-green-200' 
+                                  : (isCurrentSession ? 'bg-[#4b33e8]/5 text-[#4b33e8] border-[#4b33e8]/20' : 'bg-white text-gray-400 border-gray-100')
                               }`}>
                                 <i className={`fi flex text-xl ${
                                   s.device_type?.toLowerCase() === 'mobile' 
@@ -499,25 +501,45 @@ export default function Settings() {
                                 }`}></i>
                               </div>
 
-
-
-
-
-
-
-
-
-
                               <div>
                                 <div className="flex items-center gap-2">
                                   <p className="text-xs font-bold text-[#263238]">{s.device_name || "Device"}</p>
                                   {isCurrentSession && (
                                     <span className="px-1.5 py-0.5 bg-[#4b33e8] text-white text-[8px] font-bold rounded-md uppercase tracking-wider">Current</span>
                                   )}
+                                  
+                                  {/* Online Status Dot */}
+                                  {(() => {
+                                      const lastSeen = new Date(s.last_accessed_at).getTime();
+                                      const diffSeconds = (Date.now() - lastSeen) / 1000;
+                                      
+                                      let dotColor = "bg-gray-300"; // Offline (> 3 min)
+                                      let statusText = "Offline";
+
+                                      if (diffSeconds < 60) { 
+                                          dotColor = "bg-green-500"; // Online (< 1 min)
+                                          statusText = "Online";
+                                      } else if (diffSeconds < 180) {
+                                          dotColor = "bg-yellow-400"; // Recently (< 3 min)
+                                          statusText = "Recently Online";
+                                      }
+
+                                      return (
+                                        <div className="group relative flex items-center">
+                                            <div className={`w-2 h-2 rounded-full ${dotColor} relative`}></div>
+                                            <div className="absolute left-4 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-[9px] px-2 py-1 rounded pointer-events-none whitespace-nowrap z-10">
+                                                {statusText}
+                                            </div>
+                                        </div>
+                                      );
+
+                                  })()}
                                 </div>
                                 <p className="text-[10px] text-gray-400">{s.location || "Unknown"} • {formatTimeAgo(s.last_accessed_at)}</p>
                               </div>
                             </div>
+
+
                             {!isCurrentSession && (
                               <button 
                                 onClick={() => handleRevokeSession(sessionId)} 
