@@ -90,7 +90,34 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
              setLocalEntryId(entryId);
              localStorage.setItem('android_id', androidId);
              localStorage.setItem('entry_id', entryId);
+
+             // Update Session Metadata in DB
+             const updateSessionMeta = async () => {
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const tokenId = getStoredUserData()?.token_id;
+                  
+                  if (session && tokenId) {
+                    await fetch('/api/auth/update-session-meta', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
+                      },
+                      body: JSON.stringify({
+                        device_info: payload.value,
+                        token_id: tokenId
+                      })
+                    });
+                    console.log("✅ [Header] Session metadata updated in DB");
+                  }
+                } catch (err) {
+                  console.error("❌ [Header] Failed to sync session meta:", err);
+                }
+             };
+             updateSessionMeta();
           }
+
         }
 
         // --- Persistent Lock Release ---

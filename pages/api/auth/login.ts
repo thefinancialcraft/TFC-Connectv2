@@ -22,7 +22,13 @@ export default async function handler(
   }
 
   try {
-    const { email, password, location: clientLocation } = req.body;
+    const { 
+      email, 
+      password, 
+      location: clientLocation, 
+      token_id: clientTokenId, 
+      device_info: flutterDeviceInfo 
+    } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -56,9 +62,27 @@ export default async function handler(
     }
 
     // Handle token_id (Support multi-account/quick-login system)
-    const { token_id: clientTokenId } = req.body;
     const crypto = await import('crypto');
     const finalTokenId = clientTokenId || `token_${crypto.randomBytes(5).toString('hex')}`;
+
+    // Handle Metadata (Nexus App vs Standard Browser)
+    let deviceName, browser, deviceType, userAgent;
+
+    if (flutterDeviceInfo) {
+      // Nexus App Logic
+      deviceName = `${flutterDeviceInfo.brand} ${flutterDeviceInfo.model}`;
+      browser = "Nexus App";
+      userAgent = flutterDeviceInfo.androidId || "Nexus-Android";
+      deviceType = "mobile";
+    } else {
+      // Standard Browser Logic
+      const rawUA = req.headers['user-agent'] || '';
+      const info = getDeviceInfo(rawUA);
+      deviceName = info.deviceName;
+      browser = info.browser;
+      userAgent = rawUA;
+      deviceType = info.deviceType;
+    }
 
     const sessionExpiry = new Date();
     sessionExpiry.setMonth(sessionExpiry.getMonth() + 1); // Exactly 1 month expiry from now
@@ -66,19 +90,16 @@ export default async function handler(
     // Store session information in database
     if (supabaseAdmin) {
       try {
-        const userAgent = req.headers['user-agent'] || '';
-        const deviceInfo = getDeviceInfo(userAgent);
-
         await supabaseAdmin
           .from('user_sessions')
           .upsert({
             token_id: finalTokenId,
             user_id: data.user.id,
             session_token: data.session.access_token,
-            device_name: deviceInfo.deviceName,
-            device_type: deviceInfo.deviceType,
-            browser: deviceInfo.browser,
-            user_agent: deviceInfo.userAgent,
+            device_name: deviceName,
+            device_type: deviceType,
+            browser: browser,
+            user_agent: userAgent,
             ip_address: ipAddress,
             location: location,
             is_active: true,
@@ -92,6 +113,7 @@ export default async function handler(
         console.error('Error storing session:', sessionStoreError);
       }
     }
+
 
     return res.status(200).json({
       success: true,

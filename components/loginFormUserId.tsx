@@ -33,21 +33,26 @@ export default function LoginFormUserId({
   
   // Listen for device info if in Flutter environment
   useEffect(() => {
+    // 1. Request device info immediately
+    const initBridge = async () => {
+       const { requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
+       requestDeviceInfoFromFlutter();
+    };
+    initBridge();
+
+    // 2. Listen for response
     const handleFlutterMessage = (event: any) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'device_info') {
-          console.log("📱 [Bridge] Received Device Info from Flutter:", data.payload);
-          setFlutterDeviceInfo(data.payload);
-        }
-      } catch (e) {
-        // Not a JSON message or not for us
+      const data = event.detail;
+      if (data?.type === 'device_info') {
+        console.log("📱 [Login] Received Device Info from Flutter:", data.value);
+        setFlutterDeviceInfo(data.value);
       }
     };
 
-    window.addEventListener('message', handleFlutterMessage);
-    return () => window.removeEventListener('message', handleFlutterMessage);
+    window.addEventListener('tfc-bridge-message' as any, handleFlutterMessage);
+    return () => window.removeEventListener('tfc-bridge-message' as any, handleFlutterMessage);
   }, []);
+
 
   const handleForgotFormToggle = (show: boolean) => {
     onForgotFormToggle?.(show);

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotPasswordForm from "./ForgotPasswordForm";
@@ -25,6 +26,31 @@ export default function LoginFormEmailId({
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotEmailForm, setShowForgotEmailForm] = useState(false);
+  const [flutterDeviceInfo, setFlutterDeviceInfo] = useState<any>(null);
+
+  // Listen for device info if in Flutter environment
+  useEffect(() => {
+    // 1. Request device info immediately
+    const initBridge = async () => {
+       const { requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
+       requestDeviceInfoFromFlutter();
+    };
+    initBridge();
+
+    // 2. Listen for response
+    const handleFlutterMessage = (event: any) => {
+      const data = event.detail;
+      if (data?.type === 'device_info') {
+        console.log("📱 [Login] Received Device Info from Flutter:", data.value);
+        setFlutterDeviceInfo(data.value);
+      }
+    };
+
+    window.addEventListener('tfc-bridge-message' as any, handleFlutterMessage);
+    return () => window.removeEventListener('tfc-bridge-message' as any, handleFlutterMessage);
+  }, []);
+
+
 
   const handleForgotPasswordFormToggle = (show: boolean) => {
     onForgotPasswordFormToggle?.(show);
@@ -64,7 +90,9 @@ export default function LoginFormEmailId({
           password,
           location: location || undefined,
           token_id: existingTokenId,
+          device_info: flutterDeviceInfo || undefined,
         }),
+
 
       });
 
