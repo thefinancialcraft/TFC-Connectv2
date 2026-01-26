@@ -25,6 +25,21 @@ export default async function handler(
         return res.status(400).json({ error: 'Token ID is required' });
     }
 
+    // Check for expiration first
+    const { data: session } = await supabaseAdmin
+      .from('user_sessions')
+      .select('expires_at')
+      .eq('token_id', token_id)
+      .single();
+
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    if (new Date(session.expires_at) < new Date()) {
+      return res.status(403).json({ error: 'Session expired' });
+    }
+
     // Reactivate the session
     const { error: updateError } = await supabaseAdmin
       .from('user_sessions')
@@ -34,6 +49,7 @@ export default async function handler(
         last_login_at: new Date().toISOString() // Show as a new activity
       })
       .eq('token_id', token_id);
+
 
     if (updateError) {
       console.error('Error activating session:', updateError);

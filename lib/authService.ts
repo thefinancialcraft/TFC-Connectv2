@@ -375,6 +375,7 @@ export interface UserProfileData {
   updated_at?: string;
   is_caller?: boolean;
   designation?: string;
+  token_id?: string; // TFC Session Token ID
   [key: string]: any; // Allow additional fields
 }
 
@@ -428,9 +429,28 @@ export async function fetchUserProfileFromTable(userId?: string): Promise<FetchU
       };
     }
 
-    // Store user data in array
+    // Store user data in array with token_id from local storage
     if (data) {
-      addUserToStore(data as UserProfileData);
+      // Retrieve token_id from local storage to include in the store
+      const { getStoredUserData } = await import("./localStorageUtils");
+      const storedLocal = getStoredUserData();
+      
+      const dataWithToken: UserProfileData = {
+        ...data,
+        token_id: storedLocal?.token_id
+      };
+      
+      addUserToStore(dataWithToken);
+      
+      // Force Activate Session on DB side to ensure is_active=true on every profile fetch (refresh/login)
+      if (storedLocal?.token_id) {
+         fetch("/api/auth/activate-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token_id: storedLocal.token_id }),
+            keepalive: true
+         }).catch(console.error);
+      }
     }
 
     return {
@@ -438,6 +458,7 @@ export async function fetchUserProfileFromTable(userId?: string): Promise<FetchU
       data: data as UserProfileData | null,
       error: null,
     };
+
   } catch (error: any) {
     console.error("Fetch user profile error:", error);
     return {
@@ -469,42 +490,63 @@ export async function handleLogout(router: NextRouter, tokenId?: string): Promis
     try {
       const { getStoredUserData } = await import("./localStorageUtils");
       const activeUser = getStoredUserData();
+      const { getStoredAccounts } = await import("./sessionManager");
+      const accounts = getStoredAccounts();
       
-      let finalTokenId = tokenId || activeUser?.token_id; // token_id holds the TFC UUID for the session
+      let finalTokenId = tokenId || activeUser?.token_id;
 
       if (!finalTokenId) {
         // Fallback: Check if we can find it by current user_id in accounts
-        const { getStoredAccounts } = await import("./sessionManager");
-        const accounts = getStoredAccounts();
-        
         if (activeUser?.user_id) {
             finalTokenId = accounts.find(a => a.user_id === activeUser.user_id)?.token_id;
         }
         
-        // Final fallback
+        // Final fallback: Use the first available account if we can't match user
         if (!finalTokenId) finalTokenId = accounts[0]?.token_id;
       }
 
       if (finalTokenId) {
         console.log(`📡 [Auth] Requesting deactivation for token: ${finalTokenId}`);
-        const response = await fetch("/api/auth/deactivate-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token_id: finalTokenId }),
-        });
         
-        if (response.ok) {
-           console.log("✅ [Auth] DB Deactivation confirmed.");
-        } else {
-           const errData = await response.json();
-           console.error("❌ [Auth] DB Deactivation failed:", errData.error);
+        const url = "/api/auth/deactivate-session";
+        const body = JSON.stringify({ token_id: finalTokenId });
+        let sent = false;
+
+        // METHOD 1: navigator.sendBeacon (Gold standard for unloads/redirects)
+        try {
+          if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+            // Send as Blob to ensure correct Content-Type for JSON
+            const blob = new Blob([body], { type: 'application/json' });
+            sent = navigator.sendBeacon(url, blob);
+            if (sent) console.log("✅ [Auth] Deactivation signal queued via Beacon.");
+          }
+        } catch (err) {
+           console.warn("⚠️ [Auth] Beacon failed:", err);
         }
+
+        // METHOD 2: Fallback to Fetch with keepalive if Beacon failed or not supported
+        if (!sent) {
+          console.log("⚠️ [Auth] Beacon skipped/failed. Using Fetch fallback.");
+          // We don't await this either to prevent blocking, but keepalive ensures it survives
+          fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: body,
+            keepalive: true
+          }).catch(e => console.error("Fetch keepalive failed:", e));
+        }
+
+        // SAFETY: Give the network stack a tiny moment to process the queue before killing the execution context
+        await new Promise(resolve => setTimeout(resolve, 200));
+
       } else {
         console.warn("⚠️ [Auth] Could not identify token_id to deactivate. Skipping DB update.");
       }
     } catch (e) {
       console.error("❌ [Auth] Deactivation API reached timeout or failed:", e);
     }
+
+
 
 
 

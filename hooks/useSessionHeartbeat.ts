@@ -86,9 +86,10 @@ export const useSessionHeartbeat = (user: any) => {
   useEffect(() => {
     if (user && user.uid) {
       performHeartbeat();
-      // Every 3 minutes (staggered slightly to avoid all tabs hitting at once)
+      // Every 1 minute (staggered slightly to avoid all tabs hitting at once)
       const offset = Math.floor(Math.random() * 10000); 
-      heartbeatInterval.current = setInterval(performHeartbeat, 3 * 60 * 1000 + offset);
+      heartbeatInterval.current = setInterval(performHeartbeat, 1 * 60 * 1000 + offset);
+
     }
 
     return () => {

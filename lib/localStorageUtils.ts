@@ -94,9 +94,31 @@ export function storeUserData(userData: StoredUserData): void {
     }
     
     localStorage.setItem(STORAGE_KEY_ARRAY, JSON.stringify(allUsers));
-    
+
+    // --- CRITICAL SYNC: Update 'sessionManager' accounts too ---
+    // This ensures that token_id is consistent across both storage locations
+    if (typeof window !== 'undefined') {
+        import("./sessionManager").then(({ getStoredAccounts, saveAccount }) => {
+            const accounts = getStoredAccounts();
+            const matchingAccount = accounts.find(a => a.user_id === dataToStore.user_id);
+            if (matchingAccount) {
+                saveAccount({
+                    ...matchingAccount,
+                    access_token: dataToStore.session_token,
+                    refresh_token: dataToStore.refresh_token,
+                    token_id: dataToStore.token_id || matchingAccount.token_id,
+                    user_name: dataToStore.user_name || matchingAccount.user_name,
+                    profile_pic_url: dataToStore.profile_pic_url || matchingAccount.profile_pic_url,
+                    role: dataToStore.role || matchingAccount.role
+                });
+                console.log("🔄 [LocalStorage] Synced login data to sessionManager");
+            }
+        });
+    }
+
     // Verify it was stored correctly
     const stored = localStorage.getItem(STORAGE_KEY);
+
     if (stored) {
       const parsed = JSON.parse(stored) as StoredUserData;
       console.log('Verified stored data:', {
