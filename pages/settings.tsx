@@ -418,14 +418,24 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  {/* Sessions Section */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Sessions</h4>
-                      <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-full border border-gray-200">
-                        {activeSessions.length} {activeSessions.length === 1 ? 'Session' : 'Sessions'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={fetchActiveSessions}
+                          disabled={isLoadingSessions}
+                          className="p-1.5 bg-gray-50 text-gray-400 hover:text-[#4b33e8] hover:bg-[#4b33e8]/5 rounded-lg transition-all border border-gray-100 disabled:opacity-50"
+                          title="Refresh Sessions"
+                        >
+                          <i className={`fi fi-rr-refresh flex text-[10px] ${isLoadingSessions ? 'animate-spin' : ''}`} />
+                        </button>
+                        <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-full border border-gray-200">
+                          {activeSessions.length} {activeSessions.length === 1 ? 'Session' : 'Sessions'}
+                        </span>
+                      </div>
                     </div>
+
 
                     <div className="space-y-3">
                       {isLoadingSessions ? (

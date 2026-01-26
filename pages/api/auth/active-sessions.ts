@@ -66,18 +66,28 @@ export default async function handler(
        console.log('📡 [ActiveSessions] Table is reachable. Test record:', allSessions?.[0]);
     }
 
-    // Actual targeted query - Select all columns and filter by user_id
+    // Targeted query - Fetch ALL sessions for this user to debug why some are missing
     const { data: rawSessions, error } = await supabaseAdmin
       .from('user_sessions')
       .select('*')
       .eq('user_id', userId)
-      .eq('is_active', true)
       .order('last_accessed_at', { ascending: false });
 
     if (error) {
       console.error('❌ [ActiveSessions] DB Query Error:', error);
       return res.status(500).json({ error: 'Failed to fetch sessions from database' });
     }
+
+    console.log(`📡 [ActiveSessions] Total records found for ${userId}: ${rawSessions?.length || 0}`);
+    if (rawSessions) {
+      rawSessions.forEach((s, i) => {
+        console.log(`   Session ${i}: ID=${s.id || s.token_id}, Active=${s.is_active}, Device=${s.device_name}`);
+      });
+    }
+
+    // Filter active ones for the frontend
+    const activeRawSessions = (rawSessions || []).filter(s => s.is_active === true);
+
 
     if (rawSessions && rawSessions.length > 0) {
        console.log('📄 [ActiveSessions] Sample session from DB:', rawSessions[0]);
@@ -97,6 +107,7 @@ export default async function handler(
       last_accessed_at: s.last_accessed_at,
       created_at: s.created_at
     }));
+
 
 
 
