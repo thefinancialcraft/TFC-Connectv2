@@ -167,6 +167,37 @@ export function useAuthGuard(): UseAuthGuardReturn {
           return;
         }
 
+        // --- VALIDATION: Check if current token in storage is actually valid in DB ---
+        // This catches cases where session was deleted (revoked) but client still has valid JWT
+        const { getStoredUserData } = await import("../lib/localStorageUtils");
+        const storedData = getStoredUserData();
+        
+        if (storedData?.token_id) {
+           try {
+             const validateRes = await fetch('/api/auth/heartbeat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token_id: storedData.token_id }) 
+             });
+             
+             const validateData = await validateRes.json();
+             
+             // If validation fails (404/force_logout), kill the session immediately
+             if (validateRes.status === 404 || validateData.force_logout) {
+                console.warn("🚫 [AuthGuard] Active session revoked in DB. Forcing logout.");
+                const { removeAccount } = await import("../lib/sessionManager");
+                removeAccount(storedData.token_id);
+                
+                const { handleLogout } = await import("../lib/authService");
+                await handleLogout(router, storedData.token_id);
+                return;
+             }
+           } catch (valErr) {
+             console.error("Session validation check failed:", valErr);
+           }
+        }
+
+
         const { data: { session } } = await supabase.auth.getSession();
 
         let latestUserData = result.user;
