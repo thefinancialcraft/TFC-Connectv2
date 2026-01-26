@@ -6,7 +6,9 @@ type Data = {
   error?: string;
   is_active?: boolean;
   expires_at?: string;
+  force_logout?: boolean;
 };
+
 
 export default async function handler(
   req: NextApiRequest,
