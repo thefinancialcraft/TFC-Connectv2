@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotUserIdForm from "./ForgotUserIdForm";
@@ -6,6 +6,7 @@ import ForgotPasswordForm from "./ForgotPasswordForm";
 import { showError } from "../lib/dialogUtils";
 import { getBrowserLocation } from "../lib/deviceUtils";
 import { storeUserData } from "../lib/localStorageUtils";
+import { saveAccount, getStoredAccounts } from "../lib/sessionManager";
 
 interface LoginFormUserIdProps {
   showForgotForm?: boolean;
@@ -27,7 +28,27 @@ export default function LoginFormUserId({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [flutterDeviceInfo, setFlutterDeviceInfo] = useState<any>(null);
   
+  // Listen for device info if in Flutter environment
+  useEffect(() => {
+    const handleFlutterMessage = (event: any) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'device_info') {
+          console.log("📱 [Bridge] Received Device Info from Flutter:", data.payload);
+          setFlutterDeviceInfo(data.payload);
+        }
+      } catch (e) {
+        // Not a JSON message or not for us
+      }
+    };
+
+    window.addEventListener('message', handleFlutterMessage);
+    return () => window.removeEventListener('message', handleFlutterMessage);
+  }, []);
+
   const handleForgotFormToggle = (show: boolean) => {
     onForgotFormToggle?.(show);
   };
@@ -50,6 +71,17 @@ export default function LoginFormUserId({
         console.log('Location permission denied or error:', locError);
       }
 
+      // --- FIX: Only reuse token_id if the SAME user is logging in again ---
+      const accounts = getStoredAccounts();
+      const existingAccount = accounts.find(a => 
+         a.employee_id === userId.trim() || 
+         a.email === userId.trim() || 
+         a.user_id === userId.trim()
+      );
+      
+      const existingTokenId = existingAccount ? existingAccount.token_id : undefined;
+
+
       const response = await fetch("/api/auth/login-userid", {
         method: "POST",
         headers: {
@@ -58,7 +90,9 @@ export default function LoginFormUserId({
         body: JSON.stringify({ 
           userId: userId.trim(), 
           password: password,
-          location: location || undefined, // Send location if available
+          location: location || undefined,
+          token_id: existingTokenId,
+          device_info: flutterDeviceInfo || undefined
         }),
       });
 
@@ -73,107 +107,69 @@ export default function LoginFormUserId({
       }
 
       if (data.success && data.session) {
-        // Store session tokens immediately before setting session
-        const accessToken = data.session.access_token;
-        const refreshToken = data.session.refresh_token;
+        const { access_token, refresh_token, token_id, expires_at } = data.session;
+        const userData = data.user;
 
-        // Set session in Supabase client
+        // 1. Set session in Supabase client
         const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          access_token: access_token,
+          refresh_token: refresh_token,
         });
 
         if (sessionError) {
-          const errorMessage = "Failed to create session";
-          showError(errorMessage, "Session Error");
-          setError(errorMessage);
-          onError?.(errorMessage);
-          setIsLoading(false);
+          throw new Error("Failed to create session");
+        }
+
+        // 2. Save to Multi-Account Storage (Our New Token System)
+        saveAccount({
+          token_id: token_id,
+          user_id: userData.id,
+          email: userData.email,
+          user_name: userData.displayName || '',
+          role: userData.role || 'user',
+          profile_pic_url: userData.profile_pic_url || null,
+          employee_id: userData.employee_id || '',
+          access_token: access_token,
+          refresh_token: refresh_token,
+          expiry_date: expires_at,
+          last_login_at: new Date().toISOString(),
+          device_info: flutterDeviceInfo
+        });
+
+        // 3. Compatibility: Save to old localStorage keys if other components still use them
+        storeUserData({
+          user_id: userData.id,
+          email: userData.email,
+          user_name: userData.displayName,
+          employee_id: userData.employee_id,
+          role: userData.role,
+          profile_pic_url: userData.profile_pic_url,
+          session_token: access_token,
+          refresh_token: refresh_token,
+          token_id: token_id,
+        });
+
+
+        // 4. Flutter Bridge Notifications
+        const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+        notifyLoginToFlutter();
+        syncUserInfoToFlutter(userData);
+
+        // 5. Redirect Logic
+        if (userData.profile_complete === false) {
+          router.push("/profile-completion");
           return;
         }
 
-        // Fetch user profile data and store in localStorage
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            // Fetch full profile from API
-            const profileResponse = await fetch("/api/auth/user-profile", {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            });
-            
-            if (profileResponse.ok) {
-              const profileData = await profileResponse.json();
-              if (profileData.success && profileData.user) {
-                // Check approval status and account status first
-                // If rejected, suspended, or on hold, we might not want to save the user for quick login
-                // However, for pending users, it might be useful to keep the card
-                
-                // Store user data in localStorage with session tokens
-                const userDataToStore = {
-                  user_id: user.id,
-                  email: user.email || '',
-                  user_name: profileData.user.displayName || profileData.user.user_name || '',
-                  employee_id: profileData.user.employeeId || '',
-                  role: profileData.user.role || 'user',
-                  profile_pic_url: profileData.user.profile_pic_url || null,
-                  displayName: profileData.user.displayName || profileData.user.user_name || '',
-                  session_token: accessToken,
-                  refresh_token: refreshToken,
-                };
-                
-                // Only store if the account is not rejected (other statuses like pending/suspend/hold might still want a card)
-                if (profileData.user.approvalStatus !== 'rejected') {
-                  console.log('Storing user data with tokens');
-                  storeUserData(userDataToStore);
-                } else {
-                  console.log('User rejected, not storing in localStorage');
-                }
-
-                // Success! Notify Flutter bridge immediately
-                const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
-                notifyLoginToFlutter();
-                syncUserInfoToFlutter(profileData.user);
-                requestDeviceInfoFromFlutter();
-
-                // Check profile_complete first
-                if (profileData.user.profile_complete === false) {
-                  router.push("/profile-completion");
-                  return;
-                }
-
-                // Redirect based on approval status and account status
-                if (profileData.user.approvalStatus === 'rejected') {
-                  router.push("/rejected");
-                  return;
-                } else if (profileData.user.approvalStatus === 'pending') {
-                  router.push("/pending");
-                  return;
-                } else if (profileData.user.approvalStatus === 'suspend' || profileData.user.accountStatus === 'suspend') {
-                  router.push("/suspended");
-                  return;
-                } else if (profileData.user.approvalStatus === 'hold' || profileData.user.accountStatus === 'hold') {
-                  router.push("/hold");
-                  return;
-                } else if (profileData.user.approvalStatus === 'approved' && profileData.user.accountStatus === 'active') {
-                  router.push("/dashboard");
-                  return;
-                }
-              }
-            } else {
-              console.error('Profile fetch failed with status:', profileResponse.status);
-              // Do not store any data if profile fetch fails
-            }
-          }
-        } catch (profileError) {
-          console.error('Error fetching profile for localStorage:', profileError);
-          // Do not store any data if an error occurs
-        }
-
-
-        // Fallback redirect if everything above somehow bypassed redirects
-        router.push("/dashboard");
+        const pathMap: Record<string, string> = {
+          rejected: "/rejected",
+          pending: "/pending",
+          suspend: "/suspended",
+          hold: "/hold"
+        };
+        
+        const redirectPath = pathMap[userData.approval_status] || pathMap[userData.status] || "/dashboard";
+        router.push(redirectPath);
       }
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred during login";
@@ -287,7 +283,7 @@ export default function LoginFormUserId({
             }}
           ></i>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -298,7 +294,7 @@ export default function LoginFormUserId({
               color: 'rgb(38, 50, 56)',
               fontFamily: "'Roboto', sans-serif",
               paddingLeft: '45px',
-              paddingRight: '16px'
+              paddingRight: '45px'
             }}
             onFocus={(e) => {
               e.currentTarget.style.borderColor = '#4b33e8';
@@ -309,6 +305,22 @@ export default function LoginFormUserId({
             placeholder="Enter your Password"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-lg md:text-base focus:outline-none"
+            style={{ 
+              color: '#787E9D',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0'
+            }}
+          >
+            <i className={`fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`}></i>
+          </button>
         </div>
         <div className="flex justify-end mt-1">
         <a 
@@ -358,4 +370,5 @@ export default function LoginFormUserId({
     </form>
   );
 }
+
 

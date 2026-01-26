@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, supabaseAdmin } from '../../../lib/supabase';
 import { getDeviceInfo, getClientIP, getLocationFromIP } from '../../../lib/deviceUtils';
+import crypto from 'crypto';
 
 type Data = {
   success?: boolean;
@@ -8,7 +9,10 @@ type Data = {
   session?: {
     access_token: string;
     refresh_token: string;
+    expires_at: string;
+    token_id: string;
   };
+  user?: any;
 };
 
 export default async function handler(
@@ -20,7 +24,14 @@ export default async function handler(
   }
 
   try {
-    const { userId: rawUserId, password, location: clientLocation } = req.body;
+    const { 
+      userId: rawUserId, 
+      password, 
+      location: clientLocation,
+      token_id: clientTokenId,
+      device_info: flutterDeviceInfo 
+    } = req.body;
+    
     const userId = rawUserId?.toString().trim();
 
     if (!userId || !password) {
@@ -31,24 +42,22 @@ export default async function handler(
     const clientToUse = supabaseAdmin || supabase;
     
     if (!supabaseAdmin) {
-      console.warn('supabaseAdmin is not configured! Falling back to anon client, which may fail due to RLS.');
+      console.warn('supabaseAdmin is not configured! Falling back to anon client.');
     }
 
     // Find user by employee_id in user_profiles table
     const { data: profileData, error: profileError } = await clientToUse
       .from('user_profiles')
-      .select('email, user_id, employee_id')
+      .select('email, user_id, employee_id, user_name, role, profile_pic_url, approval_status, status')
       .eq('employee_id', userId)
       .single();
 
     if (profileError || !profileData) {
-      console.error('Profile fetch error for userId:', userId, profileError);
       return res.status(401).json({ error: 'Invalid User ID' });
     }
 
     const email = profileData.email?.trim();
     if (!email) {
-      console.error('Email not found for Employee ID:', userId);
       return res.status(401).json({ error: 'Email not found for this Employee ID' });
     }
 
@@ -59,54 +68,81 @@ export default async function handler(
     });
 
     if (error) {
-      console.error('Supabase Auth error:', error.message);
       return res.status(401).json({ error: error.message || 'Invalid password' });
     }
 
     if (!data.session) {
-      console.error('Session creation failed: no session returned');
       return res.status(401).json({ error: 'Failed to create session' });
     }
 
     // Check if email is confirmed
     if (!data.user?.email_confirmed_at) {
       return res.status(403).json({ 
-        error: 'Please verify your email address before logging in. Check your inbox for the confirmation email.' 
+        error: 'Please verify your email address before logging in.' 
       });
     }
 
-    // Store session information in database
+    // --- Advanced Session Logic ---
+    const ipAddress = getClientIP(req);
+    let location = clientLocation || 'Unknown Location';
+    if (!clientLocation || clientLocation === 'Unknown Location') {
+      location = await getLocationFromIP(ipAddress);
+    }
+
+    // Handle token_id
+    let finalTokenId = clientTokenId;
+    if (!finalTokenId) {
+      finalTokenId = `token_${crypto.randomBytes(5).toString('hex')}`;
+    }
+
+    // Handle Metadata (Nexus App vs Standard Browser)
+    let deviceName, browser, deviceType, userAgent;
+
+    if (flutterDeviceInfo) {
+      // Nexus App Logic
+      deviceName = `${flutterDeviceInfo.brand} ${flutterDeviceInfo.model}`;
+      browser = "Nexus App";
+      userAgent = flutterDeviceInfo.androidId || "Nexus-Android";
+      deviceType = "mobile";
+    } else {
+      // Standard Browser Logic
+      const rawUA = req.headers['user-agent'] || '';
+      const info = getDeviceInfo(rawUA);
+      deviceName = info.deviceName;
+      browser = info.browser;
+      userAgent = rawUA;
+      deviceType = info.deviceType;
+    }
+
+    const sessionExpiry = new Date();
+    sessionExpiry.setMonth(sessionExpiry.getMonth() + 1); // Exactly 1 month expiry from now (creation time)
+
     if (supabaseAdmin) {
       try {
-        const userAgent = req.headers['user-agent'] || '';
-        const deviceInfo = getDeviceInfo(userAgent);
-        const ipAddress = getClientIP(req);
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 30);
-
-        // Get location: prefer client location, fallback to IP-based geolocation
-        let location = clientLocation || 'Unknown Location';
-        if (!clientLocation || clientLocation === 'Unknown Location') {
-          location = await getLocationFromIP(ipAddress);
-        }
-
-        await supabaseAdmin
+        // Update or Insert session record
+        const { error: sessionError } = await supabaseAdmin
           .from('user_sessions')
-          .insert({
+          .upsert({
+            token_id: finalTokenId,
             user_id: data.user.id,
             session_token: data.session.access_token,
-            device_name: deviceInfo.deviceName,
-            device_type: deviceInfo.deviceType,
-            browser: deviceInfo.browser,
-            user_agent: deviceInfo.userAgent,
+            device_name: deviceName,
+            device_type: deviceType,
+            browser: browser,
+            user_agent: userAgent,
             ip_address: ipAddress,
             location: location,
             is_active: true,
-            expires_at: expiresAt.toISOString(),
+            last_login_at: new Date().toISOString(),
+            last_accessed_at: new Date().toISOString(),
+            expires_at: sessionExpiry.toISOString(),
+          }, { 
+            onConflict: 'token_id' 
           });
-      } catch (sessionStoreError) {
-        console.error('Error storing session:', sessionStoreError);
-        // Don't fail login if session storage fails
+
+        if (sessionError) console.error('Upsert Error:', sessionError);
+      } catch (err) {
+        console.error('Session update failed:', err);
       }
     }
 
@@ -115,11 +151,24 @@ export default async function handler(
       session: {
         access_token: data.session.access_token,
         refresh_token: data.session.refresh_token,
+        expires_at: sessionExpiry.toISOString(),
+        token_id: finalTokenId,
       },
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        displayName: profileData.user_name,
+        role: profileData.role,
+        profile_pic_url: profileData.profile_pic_url,
+        employee_id: profileData.employee_id,
+        approval_status: profileData.approval_status,
+        status: profileData.status
+      }
     });
   } catch (error: any) {
-    console.error('Login error:', error);
+    console.error('Login internal error:', error);
     return res.status(500).json({ error: 'An error occurred during login' });
   }
 }
+
 

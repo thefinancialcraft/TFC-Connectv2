@@ -13,6 +13,8 @@ export interface StoredUserData {
   displayName?: string;
   session_token?: string; // Store session token for quick login
   refresh_token?: string; // Store refresh token
+  token_id?: string;      // Store the TFC Token ID
+
   approval_status?: string | null;
   status?: string | null;
   updated_at?: string | null;

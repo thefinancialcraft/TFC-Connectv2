@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import TopStats from "../components/dashboard/TopStats";
+// TopStats is now dynamically imported below with other chart components
+
 import SecondaryStats from "../components/dashboard/SecondaryStats";
 import { supabase } from "../lib/supabase";
 
@@ -11,10 +12,15 @@ import { useAgentPerformance } from "../hooks/useAgentPerformance";
 import { DashboardErrorBoundary } from "../components/DashboardErrorBoundary";
 import AppLayout, { useUser } from "../components/AppLayout";
 
-// Import existing tab components
-import ProspectTab from "../components/dashboard/ProspectTab";
-import AgentPerformanceTab from "../components/dashboard/AgentPerformanceTab";
-import HourlyAnalyticsTab from "../components/dashboard/HourlyAnalyticsTab";
+import dynamic from "next/dynamic";
+
+// Dynamically import dashboard tabs to prevent Recharts SSR sizing issues
+const TopStats = dynamic(() => import("../components/dashboard/TopStats"), { ssr: false });
+const ProspectTab = dynamic(() => import("../components/dashboard/ProspectTab"), { ssr: false });
+const AgentPerformanceTab = dynamic(() => import("../components/dashboard/AgentPerformanceTab"), { ssr: false });
+const HourlyAnalyticsTab = dynamic(() => import("../components/dashboard/HourlyAnalyticsTab"), { ssr: false });
+
+
 
 export default function Dashboard() {
   const { user, mounted } = useUser();

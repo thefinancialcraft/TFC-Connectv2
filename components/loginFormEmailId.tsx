@@ -23,6 +23,7 @@ export default function LoginFormEmailId({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showForgotEmailForm, setShowForgotEmailForm] = useState(false);
 
   const handleForgotPasswordFormToggle = (show: boolean) => {
@@ -47,6 +48,12 @@ export default function LoginFormEmailId({
         console.log('Location permission denied or error:', locError);
       }
 
+      // --- FIX: Only reuse token_id if the SAME email is logging in again ---
+      const { getStoredAccounts } = await import("../lib/sessionManager");
+      const accounts = getStoredAccounts();
+      const existingAccount = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
+      const existingTokenId = existingAccount ? existingAccount.token_id : undefined;
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -55,8 +62,10 @@ export default function LoginFormEmailId({
         body: JSON.stringify({ 
           email, 
           password,
-          location: location || undefined, // Send location if available
+          location: location || undefined,
+          token_id: existingTokenId,
         }),
+
       });
 
       const data = await response.json();
@@ -117,7 +126,9 @@ export default function LoginFormEmailId({
                   displayName: profileData.user.displayName || profileData.user.user_name || '',
                   session_token: accessToken,
                   refresh_token: refreshToken,
+                  token_id: data.session.token_id,
                 };
+
                 
                 // Only store if the account is not rejected
                 if (profileData.user.approvalStatus !== 'rejected') {
@@ -283,7 +294,7 @@ export default function LoginFormEmailId({
             }}
           ></i>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -294,7 +305,7 @@ export default function LoginFormEmailId({
               color: 'rgb(38, 50, 56)',
               fontFamily: "'Roboto', sans-serif",
               paddingLeft: '45px',
-              paddingRight: '16px'
+              paddingRight: '45px'
             }}
             onFocus={(e) => {
               e.currentTarget.style.borderColor = '#4b33e8';
@@ -305,6 +316,22 @@ export default function LoginFormEmailId({
             placeholder="Enter your Password"
             required
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-lg md:text-base focus:outline-none"
+            style={{ 
+              color: '#787E9D',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0'
+            }}
+          >
+            <i className={`fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`}></i>
+          </button>
         </div>
         <div className="flex justify-end mt-1">
         <a 

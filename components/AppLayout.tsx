@@ -74,12 +74,17 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         }
         return prev;
       });
+    } else if (mounted) {
+      // If context says user is null and we are mounted, clear stableUser
+      setStableUser(null);
     }
-  }, [user]);
+  }, [user, mounted]);
 
-  const handleLogoutClick = useCallback(async () => {
-    await handleLogout(router);
+
+  const handleLogoutClick = useCallback(async (tokenId?: string) => {
+    await handleLogout(router, tokenId);
   }, [router]);
+
 
   // Loading state
   if (authLoading && !mounted) {
@@ -137,7 +142,9 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         <Sidebar
           user={stableUser}
           userRole={userRole}
+          onLogout={handleLogoutClick}
         />
+
       )}
 
       {/* Main Content Area */}

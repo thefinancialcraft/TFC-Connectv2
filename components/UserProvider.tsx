@@ -17,6 +17,11 @@ export function UserProvider({ children }: UserProviderProps) {
     let syncInterval: NodeJS.Timeout;
 
     const executeSync = async () => {
+      // --- ADDITION: Only sync if online ---
+      if (typeof window !== 'undefined' && !window.navigator.onLine) {
+        return false; 
+      }
+
       const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
       
       const success = (user) ? syncUserInfoToFlutter(user) : true;
@@ -39,10 +44,18 @@ export function UserProvider({ children }: UserProviderProps) {
 
     // Initial attempt after a small delay
     const timer = setTimeout(async () => {
+      // Check if bridge exists before starting sync interval
+      const isBridgeContext = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview?.callHandler;
+      
+      if (!isBridgeContext) {
+        console.log("💻 [Bridge] Standard Browser detected. Skipping background sync.");
+        return;
+      }
+
       const success = await executeSync();
       
       if (!success && user) {
-        // Bridge might be slow, retry every 2s
+        // Bridge context exists but sync failed (maybe timing), retry every 2s
         syncInterval = setInterval(async () => {
           if (await executeSync()) {
             clearInterval(syncInterval);
@@ -50,6 +63,7 @@ export function UserProvider({ children }: UserProviderProps) {
         }, 2000);
       }
     }, 1000);
+
 
     return () => {
       clearTimeout(timer);

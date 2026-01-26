@@ -17,8 +17,6 @@ export default async function handler(
   try {
     const { token_id } = req.body;
     
-    // We use supabaseAdmin here because we need to update records 
-    // potentially after the client session is cleared or token is expired
     if (!supabaseAdmin) {
         return res.status(500).json({ error: 'Database admin not configured' });
     }
@@ -27,27 +25,26 @@ export default async function handler(
         return res.status(400).json({ error: 'Token ID is required' });
     }
 
-    // Set is_active = false for this specific token
+    // Reactivate the session
     const { error: updateError } = await supabaseAdmin
       .from('user_sessions')
       .update({ 
-        is_active: false,
-        last_accessed_at: new Date().toISOString() 
+        is_active: true,
+        last_accessed_at: new Date().toISOString(),
+        last_login_at: new Date().toISOString() // Show as a new activity
       })
       .eq('token_id', token_id);
 
     if (updateError) {
-      console.error('Error deactivating session:', updateError);
-      return res.status(500).json({ error: 'Failed to deactivate session' });
+      console.error('Error activating session:', updateError);
+      return res.status(500).json({ error: 'Failed to activate session' });
     }
 
     return res.status(200).json({
       success: true,
     });
   } catch (error: any) {
-    console.error('Deactivate session error:', error);
-    return res.status(500).json({ error: 'An error occurred while deactivating session' });
+    console.error('Activate session error:', error);
+    return res.status(500).json({ error: 'An error occurred while activating session' });
   }
 }
-
-

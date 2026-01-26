@@ -37,10 +37,17 @@ class Logger {
         // Call original console
         this.originalConsole[level].apply(console, args);
 
+        // Filter out Recharts noise that causes render-cycle state updates
+        const message = args.join(' ');
+        if (message.includes('width(-1)') || message.includes('height(-1)')) {
+          return;
+        }
+
         // Save to storage
         this.saveLog(level, args);
       };
     });
+
 
     this.initialized = true;
     console.log("🚀 [Logger] Persistant logging initialized.");

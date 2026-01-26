@@ -6,6 +6,8 @@ import {
 } from "../lib/authService";
 import { supabase } from "../lib/supabase";
 import { getStoredUserData, storeUserData } from "../lib/localStorageUtils";
+import { getStoredAccounts } from "../lib/sessionManager";
+import { useSessionHeartbeat } from "./useSessionHeartbeat";
 
 export interface UseAuthGuardReturn {
   user: UserProfile | null;
@@ -15,18 +17,11 @@ export interface UseAuthGuardReturn {
   refetchUser: () => Promise<void>;
 }
 
-/**
- * Central authentication guard hook
- * Handles all auth logic, redirects, and profile management
- * 
- * Usage:
- * const { user, loading, error, mounted } = useAuthGuard();
- */
 export function useAuthGuard(): UseAuthGuardReturn {
   const router = useRouter();
   
-  // Initialize with cached data for ghost loading (prevents flicker)
   const [user, setUser] = useState<UserProfile | null>(() => {
+    // Initial load from localStorage for ghost loading
     const cachedData = getStoredUserData();
     if (cachedData) {
       return {
@@ -60,48 +55,126 @@ export function useAuthGuard(): UseAuthGuardReturn {
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
 
+  // Initialize session heartbeat
+  useSessionHeartbeat(user);
+
   const fetchAuth = async () => {
     if (loading) return;
     setLoading(true);
     
     try {
+      // 1. Initial Auth Check (Supabase & Multi-Account Card Logic)
+      const isLoginPage = router.pathname === "/login" || router.pathname === "/auth/login";
+      const isRootPath = router.pathname === "/";
+      
+      if (isLoginPage || isRootPath) {
+        // --- ADDITION: If just logged out, don't auto-redirect ---
+        const isLogoutUrl = typeof window !== 'undefined' && (
+          router.query.logout === "true" || 
+          window.location.search.includes("logout=true") ||
+          sessionStorage.getItem('tfc_just_logged_out') === 'true'
+        );
+
+        if (isLogoutUrl) {
+            console.log("🛑 [AuthGuard] Fresh logout detected, staying on Login page.");
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('tfc_just_logged_out');
+            }
+            setLoading(false);
+            return;
+        }
+
+
+        // 1a. Check if Supabase client ALREADY has an active session from hydration
+
+
+        const { data: { session: currentSupabaseSession } } = await supabase.auth.getSession();
+        const accounts = getStoredAccounts();
+
+        if (currentSupabaseSession && accounts.length > 0) {
+            // Check if this Supabase session matches one of our stored accounts
+            const sessionActive = accounts.some(a => a.user_id === currentSupabaseSession.user.id);
+            if (sessionActive) {
+                console.log("✅ [AuthGuard] Active session detected, auto-bypassing login/home");
+                router.push("/dashboard");
+                return;
+            }
+        }
+
+        // 1b. Check database for active multi-account tokens
+        if (accounts.length > 0) {
+          try {
+            const tokens = accounts.map(a => a.token_id);
+            const response = await fetch('/api/auth/batch-status', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tokens })
+            });
+            const data = await response.json();
+            
+            if (data.active_tokens && data.active_tokens.length > 0) {
+              const activeTokenId = data.active_tokens[0]; 
+              const activeAccount = accounts.find(a => a.token_id === activeTokenId);
+              
+              if (activeAccount) {
+                console.log("🚀 [AuthGuard] Active token found in DB, restoring and bypassing login/home");
+                await supabase.auth.setSession({
+                  access_token: activeAccount.access_token,
+                  refresh_token: activeAccount.refresh_token
+                });
+                
+                // CRITICAL: Strictly await activation on the server before moving to dashboard
+                console.log("📡 [AuthGuard] Confirming activation with server...");
+                const activateRes = await fetch("/api/auth/activate-session", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ token_id: activeAccount.token_id }),
+                });
+
+                if (activateRes.ok) {
+                    console.log("✅ [AuthGuard] Server confirmed active. Moving to Dashboard.");
+                    router.push("/dashboard");
+                    return;
+                } else {
+                    console.error("⚠️ [AuthGuard] Activation call failed, but proceeding anyway to avoid stuck UI.");
+                    router.push("/dashboard");
+                    return;
+                }
+
+              }
+            }
+          } catch (e) {
+            console.error("Batch status check failed:", e);
+          }
+        }
+      }
+
       const result = await checkAuthAndFetchProfile();
 
-      // Handle redirect scenarios
       if (result.shouldRedirect) {
         setUser(null);
         setLoading(false);
-        if (router.pathname !== "/login" && router.pathname !== "/auth/login") {
-          console.log("🚩 [AuthGuard] Redirecting to login because auth failed");
+        if (!isLoginPage && !isRootPath) {
           router.push("/login");
         }
         return;
       }
 
-      if (result.error) {
-        setError(result.error);
-        setLoading(false);
-        setTimeout(() => {
-          if (router.pathname !== "/login") {
-            router.push("/login");
-          }
-        }, 2000);
-        return;
-      }
-
       if (result.user) {
-        // Fetch latest profile data from API
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        // --- ADDITION: If we landed on Login/Home but result says we ARE authenticated, push to dashboard ---
+        if (isLoginPage || isRootPath) {
+          router.push("/dashboard");
+          return;
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+
         let latestUserData = result.user;
 
         if (session) {
-          try {
+           try {
             const profileResponse = await fetch("/api/auth/user-profile", {
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-              },
+              headers: { Authorization: `Bearer ${session.access_token}` },
             });
             const profileData = await profileResponse.json();
 
@@ -111,11 +184,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
                 profilePicUrl: profileData.user.profile_pic_url || null,
               };
 
-              // Check profile completion
-              if (profileData.user.profile_complete === false) {
-                if (router.pathname !== "/profile-completion") {
-                  router.push("/profile-completion");
-                }
+              if (profileData.user.profile_complete === false && router.pathname !== "/profile-completion") {
+                router.push("/profile-completion");
                 setLoading(false);
                 return;
               }
@@ -125,63 +195,29 @@ export function useAuthGuard(): UseAuthGuardReturn {
           }
         }
 
-        // Smart state update - only update if data changed
         setUser((prevUser) => {
-          if (!prevUser) {
-            updateLocalStorage(latestUserData);
-            return latestUserData;
+          if (!prevUser || JSON.stringify(prevUser) !== JSON.stringify(latestUserData)) {
+             updateLocalStorage(latestUserData);
+             return latestUserData;
           }
-
-          const hasChanged =
-            prevUser.displayName !== latestUserData.displayName ||
-            prevUser.employeeId !== latestUserData.employeeId ||
-            prevUser.email !== latestUserData.email ||
-            prevUser.approvalStatus !== latestUserData.approvalStatus ||
-            prevUser.accountStatus !== latestUserData.accountStatus ||
-            prevUser.role !== latestUserData.role ||
-            prevUser.phone !== latestUserData.phone ||
-            prevUser.profilePicUrl !== latestUserData.profilePicUrl ||
-            prevUser.statusReason !== latestUserData.statusReason ||
-            prevUser.holdStartDate !== latestUserData.holdStartDate ||
-            prevUser.holdEndDate !== latestUserData.holdEndDate ||
-            prevUser.allTimeActive !== latestUserData.allTimeActive ||
-            prevUser.isClient !== latestUserData.isClient ||
-            prevUser.designation !== latestUserData.designation;
-
-          if (hasChanged) {
-            updateLocalStorage(latestUserData);
-            return latestUserData;
-          }
-
           return prevUser;
         });
 
-        // Handle approval status redirects
-        // Priority: rejected → pending → suspend → hold → approved
-        let redirectPath = "";
-        if (latestUserData.approvalStatus === "rejected") {
-          redirectPath = "/rejected";
-        } else if (latestUserData.approvalStatus === "pending") {
-          redirectPath = "/pending";
-        } else if (
-          latestUserData.approvalStatus === "suspend" ||
-          latestUserData.accountStatus === "suspend"
-        ) {
-          redirectPath = "/suspended";
-        } else if (
-          latestUserData.approvalStatus === "hold" ||
-          latestUserData.accountStatus === "hold"
-        ) {
-          redirectPath = "/hold";
-        }
-
+        // Redirect based on status
+        const statusPaths: Record<string, string> = {
+          rejected: "/rejected",
+          pending: "/pending",
+          suspend: "/suspended",
+          hold: "/hold"
+        };
+        const redirectPath = statusPaths[latestUserData.approvalStatus as string] || statusPaths[latestUserData.accountStatus as string];
         if (redirectPath && router.pathname !== redirectPath) {
           router.push(redirectPath);
         }
       }
     } catch (err: any) {
       console.error("Auth check failed:", err);
-      setError(err.message || "An error occurred during authentication");
+      setError(err.message || "Authentication error");
     } finally {
       setLoading(false);
     }
@@ -189,50 +225,42 @@ export function useAuthGuard(): UseAuthGuardReturn {
 
   const updateLocalStorage = (userData: UserProfile) => {
     if (userData.uid) {
-      const cachedData = getStoredUserData();
-      const userDataToStore = {
-        user_id: userData.uid,
-        email: userData.email || "",
-        user_name: userData.displayName || cachedData?.user_name || "",
-        employee_id: userData.employeeId || cachedData?.employee_id || "",
-        role: userData.role || cachedData?.role || "user",
-        profile_pic_url: userData.profilePicUrl || null,
-        displayName: userData.displayName || undefined,
-        session_token: cachedData?.session_token,
-        refresh_token: cachedData?.refresh_token,
-        status_reason: userData.statusReason || null,
-        hold_start_date: userData.holdStartDate || null,
-        hold_end_date: userData.holdEndDate || null,
-        approval_status: userData.approvalStatus || null,
-        status: userData.accountStatus || null,
-        updated_at: userData.updatedAt || null,
-        all_time_active: userData.allTimeActive ?? true,
-        is_caller: userData.isCaller ?? false,
-        is_client: userData.isClient ?? false,
-        designation: userData.designation || null,
-      };
-      storeUserData(userDataToStore);
+       const cachedData = getStoredUserData();
+       storeUserData({
+          ...cachedData,
+          user_id: userData.uid,
+          email: userData.email,
+          user_name: userData.displayName || cachedData?.user_name || "",
+          employee_id: userData.employeeId || cachedData?.employee_id || "",
+          role: userData.role || cachedData?.role || "user",
+          profile_pic_url: userData.profilePicUrl || null,
+          approval_status: userData.approvalStatus || null,
+          status: userData.accountStatus || null,
+       });
     }
   };
 
   useEffect(() => {
     setMounted(true);
     fetchAuth();
+    
+    const handleFocus = () => fetchAuth();
+    window.addEventListener("focus", handleFocus);
+    
+    // --- ADDITION: Listen for manual logout events to clear state immediately ---
+    const handleLogoutEvent = () => {
+       console.log("🧹 [AuthGuard] Resetting user state due to logout event");
+       setUser(null);
+    };
+    window.addEventListener('tfc-logout-event', handleLogoutEvent);
 
-    // Refresh user data when page comes into focus
-    const handleFocus = () => {
-      fetchAuth();
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener('tfc-logout-event', handleLogoutEvent);
     };
 
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [router]);
+  }, [router.pathname]);
 
-  return {
-    user,
-    loading,
-    error,
-    mounted,
-    refetchUser: fetchAuth,
-  };
+  return { user, loading, error, mounted, refetchUser: fetchAuth };
 }
+

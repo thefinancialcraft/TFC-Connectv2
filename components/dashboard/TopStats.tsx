@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+
 import {
   BarChart,
   Bar,
@@ -19,6 +21,14 @@ interface TopStatsProps {
 
 export default function TopStats({ stats, chartData, loading = false }: TopStatsProps) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+
 
   const cards = [
     // ... same cards
@@ -108,10 +118,10 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
               </div>
 
               <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                <div className="w-24 h-10">
-                  {card.chartType === "bar" ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData}>
+                <div style={{ width: '96px', height: '40px' }}>
+                  {mounted && (
+                    card.chartType === "bar" ? (
+                      <BarChart width={96} height={40} data={chartData}>
                         <Bar
                           dataKey="dials"
                           fill={card.color}
@@ -119,10 +129,8 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
                           opacity={0.6}
                         />
                       </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData}>
+                    ) : (
+                      <AreaChart width={96} height={40} data={chartData}>
                         <Area
                           type="monotone"
                           dataKey="dials"
@@ -132,9 +140,13 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
                           strokeWidth={2}
                         />
                       </AreaChart>
-                    </ResponsiveContainer>
+                    )
                   )}
                 </div>
+
+
+
+
                 <button
                   onClick={() => router.push("/activity")}
                   className="text-xs font-bold text-gray-400 hover:text-[#4b33e8] transition-colors flex items-center gap-1 group/btn"

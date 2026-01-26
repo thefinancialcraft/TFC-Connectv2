@@ -8,6 +8,8 @@ type Data = {
   session?: {
     access_token: string;
     refresh_token: string;
+    expires_at: string;
+    token_id: string;
   };
 };
 
@@ -47,24 +49,30 @@ export default async function handler(
       });
     }
 
+    const ipAddress = getClientIP(req);
+    let location = clientLocation || 'Unknown Location';
+    if (!clientLocation || clientLocation === 'Unknown Location') {
+      location = await getLocationFromIP(ipAddress);
+    }
+
+    // Handle token_id (Support multi-account/quick-login system)
+    const { token_id: clientTokenId } = req.body;
+    const crypto = await import('crypto');
+    const finalTokenId = clientTokenId || `token_${crypto.randomBytes(5).toString('hex')}`;
+
+    const sessionExpiry = new Date();
+    sessionExpiry.setMonth(sessionExpiry.getMonth() + 1); // Exactly 1 month expiry from now
+
     // Store session information in database
     if (supabaseAdmin) {
       try {
         const userAgent = req.headers['user-agent'] || '';
         const deviceInfo = getDeviceInfo(userAgent);
-        const ipAddress = getClientIP(req);
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + 30);
-
-        // Get location: prefer client location, fallback to IP-based geolocation
-        let location = clientLocation || 'Unknown Location';
-        if (!clientLocation || clientLocation === 'Unknown Location') {
-          location = await getLocationFromIP(ipAddress);
-        }
 
         await supabaseAdmin
           .from('user_sessions')
-          .insert({
+          .upsert({
+            token_id: finalTokenId,
             user_id: data.user.id,
             session_token: data.session.access_token,
             device_name: deviceInfo.deviceName,
@@ -74,11 +82,14 @@ export default async function handler(
             ip_address: ipAddress,
             location: location,
             is_active: true,
-            expires_at: expiresAt.toISOString(),
+            last_login_at: new Date().toISOString(),
+            last_accessed_at: new Date().toISOString(),
+            expires_at: sessionExpiry.toISOString(),
+          }, { 
+            onConflict: 'token_id' 
           });
       } catch (sessionStoreError) {
         console.error('Error storing session:', sessionStoreError);
-        // Don't fail login if session storage fails
       }
     }
 
@@ -87,6 +98,8 @@ export default async function handler(
       session: {
         access_token: data.session.access_token,
         refresh_token: data.session.refresh_token,
+        expires_at: sessionExpiry.toISOString(),
+        token_id: finalTokenId,
       },
     });
   } catch (error: any) {
@@ -94,4 +107,5 @@ export default async function handler(
     return res.status(500).json({ error: 'An error occurred during login' });
   }
 }
+
 

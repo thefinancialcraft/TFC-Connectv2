@@ -7,7 +7,7 @@ import SocialLoginButtons from "../components/SocialLoginButtons";
 import HeroSection from "../components/HeroSection";
 import ErrorNotification from "../components/ErrorNotification";
 import LoggedOutUserCard from "../components/LoggedOutUserCard";
-import { getStoredUserData } from "../lib/localStorageUtils";
+import { getStoredAccounts } from "../lib/sessionManager";
 
 export default function Login() {
   const router = useRouter();
@@ -18,10 +18,15 @@ export default function Login() {
   const [showLoginForm, setShowLoginForm] = useState(false);
 
   useEffect(() => {
-    // Check if user data exists in localStorage
-    const storedUser = getStoredUserData();
-    setShowLoginForm(!storedUser); // Show login form only if no stored user
+    // Check if any account cards exist in the new multi-account system
+    const accounts = getStoredAccounts();
+    if (!accounts || accounts.length === 0) {
+      setShowLoginForm(true);
+    } else {
+      setShowLoginForm(false);
+    }
   }, []);
+
 
   const toggleForm = () => {
     setFormType(formType === "userId" ? "email" : "userId");

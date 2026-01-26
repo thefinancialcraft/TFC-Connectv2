@@ -99,8 +99,12 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
         setLoading(true);
         setError(null);
 
-        const { data: { session } } = await supabase.auth.getSession();
+        // Wait for session using the robust helper (handles hydration race conditions)
+        const { ensureValidSession } = await import("../lib/sessionManager");
+        const session = await ensureValidSession();
+
         if (!session) throw new Error("Not authenticated");
+
 
         const params = new URLSearchParams({
           dateFilter,

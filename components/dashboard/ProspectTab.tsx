@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -30,6 +31,14 @@ export default function ProspectTab({
   campaignData,
   pieData,
 }: ProspectTabProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+
   return (
     <>
       {/* Middle Row (Analytics & Performance) */}
@@ -44,30 +53,34 @@ export default function ProspectTab({
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center">
-            <div className="relative w-full h-40 pb-3 sm:h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart
-                  cx="50%"
-                  cy="100%"
-                  innerRadius="150%"
-                  outerRadius="130%"
-                  startAngle={180}
-                  endAngle={0}
-                  data={[
-                    {
-                      name: "Score",
-                      value: stats.efficiencyScore,
-                      fill: "#f97316",
-                    },
-                  ]}
-                >
-                  <RadialBar
-                    background={{ fill: "#f5f5f5" }}
-                    dataKey="value"
-                    cornerRadius={30}
-                  />
-                </RadialBarChart>
-              </ResponsiveContainer>
+            <div className="relative w-full" style={{ height: '180px' }}>
+              {mounted && (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+
+                  <RadialBarChart
+                    cx="50%"
+                    cy="100%"
+                    innerRadius="150%"
+                    outerRadius="130%"
+                    startAngle={180}
+                    endAngle={0}
+                    data={[
+                      {
+                        name: "Score",
+                        value: stats.efficiencyScore,
+                        fill: "#f97316",
+                      },
+                    ]}
+                  >
+                    <RadialBar
+                      background={{ fill: "#f5f5f5" }}
+                      dataKey="value"
+                      cornerRadius={30}
+                    />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+              )}
+
               <div className="absolute top-[75%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
                 <h4 className="text-3xl font-bold text-[#263238]">
                   {stats.efficiencyScore}{" "}
@@ -157,76 +170,80 @@ export default function ProspectTab({
               <i className="fi fi-rr-info text-[10px] text-gray-300"></i>
             </h3>
           </div>
-          <div className="flex-1 min-h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={campaignData} barGap={8}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#F1F1F1"
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fill: "#787E9D",
-                    fontSize: 10,
-                    fontWeight: 600,
-                  }}
-                  dy={5}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fill: "#787E9D",
-                    fontSize: 10,
-                    fontWeight: 600,
-                  }}
-                />
-                <Tooltip
-                  cursor={{ fill: "#F9FAFB", radius: 8 }}
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "none",
-                    background: "#111827",
-                    color: "#fff",
-                    fontSize: "11px",
-                  }}
-                />
-                <Bar
-                  dataKey="total"
-                  name="Total"
-                  fill="#4b33e8"
-                  radius={[4, 4, 4, 4]}
-                  barSize={20}
-                >
-                  <LabelList
+          <div className="flex-1" style={{ height: '250px', width: '100%', position: 'relative' }}>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+
+                <BarChart data={campaignData} barGap={8}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#F1F1F1"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fill: "#787E9D",
+                      fontSize: 10,
+                      fontWeight: 600,
+                    }}
+                    dy={5}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fill: "#787E9D",
+                      fontSize: 10,
+                      fontWeight: 600,
+                    }}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "#F9FAFB", radius: 8 }}
+                    contentStyle={{
+                      borderRadius: "12px",
+                      border: "none",
+                      background: "#111827",
+                      color: "#fff",
+                      fontSize: "11px",
+                    }}
+                  />
+                  <Bar
                     dataKey="total"
-                    position="center"
-                    fill="#fff"
-                    fontSize={8}
-                    fontWeight="bold"
-                  />
-                </Bar>
-                <Bar
-                  dataKey="success"
-                  name="Conv"
-                  fill="#10b981"
-                  radius={[4, 4, 4, 4]}
-                  barSize={20}
-                >
-                  <LabelList
+                    name="Total"
+                    fill="#4b33e8"
+                    radius={[4, 4, 4, 4]}
+                    barSize={20}
+                  >
+                    <LabelList
+                      dataKey="total"
+                      position="center"
+                      fill="#fff"
+                      fontSize={8}
+                      fontWeight="bold"
+                    />
+                  </Bar>
+                  <Bar
                     dataKey="success"
-                    position="center"
-                    fill="#fff"
-                    fontSize={8}
-                    fontWeight="bold"
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                    name="Conv"
+                    fill="#10b981"
+                    radius={[4, 4, 4, 4]}
+                    barSize={20}
+                  >
+                    <LabelList
+                      dataKey="success"
+                      position="center"
+                      fill="#fff"
+                      fontSize={8}
+                      fontWeight="bold"
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+
           </div>
         </div>
 
@@ -240,80 +257,84 @@ export default function ProspectTab({
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="h-[180px] w-full relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={
-                      pieData.length > 0
-                        ? pieData
-                        : [{ name: "Fresh Lead", value: 1 }]
-                    }
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={75}
-                    paddingAngle={6}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          [
-                            "#f97316",
-                            "#4b33e8",
-                            "#10b981",
-                            "#facc15",
-                            "#6366f1",
-                          ][index % 5]
-                        }
+            <div className="relative w-full" style={{ height: '180px' }}>
+              {mounted && (
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+
+                  <PieChart>
+                    <Pie
+                      data={
+                        pieData.length > 0
+                          ? pieData
+                          : [{ name: "Fresh Lead", value: 1 }]
+                      }
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={75}
+                      paddingAngle={6}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            [
+                              "#f97316",
+                              "#4b33e8",
+                              "#10b981",
+                              "#facc15",
+                              "#6366f1",
+                            ][index % 5]
+                          }
+                        />
+                      ))}
+                      <Label
+                        content={(props: any) => {
+                          const { cx, cy } = props.viewBox;
+                          return (
+                            <g>
+                              <text
+                                x={cx}
+                                y={cy - 5}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                style={{
+                                  fontSize: "20px",
+                                  fontWeight: "bold",
+                                  fill: "#263238",
+                                  fontFamily: "Poppins",
+                                }}
+                              >
+                                {stats.totalCustomers}
+                              </text>
+                              <text
+                                x={cx}
+                                y={cy + 12}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                style={{
+                                  fontSize: "8px",
+                                  fontWeight: "bold",
+                                  fill: "#787E9D",
+                                  fontFamily: "Poppins",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em",
+                                }}
+                              >
+                                Leads
+                              </text>
+                            </g>
+                          );
+                        }}
                       />
-                    ))}
-                    <Label
-                      content={(props: any) => {
-                        const { cx, cy } = props.viewBox;
-                        return (
-                          <g>
-                            <text
-                              x={cx}
-                              y={cy - 5}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              style={{
-                                fontSize: "20px",
-                                fontWeight: "bold",
-                                fill: "#263238",
-                                fontFamily: "Poppins",
-                              }}
-                            >
-                              {stats.totalCustomers}
-                            </text>
-                            <text
-                              x={cx}
-                              y={cy + 12}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              style={{
-                                fontSize: "8px",
-                                fontWeight: "bold",
-                                fill: "#787E9D",
-                                fontFamily: "Poppins",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em",
-                              }}
-                            >
-                              Leads
-                            </text>
-                          </g>
-                        );
-                      }}
-                    />
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+
             </div>
 
             <div className="mt-4 space-y-3.5">

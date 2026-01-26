@@ -27,10 +27,30 @@ export default function LogPip() {
         setLogs(globalLogger.getLogs().slice(0, 100));
         setBridgeLogs(globalBridgeLogger.getLogs().slice(0, 100));
 
-        const handleNewLog = () => setLogs(globalLogger.getLogs().slice(0, 100));
-        const handleNewBridgeLog = () => setBridgeLogs(globalBridgeLogger.getLogs().slice(0, 100));
-        const handleCleared = () => setLogs([]);
-        const handleBridgeCleared = () => setBridgeLogs([]);
+        const handleNewLog = () => {
+          requestAnimationFrame(() => {
+            setLogs(globalLogger.getLogs().slice(0, 100));
+          });
+        };
+
+        const handleNewBridgeLog = () => {
+          requestAnimationFrame(() => {
+            setBridgeLogs(globalBridgeLogger.getLogs().slice(0, 100));
+          });
+        };
+
+        const handleCleared = () => {
+          requestAnimationFrame(() => {
+            setLogs([]);
+          });
+        };
+
+        const handleBridgeCleared = () => {
+          requestAnimationFrame(() => {
+            setBridgeLogs([]);
+          });
+        };
+
 
         const handleToggle = (e: any) => {
             const newState = e.detail;

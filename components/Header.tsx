@@ -12,7 +12,8 @@ interface HeaderProps {
     employeeId?: string | null;
     profilePicUrl?: string | null;
   };
-  onLogout?: () => void;
+  onLogout?: (tokenId?: string) => void;
+
 }
 
 function HeaderComponent({ user, onLogout }: HeaderProps) {
@@ -22,6 +23,7 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   const [mounted, setMounted] = useState(false);
   const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [localEntryId, setLocalEntryId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const lastProcessedRef = useRef<{ type: string; value: any; time: number } | null>(null);
@@ -46,8 +48,8 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   // Use cached user for display (prevents "User / Not assigned" flicker)
   // Memoize displayUser to prevent recalculation on every render
   const displayUser = useMemo(() => {
-    return mounted ? (cachedUser || user) : user;
-  }, [mounted, cachedUser, user]);
+    return mounted ? (user || cachedUser) : user;
+  }, [mounted, user, cachedUser]);
 
   const initials = useMemo(() => {
     if (!mounted) return "U"; // Return default during SSR to prevent hydration mismatch
@@ -311,11 +313,33 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
 
 
   // Stable logout handler
-  const handleLogout = useCallback(() => {
-    if (onLogout) {
-      onLogout();
+  const handleLogout = useCallback(async () => {
+    if (isLoggingOut || !onLogout) return;
+    setIsLoggingOut(true);
+    try {
+      // 1. Get current active token from metadata
+      const { getStoredUserData } = await import("../lib/localStorageUtils");
+      const activeData = getStoredUserData();
+      const accounts = (await import("../lib/sessionManager")).getStoredAccounts();
+      
+      let currentTokenId = activeData?.token_id;
+
+      // 2. Fallback: Search in accounts
+      if (!currentTokenId) {
+        currentTokenId = displayUser?.employeeId 
+          ? accounts.find(a => a.employee_id === displayUser.employeeId)?.token_id 
+          : accounts[0]?.token_id;
+      }
+
+      onLogout(currentTokenId);
+
+    } catch (err) {
+      console.error("Logout exception:", err);
+      setIsLoggingOut(false);
     }
-  }, [onLogout]);
+  }, [isLoggingOut, onLogout, displayUser?.employeeId]);
+
+
 
   // Mobile header design
   return (
@@ -366,11 +390,16 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleLogout}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              disabled={isLoggingOut}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
               style={{ color: "#EF4444" }}
               aria-label="Logout"
             >
-              <i className="fi flex fi-rr-exit text-lg"></i>
+              {isLoggingOut ? (
+                <div className="w-5 h-5 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
+              ) : (
+                <i className="fi flex fi-rr-exit text-lg"></i>
+              )}
             </button>
           </div>
         </div>

@@ -4,6 +4,8 @@ import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
 import { showSuccess, showError } from "../lib/dialogUtils";
 import SettingsFormFields from "../components/SettingsFormFields";
+import { getStoredUserData } from "../lib/localStorageUtils";
+
 import FlutterBridgeTab from "../components/settings/FlutterBridgeTab";
 import DevicesTab from "../components/settings/DevicesTab";
 import ConsoleLogsTab from "../components/settings/ConsoleLogsTab";
@@ -101,6 +103,19 @@ export default function Settings() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [activeSessions, setActiveSessions] = useState<any[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+
+  const currentUserId = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return getStoredUserData()?.user_id;
+  }, []);
+
+  const currentTokenId = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return getStoredUserData()?.token_id;
+  }, []);
+
+
+
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -219,7 +234,11 @@ export default function Settings() {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const data = await res.json();
-      if (data.success) setActiveSessions(data.sessions);
+      if (data.success) {
+        console.log("📱 [Settings] Fetched Active Sessions:", data.sessions);
+        setActiveSessions(data.sessions);
+      }
+
     } catch (error) { console.error(error); }
     finally { setIsLoadingSessions(false); }
   };
@@ -401,24 +420,81 @@ export default function Settings() {
 
                   {/* Sessions Section */}
                   <div className="space-y-4">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Sessions</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Sessions</h4>
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-full border border-gray-200">
+                        {activeSessions.length} {activeSessions.length === 1 ? 'Session' : 'Sessions'}
+                      </span>
+                    </div>
+
                     <div className="space-y-3">
-                      {activeSessions.length > 0 ? activeSessions.map(s => (
-                        <div key={s.id} className="p-4 bg-gray-50 rounded-2xl flex items-center justify-between border border-gray-100">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-[#4b33e8] border border-gray-200">
-                              <i className="fi fi-rr-desktop" />
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-[#263238]">{s.device_name || "Device"}</p>
-                              <p className="text-[10px] text-gray-400">{s.location || "Unknown"} • {formatTimeAgo(s.last_accessed_at)}</p>
-                            </div>
-                          </div>
-                          <button onClick={() => handleRevokeSession(s.id)} className="text-[10px] font-bold text-red-500 hover:underline">Revoke</button>
+                      {isLoadingSessions ? (
+                        <div className="flex flex-col items-center justify-center py-10 gap-3">
+                          <div className="w-6 h-6 border-2 border-[#4b33e8]/30 border-t-[#4b33e8] rounded-full animate-spin"></div>
+                          <p className="text-[10px] font-bold text-gray-400">Loading sessions...</p>
                         </div>
-                      )) : (
+                      ) : activeSessions.length > 0 ? activeSessions.map(s => {
+                        const isCurrentSession = s.token_id === currentTokenId;
+                        const sessionId = s.id || s.token_id;
+                        console.log(`Debug Session ${sessionId}: type=${s.device_type}`);
+
+                        return (
+                          <div 
+                            key={sessionId} 
+                            className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${
+                              isCurrentSession 
+                                ? 'bg-[#4b33e8]/5 border-[#4b33e8] ring-1 ring-[#4b33e8]/20' 
+                                : 'bg-gray-50 border-gray-100'
+                            }`}
+                          >
+
+
+
+                            <div className="flex items-center gap-3">
+                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-colors ${
+                                isCurrentSession ? 'bg-white text-[#4b33e8] border-[#4b33e8]' : 'bg-white text-gray-400 border-gray-100'
+                              }`}>
+                                <i className={`fi flex text-xl ${
+                                  s.device_type?.toLowerCase() === 'mobile' 
+                                    ? 'fi-rr-smartphone' 
+                                    : 'fi-rr-laptop'
+                                }`}></i>
+                              </div>
+
+
+
+
+
+
+
+
+
+
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <p className="text-xs font-bold text-[#263238]">{s.device_name || "Device"}</p>
+                                  {isCurrentSession && (
+                                    <span className="px-1.5 py-0.5 bg-[#4b33e8] text-white text-[8px] font-bold rounded-md uppercase tracking-wider">Current</span>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-gray-400">{s.location || "Unknown"} • {formatTimeAgo(s.last_accessed_at)}</p>
+                              </div>
+                            </div>
+                            {!isCurrentSession && (
+                              <button 
+                                onClick={() => handleRevokeSession(sessionId)} 
+                                className="text-[10px] font-bold text-red-500 hover:underline hover:text-red-600"
+                              >
+                                Revoke
+                              </button>
+                            )}
+
+                          </div>
+                        );
+                      }) : (
                         <div className="text-center py-10 text-gray-400 text-xs">No active sessions found</div>
                       )}
+
                     </div>
                   </div>
                 </div>

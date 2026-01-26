@@ -56,6 +56,10 @@ export const notifyLogoutToFlutter = () => {
 export const syncUserInfoToFlutter = (user: any) => {
   if (!user) return false;
   
+  // Only proceed if bridge is actually active in the window
+  const isBridgeActive = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview?.callHandler;
+  if (!isBridgeActive) return false;
+
   // Normalize user data for bridge
   const userInfoPayload = {
     user_name: user.displayName || user.user_name || null,
@@ -72,6 +76,7 @@ export const syncUserInfoToFlutter = (user: any) => {
   console.log("🚀 [Bridge] Syncing User Profile");
   return notifyFlutter('sync_user_info', userInfoPayload);
 };
+
 
 export const requestDeviceInfoFromFlutter = () => {
   console.log("🚀 [Bridge] Requesting Device Info");

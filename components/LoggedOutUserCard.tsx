@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { getStoredUserData, getAllStoredUsers, clearStoredUserData, removeStoredUser, storeUserData, StoredUserData } from "../lib/localStorageUtils";
+import { getStoredAccounts, removeAccount, StoredUser, saveAccount } from "../lib/sessionManager";
 import { supabase } from "../lib/supabase";
 import { showError, showSuccess } from "../lib/dialogUtils";
 import SocialLoginButtons from "./SocialLoginButtons";
@@ -14,68 +14,38 @@ interface LoggedOutUserCardProps {
 
 export default function LoggedOutUserCard({ onShowLoginForm, onLoginAnotherAccount, formType = "userId", onToggleForm }: LoggedOutUserCardProps) {
   const router = useRouter();
-  const [userData, setUserData] = useState<StoredUserData | null>(null);
-  const [allUsers, setAllUsers] = useState<StoredUserData[]>([]);
+  const [allUsers, setAllUsers] = useState<StoredUser[]>([]);
+  const [activeTokens, setActiveTokens] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
-      // Get all stored users (supports multiple users)
-      const usersArray = getAllStoredUsers();
-      console.log('Loaded stored users:', usersArray);
-      
-      if (usersArray.length === 0) {
-        // No users found, check if single user storage exists (backward compatibility)
-        const singleUser = getStoredUserData();
-        if (singleUser) {
-          usersArray.push(singleUser);
-        }
-      }
-      
-      if (usersArray.length > 0) {
-        setAllUsers(usersArray);
-        setCurrentIndex(0);
+      const accounts = getStoredAccounts();
+      if (accounts.length > 0) {
+        setAllUsers(accounts);
         
-        // Check if Supabase has a session (might be from previous login)
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        const currentUser = usersArray[0];
-        
-        // If we have stored data but no tokens, try to get from Supabase session
-        if ((!currentUser.session_token || !currentUser.refresh_token) && session) {
-          console.log('Found Supabase session but stored data missing tokens, updating localStorage');
-          const updatedData = {
-            ...currentUser,
-            session_token: session.access_token,
-            refresh_token: session.refresh_token,
-          };
-          storeUserData(updatedData);
-          const updatedUsers = [...usersArray];
-          updatedUsers[0] = updatedData;
-          setAllUsers(updatedUsers);
-          setUserData(updatedData);
-        } else {
-          setUserData(currentUser);
+        // Batch check which tokens are still active in Supabase
+        try {
+          const response = await fetch('/api/auth/batch-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tokens: accounts.map(a => a.token_id) })
+          });
+          const data = await response.json();
+          if (data.active_tokens) {
+            setActiveTokens(data.active_tokens);
+          }
+        } catch (e) {
+          console.error("Failed to check token statuses:", e);
         }
       } else {
-        // Check if Supabase has session but no stored data
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          console.log('Supabase session found but no stored user data');
-        }
+        onShowLoginForm();
       }
     };
     
     loadUserData();
   }, []);
-
-  // Update current user data when index changes
-  useEffect(() => {
-    if (allUsers.length > 0 && currentIndex >= 0 && currentIndex < allUsers.length) {
-      setUserData(allUsers[currentIndex]);
-    }
-  }, [currentIndex, allUsers]);
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : allUsers.length - 1));
@@ -85,469 +55,218 @@ export default function LoggedOutUserCard({ onShowLoginForm, onLoginAnotherAccou
     setCurrentIndex((prev) => (prev < allUsers.length - 1 ? prev + 1 : 0));
   };
 
-  const handleRemoveAccount = () => {
+  const handleRemoveAccount = async () => {
+    const userData = allUsers[currentIndex];
     if (!userData) return;
     
-    // Remove current user from stored users
-    removeStoredUser(userData.user_id);
-    
-    // Update local state
-    const updatedUsers = allUsers.filter((u) => u.user_id !== userData.user_id);
+    // --- NEW: Also remove from DB ---
+    try {
+      console.log(`🗑️ [UserCard] Removing session ${userData.token_id} from DB...`);
+      await fetch("/api/auth/delete-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token_id: userData.token_id }),
+      });
+    } catch (e) {
+      console.error("❌ [UserCard] Failed to remove session from DB:", e);
+    }
+
+    removeAccount(userData.token_id);
+    const updatedUsers = allUsers.filter((u) => u.token_id !== userData.token_id);
     setAllUsers(updatedUsers);
     
     if (updatedUsers.length > 0) {
-      // Switch to first remaining user
       setCurrentIndex(0);
-      setUserData(updatedUsers[0]);
     } else {
-      // No users left, show login form
-      setUserData(null);
-      if (onLoginAnotherAccount) {
-        onLoginAnotherAccount();
-      } else {
-        onShowLoginForm();
-      }
+      onShowLoginForm();
     }
   };
 
+
   const handleLogin = async () => {
+    const userData = allUsers[currentIndex];
+    if (!userData) return;
+
     setIsLoading(true);
     
     try {
-      // First check if Supabase already has an active session
-      const { data: { session: existingSession }, error: getSessionError } = await supabase.auth.getSession();
-      
-      if (existingSession && existingSession.user?.email_confirmed_at) {
-        // Verify the existing session is actually valid by fetching the user
-        const { data: { user: verifiedUser }, error: verifyError } = await supabase.auth.getUser();
-        
-        if (verifyError || !verifiedUser) {
-          console.error('Existing session verification failed:', verifyError);
-          // Session exists but is invalid, continue with token restoration
-        } else {
-          // Already have a valid and verified session, just redirect
-          console.log('Found existing Supabase session, verified, redirecting');
-          // Update stored data with current session tokens
-          if (userData) {
-            storeUserData({
-              ...userData,
-              session_token: existingSession.access_token,
-              refresh_token: existingSession.refresh_token,
-            });
-          }
-          showSuccess('Welcome back!', 'Login Success');
-          setIsLoading(false);
-          router.push('/dashboard');
-          return;
-        }
-      }
-
-      // No existing session, try to restore using stored tokens
-      if (!userData?.session_token || !userData?.refresh_token) {
-        // No stored session tokens, show login form
-        console.log('No session tokens found, showing login form');
-        setIsLoading(false);
-        onShowLoginForm();
-        return;
-      }
-
-      // Try to restore session using stored tokens
-      console.log('Attempting to restore session with stored tokens...');
-      console.log('Token details:', {
-        hasAccessToken: !!userData.session_token,
-        accessTokenLength: userData.session_token?.length,
-        hasRefreshToken: !!userData.refresh_token,
-        refreshTokenLength: userData.refresh_token?.length,
+      // Restore session in Supabase client
+      const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+        access_token: userData.access_token,
+        refresh_token: userData.refresh_token,
       });
-      
-      // Skip verification - directly try to restore session with stored tokens
-      // If tokens are expired, refreshSession/setSession will fail and we'll handle it below
-      console.log('Attempting to restore session with stored tokens...');
-      
-      let session = null;
-      let sessionError = null;
-      
-      // Try refreshSession first - refresh tokens last longer than access tokens
-      // Access tokens expire quickly (usually 1 hour), so we should refresh first
-      if (userData.refresh_token) {
-        try {
-          console.log('Trying refreshSession first (refresh tokens last longer)...');
-          const refreshResponse = await supabase.auth.refreshSession({
-            refresh_token: userData.refresh_token,
-          });
-          
-          if (refreshResponse.data?.session) {
-            // Verify the refreshed session is actually valid by fetching the user
-            const { data: { user: verifiedUser }, error: verifyError } = await supabase.auth.getUser();
-            
-            if (verifyError || !verifiedUser) {
-              console.error('Refreshed session verification failed:', verifyError);
-              sessionError = verifyError || new Error('User verification failed');
-            } else {
-              session = refreshResponse.data.session;
-              console.log('Session refreshed and verified successfully with refreshSession');
-              // Update stored tokens with new ones - ensure all card details are preserved
-              const updatedUserData = {
-                ...userData,
-                session_token: session.access_token,
-                refresh_token: session.refresh_token,
-              };
-              storeUserData(updatedUserData);
-              // Update local state
-              setUserData(updatedUserData);
-              // Update in allUsers array
-              const updatedUsers = [...allUsers];
-              const currentUserIndex = updatedUsers.findIndex(u => u.user_id === userData.user_id);
-              if (currentUserIndex >= 0) {
-                updatedUsers[currentUserIndex] = updatedUserData;
-                setAllUsers(updatedUsers);
-              }
-            }
-          } else if (refreshResponse.error) {
-            sessionError = refreshResponse.error;
-            console.error('RefreshSession error:', refreshResponse.error);
-          }
-        } catch (refreshError: any) {
-          console.error('RefreshSession exception:', refreshError);
-          if (!sessionError) {
-            sessionError = refreshError;
-          }
-        }
-      }
-      
-      // If refreshSession didn't work, try setSession as fallback
-      if (!session && !sessionError) {
-        try {
-          console.log('Trying setSession as fallback...');
-          const setSessionResponse = await supabase.auth.setSession({
-            access_token: userData.session_token,
-            refresh_token: userData.refresh_token,
-          });
-          
-          if (setSessionResponse.data?.session) {
-            // Verify the session is actually valid by fetching the user
-            const { data: { user: verifiedUser }, error: verifyError } = await supabase.auth.getUser();
-            
-            if (verifyError || !verifiedUser) {
-              console.error('Session verification failed:', verifyError);
-              sessionError = verifyError || new Error('User verification failed');
-            } else {
-              session = setSessionResponse.data.session;
-              console.log('Session restored and verified successfully with setSession');
-              // Update stored tokens with any new ones (in case they were refreshed)
-              // Ensure all card details are preserved along with session tokens
-              const updatedUserData = {
-                ...userData,
-                session_token: session.access_token,
-                refresh_token: session.refresh_token,
-              };
-              storeUserData(updatedUserData);
-              // Update local state
-              setUserData(updatedUserData);
-              // Update in allUsers array
-              const updatedUsers = [...allUsers];
-              const currentUserIndex = updatedUsers.findIndex(u => u.user_id === userData.user_id);
-              if (currentUserIndex >= 0) {
-                updatedUsers[currentUserIndex] = updatedUserData;
-                setAllUsers(updatedUsers);
-              }
-            }
-          } else if (setSessionResponse.error) {
-            sessionError = setSessionResponse.error;
-            console.error('SetSession error:', setSessionResponse.error);
-          }
-        } catch (setSessionError: any) {
-          console.error('SetSession exception:', setSessionError);
-          sessionError = setSessionError;
-        }
-      }
 
       if (sessionError || !session) {
-        console.error('Failed to restore session for user:', userData.user_id, sessionError);
-        // Token expired or invalid for current user only
-        console.log('Session expired or invalid for current user only');
+        // Token might be expired, remove card and show login
+        console.warn("Session restoration failed:", sessionError);
+        removeAccount(userData.token_id);
+        const updated = allUsers.filter(u => u.token_id !== userData.token_id);
+        setAllUsers(updated);
         
-        setIsLoading(false);
+        if (updated.length === 0) onShowLoginForm();
+        else setCurrentIndex(0);
         
-        // Only remove the current user's card from localStorage
-        removeStoredUser(userData.user_id);
-        
-        // Update local state - remove only this specific user
-        const updatedUsers = allUsers.filter((u) => u.user_id !== userData.user_id);
-        setAllUsers(updatedUsers);
-        
-        if (updatedUsers.length > 0) {
-          // Switch to first remaining user (don't auto-login, just show the card)
-          setCurrentIndex(0);
-          setUserData(updatedUsers[0]);
-          
-          // Show appropriate error message for the failed user only
-          const errorMsg = sessionError?.message?.includes('expired') || 
-                          sessionError?.status === 401
-            ? `Session expired for ${userData.user_name || userData.email}. Please use another account.`
-            : `Failed to restore session for ${userData.user_name || userData.email}. Please use another account.`;
-          
-          showError(errorMsg, 'Session Error');
-        } else {
-          // No users left, show login form
-          setUserData(null);
-          const errorMsg = sessionError?.message?.includes('expired') || 
-                          sessionError?.status === 401
-            ? 'Your session has expired. Please login again.'
-            : 'Failed to restore session. Please login again.';
-          showError(errorMsg, 'Session Error');
-          onShowLoginForm();
-        }
-        return;
-      }
-
-      if (!session) {
-        console.log('No session returned, showing login form');
-        setIsLoading(false);
-        showError('Failed to restore session. Please login again.', 'Login Error');
-        clearStoredUserData();
-        setUserData(null);
-        onShowLoginForm();
-        return;
-      }
-
-      // Verify email confirmation
-      if (!session.user?.email_confirmed_at) {
-        showError('Please verify your email address before accessing the dashboard.', 'Email Not Verified');
+        showError("Session expired. Please login again.", "Token Error");
         setIsLoading(false);
         return;
       }
 
-      // Session restored successfully, redirect to dashboard
-      console.log('Session restored successfully, redirecting to dashboard');
-      
-      // Success! Notify Flutter bridge immediately
-      try {
-        const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
-        notifyLoginToFlutter();
-        if (userData) syncUserInfoToFlutter(userData);
-      } catch (brError) {
-        console.error('Bridge notification error:', brError);
+      // 2. Activate in DB (Strictly await confirmation)
+      console.log("📡 [UserCard] Activating session in DB...");
+      const activateRes = await fetch("/api/auth/activate-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token_id: userData.token_id }),
+      });
+
+      if (activateRes.ok) {
+        console.log("✅ [UserCard] DB Activation confirmed.");
+      } else {
+        console.warn("⚠️ [UserCard] DB Activation failed on server.");
       }
+
+
+      // 3. Compatibility: Update Active Session Metadata
+      const { storeUserData } = await import("../lib/localStorageUtils");
+      storeUserData({
+        user_id: userData.user_id,
+        email: userData.email,
+        user_name: userData.user_name,
+        employee_id: userData.employee_id,
+        role: userData.role,
+        profile_pic_url: userData.profile_pic_url,
+        session_token: userData.access_token,
+        refresh_token: userData.refresh_token,
+        token_id: userData.token_id,
+      });
+
+      // 4. Update Multi-Account Storage last_login_at
+      saveAccount({
+        ...userData,
+        last_login_at: new Date().toISOString()
+      });
+
+
+
+      // Notify Bridge
+      const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
+      notifyLoginToFlutter();
+      syncUserInfoToFlutter(userData);
 
       showSuccess('Welcome back!', 'Login Success');
-      setIsLoading(false);
       router.push('/dashboard');
     } catch (error: any) {
       console.error('Login error:', error);
-      showError(error.message || 'Failed to restore session. Please login again.', 'Login Error');
+      showError('Failed to restore session.', 'Login Error');
       setIsLoading(false);
-      // Clear invalid session data
-      clearStoredUserData();
-      setUserData(null);
-      onShowLoginForm();
     }
   };
 
   const getInitials = (name: string) => {
     if (!name) return "U";
     const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.trim().charAt(0).toUpperCase();
+    return parts.length >= 2 
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : name.trim().charAt(0).toUpperCase();
   };
 
-  if (!userData || allUsers.length === 0) {
-    return null;
-  }
+  const currentUser = allUsers[currentIndex];
+  if (!currentUser) return null;
 
-  const showNavigation = allUsers.length > 1;
+  const isActive = activeTokens.includes(currentUser.token_id);
 
   return (
     <div className="w-full flex flex-col items-center relative">
-      {/* Navigation Buttons - Only show if multiple users */}
-      {showNavigation && (
-        <>
-          {/* Previous Button (Left) */}
-          <button
-            type="button"
-            onClick={handlePrevious}
-            className="absolute left-0 z-10 p-1.5 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors border"
-            style={{ 
-              borderColor: '#DCDEE3',
-              top: '35%',
-              transform: 'translateX(-50%)',
-            }}
-            title="Previous account"
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-4 w-4" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-              strokeWidth={2.5}
-              style={{ color: '#4b33e8' }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-
-          {/* Next Button (Right) */}
-          <button
-            type="button"
-            onClick={handleNext}
-            className="absolute right-0 z-10 p-1.5 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors border"
-            style={{ 
-              borderColor: '#DCDEE3',
-              top: '35%',
-              transform: 'translateX(50%)',
-            }}
-            title="Next account"
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-4 w-4" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-              strokeWidth={2.5}
-              style={{ color: '#4b33e8' }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-
-          {/* Card Indicator (Dots) */}
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
-            {allUsers.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? 'w-6' : ''
-                }`}
-                style={{
-                  backgroundColor: index === currentIndex ? '#4b33e8' : '#DCDEE3',
-                }}
-                title={`Switch to account ${index + 1}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-      {/* Profile Picture */}
       <div className="relative mb-4">
-        {userData.profile_pic_url ? (
+        {currentUser.profile_pic_url ? (
           <img
-            src={userData.profile_pic_url}
-            alt={userData.user_name || 'User'}
-            className="w-24 h-24 rounded-full object-cover"
+            src={currentUser.profile_pic_url}
+            alt={currentUser.user_name}
+            className="w-24 h-24 rounded-full object-cover border-4"
+            style={{ borderColor: isActive ? '#4caf50' : '#DCDEE3' }}
           />
         ) : (
           <div 
-            className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold"
+            className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4"
             style={{ 
               backgroundColor: '#4b33e8',
+              borderColor: isActive ? '#4caf50' : '#DCDEE3',
               fontFamily: "'Poppins', sans-serif"
             }}
           >
-            {getInitials(userData.user_name || userData.displayName || '')}
+            {getInitials(currentUser.user_name)}
+          </div>
+        )}
+
+        {/* Active Badge */}
+        {isActive && (
+          <div 
+            className="absolute bottom-0 right-0 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold border-2 border-white"
+            style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+          >
+            ACTIVE
           </div>
         )}
         
-        {/* Remove Button (Trash Icon) - Top Right */}
+        {/* Remove Button */}
         <button
           type="button"
           onClick={handleRemoveAccount}
           className="absolute -top-1 -right-1 p-1.5 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
-          title="Remove account"
           style={{ color: '#4b33e8' }}
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-4 w-4" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         </button>
       </div>
 
-      {/* User Name */}
-      <h3 
-        className="text-2xl font-bold mb-2 text-center"
-        style={{ 
-          color: '#263238',
-          fontFamily: "'Poppins', sans-serif"
-        }}
-      >
-        {userData.user_name || userData.displayName || 'User'}
+      <h3 className="text-2xl font-bold mb-1 text-center" style={{ color: '#263238' }}>
+        {currentUser.user_name}
       </h3>
 
-      {/* ID and Role */}
-      <p 
-        className="text-sm mb-4 text-center"
-        style={{ 
-          color: '#263238',
-          fontFamily: "'Roboto', sans-serif"
-        }}
-      >
-        {userData.employee_id ? `${userData.employee_id} • ` : ''}
-        {userData.role ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : 'user'}
+      <p className="text-sm mb-4 text-center opacity-70" style={{ color: '#263238' }}>
+        {currentUser.employee_id} • {currentUser.role}
       </p>
 
-      {/* Login Button (Purple with loading state) */}
+      {/* Account Navigation */}
+      {allUsers.length > 1 && (
+        <div className="flex gap-4 mb-6">
+          <button type="button" onClick={handlePrevious} className="p-2 rounded-full border text-[#4b33e8] hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div className="flex items-center gap-1">
+            {allUsers.map((_, i) => (
+              <div key={i} className={`h-1.5 rounded-full transition-all ${i === currentIndex ? 'w-4 bg-[#4b33e8]' : 'w-1.5 bg-gray-300'}`} />
+            ))}
+          </div>
+          <button type="button" onClick={handleNext} className="p-2 rounded-full border text-[#4b33e8] hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={handleLogin}
         disabled={isLoading}
-        className="w-full rounded-full px-6 py-3 md:py-[7px] text-center font-semibold text-white transition-all hover:opacity-90 shadow-md flex items-center justify-center gap-2 disabled:opacity-75"
-        style={{ 
-          backgroundColor: '#4b33e8',
-          fontFamily: "'Poppins', sans-serif"
-        }}
+        className="w-full rounded-full px-6 py-3 font-semibold text-white transition-all hover:opacity-90 shadow-md flex items-center justify-center gap-2"
+        style={{ backgroundColor: '#4b33e8' }}
       >
-        {isLoading ? (
-          <>
-            <div 
-              className="animate-spin rounded-full border-2 border-white border-t-transparent"
-              style={{
-                width: '20px',
-                height: '20px'
-              }}
-            ></div>
-          </>
-        ) : (
-          'Log In'
-        )}
+        {isLoading ? <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" /> : 'Log In Now'}
       </button>
 
-      {/* Divider */}
-      <div className="my-6 md:my-4 flex items-center w-full">
+      <div className="my-4 flex items-center w-full">
         <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
-        <span className="px-4 text-sm" style={{ color: '#787E9D', fontFamily: "'Roboto', sans-serif" }}>
-          or
-        </span>
+        <span className="px-4 text-sm text-gray-400">or</span>
         <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
       </div>
 
-      {/* Social Login Buttons */}
       <div className="w-full">
-        <SocialLoginButtons 
-          formType={formType} 
-          onToggleForm={() => {
-            // When Email/User ID toggle button is clicked
-            // First toggle the form type (if handler provided)
-            if (onToggleForm) {
-              onToggleForm();
-            }
-            // Then show the login form (hide user card)
-            onShowLoginForm();
-          }}
-        />
+        <SocialLoginButtons formType={formType} onToggleForm={() => { onToggleForm?.(); onShowLoginForm(); }} />
       </div>
     </div>
   );
 }
+
 

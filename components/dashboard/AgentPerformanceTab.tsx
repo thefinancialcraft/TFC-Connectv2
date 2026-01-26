@@ -31,6 +31,14 @@ export default function AgentPerformanceTab({
     loading,
     totalDuration
   } = useAgentPerformance();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
+
 
   // Helper to format duration (seconds to HH:MM:SS)
   const formatDuration = (seconds: number) => {
@@ -141,113 +149,117 @@ export default function AgentPerformanceTab({
             </div>
           </div>
 
-          <div className="flex-1 min-h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                layout="vertical"
-                data={agentData}
-                margin={{ top: 0, right: 40, left: 20, bottom: 0 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={true}
-                  horizontal={false}
-                  stroke="#F1F1F1"
-                />
-                <XAxis type="number" hide xAxisId="cnt" />
-                <XAxis type="number" hide xAxisId="dur" />
-                <Legend 
-                  verticalAlign="top" 
-                  align="right" 
-                  iconType="circle"
-                  wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }}
-                />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fill: "#263238",
-                    fontSize: 12,
-                    fontWeight: 700,
-                  }}
-                  width={120}
-                />
-                <Tooltip
-                  cursor={{ fill: "#F9FAFB", radius: 8 }}
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      return (
-                        <div className="bg-[#111827] p-3 rounded-xl border-none shadow-xl">
-                          <p className="text-white font-bold text-xs mb-1">{data.name}</p>
-                          <div className="flex flex-col gap-0.5">
-                            <p className="text-[#4b33e8] text-[10px] font-bold">Dials: {data.count}</p>
-                            <p className="text-green-400 text-[10px] font-bold">Talktime: {formatDuration(data.duration)}</p>
+          <div className="flex-1" style={{ height: '400px', width: '100%', position: 'relative' }}>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+
+                <BarChart
+                  layout="vertical"
+                  data={agentData}
+                  margin={{ top: 0, right: 40, left: 20, bottom: 0 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={true}
+                    horizontal={false}
+                    stroke="#F1F1F1"
+                  />
+                  <XAxis type="number" hide xAxisId="cnt" />
+                  <XAxis type="number" hide xAxisId="dur" />
+                  <Legend 
+                    verticalAlign="top" 
+                    align="right" 
+                    iconType="circle"
+                    wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }}
+                  />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fill: "#263238",
+                      fontSize: 12,
+                      fontWeight: 700,
+                    }}
+                    width={120}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "#F9FAFB", radius: 8 }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-[#111827] p-3 rounded-xl border-none shadow-xl">
+                            <p className="text-white font-bold text-xs mb-1">{data.name}</p>
+                            <div className="flex flex-col gap-0.5">
+                              <p className="text-[#4b33e8] text-[10px] font-bold">Dials: {data.count}</p>
+                              <p className="text-green-400 text-[10px] font-bold">Talktime: {formatDuration(data.duration)}</p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar
-                  dataKey="count"
-                  xAxisId="cnt"
-                  name="Dials"
-                  fill="#4b33e8"
-                  radius={[0, 20, 20, 0]}
-                  barSize={12}
-                >
-                  <LabelList
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar
                     dataKey="count"
-                    position="right"
-                    content={(props: any) => {
-                      const { x, y, width, value } = props;
-                      return (
-                        <text
-                          x={x + width + 5}
-                          y={y + 10}
-                          fill="#4b33e8"
-                          fontSize={10}
-                          fontWeight="bold"
-                        >
-                          {value}
-                        </text>
-                      );
-                    }}
-                  />
-                </Bar>
-                <Bar
-                  dataKey="duration"
-                  xAxisId="dur"
-                  name="Talktime"
-                  fill="#10b981"
-                  radius={[0, 20, 20, 0]}
-                  barSize={12}
-                >
-                   <LabelList
+                    xAxisId="cnt"
+                    name="Dials"
+                    fill="#4b33e8"
+                    radius={[0, 20, 20, 0]}
+                    barSize={12}
+                  >
+                    <LabelList
+                      dataKey="count"
+                      position="right"
+                      content={(props: any) => {
+                        const { x, y, width, value } = props;
+                        return (
+                          <text
+                            x={x + width + 5}
+                            y={y + 10}
+                            fill="#4b33e8"
+                            fontSize={10}
+                            fontWeight="bold"
+                          >
+                            {value}
+                          </text>
+                        );
+                      }}
+                    />
+                  </Bar>
+                  <Bar
                     dataKey="duration"
-                    position="right"
-                    content={(props: any) => {
-                      const { x, y, width, value } = props;
-                      return (
-                        <text
-                          x={x + width + 5}
-                          y={y + 10}
-                          fill="#10b981"
-                          fontSize={10}
-                          fontWeight="bold"
-                        >
-                          {formatDuration(value)}
-                        </text>
-                      );
-                    }}
-                  />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                    xAxisId="dur"
+                    name="Talktime"
+                    fill="#10b981"
+                    radius={[0, 20, 20, 0]}
+                    barSize={12}
+                  >
+                     <LabelList
+                      dataKey="duration"
+                      position="right"
+                      content={(props: any) => {
+                        const { x, y, width, value } = props;
+                        return (
+                          <text
+                            x={x + width + 5}
+                            y={y + 10}
+                            fill="#10b981"
+                            fontSize={10}
+                            fontWeight="bold"
+                          >
+                            {formatDuration(value)}
+                          </text>
+                        );
+                      }}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+
           </div>
         </div>
 

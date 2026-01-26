@@ -20,6 +20,7 @@ interface SidebarProps {
   onNavChange?: (nav: string) => void;
   userRole?: string | null;
   isSuperAdmin?: boolean;
+  onLogout?: (tokenId?: string) => void;
 }
 
 const Sidebar = memo(function Sidebar({ 
@@ -27,7 +28,8 @@ const Sidebar = memo(function Sidebar({
   activeNav = "dashboard", 
   onNavChange, 
   userRole, 
-  isSuperAdmin 
+  isSuperAdmin,
+  onLogout
 }: SidebarProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -67,31 +69,30 @@ const Sidebar = memo(function Sidebar({
 
   // Stable logout handler
   const handleLogout = useCallback(async () => {
-    if (isLoggingOut) return;
+    if (isLoggingOut || !onLogout) return;
     setIsLoggingOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-      }
+      // 1. Get current active token from metadata
+      const { getStoredUserData } = await import("../lib/localStorageUtils");
+      const activeData = getStoredUserData();
+      const accounts = (await import("../lib/sessionManager")).getStoredAccounts();
       
-      // Clear critical local storage items on logout
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem("isAuthenticated");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("rememberMe");
-        localStorage.removeItem("rememberedEmail");
-        localStorage.removeItem("rememberedPassword");
+      let currentTokenId = activeData?.token_id;
+
+      // 2. Fallback: Search in accounts
+      if (!currentTokenId) {
+        currentTokenId = displayUser?.employeeId 
+          ? accounts.find(a => a.employee_id === displayUser.employeeId)?.token_id 
+          : accounts[0]?.token_id;
       }
-      // Use replace to prevent back navigation after logout
-      await router.replace("/login");
+
+      onLogout(currentTokenId);
+
     } catch (err) {
       console.error("Logout exception:", err);
-      await router.replace("/login");
-    } finally {
-      if (mounted) setIsLoggingOut(false);
+      setIsLoggingOut(false);
     }
-  }, [isLoggingOut, router, mounted]);
+  }, [isLoggingOut, onLogout, displayUser?.employeeId]);
 
   // Memoize derived UI values
   const initials = useMemo(() => {

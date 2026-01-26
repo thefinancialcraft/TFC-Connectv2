@@ -119,29 +119,48 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             console.log("✅ [Auth] Session restored automatically!");
             session = data.session;
             
-            // Update stored data with new tokens
-            storeUserData({
-              ...storedData,
-              session_token: session.access_token,
-              refresh_token: session.refresh_token,
-            });
+            // Update stored data with new tokens using the secure manager
+            const { saveAccount, getStoredAccounts } = await import("./sessionManager");
+            const accounts = getStoredAccounts();
+            const currentAccount = accounts.find(a => a.user_id === storedData.user_id);
+            if (currentAccount) {
+                saveAccount({
+                  ...currentAccount,
+                  access_token: session.access_token,
+                  refresh_token: session.refresh_token,
+                });
+
+                // Also explicitly activate in DB
+                await fetch("/api/auth/activate-session", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ token_id: currentAccount.token_id }),
+                });
+            }
           } else if (refreshError) {
-            console.error("❌ [Auth] Auto-restoration failed:", refreshError);
-            // If it's a 400 (Bad Request) or 401 (Unauthorized), the refresh token is likely invalid/expired
-            // We must clear it to prevent infinite loops of 429 (Too Many Requests)
-            if (refreshError.status === 400 || refreshError.status === 401 || refreshError.message?.toLowerCase().includes("invalid")) {
-              console.warn("🗑️ [Auth] Refresh token is invalid, clearing from storage to stop restart loop");
-              storeUserData({
-                ...storedData,
-                session_token: undefined,
-                refresh_token: undefined,
-              });
+
+            console.error("❌ [Auth] Auto-restoration failed:", refreshError.message);
+            // If it's a 400/401 or specifically "Not Found", it's a dead token.
+            const isDeadToken = refreshError.status === 400 || 
+                               refreshError.status === 401 || 
+                               refreshError.message?.toLowerCase().includes("not found") ||
+                               refreshError.message?.toLowerCase().includes("invalid");
+            
+            if (isDeadToken) {
+              console.warn("🗑️ [Auth] Refresh token is invalid/dead, clearing to stop restart loop");
+              const { removeAccount, getStoredAccounts } = await import("./sessionManager");
+              const accounts = getStoredAccounts();
+              const currentAccount = accounts.find(a => a.user_id === storedData.user_id);
+              if (currentAccount) {
+                  removeAccount(currentAccount.token_id);
+              }
             }
           }
         } catch (err) {
           console.error("❌ [Auth] Auto-restoration exception:", err);
         }
       }
+
     }
 
     if (!session) {
@@ -281,14 +300,24 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       console.error("Profile fetch error:", fetchError);
 
       // If the token is invalid/expired (server returned 401), we MUST NOT use cached data.
-      // We should let this fail so the user is redirected to login.
-      if (fetchError.message && (fetchError.message.includes("Invalid or expired token") || fetchError.message.includes("invalid claim"))) {
-        // Clear stored data to ensure full logout
+      // We should return a redirect signal instead of throwing to prevent app crash.
+      const isAuthError = fetchError.message && (
+        fetchError.message.includes("Invalid or expired token") || 
+        fetchError.message.includes("invalid claim") ||
+        fetchError.message.includes("JWT")
+      );
+
+      if (isAuthError) {
+        console.warn("🔐 [Auth] Session expired during offline/reconnect. Redirecting to login.");
         clearStoredUserData();
-        throw fetchError;
+        return {
+          user: null,
+          error: "Your session has expired. Please log in again.",
+          shouldRedirect: true,
+        };
       }
 
-      // Return cached user data if available, otherwise return error
+      // Return cached user data if available for non-auth errors (like transient network issues)
       if (userData) {
         return {
           user: userData,
@@ -297,8 +326,15 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
           serverNow: serverNow,
         };
       }
-      throw fetchError;
+      
+      // Fallback for unknown errors
+      return {
+        user: null,
+        error: fetchError.message || "An authentication error occurred",
+        shouldRedirect: true,
+      };
     }
+
 
     return {
       user: userData,
@@ -413,94 +449,114 @@ export async function fetchUserProfileFromTable(userId?: string): Promise<FetchU
 }
 
 /**
- * Handle logout
+ * Handle logout (Soft Logout)
+ * This marks the session as inactive in DB but preserves tokens in LocalStorage
+ * so that "Card Login" works without "Refresh Token Not Found" errors.
  */
-export async function handleLogout(router: NextRouter): Promise<void> {
-  // Clear user data from localStorage (but keep it for logged out user card)
-  // We don't clear it here so user card can be shown after logout
+export async function handleLogout(router: NextRouter, tokenId?: string): Promise<void> {
   try {
-    // Notify Flutter bridge of logout
+    console.log("🚀 [Auth] Starting soft-logout for token:", tokenId);
+
+    // 1. Notify Flutter bridge of logout
     if (typeof window !== 'undefined') {
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
-        console.log("📤 [Bridge] Sending Logout Event to Flutter");
         win.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
       }
     }
 
-    // Get current session before signing out
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    // Update session in database to set is_active = false
-    if (session?.access_token) {
-      try {
-        // Call API to deactivate session
-        await fetch("/api/auth/deactivate-session", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-      } catch (sessionUpdateError) {
-        console.error("Error deactivating session:", sessionUpdateError);
-        // Continue with logout even if session update fails
+    // 2. Clear server-side session status (Mark is_active = false)
+    try {
+      const { getStoredUserData } = await import("./localStorageUtils");
+      const activeUser = getStoredUserData();
+      
+      let finalTokenId = tokenId || activeUser?.token_id; // token_id holds the TFC UUID for the session
+
+      if (!finalTokenId) {
+        // Fallback: Check if we can find it by current user_id in accounts
+        const { getStoredAccounts } = await import("./sessionManager");
+        const accounts = getStoredAccounts();
+        
+        if (activeUser?.user_id) {
+            finalTokenId = accounts.find(a => a.user_id === activeUser.user_id)?.token_id;
+        }
+        
+        // Final fallback
+        if (!finalTokenId) finalTokenId = accounts[0]?.token_id;
       }
+
+      if (finalTokenId) {
+        console.log(`📡 [Auth] Requesting deactivation for token: ${finalTokenId}`);
+        const response = await fetch("/api/auth/deactivate-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token_id: finalTokenId }),
+        });
+        
+        if (response.ok) {
+           console.log("✅ [Auth] DB Deactivation confirmed.");
+        } else {
+           const errData = await response.json();
+           console.error("❌ [Auth] DB Deactivation failed:", errData.error);
+        }
+      } else {
+        console.warn("⚠️ [Auth] Could not identify token_id to deactivate. Skipping DB update.");
+      }
+    } catch (e) {
+      console.error("❌ [Auth] Deactivation API reached timeout or failed:", e);
     }
 
-    // For "quick login" feature (Facebook-style), we use soft logout:
-    // - Mark session as inactive in database (for tracking)
-    // - Clear client-side session
-    // - But DON'T invalidate tokens server-side (keep them valid for quick re-login)
-    // This allows stored tokens to be used to restore session later
-    
-    // Note: We intentionally DON'T call supabase.auth.signOut() here
-    // because it would invalidate the refresh token server-side, preventing quick login
-    // Instead, we just clear the local session and mark it inactive in our tracking table
-    
-    // Clear Supabase client's local session storage manually
-    try {
-      if (typeof window !== 'undefined') {
-        // Supabase stores session in localStorage with keys like:
-        // `sb-${projectRef}-auth-token` where projectRef is part of the URL
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-        const urlMatch = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
-        if (urlMatch) {
-          const projectRef = urlMatch[1];
-          const sessionKey = `sb-${projectRef}-auth-token`;
-          localStorage.removeItem(sessionKey);
+
+
+    /**
+     * CRITICAL: We do NOT call supabase.auth.signOut() here.
+     * Calling signOut() invalidates the refresh token on Supabase servers.
+     * Instead, we manually wipe the client-side session to trigger a "Logged Out" UI state.
+     */
+
+    // 3. Manual wipe of Supabase Client side session keys
+    if (typeof window !== 'undefined') {
+      // CLEAR ACTIVE USER DATA (This stops auto-restoration in checkAuthAndFetchProfile)
+      clearStoredUserData();
+
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        // Clear Supabase internal session keys
+        if (key.includes('auth-token') || (key.includes('supabase') && !key.includes('stored_accounts'))) {
+          localStorage.removeItem(key);
         }
-        // Also try to remove any supabase auth-related keys
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-          if (key.includes('supabase') && (key.includes('auth') || key.includes('token'))) {
-            localStorage.removeItem(key);
-          }
-        });
-      }
-    } catch (clearError) {
-      console.error("Error clearing local session:", clearError);
-      // Continue with logout even if clearing fails
-    }
-    
-    // Clear any other cached data
+      });
+      
+      // Clear specific auth flags
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("userEmail");
-      localStorage.removeItem("rememberMe");
-      localStorage.removeItem("rememberedEmail");
-      localStorage.removeItem("rememberedPassword");
-      
-      // Clear users store
-      clearUsersStore();
+    }
+
+    // 4. Clear internal memory store
+    clearUsersStore();
     
-    // Note: We keep user data (including tokens) in localStorage for logged out user card
-    // This allows quick re-login using stored tokens
-    // It will be cleared only when user clicks "Remove account" or logs in with different account
-      
-      router.push("/login");
+    // Dispatch a global event so hooks can reset state immediately
+    if (typeof window !== 'undefined') {
+       window.dispatchEvent(new CustomEvent('tfc-logout-event'));
+    }
+
+    
+    // 5. Set a temporary flag in session storage to prevent immediate auto-redirect loop
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('tfc_just_logged_out', 'true');
+    }
+    
+    console.log("👋 [Auth] Soft-logout complete, redirecting to login...");
+    router.replace("/login");
+
+
+
   } catch (err) {
-    console.error("Logout error:", err);
+    console.error("❌ [Auth] Critical Logout failure:", err);
     router.push("/login");
   }
 }
+
+
+
 
