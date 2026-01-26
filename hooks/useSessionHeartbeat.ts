@@ -54,13 +54,22 @@ export const useSessionHeartbeat = (user: any) => {
           channelRef.current?.postMessage({ type: 'HEARTBEAT_DONE', timestamp: Date.now() });
       }
 
-      if (!data.is_active) {
+      if (!data.is_active || data.force_logout || response.status === 404) {
+        console.warn(`💔 [Heartbeat] Session invalid (Status: ${response.status}, Force: ${data.force_logout}). Logging out...`);
+        
+        // Remove from local storage if the session doesn't exist on server
+        if (data.force_logout || response.status === 404) {
+           removeAccount(currentAccount.token_id);
+           console.log(`🗑️ [Heartbeat] Removed invalid account ${currentAccount.token_id} from storage`);
+        }
+        
         handleLogout(currentAccount.token_id);
       }
       
       if (data.expires_at && new Date(data.expires_at) < new Date()) {
           handleLogout(currentAccount.token_id);
       }
+
 
     } catch (error) {
       console.error('Heartbeat failed:', error);

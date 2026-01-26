@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../lib/supabase';
+import { supabase, supabaseAdmin } from '../../../lib/supabase';
 
 type Data = {
   success?: boolean;
   error?: string;
+  revoked_token_id?: string;
 };
+
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,12 +48,25 @@ export default async function handler(
       console.error('Session error:', sessionError);
     }
 
-    // Revoke session (set is_active to false)
-    const { error } = await supabase
+    // Use supabaseAdmin to bypass RLS and ensure the session is deleted
+    if (!supabaseAdmin) {
+      throw new Error("supabaseAdmin not initialized");
+    }
+
+    // First fetch the token_id so we can return it to the frontend
+    const { data: sessionData } = await supabaseAdmin
       .from('user_sessions')
-      .update({ is_active: false })
+      .select('token_id')
       .eq('id', session_id)
-      .eq('user_id', user.id); // Ensure user can only revoke their own sessions
+      .eq('user_id', user.id)
+      .single();
+
+    // Revoke session (DELETE the record)
+    const { error } = await supabaseAdmin
+      .from('user_sessions')
+      .delete()
+      .eq('id', session_id)
+      .eq('user_id', user.id); 
 
     if (error) {
       console.error('Error revoking session:', error);
@@ -60,7 +75,9 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
+      revoked_token_id: sessionData?.token_id
     });
+
   } catch (error: any) {
     console.error('Revoke session error:', error);
     return res.status(500).json({ error: 'An error occurred while revoking session' });

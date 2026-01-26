@@ -33,8 +33,15 @@ export default async function handler(
       .single();
 
     if (fetchError || !session) {
-      return res.status(404).json({ error: 'Session not found', is_active: false });
+      // Logic: If token_id is not found in DB, it means it was revoked or invalid.
+      // We instruct the frontend to force logout and remove local data.
+      return res.status(404).json({ 
+        error: 'Session not found', 
+        is_active: false,
+        force_logout: true 
+      });
     }
+
 
     // Check if session has expired
     const isExpired = new Date(session.expires_at) < new Date();

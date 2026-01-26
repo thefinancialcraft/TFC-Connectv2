@@ -244,9 +244,12 @@ export default function Settings() {
   };
 
   const handleRevokeSession = async (sessionId: string) => {
+    if (!window.confirm("Are you sure you want to revoke this session?")) return;
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+      
       const res = await fetch("/api/auth/revoke-session", {
         method: "POST",
         headers: {
@@ -255,9 +258,34 @@ export default function Settings() {
         },
         body: JSON.stringify({ session_id: sessionId }),
       });
-      if (res.ok) fetchActiveSessions();
-    } catch (error) { console.error(error); }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        // 1. Remove from Multi-Account Storage (local storage)
+        const { removeAccount } = await import("../lib/sessionManager");
+        if (data.revoked_token_id) {
+          removeAccount(data.revoked_token_id);
+          console.log(`🗑️ [Settings] Removed session ${data.revoked_token_id} from local storage`);
+          
+          // 2. Refresh UI
+          if (data.revoked_token_id === currentTokenId) {
+             router.push('/login');
+             return;
+          }
+        }
+        
+        fetchActiveSessions();
+        showSuccess("Session revoked successfully", "Success");
+      } else {
+        showError(data.error || "Failed to revoke session", "Error");
+      }
+    } catch (error) { 
+      console.error(error); 
+      showError("An error occurred", "Error");
+    }
   };
+
 
   const calculateProfileCompletion = () => {
     const fields: Array<keyof SettingsFormData> = [
@@ -493,11 +521,12 @@ export default function Settings() {
                             {!isCurrentSession && (
                               <button 
                                 onClick={() => handleRevokeSession(sessionId)} 
-                                className="text-[10px] font-bold text-red-500 hover:underline hover:text-red-600"
+                                className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-bold transition-all border border-red-100"
                               >
                                 Revoke
                               </button>
                             )}
+
 
                           </div>
                         );
