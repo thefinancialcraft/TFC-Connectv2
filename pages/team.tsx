@@ -7,27 +7,44 @@ import TeamManagementModal from "../components/TeamManagementModal";
 
 export default function Team() {
   const router = useRouter();
-  const { user, mounted } = useUser();
+  const { user, mounted, loading: authLoading } = useUser();
   
-  // Page level protection logic (Strict: Hidden by default)
+  // Page level protection logic (Strict: Redirect only after auth is finalized)
   useEffect(() => {
-    if (mounted && user) {
-      // Allowed designations for clients
-      const allowedClientDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
-      const userDesignation = user.designation?.toLowerCase() || '';
+    if (mounted && !authLoading && user) {
+      // Allowed designations for clients (Expanded for robustness)
+      const allowedClientDesignations = ['manager', 'team_leader', 'teamleader', 'ceo', 'developer', 'admin', 'super_admin'];
+      const userDesignation = user.designation?.toLowerCase().replace(/\s+/g, '_') || '';
       
       const isTeamPageVisible = user.isClient === false || 
-                                (user.isClient === true && allowedClientDesignations.includes(userDesignation));
+                                 (user.isClient === true && allowedClientDesignations.includes(userDesignation));
       
       if (!isTeamPageVisible) {
         console.warn("Unauthorized access to team page, redirecting...");
         router.replace('/dashboard');
       }
     }
-  }, [mounted, user, router]);
+  }, [mounted, user, authLoading, router]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
+  const isLevel2User = useMemo(() => {
+    if (!mounted || !user) return false;
+    const designation = user.designation?.toLowerCase() || '';
+    return user.isClient === true && (designation === 'team_leader' || designation === 'teamleader');
+  }, [mounted, user]);
+
+  const isCreateTeamButtonVisible = useMemo(() => {
+    if (!mounted || !user) return false;
+    
+    const isInternalStaff = user.isClient === false;
+    const designation = user.designation?.toLowerCase() || '';
+    const isClientAdmin = user.isClient === true && ['ceo', 'manager', 'developer'].includes(designation);
+    
+    return isInternalStaff || isClientAdmin;
+  }, [mounted, user]);
+  
   const [teams, setTeams] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -78,14 +95,37 @@ export default function Team() {
 
       try {
           if (!isBackground) setLoading(true);
-          const { data, error } = await supabase
+          
+          // Use direct user object to avoid memo race conditions during hydration
+          const designation = user?.designation?.toLowerCase() || '';
+          const isActuallyLevel2 = user?.isClient === true && (designation === 'team_leader' || designation === 'teamleader');
+          const isHighLevelAdmin = user?.isClient === true && ['ceo', 'manager', 'developer'].includes(designation);
+          const isStaff = user?.isClient === false;
+
+          let query = supabase
               .from('teams')
               .select(`
                 *,
                 leader:user_profiles!leader_id(user_name, profile_pic_url),
                 organization:organizations(company_name)
               `)
-              .order('name', { ascending: true })
+              .order('name', { ascending: true });
+
+          // --- SECURITY LAYER 1: Scope to Organization for all Clients ---
+          if (user?.isClient === true && user?.organization_id) {
+              query = query.eq('organization_id', user.organization_id);
+          }
+
+          // --- SECURITY LAYER 2: Level-based Filtering ---
+          if (isActuallyLevel2 && user?.uid) {
+              query = query.eq('leader_id', user.uid);
+          } else if (!isHighLevelAdmin && !isStaff) {
+              // If they are a standard client user (not CEO/Manager), and somehow reach here, 
+              // strictly filter by their ID as a safety fallback
+              query = query.eq('leader_id', user?.uid || '00000000-0000-0000-0000-000000000000');
+          }
+          
+          const { data, error } = await query
               .abortSignal(teamsAbortControllerRef.current.signal);
           
           if (error) throw error;
@@ -97,7 +137,7 @@ export default function Team() {
       } finally {
           if (!isBackground) setLoading(false);
       }
-  }, []);
+  }, [user?.uid, user?.isClient, user?.designation, user?.organization_id]);
 
   useEffect(() => {
     if (mounted && user) {
@@ -109,20 +149,38 @@ export default function Team() {
       if (teamsAbortControllerRef.current) teamsAbortControllerRef.current.abort();
       if (depsAbortControllerRef.current) depsAbortControllerRef.current.abort();
     };
-  }, [mounted, user, fetchTeams, fetchDependencies]);
+  }, [mounted, user, fetchTeams, fetchDependencies, isLevel2User]);
 
 
-  // Filter teams based on search
+  // Filter teams based on search and permissions
   const filteredTeams = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-    if (!query) return teams;
+    // Stage 0: Hydration Gate (No data until mount + user verified)
+    if (!mounted || !user) return [];
     
-    return teams.filter(team => 
+    // Stage 1: Permission Filter (Strict layer of security)
+    const designation = user.designation?.toLowerCase() || '';
+    const isActuallyLevel2 = user.isClient === true && (designation === 'team_leader' || designation === 'teamleader');
+    const isHighLevelAdmin = user.isClient === true && ['ceo', 'manager', 'developer'].includes(designation);
+    
+    let accessibleTeams = teams;
+    if (isActuallyLevel2) {
+        // Double-check leader_id strictly on the frontend too
+        accessibleTeams = teams.filter(t => t.leader_id === user.uid);
+    } else if (!isHighLevelAdmin && user.isClient === true) {
+        // Safety: If not an admin, filter strictly by user ID
+        accessibleTeams = teams.filter(t => t.leader_id === user.uid);
+    }
+
+    // Stage 2: Search Filter
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return accessibleTeams;
+    
+    return accessibleTeams.filter(team => 
         team.name?.toLowerCase().includes(query) ||
         team.organization?.company_name?.toLowerCase().includes(query) ||
         team.leader?.user_name?.toLowerCase().includes(query)
     );
-  }, [teams, searchQuery]);
+  }, [teams, searchQuery, mounted, user]);
 
 
   return (
@@ -154,13 +212,15 @@ export default function Team() {
                       className="pl-10 pr-4 text-gray-500 py-2 w-full border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent outline-none text-sm bg-white shadow-sm transition-all"
                    />
                 </div>
-                <button 
-                  onClick={() => { setEditingTeam(null); setShowModal(true); }}
-                  className="flex items-center justify-center gap-2 px-6 py-2 rounded-xl bg-[#4b33e8] text-white text-sm font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all whitespace-nowrap"
-                >
-                  <i className="fi fi-rr-plus flex"></i>
-                  Create Team
-                </button>
+                {isCreateTeamButtonVisible && (
+                  <button 
+                    onClick={() => { setEditingTeam(null); setShowModal(true); }}
+                    className="flex items-center justify-center gap-2 px-6 py-2 rounded-xl bg-[#4b33e8] text-white text-sm font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all whitespace-nowrap"
+                  >
+                    <i className="fi fi-rr-plus flex"></i>
+                    Create Team
+                  </button>
+                )}
               </div>
             </div>
 
@@ -179,12 +239,14 @@ export default function Team() {
                                         <i className="fi flex fi-rr-users-alt"></i>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <button 
-                                          onClick={() => { setEditingTeam(team); setShowModal(true); }}
-                                          className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:text-[#4b33e8] hover:bg-indigo-50 flex items-center justify-center transition-all"
-                                        >
-                                          <i className="fi fi-rr-edit flex text-sm"></i>
-                                        </button>
+                                        {isCreateTeamButtonVisible && (
+                                          <button 
+                                            onClick={() => { setEditingTeam(team); setShowModal(true); }}
+                                            className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:text-[#4b33e8] hover:bg-indigo-50 flex items-center justify-center transition-all"
+                                          >
+                                            <i className="fi fi-rr-edit flex text-sm"></i>
+                                          </button>
+                                        )}
                                         <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${team.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
                                             {team.is_active ? 'Active' : 'Inactive'}
                                         </span>

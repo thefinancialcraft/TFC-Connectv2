@@ -4,8 +4,17 @@ import { supabase } from "../lib/supabase";
 export interface AgentDataPoint {
   id: string;
   name: string;
+  employee_id: string | null;
+  profile_pic_url: string | null;
   count: number;
   duration: number;
+  connected_count: number;
+  deals_count: number;
+  follow_ups_count: number;
+  last_active: string | null;
+  last_online: string | null;
+  on_call: boolean;
+  is_personal: boolean;
 }
 
 export interface UseAgentPerformanceReturn {
@@ -14,7 +23,7 @@ export interface UseAgentPerformanceReturn {
   totalDuration: number;
   loading: boolean;
   error: string | null;
-  fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }) => Promise<void>;
+  fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -47,11 +56,11 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   }, []);
 
   const fetchAgentPerformance = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }) => {
+    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false) => {
       const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}`;
 
       const cached = cacheRef.current[cacheKey];
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
         setAgentData(cached.data.agentData);
         setTotalDials(cached.data.totalDials);
         setTotalDuration(cached.data.totalDuration);

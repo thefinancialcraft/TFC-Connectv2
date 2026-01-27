@@ -16,11 +16,13 @@ import { AgentDataPoint, useAgentPerformance } from "../../hooks/useAgentPerform
 interface AgentPerformanceTabProps {
   agentData?: AgentDataPoint[];
   totalDials?: number;
+  selectedOrgId?: string;
 }
 
 export default function AgentPerformanceTab({
   agentData: initialAgentData,
   totalDials: initialTotal,
+  selectedOrgId,
 }: AgentPerformanceTabProps) {
   const router = useRouter();
   const [dateFilter, setDateFilter] = useState("all_time");
@@ -50,10 +52,55 @@ export default function AgentPerformanceTab({
     return `${secs}s`;
   };
 
+  const formatTime = (dateStr: string | null) => {
+    if (!dateStr) return "Never";
+    const d = new Date(dateStr);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const calculateStatus = (lastActive: string | null) => {
+    if (!lastActive) return { status: 'Idle', idleTime: 'N/A', isOnline: false };
+    const now = new Date();
+    const active = new Date(lastActive);
+    const diffMs = now.getTime() - active.getTime();
+    
+    // Convert to seconds for precision
+    const diffSec = Math.floor(diffMs / 1000);
+    
+    let idleTimeStr = "N/A";
+    if (diffSec < 60) {
+      idleTimeStr = `${diffSec}s`;
+    } else if (diffSec < 3600) {
+      idleTimeStr = `${Math.floor(diffSec / 60)}m`;
+    } else {
+      const h = Math.floor(diffSec / 3600);
+      const m = Math.floor((diffSec % 3600) / 60);
+      idleTimeStr = `${h}h ${m}m`;
+    }
+
+    // New 30 second threshold for Active vs Idle
+    const isOnline = diffSec >= 0 && diffSec < 30;
+    return { 
+      status: isOnline ? 'Active' : 'Idle', 
+      idleTime: idleTimeStr,
+      isOnline
+    };
+  };
+
   // Fetch data when filter changes
   useEffect(() => {
-    fetchAgentPerformance(undefined, dateFilter);
-  }, [dateFilter, fetchAgentPerformance]);
+    const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+    fetchAgentPerformance(orgFilter, dateFilter);
+  }, [dateFilter, selectedOrgId, fetchAgentPerformance]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+      fetchAgentPerformance(orgFilter, dateFilter);
+    }, 30000); // 30 seconds
+    return () => clearInterval(interval);
+  }, [dateFilter, selectedOrgId, fetchAgentPerformance]);
 
   const totalDials = agentData.reduce((acc, curr) => acc + curr.count, 0);
 
@@ -325,6 +372,169 @@ export default function AgentPerformanceTab({
             View All Team Insights
           </button>
         </div>
+      </div>
+
+      {/* Detailed Member Performance Table */}
+      <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden text-left">
+          <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
+              <div>
+                  <h3 className="font-bold text-[#263238] text-xl">Member Performance Breakdown</h3>
+                  <p className="text-sm text-gray-400 mt-1">Granular metrics for individual agent activity</p>
+              </div>
+              <div className="flex items-center gap-4">
+                  <button 
+                      onClick={() => {
+                        const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+                        fetchAgentPerformance(orgFilter, dateFilter, undefined, true);
+                      }}
+                      disabled={loading}
+                      className="group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100 translate-y-[1px]"
+                  >
+                      <i className={`fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i>
+                      <span>Refresh</span>
+                  </button>
+                  <div className="flex gap-4 text-xs font-bold">
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ACTIVE
+                      </span>
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-xl border border-gray-100">
+                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> IDLE
+                      </span>
+                  </div>
+              </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                  <thead>
+                      <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest">
+                          <th className="px-5 py-4 font-bold">Agent</th>
+                          <th className="px-2 py-4 font-bold text-center">Last Active</th>
+                          <th className="px-2 py-4 font-bold text-center">Status</th>
+                          <th className="px-2 py-4 font-bold text-center">Dials</th>
+                          <th className="px-2 py-4 font-bold text-center">Connected</th>
+                          <th className="px-2 py-4 font-bold text-center">Avg Talk</th>
+                          <th className="px-2 py-4 font-bold text-center">Follow Ups</th>
+                          <th className="px-2 py-4 font-bold text-center">Deals</th>
+                          <th className="px-5 py-4 font-bold text-right">Last Call</th>
+                      </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                      {agentData.length === 0 ? (
+                          <tr>
+                              <td colSpan={9} className="px-8 py-12 text-center">
+                                  <div className="flex flex-col items-center gap-2">
+                                      <i className="fi fi-rr-search text-3xl text-gray-200"></i>
+                                      <p className="text-sm font-bold text-gray-400">No agent activity found for this period</p>
+                                  </div>
+                              </td>
+                          </tr>
+                      ) : agentData.map((agent, i) => {
+                          const { status, idleTime, isOnline } = calculateStatus(agent.last_active);
+                          const connectRate = agent.count > 0 ? ((agent.connected_count / agent.count) * 100).toFixed(1) : "0.0";
+                          const avgTalkTime = agent.count > 0 ? formatDuration(Math.floor(agent.duration / agent.count)) : "0s";
+                          
+                          return (
+                              <tr key={agent.id} className="hover:bg-gray-50/50 transition-colors group">
+                                  <td className="px-5 py-5">
+                                      <div className="flex items-center gap-4">
+                                          <div className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center text-[#4b33e8] font-bold group-hover:bg-[#4b33e8] group-hover:text-white transition-all">
+                                              {agent.profile_pic_url ? (
+                                                  <img src={agent.profile_pic_url} alt="" className="w-full h-full object-cover" />
+                                              ) : (
+                                                  <span className="text-sm">{agent.name.charAt(0)}</span>
+                                              )}
+                                          </div>
+                                          <div>
+                                              <p className="text-sm font-bold text-[#263238]">{agent.name}</p>
+                                              <p className="text-[10px] text-gray-400 font-medium">ID: {agent.employee_id || i + 101}</p>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      {agent.last_online ? (() => {
+                                          const diff = Date.now() - new Date(agent.last_online).getTime();
+                                          const diffMins = diff / 60000;
+                                          let dotColor = "bg-gray-400";
+                                          let textColor = "text-gray-500";
+                                          let bgColor = "bg-gray-50";
+                                          let borderColor = "border-gray-100";
+                                          let statusText = "OFFLINE";
+
+                                          if (diffMins <= 1) {
+                                              dotColor = "bg-emerald-500 animate-pulse";
+                                              textColor = "text-emerald-700";
+                                              bgColor = "bg-emerald-50";
+                                              borderColor = "border-emerald-100";
+                                              statusText = "ONLINE";
+                                          } else if (diffMins <= 3) {
+                                              dotColor = "bg-amber-500";
+                                              textColor = "text-amber-700";
+                                              bgColor = "bg-amber-50";
+                                              borderColor = "border-amber-100";
+                                              statusText = "IDLE";
+                                          }
+
+                                          return (
+                                              <div className="flex flex-col items-center gap-1">
+                                                  <p className="text-[10px] font-bold text-gray-500">{formatTime(agent.last_online)}</p>
+                                                  <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[9px] font-bold border ${bgColor} ${textColor} ${borderColor}`}>
+                                                      <span className={`w-1 h-1 rounded-full ${dotColor}`}></span>
+                                                      {statusText}
+                                                  </div>
+                                              </div>
+                                          );
+                                      })() : (
+                                          <span className="text-gray-300 font-bold">-</span>
+                                      )}
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      {agent.on_call ? (
+                                          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.is_personal ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`}>
+                                              <i className={`fi flex ${agent.is_personal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`}></i>
+                                              {agent.is_personal ? 'PERSONAL CALL' : 'ON CALL'}
+                                          </div>
+                                      ) : (
+                                          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+                                              <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                              {isOnline ? 'ACTIVE' : `IDLE ${idleTime !== 'N/A' ? idleTime : ''}`}
+                                          </div>
+                                      )}
+                                  </td>
+                                  <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
+                                      {agent.count.toLocaleString()}
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      <p className="text-sm font-bold text-[#263238]">{agent.connected_count}</p>
+                                      <p className="text-[10px] text-indigo-500 font-bold">{connectRate}% </p>
+                                  </td>
+                                  <td className="px-2 py-5 text-center text-sm text-gray-600 font-bold">
+                                      {avgTalkTime}
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100">
+                                          {agent.follow_ups_count} PENDING
+                                      </span>
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      {agent.deals_count > 0 ? (
+                                          <span className="inline-flex items-center gap-1 text-emerald-600 font-bold text-sm">
+                                              <i className="fi flex fi-rr-trophy text-xs"></i> {agent.deals_count}
+                                          </span>
+                                      ) : <span className="text-gray-300 font-bold">-</span>}
+                                  </td>
+                                  <td className="px-5 py-5 text-right">
+                                      <p className="text-sm font-bold text-[#263238]">{formatTime(agent.last_active)}</p>
+                                      <p className="text-[10px] text-gray-400 font-medium">
+                                          {agent.last_active ? new Date(agent.last_active).toLocaleDateString() : 'N/A'}
+                                      </p>
+                                  </td>
+                              </tr>
+                          );
+                      })}
+                  </tbody>
+              </table>
+          </div>
       </div>
     </div>
   );

@@ -139,6 +139,7 @@ export default function CampaignDetails() {
     const [leadsPerPage] = useState(10);
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
     const [mounted, setMounted] = useState(false);
+    const [teamMemberIds, setTeamMemberIds] = useState<string[]>([]);
 
     useEffect(() => {
         setMounted(true);
@@ -199,34 +200,69 @@ export default function CampaignDetails() {
 
             // 2. Fetch Stats & Analytics in Parallel
             // Determine user constraints
-            const isLevel1User = user?.isClient === true && user?.designation?.toLowerCase() === 'agent';
+            const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
+            const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
             const userId = user?.uid;
+            
+            // --- LEVEL 2: Fetch Team Members if applicable ---
+            let effectiveTeamMembers: string[] = [];
+            if (isLevel2User && userId) {
+                const { data: teamData } = await supabase
+                    .from('teams')
+                    .select('members')
+                    .eq('leader_id', userId)
+                    .eq('is_active', true);
+                
+                if (teamData && teamData.length > 0) {
+                    // Collect all members from teams where user is leader
+                    const allMembers = teamData.flatMap(t => t.members || []);
+                    
+                    // Intersection with campaign users
+                    const campaignUserIds = (campaignData?.users || []).map((u: any) => u.user_id || u.id);
+                    effectiveTeamMembers = allMembers.filter(mid => campaignUserIds.includes(mid));
+                    
+                    // Also include the TL themselves if they are in the campaign
+                    if (campaignUserIds.includes(userId) && !effectiveTeamMembers.includes(userId)) {
+                        effectiveTeamMembers.push(userId);
+                    }
+                    
+                    console.log('--- TL Debug ---', { userId, allMembers, campaignUserIds, effectiveTeamMembers });
+                    setTeamMemberIds(effectiveTeamMembers);
+                }
+            }
+
             const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
             // Prepare Queries based on User Level
             // Total Customers
             let qTotal = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id);
             if (isLevel1User && userId) qTotal = qTotal.eq('assigned_to', userId);
+            if (isLevel2User) qTotal = effectiveTeamMembers.length > 0 ? qTotal.in('assigned_to', effectiveTeamMembers) : qTotal.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             // Follow-ups
             let qFollowup = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup');
             if (isLevel1User && userId) qFollowup = qFollowup.eq('assigned_to', userId);
+            if (isLevel2User) qFollowup = effectiveTeamMembers.length > 0 ? qFollowup.in('assigned_to', effectiveTeamMembers) : qFollowup.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             // Overdue
             let qOverdue = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup').lt('expiry_date', now);
             if (isLevel1User && userId) qOverdue = qOverdue.eq('assigned_to', userId);
+            if (isLevel2User) qOverdue = effectiveTeamMembers.length > 0 ? qOverdue.in('assigned_to', effectiveTeamMembers) : qOverdue.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             // Upcoming
             let qUpcoming = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).eq('status', 'followup').gte('expiry_date', now);
             if (isLevel1User && userId) qUpcoming = qUpcoming.eq('assigned_to', userId);
+            if (isLevel2User) qUpcoming = effectiveTeamMembers.length > 0 ? qUpcoming.in('assigned_to', effectiveTeamMembers) : qUpcoming.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             // Managed
             let qManaged = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).not('managed_by', 'is', null);
-            if (isLevel1User && userId) qManaged = qManaged.eq('assigned_to', userId); // OR managed_by if they were managers, but for Agents it's assigned_to
+            if (isLevel1User && userId) qManaged = qManaged.eq('assigned_to', userId); 
+            if (isLevel2User) qManaged = effectiveTeamMembers.length > 0 ? qManaged.in('assigned_to', effectiveTeamMembers) : qManaged.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
             
-            // Recent (Calls made by specific user if L1)
+            // Recent (Calls made by specific user if L1, or team if L2)
             let qRecentCount = supabase.from('call_logs').select('*', { count: 'exact', head: true }).eq('campaign_id', id).gte('created_at', twentyFourHoursAgoCount);
             if (isLevel1User && userId) qRecentCount = qRecentCount.eq('agent_id', userId);
+            if (isLevel2User) qRecentCount = effectiveTeamMembers.length > 0 ? qRecentCount.in('agent_id', effectiveTeamMembers) : qRecentCount.eq('agent_id', '00000000-0000-0000-0000-000000000000');
 
             // Analytics (Always fetch so breakdown tables work for everyone)
             const analyticsPromise = supabase.rpc('get_campaign_analytics', { campaign_id_input: id });
@@ -254,7 +290,7 @@ export default function CampaignDetails() {
                     .select('duration, created_at, is_connected, disposition, sub_disposition, agent_id')
                     .eq('campaign_id', id)
                     .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
-                    .match(isLevel1User && userId ? { agent_id: userId } : {})
+                    .filter('agent_id', isLevel1User ? 'eq' : (isLevel2User ? 'in' : 'not.is'), isLevel1User ? userId : (isLevel2User ? `(${effectiveTeamMembers.length > 0 ? effectiveTeamMembers.join(',') : '00000000-0000-0000-0000-000000000000'})` : 'null'))
             ]);
 
             setStats({
@@ -267,12 +303,25 @@ export default function CampaignDetails() {
                 managedCount: managedCount || 0
             });
 
+            // --- USER PROFILES: Fetch all profiles needed for analytics and tiles ---
+            const initialProfileIds = [userId, ...effectiveTeamMembers].filter(Boolean) as string[];
+            let userProfiles: any[] = [];
+            if (initialProfileIds.length > 0) {
+                const { data: profiles } = await supabase
+                    .from('user_profiles')
+                    .select('id, user_id, user_name, employee_id')
+                    .or(`user_id.in.(${initialProfileIds.join(',')}),id.in.(${initialProfileIds.join(',')})`);
+                userProfiles = profiles || [];
+            }
+
+            const findUser = (targetId: string) => userProfiles.find((p: any) => p.user_id === targetId || p.id === targetId);
+
             // Process Analytics
             const { data: analyticsResult, error: analyticsError } = analyticsResponse;
             const { data: todayStatsData } = todayStatsResponse;
 
-            if (isLevel1User && todayStatsData) {
-                // Calculate Hourly Stats for the specific Agent
+            if ((isLevel1User || isLevel2User) && todayStatsData) {
+                // Calculate Hourly Stats for the specific Agent or Team
                 const hoursMap: Record<number, any> = {};
                 todayStatsData.forEach((log: any) => {
                     const hour = new Date(log.created_at).getHours();
@@ -290,16 +339,17 @@ export default function CampaignDetails() {
                 const myHourlyDetailed = Object.values(hoursMap).sort((a: any, b: any) => a.hour - b.hour);
                 const myHourlyCalls = myHourlyDetailed.map(h => ({ hour: h.hour, count: h.total_calls }));
 
-                // Filter Caller Performance for current user
+                // Filter Caller Performance
+                const allowedIds = isLevel1User ? [userId] : effectiveTeamMembers;
                 const myCallerPerformance = (analyticsResult?.caller_performance || []).filter((row: any) => 
-                    (user?.employeeId && row.employee_id === user.employeeId) || 
-                    (user?.displayName && row.caller && row.caller.toLowerCase() === user.displayName.toLowerCase())
+                     allowedIds.some(id => row.employee_id === userProfiles.find(p => p.user_id === id)?.employee_id) ||
+                     (isLevel1User && user?.displayName && row.caller && row.caller.toLowerCase() === user.displayName.toLowerCase())
                 );
 
                 setAnalytics({
                     hourly_calls: myHourlyCalls,
-                    agent_performance: (analyticsResult?.agent_performance || []).filter((row: any) => row.employee_id === user?.employeeId),
-                    disposition_stats: analyticsResult?.disposition_stats || [], // Group-by on frontend would be better but keeping it simple
+                    agent_performance: (analyticsResult?.agent_performance || []).filter((row: any) => allowedIds.includes(userProfiles.find(p => p.employee_id === row.employee_id)?.user_id || '')),
+                    disposition_stats: analyticsResult?.disposition_stats || [], 
                     hourly_detailed: myHourlyDetailed,
                     caller_performance: myCallerPerformance
                 });
@@ -331,15 +381,19 @@ export default function CampaignDetails() {
             // Prepare Tile Queries
             let qRecentLogs = supabase.from('call_logs').select(`id, disposition, sub_disposition, created_at, agent_id, customer_id, customers (customer_name, expiry_date)`).eq('campaign_id', id).gte('created_at', twentyFourHoursAgo).order('created_at', { ascending: false }).limit(3);
             if (isLevel1User && userId) qRecentLogs = qRecentLogs.eq('agent_id', userId);
+            if (isLevel2User) qRecentLogs = effectiveTeamMembers.length > 0 ? qRecentLogs.in('agent_id', effectiveTeamMembers) : qRecentLogs.eq('agent_id', '00000000-0000-0000-0000-000000000000');
 
             let qOverdueLeads = supabase.from('customers').select('id, customer_name, disposition, sub_disposition, expiry_date, assigned_to, managed_by').eq('campaign_id', id).eq('status', 'followup').lt('expiry_date', now).order('expiry_date', { ascending: true }).limit(3);
             if (isLevel1User && userId) qOverdueLeads = qOverdueLeads.eq('assigned_to', userId);
+            if (isLevel2User) qOverdueLeads = effectiveTeamMembers.length > 0 ? qOverdueLeads.in('assigned_to', effectiveTeamMembers) : qOverdueLeads.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             let qUpcomingLeads = supabase.from('customers').select('id, customer_name, disposition, sub_disposition, expiry_date, assigned_to, managed_by').eq('campaign_id', id).eq('status', 'followup').gte('expiry_date', now).order('expiry_date', { ascending: true }).limit(3);
             if (isLevel1User && userId) qUpcomingLeads = qUpcomingLeads.eq('assigned_to', userId);
+            if (isLevel2User) qUpcomingLeads = effectiveTeamMembers.length > 0 ? qUpcomingLeads.in('assigned_to', effectiveTeamMembers) : qUpcomingLeads.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             let qManagedLeads = supabase.from('customers').select('id, customer_name, managed_by, assigned_to').eq('campaign_id', id).not('managed_by', 'is', null).order('created_at', { ascending: false }).limit(3);
             if (isLevel1User && userId) qManagedLeads = qManagedLeads.eq('assigned_to', userId);
+            if (isLevel2User) qManagedLeads = effectiveTeamMembers.length > 0 ? qManagedLeads.in('assigned_to', effectiveTeamMembers) : qManagedLeads.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
 
             const [recentRes, overdueRes, upcomingRes, managedRes] = await Promise.all([
                  qRecentLogs,
@@ -353,8 +407,8 @@ export default function CampaignDetails() {
             const upcomingData = upcomingRes.data || [];
             const managedData = managedRes.data || [];
 
-            // 4. Collect all User IDs for enrichment
-            const allTileUserIds = [
+            // 4. Collect additional User IDs that might have appeared in Tile data but not in team/agent lists
+            const extraUserIds = [
                 ...new Set([
                     ...recentData.map((d: any) => d.agent_id),
                     ...overdueData.map((d: any) => d.assigned_to),
@@ -364,18 +418,17 @@ export default function CampaignDetails() {
                     ...managedData.map((d: any) => d.managed_by),
                     ...managedData.map((d: any) => d.assigned_to)
                 ])
-            ].filter(Boolean);
+            ].filter(id => id && !userProfiles.some(p => p.user_id === id || p.id === id));
 
-            let userProfiles: any[] = [];
-            if (allTileUserIds.length > 0) {
-                const { data: profiles } = await supabase
+            if (extraUserIds.length > 0) {
+                const { data: extraProfiles } = await supabase
                     .from('user_profiles')
                     .select('id, user_id, user_name, employee_id')
-                    .or(`user_id.in.(${allTileUserIds.join(',')}),id.in.(${allTileUserIds.join(',')})`);
-                userProfiles = profiles || [];
+                    .or(`user_id.in.(${extraUserIds.join(',')}),id.in.(${extraUserIds.join(',')})`);
+                if (extraProfiles) {
+                    userProfiles = [...userProfiles, ...extraProfiles];
+                }
             }
-
-            const findUser = (id: string) => userProfiles.find((p: any) => p.user_id === id || p.id === id);
 
             // Enrich Recent Calls
             setRecentCalls(recentData.map((log: any) => {
@@ -420,8 +473,8 @@ export default function CampaignDetails() {
                 };
             }));
 
-            // 2. Fetch Leads
-            fetchLeads();
+            // 2. Fetch Leads - Pass effective members directly to avoid waiting for state update
+            fetchLeads(undefined, effectiveTeamMembers);
 
         } catch (err: any) {
             console.error("Error fetching campaign details:", err);
@@ -432,8 +485,9 @@ export default function CampaignDetails() {
     };
 
     const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
+    const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
 
-    const fetchLeads = async (pageOverride?: number) => {
+    const fetchLeads = async (pageOverride?: number, teamIdsOverride?: string[]) => {
         if (!id) return;
         try {
             setLoadingLeads(true);
@@ -449,6 +503,9 @@ export default function CampaignDetails() {
             
             if (isLevel1User && user?.uid) {
                 countQuery = countQuery.eq('assigned_to', user.uid);
+            } else if (isLevel2User) {
+                const activeTeamIds = teamIdsOverride || teamMemberIds;
+                countQuery = activeTeamIds.length > 0 ? countQuery.in('assigned_to', activeTeamIds) : countQuery.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
             }
 
             if (searchQuery) {
@@ -470,6 +527,9 @@ export default function CampaignDetails() {
 
             if (isLevel1User && user?.uid) {
                 dataQuery = dataQuery.eq('assigned_to', user.uid);
+            } else if (isLevel2User) {
+                const activeTeamIds = teamIdsOverride || teamMemberIds;
+                dataQuery = activeTeamIds.length > 0 ? dataQuery.in('assigned_to', activeTeamIds) : dataQuery.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
             }
 
             if (searchQuery) {
@@ -833,18 +893,18 @@ export default function CampaignDetails() {
                            {/* Stats Grid */}
                         <CampaignStatsGrid stats={stats} />
 
-                        {/* ANALYTICS SECTION - Hidden for Level 1 Users */}
-                        {!isLevel1User && (
+                        {/* ANALYTICS SECTION - Hidden for Level 1 Users but Visible for Level 2 */}
+                        {(isLevel2User || !isLevel1User) && (
                         <>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                                  {/* 1. Hourly Activity (Area Chart) */}
-                                 {campaign?.ishourlyactivitywidgevisible && (
+                                 {(campaign?.ishourlyactivitywidgevisible || isLevel2User) && (
                                      <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
                                          expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
                                      }`}>
                                          <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                                              <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
-                                             Hourly Activity (Today)
+                                             Hourly Activity (Today) {isLevel2User && <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full ml-2">Team Mode</span>}
                                          </h3>
                                          <div className="flex-1 w-full min-h-0">
                                              <ResponsiveContainer width="100%" height="100%">
@@ -889,13 +949,13 @@ export default function CampaignDetails() {
                                  )}
 
                                 {/* 2. Agent Performance (Bar Chart) */}
-                                 {campaign?.istopagentvwidgetvisible && (
+                                 {(campaign?.istopagentvwidgetvisible || isLevel2User) && (
                                      <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
                                          expandedChart === 'users' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
                                      }`}>
                                          <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                                              <i className="fi fi-rr-trophy text-yellow-500"></i>
-                                             Top Agents (Today)
+                                             Top Agents (Today) {isLevel2User && <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full ml-2">Team Mode</span>}
                                          </h3>
                                          <div className="flex-1 w-full min-h-0">
                                              <ResponsiveContainer width="100%" height="100%">
@@ -938,11 +998,11 @@ export default function CampaignDetails() {
                                  )}
 
                                 {/* 3. Outcomes (Pie Chart) */}
-                                 {campaign?.iscalloutcomeswidgetvisible && (
+                                 {(campaign?.iscalloutcomeswidgetvisible || isLevel2User) && (
                                      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 col-span-1 lg:col-span-1 flex flex-col h-[300px]">
                                          <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                                              <i className="fi fi-rr-pie-chart text-pink-500"></i>
-                                             Call Outcomes
+                                             Call Outcomes {isLevel2User && <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full ml-2">Team Mode</span>}
                                          </h3>
                                          <div className="flex-1 w-full min-h-0 relative">
                                              <ResponsiveContainer width="100%" height="100%">
@@ -1391,7 +1451,7 @@ export default function CampaignDetails() {
                                         
 
                                         {/* Add Bulk Button */}
-                                         {!isLevel1User && campaign?.isaddbulkbuttonvisible && (
+                                         {!isLevel1User && !isLevel2User && campaign?.isaddbulkbuttonvisible && (
                                              <button 
                                                  onClick={() => setShowImportModal(true)}
                                                  className="flex items-center gap-2 px-6 h-[42px] bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest"
@@ -1402,7 +1462,7 @@ export default function CampaignDetails() {
                                          )}
 
                                          {/* Add Lead Button */}
-                                         {!isLevel1User && campaign?.isaddleadbuttonvisible && (
+                                         {!isLevel1User && !isLevel2User && campaign?.isaddleadbuttonvisible && (
                                              <button className="flex items-center gap-2 px-6 h-[42px] bg-[#4b33e8] text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-100 hover:opacity-90 transition-all uppercase tracking-widest">
                                                  <i className="fi flex fi-rr-plus"></i>
                                                  Add Lead

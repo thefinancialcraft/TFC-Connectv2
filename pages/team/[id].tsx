@@ -24,6 +24,8 @@ export default function TeamDetails() {
   const [members, setMembers] = useState<any[]>([]);
   const [rawLogs, setRawLogs] = useState<any[]>([]);
   const [rawCustomers, setRawCustomers] = useState<any[]>([]);
+  const [rawSyncMeta, setRawSyncMeta] = useState<any[]>([]);
+  const [rawSessions, setRawSessions] = useState<any[]>([]);
   const [dateFilter, setDateFilter] = useState("today");
 
   // Recharts Constants
@@ -128,10 +130,40 @@ export default function TeamDetails() {
       if (membersRes.error) throw new Error(`Members fetch failed: ${membersRes.error.message}`);
       if (logsRes.error) throw new Error(`Logs fetch failed: ${logsRes.error.message}`);
       if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
+      
+      const employeeIds = (membersRes.data || []).map(m => m.employee_id).filter(id => !!id);
+      let finalSyncMeta: any[] = [];
+      
+      if (employeeIds.length > 0) {
+        const { data: syncData } = await supabase.from('sync_meta')
+          .select('employee_id, on_call, is_personal')
+          .in('employee_id', employeeIds);
+        finalSyncMeta = syncData || [];
+      }
 
       setMembers(membersRes.data || []);
       setRawLogs(logsRes.data || []);
       setRawCustomers(customersRes.data || []);
+      setRawSyncMeta(finalSyncMeta);
+
+      if (memberIds.length > 0) {
+        const { data: sessionData } = await supabase
+          .from('user_sessions')
+          .select('user_id, last_accessed_at')
+          .in('user_id', memberIds)
+          .order('last_accessed_at', { ascending: false });
+        
+        // Group sessions to find the latest one per member
+        const latestSessions: any[] = [];
+        const seenUsers = new Set();
+        (sessionData || []).forEach(s => {
+          if (!seenUsers.has(s.user_id)) {
+            latestSessions.push(s);
+            seenUsers.add(s.user_id);
+          }
+        });
+        setRawSessions(latestSessions);
+      }
 
     } catch (err: any) {
       console.error("Fatal Error in fetchTeamData:", err);
@@ -149,6 +181,19 @@ export default function TeamDetails() {
     }
     return () => {
       if (abortControllerRef.current) abortControllerRef.current.abort();
+    };
+  }, [router.isReady, id, mounted, user, fetchTeamData]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (router.isReady && id && mounted && user) {
+      interval = setInterval(() => {
+        fetchTeamData();
+      }, 30000); // 30 seconds
+    }
+    return () => {
+      if (interval) clearInterval(interval);
     };
   }, [router.isReady, id, mounted, user, fetchTeamData]);
 
@@ -243,16 +288,24 @@ export default function TeamDetails() {
           lastActive = recentLog.created_at;
           
           const diffMs = now.getTime() - new Date(recentLog.created_at).getTime();
-          idleMins = Math.floor(diffMs / 60000);
+          const diffSec = Math.floor(diffMs / 1000);
           
-          if (idleMins < 60) {
-            idleTimeStr = `${idleMins}m`;
+          if (diffSec < 60) {
+            idleTimeStr = `${diffSec}s`;
+          } else if (diffSec < 3600) {
+            idleTimeStr = `${Math.floor(diffSec / 60)}m`;
           } else {
-            const h = Math.floor(idleMins / 60);
-            const m = idleMins % 60;
+            const h = Math.floor(diffSec / 3600);
+            const m = Math.floor((diffSec % 3600) / 60);
             idleTimeStr = `${h}h ${m}m`;
           }
+          
+          idleMins = Math.floor(diffSec / 60);
         }
+
+        const syncData = rawSyncMeta.find(s => s.employee_id === member.employee_id);
+        const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 30000); // 30s threshold
+        const sessionData = rawSessions.find(s => s.user_id === mId);
 
         stats[mId] = {
           totalCalls,
@@ -262,9 +315,12 @@ export default function TeamDetails() {
           deals: dealsCount,
           followUps: followUpsCount,
           lastActive,
+          lastOnline: sessionData?.last_accessed_at || null,
           idleTime: idleTimeStr,
           idleMins,
-          status: (idleMins >= 0 && idleMins < 15) ? 'Online' : 'Idle'
+          onCall: !!syncData?.on_call,
+          isPersonal: !!syncData?.is_personal,
+          status: syncData?.on_call ? (syncData.is_personal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle')
         };
 
         totalCallsAll += totalCalls;
@@ -355,7 +411,7 @@ export default function TeamDetails() {
         topAgents: []
       };
     }
-  }, [members, rawLogs, rawCustomers]);
+  }, [members, rawLogs, rawCustomers, rawSyncMeta, rawSessions]);
 
   const formatTime = (dateStr: string) => {
     if (!dateStr) return "Never";
@@ -619,9 +675,19 @@ export default function TeamDetails() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden text-left">
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 className="font-bold text-gray-800 text-lg">Member Performance</h3>
-                    <div className="flex gap-2 text-xs font-medium">
-                        <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-md"><span className="w-2 h-2 rounded-full bg-green-500"></span> Online</span>
-                        <span className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 text-gray-500 rounded-md"><span className="w-2 h-2 rounded-full bg-gray-400"></span> Idle</span>
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={() => fetchTeamData()}
+                            disabled={loading}
+                            className="group flex items-center gap-2 px-2.5 py-1 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all border border-indigo-100"
+                        >
+                            <i className={`fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i>
+                            <span>Refresh</span>
+                        </button>
+                        <div className="flex gap-2 text-xs font-medium">
+                            <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-md"><span className="w-2 h-2 rounded-full bg-green-500"></span> Online</span>
+                            <span className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 text-gray-500 rounded-md"><span className="w-2 h-2 rounded-full bg-gray-400"></span> Idle</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -629,20 +695,21 @@ export default function TeamDetails() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50 text-xs text-gray-500 uppercase tracking-wider">
-                                <th className="px-6 py-3 font-semibold">Agent</th>
-                                <th className="px-6 py-3 font-semibold text-center">Status</th>
-                                <th className="px-6 py-3 font-semibold text-center">Calls</th>
-                                <th className="px-6 py-3 font-semibold text-center">Connected</th>
-                                <th className="px-6 py-3 font-semibold text-center">Avg Talk</th>
-                                <th className="px-6 py-3 font-semibold text-center">Follow Ups</th>
-                                <th className="px-6 py-3 font-semibold text-center">Deals</th>
-                                <th className="px-6 py-3 font-semibold text-right">Last Active</th>
+                            <th className="px-4 py-3 font-semibold">Agent</th>
+                            <th className="px-2 py-3 font-semibold text-center">Last Active</th>
+                            <th className="px-2 py-3 font-semibold text-center">Status</th>
+                            <th className="px-2 py-3 font-semibold text-center">Calls</th>
+                            <th className="px-2 py-3 font-semibold text-center">Connected</th>
+                            <th className="px-2 py-3 font-semibold text-center">Avg Talk</th>
+                            <th className="px-2 py-3 font-semibold text-center">Follow Ups</th>
+                            <th className="px-2 py-3 font-semibold text-center">Deals</th>
+                            <th className="px-4 py-3 font-semibold text-right">Last Call</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {members.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500 text-sm">No members in this team</td>
+                                    <td colSpan={9} className="px-6 py-8 text-center text-gray-500 text-sm">No members in this team</td>
                                 </tr>
                             ) : members.map(member => {
                                 const mId = member.user_id as string;
@@ -652,7 +719,7 @@ export default function TeamDetails() {
                                 
                                 return (
                                     <tr key={member.user_id} className="hover:bg-gray-50/80 transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-gray-100 border border-white shadow-sm overflow-hidden flex items-center justify-center text-gray-500 font-bold text-xs">
                                                     {member.profile_pic_url ? (
@@ -667,35 +734,79 @@ export default function TeamDetails() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></span>
-                                                {isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`}
-                                            </div>
+                                        <td className="px-2 py-4 text-center">
+                                            {mStats.lastOnline ? (() => {
+                                                const diff = Date.now() - new Date(mStats.lastOnline).getTime();
+                                                const diffMins = diff / 60000;
+                                                let dotColor = "bg-gray-400";
+                                                let textColor = "text-gray-500";
+                                                let bgColor = "bg-gray-50";
+                                                let borderColor = "border-gray-100";
+                                                let statusText = "Offline";
+
+                                                if (diffMins <= 1) {
+                                                    dotColor = "bg-green-500 animate-pulse";
+                                                    textColor = "text-green-700";
+                                                    bgColor = "bg-green-50";
+                                                    borderColor = "border-green-100";
+                                                    statusText = "Online";
+                                                } else if (diffMins <= 3) {
+                                                    dotColor = "bg-orange-500";
+                                                    textColor = "text-orange-700";
+                                                    bgColor = "bg-orange-50";
+                                                    borderColor = "border-orange-100";
+                                                    statusText = "Away";
+                                                }
+
+                                                return (
+                                                    <div className="flex flex-col items-center gap-1">
+                                                        <p className="text-[10px] font-bold text-gray-500">{formatTime(mStats.lastOnline)}</p>
+                                                        <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] uppercase font-bold border ${bgColor} ${textColor} ${borderColor}`}>
+                                                            <span className={`w-1 h-1 rounded-full ${dotColor}`}></span>
+                                                            {statusText}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })() : (
+                                                <span className="text-gray-300">-</span>
+                                            )}
                                         </td>
-                                        <td className="px-6 py-4 text-center text-sm font-bold text-gray-700">
+                                        <td className="px-2 py-4 text-center">
+                                            {mStats.onCall ? (
+                                              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${mStats.isPersonal ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`}>
+                                                  <i className={`fi flex ${mStats.isPersonal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`}></i>
+                                                  {mStats.isPersonal ? 'Personal Call' : 'On Call'}
+                                              </div>
+                                            ) : (
+                                              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+                                                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                                  {isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`}
+                                              </div>
+                                            )}
+                                        </td>
+                                        <td className="px-2 py-4 text-center text-sm font-bold text-gray-700">
                                             {mStats.totalCalls}
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-2 py-4 text-center">
                                             <p className="text-sm font-semibold text-gray-700">{mStats.connected}</p>
                                             <p className="text-[10px] text-gray-400">{mStats.connectedRate}% Rate</p>
                                         </td>
-                                        <td className="px-6 py-4 text-center text-sm text-gray-600 font-medium">
+                                        <td className="px-2 py-4 text-center text-sm text-gray-600 font-medium">
                                             {mStats.avgDuration}
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-2 py-4 text-center">
                                             <span className="px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-bold">
                                                 {mStats.followUps} Pending
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-2 py-4 text-center">
                                             {mStats.deals > 0 ? (
                                                 <span className="flex items-center justify-center gap-1 text-green-600 font-bold text-sm">
                                                     <i className="fi flex fi-rr-trophy text-xs"></i> {mStats.deals}
                                                 </span>
                                             ) : <span className="text-gray-400 text-sm">-</span>}
                                         </td>
-                                        <td className="px-6 py-4 text-right text-sm text-gray-500">
+                                        <td className="px-4 py-4 text-right text-sm text-gray-500">
                                             {formatTime(mStats.lastActive)}
                                             <p className="text-[10px] text-gray-400">
                                                  {mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : ''}

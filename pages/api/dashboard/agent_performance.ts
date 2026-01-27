@@ -17,8 +17,17 @@ import { supabase, supabaseAdmin } from "../../../lib/supabase";
 interface AgentDataPoint {
   id: string;
   name: string;
+  employee_id: string | null;
+  profile_pic_url: string | null;
   count: number;
   duration: number;
+  connected_count: number;
+  deals_count: number;
+  follow_ups_count: number;
+  last_active: string | null;
+  last_online: string | null;
+  on_call: boolean;
+  is_personal: boolean;
 }
 
 interface AgentPerformanceResponse {
@@ -240,7 +249,7 @@ export default async function handler(
     // 1. Fetch all users for the target org(s)
     let profilesQuery = dbClient
       .from("user_profiles")
-      .select("user_id, user_name, role")
+      .select("user_id, user_name, role, employee_id, profile_pic_url")
       .neq("approval_status", "rejected"); // Filter out rejected users
 
     if (targetOrgId) {
@@ -249,13 +258,26 @@ export default async function handler(
 
     // Prepare agent map with all users initialized to 0
     const { data: profiles } = await profilesQuery;
-    const agentMap: Record<string, { id: string; name: string; count: number; duration: number }> = {};
+    const agentMap: Record<string, AgentDataPoint> = {};
     
     if (profiles) {
       profiles.forEach((p) => {
-        // Optional: Filter out specific roles if needed, e.g. "client"
         const name = p.user_name || "Unknown Agent";
-        agentMap[p.user_id] = { id: p.user_id, name, count: 0, duration: 0 };
+        agentMap[p.user_id] = { 
+          id: p.user_id, 
+          name, 
+          employee_id: p.employee_id,
+          profile_pic_url: p.profile_pic_url,
+          count: 0, 
+          duration: 0,
+          connected_count: 0,
+          deals_count: 0,
+          follow_ups_count: 0,
+          last_active: null,
+          last_online: null,
+          on_call: false,
+          is_personal: false
+        };
       });
     }
 
@@ -263,7 +285,7 @@ export default async function handler(
     const callLogs = await fetchAllRows(
       dbClient,
       "call_logs",
-      "agent_id, duration", // Need duration now
+      "agent_id, duration, is_connected, disposition, created_at",
       {
         orgId: targetOrgId,
         startDate: start,
@@ -273,22 +295,116 @@ export default async function handler(
 
     // 3. Aggregate counts and duration
     let totalDuration = 0;
+    const successDispositions = ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'];
+
     callLogs.forEach((log: any) => {
       const duration = Number(log.duration) || 0;
       totalDuration += duration;
 
-      if (log.agent_id && agentMap[log.agent_id]) {
-        agentMap[log.agent_id].count++;
-        agentMap[log.agent_id].duration += duration;
-      } else if (log.agent_id) {
-        // Handle case where agent exists in logs but not in profiles fetch (e.g. deleted user)
-         if (!agentMap[log.agent_id]) {
-             agentMap[log.agent_id] = { id: log.agent_id, name: "Unknown/Deleted", count: 0, duration: 0 };
-         }
-         agentMap[log.agent_id].count++;
-         agentMap[log.agent_id].duration += duration;
+      if (log.agent_id) {
+        if (!agentMap[log.agent_id]) {
+          agentMap[log.agent_id] = { 
+            id: log.agent_id, 
+            name: "Unknown/Deleted", 
+            employee_id: null,
+            profile_pic_url: null,
+            count: 0, 
+            duration: 0,
+            connected_count: 0,
+            deals_count: 0,
+            follow_ups_count: 0,
+            last_active: null,
+            last_online: null,
+            on_call: false,
+            is_personal: false
+          };
+        }
+
+        const agent = agentMap[log.agent_id];
+        agent.count++;
+        agent.duration += duration;
+
+        // Connected logic
+        const isConnected = log.is_connected === true || 
+                          log.is_connected === 'true' || 
+                          log.is_connected === 'contactable';
+        if (isConnected) agent.connected_count++;
+
+        // Deals logic
+        const isDeal = successDispositions.some(s => 
+          log.disposition?.toLowerCase().includes(s.toLowerCase())
+        );
+        if (isDeal) agent.deals_count++;
+
+        // Last active tracking
+        if (!agent.last_active || new Date(log.created_at) > new Date(agent.last_active)) {
+          agent.last_active = log.created_at;
+        }
       }
     });
+
+    // 4. Fetch follow-ups count from customers
+    const agentIds = Object.keys(agentMap);
+    if (agentIds.length > 0) {
+      const now = new Date().toISOString();
+      const { data: followUps } = await dbClient
+        .from('customers')
+        .select('assigned_to')
+        .in('assigned_to', agentIds)
+        .gt('next_called_at', now);
+      
+      if (followUps) {
+        followUps.forEach((f: any) => {
+          if (agentMap[f.assigned_to]) {
+            agentMap[f.assigned_to].follow_ups_count++;
+          }
+        });
+      }
+    }
+
+    // 5. Fetch Real-time On-Call status from sync_meta
+    const employeeIds = Object.values(agentMap)
+      .map(a => a.employee_id)
+      .filter((id): id is string => !!id);
+
+    if (employeeIds.length > 0) {
+      const { data: syncMeta } = await dbClient
+        .from('sync_meta')
+        .select('employee_id, on_call, is_personal')
+        .in('employee_id', employeeIds);
+      
+      if (syncMeta) {
+        syncMeta.forEach((meta: any) => {
+          // Find the agents with this employee_id
+          Object.values(agentMap).forEach(agent => {
+            if (agent.employee_id === meta.employee_id) {
+              agent.on_call = !!meta.on_call;
+              agent.is_personal = !!meta.is_personal;
+            }
+          });
+        });
+      }
+    }
+
+    // 6. Fetch last_online from user_sessions
+    const userIds = Object.keys(agentMap);
+    if (userIds.length > 0) {
+      // Fetch latest session for each user
+      const { data: sessions } = await dbClient
+        .from('user_sessions')
+        .select('user_id, last_accessed_at')
+        .in('user_id', userIds)
+        .order('last_accessed_at', { ascending: false });
+
+      if (sessions) {
+        sessions.forEach((session: any) => {
+          // Since it's ordered by last_accessed_at desc, the first one we see for a user is the latest
+          if (agentMap[session.user_id] && !agentMap[session.user_id].last_online) {
+            agentMap[session.user_id].last_online = session.last_accessed_at;
+          }
+        });
+      }
+    }
 
     // 4. Sort and return ALL agents (no slice)
     const agents = Object.values(agentMap)

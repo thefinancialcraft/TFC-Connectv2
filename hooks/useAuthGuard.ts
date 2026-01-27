@@ -44,7 +44,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         holdEndDate: cachedData.hold_end_date || null,
         allTimeActive: cachedData.all_time_active ?? true,
         isCaller: cachedData.is_caller ?? false,
-        isClient: cachedData.is_client ?? false,
+        isClient: cachedData.is_client ?? true,
         designation: cachedData.designation || null,
       };
     }

@@ -21,7 +21,7 @@ const formatDate = (dateString: string | null) => {
 
 export default function OrganizationPage() {
   const router = useRouter();
-  const { user, mounted } = useUser();
+  const { user, mounted, loading: authLoading } = useUser();
   const {
     loading,
     searchQuery,
@@ -29,11 +29,17 @@ export default function OrganizationPage() {
     stats,
     filteredOrgs,
     fetchOrganizations
-  } = useOrganizationData(user?.uid);
+  } = useOrganizationData(user, mounted);
 
-  // Page level protection logic (Strict: Hidden by default)
+  const isAddOrgVisible = useMemo(() => {
+    if (!mounted || !user) return false;
+    // Only internal staff can create organizations
+    return user.isClient === false;
+  }, [mounted, user]);
+
+  // Page level protection logic (Strict: Wait for auth to finalize)
   useEffect(() => {
-    if (mounted && user) {
+    if (mounted && !authLoading && user) {
       const isOrgVisible = user.isClient === false || 
                           (user.isClient === true && user.designation?.toLowerCase() === 'ceo');
       
@@ -42,7 +48,7 @@ export default function OrganizationPage() {
         router.replace('/dashboard');
       }
     }
-  }, [mounted, user, router]);
+  }, [mounted, user, authLoading, router]);
 
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -195,22 +201,24 @@ export default function OrganizationPage() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-4 items-center self-start lg:self-center">
-                  <button
-                    onClick={() => router.push("/organization/create")}
-                    className="flex items-center gap-4 px-7 py-4 rounded-2xl border border-white/10 shadow-xl shadow-indigo-200/50 transition-all hover:scale-[1.03] active:scale-95 group/btn relative overflow-hidden h-18"
-                    style={{ background: "linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)" }}
-                  >
-                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
-                    <div className="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover/btn:bg-white/30 transition-colors shadow-sm ring-1 ring-white/30">
-                      <i className="fi flex fi-rr-plus text-sm"></i>
-                    </div>
-                    <div className="relative z-10 flex flex-col items-start translate-y-[1px]">
-                      <span className="text-base font-black text-white leading-none">Add One</span>
-                      <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mt-1.5">Organization</span>
-                    </div>
-                  </button>
-                </div>
+                {isAddOrgVisible && (
+                  <div className="flex flex-wrap gap-4 items-center self-start lg:self-center">
+                    <button
+                      onClick={() => router.push("/organization/create")}
+                      className="flex items-center gap-4 px-7 py-4 rounded-2xl border border-white/10 shadow-xl shadow-indigo-200/50 transition-all hover:scale-[1.03] active:scale-95 group/btn relative overflow-hidden h-18"
+                      style={{ background: "linear-gradient(135deg, #4b33e8 0%, #8b5cf6 100%)" }}
+                    >
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+                      <div className="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white group-hover/btn:bg-white/30 transition-colors shadow-sm ring-1 ring-white/30">
+                        <i className="fi flex fi-rr-plus text-sm"></i>
+                      </div>
+                      <div className="relative z-10 flex flex-col items-start translate-y-[1px]">
+                        <span className="text-base font-black text-white leading-none">Add One</span>
+                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest leading-none mt-1.5">Organization</span>
+                      </div>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -342,29 +350,32 @@ export default function OrganizationPage() {
                           <h3 className="text-lg font-bold text-gray-800 truncate group-hover:text-[#4b33e8] transition-colors" style={{ fontFamily: "'Poppins', sans-serif" }}>
                             {org.company_name}
                           </h3>
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedOrg(org);
-                                setShowAssignModal(true);
-                              }}
-                              className="w-8 h-8 rounded-lg bg-indigo-50 text-[#4b33e8] flex items-center justify-center hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm"
-                              title="Assign Members"
-                            >
-                              <i className="fi flex fi-rr-user-add text-xs"></i>
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteOrganization(org.id, org.company_name);
-                              }}
-                              className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                              title="Delete Organization"
-                            >
-                              <i className="fi flex fi-rr-trash text-xs"></i>
-                            </button>
-                          </div>
+                          {/* Instruction 6: Hide administrative actions (Assign, Delete) on organization cards for client users */}
+                          {isAddOrgVisible && (
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedOrg(org);
+                                  setShowAssignModal(true);
+                                }}
+                                className="w-8 h-8 rounded-lg bg-indigo-50 text-[#4b33e8] flex items-center justify-center hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm"
+                                title="Assign Members"
+                              >
+                                <i className="fi flex fi-rr-user-add text-xs"></i>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteOrganization(org.id, org.company_name);
+                                }}
+                                className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                title="Delete Organization"
+                              >
+                                <i className="fi flex fi-rr-trash text-xs"></i>
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <p className="text-gray-500 text-xs leading-relaxed mb-6 line-clamp-2 min-h-[32px]">
                           {org.description || 'Provide a sustainable growth strategy for the organization.'}

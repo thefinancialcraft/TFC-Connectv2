@@ -198,6 +198,7 @@ export default function Dashboard() {
             <AgentPerformanceTab
               agentData={agentData}
               totalDials={stats.totalDials}
+              selectedOrgId={selectedOrgId}
             />
           )}
 

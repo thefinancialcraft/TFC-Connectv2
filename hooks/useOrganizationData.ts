@@ -21,7 +21,7 @@ export interface Organization {
   member_avatars?: (string | null)[];
 }
 
-export function useOrganizationData(userId: string | undefined) {
+export function useOrganizationData(user: any, mounted: boolean) {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,7 +29,7 @@ export function useOrganizationData(userId: string | undefined) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchOrganizations = useCallback(async (isBackground = false) => {
-    if (!userId) return;
+    if (!mounted || !user?.uid) return;
 
     if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -41,10 +41,23 @@ export function useOrganizationData(userId: string | undefined) {
       setError("");
 
       // 1. Fetch Organizations
-      const { data: orgData, error: orgError } = await supabase
+      let query = supabase
         .from("organizations")
         .select("*")
-        .order("company_joined", { ascending: false })
+        .order("company_joined", { ascending: false });
+
+      // --- SECURITY FILTERING ---
+      const designation = user.designation?.toLowerCase() || '';
+      const isCEO = user.isClient === true && designation === 'ceo';
+
+      if (isCEO && user.organization_id) {
+          query = query.eq('id', user.organization_id);
+      } else if (user.isClient === true && !isCEO) {
+          // Safety: If somehow a non-CEO client reaches here, show nothing
+          query = query.eq('id', '00000000-0000-0000-0000-000000000000');
+      }
+
+      const { data: orgData, error: orgError } = await query
         .abortSignal(abortControllerRef.current.signal);
 
       if (orgError) throw orgError;
@@ -88,7 +101,7 @@ export function useOrganizationData(userId: string | undefined) {
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [userId]);
+  }, [mounted, user?.uid, user?.designation, user?.organization_id, user?.isClient]);
 
   useEffect(() => {
     fetchOrganizations();
@@ -122,6 +135,9 @@ export function useOrganizationData(userId: string | undefined) {
   }, [organizations]);
 
   const filteredOrgs = useMemo(() => {
+    // Stage 0: Hydration Gate
+    if (!mounted || !user) return [];
+
     const query = searchQuery.toLowerCase().trim();
     if (!query) return organizations;
     return organizations.filter(org =>
@@ -129,7 +145,7 @@ export function useOrganizationData(userId: string | undefined) {
       org.owner_name?.toLowerCase().includes(query) ||
       org.company_code?.toLowerCase().includes(query)
     );
-  }, [organizations, searchQuery]);
+  }, [organizations, searchQuery, mounted, user]);
 
   return {
     organizations,

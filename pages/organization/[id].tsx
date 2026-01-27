@@ -12,20 +12,23 @@ import { formatDate, calculateNewExpiryDate, calculateMonthsToTarget } from "../
 export default function OrganizationDetail() {
   const router = useRouter();
   const { id } = router.query;
-  const { user, mounted } = useUser();
+  const { user, mounted, loading: authLoading } = useUser();
 
-  // Page level protection logic (Strict: Hidden by default)
+  // Page level protection logic (Strict: Wait for auth to finalize)
   useEffect(() => {
-    if (mounted && user) {
+    if (mounted && !authLoading && user) {
+      const allowedRoles = ['ceo', 'admin', 'super_admin'];
+      const userDesignation = user.designation?.toLowerCase().replace(/\s+/g, '_') || '';
+      
       const isOrgVisible = user.isClient === false || 
-                          (user.isClient === true && user.designation?.toLowerCase() === 'ceo');
+                          (user.isClient === true && allowedRoles.includes(userDesignation));
       
       if (!isOrgVisible) {
         console.warn("Unauthorized access to organization detail, redirecting...");
         router.replace('/dashboard');
       }
     }
-  }, [mounted, user, router]);
+  }, [mounted, user, authLoading, router]);
   const {
     loading,
     organization,
@@ -376,13 +379,15 @@ export default function OrganizationDetail() {
                                      </div>
                                  </div>
 
-                                  <button
-                                    onClick={() => setShowRenewalModal(true)}
-                                    className="px-8 ml-3 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-[12px] font-medium hover:shadow-lg hover:scale-105 transition-all flex items-center gap-1.5"
-                                  >
-                                    <i className="fi flex fi-rr-refresh text-[10px]"></i>
-                                    Renew
-                                  </button>
+                                  {user?.isClient === false && (
+                                    <button
+                                      onClick={() => setShowRenewalModal(true)}
+                                      className="px-8 ml-3 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-[12px] font-medium hover:shadow-lg hover:scale-105 transition-all flex items-center gap-1.5"
+                                    >
+                                      <i className="fi flex fi-rr-refresh text-[10px]"></i>
+                                      Renew
+                                    </button>
+                                  )}
                              </div>
                          </div>
                      </div>
@@ -522,39 +527,45 @@ export default function OrganizationDetail() {
                                      <i className="fi flex fi-rr-users-alt text-indigo-600"></i>
                                      Member Directory
                                  </h3>
-                                 <div className="flex items-center gap-3">
-                                     <div className="relative">
-                                         <i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                         <input 
-                                             type="text" 
-                                             placeholder="Search members..." 
-                                             value={searchQuery}
-                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                             className="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full sm:w-48 placeholder:text-slate-400"
-                                         />
-                                     </div>
-                                     <button 
-                                         onClick={() => setShowUserModal(true)}
-                                         className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all font-poppins"
-                                     >
-                                         <i className="fi flex fi-rr-user-add"></i>
-                                         <span>Assign Member</span>
-                                     </button>
+                                  <div className="flex items-center gap-3">
+                                      <div className="relative">
+                                          <i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                          <input 
+                                              type="text" 
+                                              placeholder="Search members..." 
+                                              value={searchQuery}
+                                              onChange={(e) => setSearchQuery(e.target.value)}
+                                              className="pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full sm:w-48 placeholder:text-slate-400"
+                                          />
+                                      </div>
+                                      {user?.isClient === false && (
+                                          <button 
+                                              onClick={() => setShowUserModal(true)}
+                                              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all font-poppins"
+                                          >
+                                              <i className="fi flex fi-rr-user-add"></i>
+                                              <span>Assign</span>
+                                          </button>
+                                      )}
+
                                       <button 
                                           onClick={() => setShowSignupModal(true)}
                                           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-indigo-200 font-poppins"
                                       >
                                           <i className="fi flex fi-rr-plus"></i>
-                                          <span>Add Member</span>
+                                          <span>Add</span>
                                       </button>
-                                      <button 
-                                          onClick={() => setShowImportModal(true)}
-                                          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest font-poppins"
-                                      >
-                                          <i className="fi flex fi-rr-upload"></i>
-                                          <span>Import Bulk</span>
-                                      </button>
-                                 </div>
+
+                                      {user?.isClient === false && (
+                                          <button 
+                                              onClick={() => setShowImportModal(true)}
+                                              className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-[#4b33e8] border border-indigo-100 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-all uppercase tracking-widest font-poppins"
+                                          >
+                                              <i className="fi flex fi-rr-upload"></i>
+                                              <span>Import</span>
+                                          </button>
+                                      )}
+                                  </div>
                              </div>
 
                              <div className="flex-1 overflow-x-auto">
@@ -594,28 +605,42 @@ export default function OrganizationDetail() {
                                                          )}
                                                      </div>
                                                  </td>
-                                                 <td className="p-4 text-left">
-                                                     <button 
-                                                         onClick={() => toggleUserStatus(u.id, u.status)}
-                                                         className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all hover:scale-105 cursor-pointer font-poppins ${
-                                                         u.status === 'active' ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                                     }`}>
+                                                  <td className="p-4 text-left">
+                                                      <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider font-poppins ${
+                                                         u.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'
+                                                      }`}>
                                                          <div className={`w-1.5 h-1.5 rounded-full ${u.status === 'active' ? 'bg-green-500' : 'bg-slate-400'}`}></div>
                                                          {u.status || 'Pending'}
-                                                     </button>
-                                                 </td>
+                                                      </div>
+                                                  </td>
                                                  <td className="p-4 text-left">
                                                      <ExpiryBadge expireDate={u.expire_at} />
                                                  </td>
-                                                 <td className="p-4 text-right">
-                                                     <button 
-                                                         onClick={() => handleRemoveUser(u.id, u.user_name || 'User')}
-                                                         className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                                         title="Remove from Organization"
-                                                     >
-                                                         <i className="fi flex fi-rr-trash"></i>
-                                                     </button>
-                                                 </td>
+                                                  <td className="p-4 text-right">
+                                                      <div className="flex items-center justify-end gap-2">
+                                                          <button 
+                                                              onClick={() => toggleUserStatus(u.id, u.status)}
+                                                              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                                                                u.status === 'active' 
+                                                                  ? 'text-amber-500 bg-amber-50 hover:bg-amber-100' 
+                                                                  : 'text-emerald-500 bg-emerald-50 hover:bg-emerald-100'
+                                                              }`}
+                                                              title={u.status === 'active' ? 'Deactivate Member' : 'Activate Member'}
+                                                          >
+                                                              <i className={`fi flex ${u.status === 'active' ? 'fi-rr-power' : 'fi-rr-bolt'}`}></i>
+                                                          </button>
+
+                                                        {user?.isClient === false && (
+                                                            <button 
+                                                                onClick={() => handleRemoveUser(u.id, u.user_name || 'User')}
+                                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                                title="Remove from Organization"
+                                                            >
+                                                                <i className="fi flex fi-rr-trash"></i>
+                                                            </button>
+                                                        )}
+                                                      </div>
+                                                  </td>
                                              </tr>
                                          ))}
                                          
