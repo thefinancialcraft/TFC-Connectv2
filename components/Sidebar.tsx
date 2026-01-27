@@ -15,6 +15,7 @@ interface SidebarProps {
     profilePicUrl?: string | null;
     isClient?: boolean;
     designation?: string | null;
+    allowed_tabs?: string[];
   };
   activeNav?: string;
   onNavChange?: (nav: string) => void;
@@ -48,6 +49,7 @@ const Sidebar = memo(function Sidebar({
         profilePicUrl: cached.profile_pic_url || null,
         isClient: cached.is_client,
         designation: cached.designation,
+        allowed_tabs: cached.allowed_tabs,
       };
     }
     return undefined;
@@ -129,47 +131,64 @@ const Sidebar = memo(function Sidebar({
 
   // Memoize filtered navigation items
   const navItems = useMemo(() => {
-    // Visibility logic for User and Org Pages (Strict Visibility)
-    const currentUser = (mounted && user) ? user : cachedUser;
-    
-    // Only allow visibility if we are mounted AND meet the criteria
-    // If not mounted, remains false to prevent flicker
-    const allowedDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
-    const currentDesignation = currentUser?.designation?.toLowerCase() || '';
+    // We prioritize the live user object if it exists (from props/auth sync)
+    // but fall back to the cachedUser (local storage) immediately to prevent flicker
+    const currentUser = user || cachedUser;
+    if (!currentUser) return [];
 
-    const isUserPageVisible = mounted && (
-      currentUser?.isClient === false || 
-      (currentUser?.isClient === true && ['ceo', 'developer'].includes(currentDesignation))
-    );
+    const isInternalStaff = currentUser.isClient === false;
+    const designation = currentUser.designation?.toLowerCase() || '';
+    const isAdminState = isAdmin || isInternalStaff;
 
-    const isOrgVisible = mounted && (
-      currentUser?.isClient === false || 
-      (currentUser?.isClient === true && ['ceo', 'developer'].includes(currentDesignation))
-    );
-
-    const isTeamPageVisible = mounted && (
-      currentUser?.isClient === false || 
-      (currentUser?.isClient === true && ['manager', 'team_leader', 'ceo', 'developer'].includes(currentDesignation))
-    );
-
-    const isAdminState = mounted && isAdmin;
-
-    return NAV_ITEMS.filter(item => {
-      // Admin check
+    const filtered = NAV_ITEMS.filter(item => {
+      // 1. Admin/Super Admin check
       if (item.adminOnly && !isAdminState) return false;
-      
-      // User page visibility check (Hidden by default until confirmed)
-      if (item.path === '/users' && !isUserPageVisible) return false;
 
-      // Org page visibility check (Hidden by default until confirmed)
-      if (item.path === '/organization' && !isOrgVisible) return false;
+      // 2. Local Storage Cache: If we have cached tabs, use them for immediate rendering
+      if (currentUser.allowed_tabs && currentUser.allowed_tabs.includes(item.path)) {
+        return true;
+      }
 
-      // Team page visibility check (Hidden by default until confirmed)
-      if (item.path === '/team' && !isTeamPageVisible) return false;
+      // 3. Fallback/Fallback Logic (in case cache is empty or new permissions assigned)
+      if (isInternalStaff) return true;
       
-      return true;
+      const isClientAdmin = ['ceo', 'developer'].includes(designation);
+      if (isClientAdmin) return true;
+
+      const path = item.path;
+      const isAgent = designation === 'agent';
+      if (isAgent) {
+        return ['/dashboard', '/campaign', '/activity', '/followup', '/customer'].includes(path);
+      }
+
+      const isManager = ['manager', 'team_leader'].includes(designation);
+      if (isManager) {
+        return ['/dashboard', '/campaign', '/activity', '/followup', '/team', '/customer'].includes(path);
+      }
+
+      return false;
     });
-  }, [mounted, isAdmin, user, cachedUser]);
+
+    return filtered;
+  }, [isAdmin, user, cachedUser]);
+
+  // Effect to sync calculated nav items back to cache
+  useEffect(() => {
+    if (mounted && navItems.length > 0) {
+      const { getStoredUserData, storeUserData } = require("../lib/localStorageUtils");
+      const currentData = getStoredUserData();
+      if (currentData) {
+        const newPaths = navItems.map(item => item.path);
+        // Only update if changed to avoid loops
+        if (JSON.stringify(currentData.allowed_tabs) !== JSON.stringify(newPaths)) {
+          storeUserData({
+            ...currentData,
+            allowed_tabs: newPaths
+          });
+        }
+      }
+    }
+  }, [navItems, mounted]);
 
   const handleNavClick = useCallback((path: string) => {
     onNavChange?.(path);
@@ -186,38 +205,46 @@ const Sidebar = memo(function Sidebar({
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
-        {navItems.map((item) => {
-          // Robust active check handling nested routes (e.g. /users matches /users/new)
-          // But strict match for dashboard to avoid matching everything if dashboard path is '/'
-          const isOnPath = router.pathname.startsWith(item.path);
-          const isExactDashboard = item.path === '/dashboard' && router.pathname === '/dashboard';
-          const isActive = item.path === '/dashboard' ? isExactDashboard : (isOnPath || activeNav === item.path);
+      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto" suppressHydrationWarning>
+        {navItems.length > 0 ? (
+          navItems.map((item) => {
+            const isOnPath = router.pathname.startsWith(item.path);
+            const isExactDashboard = item.path === '/dashboard' && router.pathname === '/dashboard';
+            const isActive = item.path === '/dashboard' ? isExactDashboard : (isOnPath || activeNav === item.path);
 
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              onClick={() => handleNavClick(item.path)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 relative ${
-                isActive
-                  ? "text-white shadow-md"
-                  : "text-gray-600 hover:bg-gray-50"
-              }`}
-              style={{
-                backgroundColor: isActive ? "#4b33e8" : "transparent",
-              }}
-            >
-              <i className={`fi ${item.icon} flex text-sm`}></i>
-              <span
-                className="font-medium px-1.5 text-sm"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                onClick={() => handleNavClick(item.path)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 relative ${
+                  isActive
+                    ? "text-white shadow-md"
+                    : "text-gray-600 hover:bg-gray-50"
+                }`}
+                style={{
+                  backgroundColor: isActive ? "#4b33e8" : "transparent",
+                }}
               >
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
+                <i className={`fi ${item.icon} flex text-sm`}></i>
+                <span
+                  className="font-medium px-1.5 text-sm"
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })
+        ) : (
+          // Skeleton Links - Only shown if cache is completely empty
+          [1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg animate-pulse">
+                <div className="w-5 h-5 rounded bg-gray-100"></div>
+                <div className="h-3 w-24 bg-gray-100 rounded"></div>
+            </div>
+          ))
+        )}
       </nav>
 
       {/* User Profile Card at Bottom */}

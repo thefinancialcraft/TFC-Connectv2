@@ -97,6 +97,8 @@ export default function CampaignDetails() {
                 updatedAt: null,
                 profilePicUrl: cachedData.profile_pic_url || null,
                 isCaller: cachedData.is_caller ?? false,
+                isClient: cachedData.is_client ?? true,
+                designation: cachedData.designation || null
             };
         }
         return null;
@@ -104,6 +106,7 @@ export default function CampaignDetails() {
     
     useCallSessionRedirect(user?.uid);
 
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
     const [loading, setLoading] = useState(true);
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [stats, setStats] = useState<CampaignStats>({
@@ -135,6 +138,11 @@ export default function CampaignDetails() {
     const [currentPage, setCurrentPage] = useState(1);
     const [leadsPerPage] = useState(10);
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
     const [showImportModal, setShowImportModal] = useState(false);
@@ -154,13 +162,17 @@ export default function CampaignDetails() {
     };
 
     const fetchAuth = async () => {
-        const result = await checkAuthAndFetchProfile();
-        if (result.shouldRedirect) {
-            router.push("/login");
-            return;
-        }
-        if (result.user) {
-            setUser(result.user);
+        try {
+            const result = await checkAuthAndFetchProfile();
+            if (result.shouldRedirect) {
+                router.push("/login");
+                return;
+            }
+            if (result.user) {
+                setUser(result.user);
+            }
+        } finally {
+            setIsAuthLoading(false);
         }
     };
 
@@ -419,7 +431,7 @@ export default function CampaignDetails() {
         }
     };
 
-    const isLevel1User = user?.isClient === true && user?.designation?.toLowerCase() === 'agent';
+    const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
 
     const fetchLeads = async (pageOverride?: number) => {
         if (!id) return;
@@ -541,8 +553,12 @@ export default function CampaignDetails() {
     useEffect(() => {
         if (!router.isReady) return;
         fetchAuth();
+    }, [router.isReady]);
+
+    useEffect(() => {
+        if (!router.isReady || !id || isAuthLoading || !user?.uid) return;
         fetchCampaignData();
-    }, [router.isReady, id]);
+    }, [router.isReady, id, user?.uid, isLevel1User, isAuthLoading]);
 
     // Effect for Page Change (Standard pagination)
     useEffect(() => {
@@ -664,12 +680,87 @@ export default function CampaignDetails() {
         await handleLogout(router);
     };
 
-    if (loading && !campaign) {
+    const SkeletonTile = () => (
+        <div className="bg-white rounded-2xl p-6 border border-gray-100 min-h-[320px] animate-pulse">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-100"></div>
+                    <div className="h-4 w-24 bg-gray-100 rounded"></div>
+                </div>
+                <div className="w-7 h-7 rounded-full bg-gray-100"></div>
+            </div>
+            <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="h-16 bg-gray-50 rounded-2xl"></div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const SkeletonTable = () => (
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
+            <div className="p-6 border-b border-gray-50 flex justify-between">
+                <div className="h-4 w-48 bg-gray-100 rounded"></div>
+            </div>
+            <div className="p-6 space-y-4">
+                {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="h-10 bg-gray-50 rounded"></div>
+                ))}
+            </div>
+        </div>
+    );
+
+    if (isAuthLoading || (loading && !campaign)) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#f6f5f7]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4 border-[#4b33e8]"></div>
-                    <p className="text-[#4b33e8] font-medium">Loading Campaign Details...</p>
+            <div className="flex h-screen bg-gray-50">
+                <Sidebar user={user ? {
+                    displayName: user.displayName,
+                    email: user.email,
+                    employeeId: user.employeeId,
+                    lastSignInAt: user.lastSignInAt,
+                    profilePicUrl: user.profilePicUrl,
+                    isClient: user.isClient,
+                    designation: user.designation,
+                } : undefined} />
+                <div className="flex-1 flex flex-col lg:ml-56 min-w-0 overflow-hidden">
+                    <Header user={user ? {
+                        displayName: user.displayName,
+                        email: user.email,
+                        employeeId: user.employeeId,
+                        profilePicUrl: user.profilePicUrl,
+                    } : undefined} />
+                    <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-[60px] lg:pt-[60px]">
+                        <div className="max-w-[1600px] mx-auto space-y-8">
+                            {/* Header Skeleton */}
+                            <div className="h-32 bg-white rounded-3xl border border-gray-100 animate-pulse"></div>
+                            
+                            {/* Stats Grid Skeleton */}
+                            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+                                {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                                    <div key={i} className="h-24 bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+                                ))}
+                            </div>
+
+                            {/* Analytics Skeleton */}
+                            {mounted && !isLevel1User && (
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="h-[300px] bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Breakdown Table Skeleton */}
+                            <SkeletonTable />
+
+                            {/* Tiles Grid Skeleton */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <SkeletonTile />
+                                <SkeletonTile />
+                            </div>
+                        </div>
+                    </main>
+                    <BottomNav />
                 </div>
             </div>
         );
@@ -696,13 +787,15 @@ export default function CampaignDetails() {
     return (
         <div className="flex min-h-screen w-full overflow-x-hidden bg-[#f6f5f7]">
             <Sidebar
-                user={{
-                    displayName: user?.displayName || null,
-                    email: user?.email || "",
-                    employeeId: user?.employeeId || null,
-                    lastSignInAt: user?.lastSignInAt || null,
-                    profilePicUrl: user?.profilePicUrl || null,
-                }}
+                user={user ? {
+                    displayName: user.displayName,
+                    email: user.email,
+                    employeeId: user.employeeId,
+                    lastSignInAt: user.lastSignInAt,
+                    profilePicUrl: user.profilePicUrl,
+                    isClient: user.isClient,
+                    designation: user.designation,
+                } : undefined}
                 activeNav="campaign"
                 onNavChange={() => { }}
                 userRole={user?.role || null}
@@ -710,12 +803,12 @@ export default function CampaignDetails() {
 
             <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
                 <Header
-                    user={{
-                        displayName: user?.displayName || null,
-                        email: user?.email || "",
-                        employeeId: user?.employeeId || null,
-                        profilePicUrl: user?.profilePicUrl || null,
-                    }}
+                    user={user ? {
+                        displayName: user.displayName,
+                        email: user.email,
+                        employeeId: user.employeeId,
+                        profilePicUrl: user.profilePicUrl,
+                    } : undefined}
                     onLogout={handleLogoutClick}
                 />
 

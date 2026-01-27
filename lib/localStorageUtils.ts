@@ -25,6 +25,7 @@ export interface StoredUserData {
   is_caller?: boolean;
   is_client?: boolean;
   designation?: string | null;
+  allowed_tabs?: string[];
 }
 
 const STORAGE_KEY = 'tfc_user_data';
