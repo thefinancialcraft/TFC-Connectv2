@@ -8,29 +8,62 @@ const OfflineOverlay = () => {
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     // Check initial state
     if (typeof window !== 'undefined') {
+      // 1. Initial Browser Check
       setIsOffline(!window.navigator.onLine);
 
       const handleOnline = () => {
-        console.log("🌐 [Status] Online");
+        console.log("🌐 [Status] Online Event");
         setIsOffline(false);
       };
       
       const handleOffline = () => {
-        console.log("❌ [Status] Offline");
+        console.log("❌ [Status] Offline Event");
         setIsOffline(true);
       };
 
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
+      // 2. Robust Polling (Heartbeat) - Fix for Flutter WebView
+      // Poll every 5 seconds to check actual reachability
+      const checkConnection = async () => {
+        try {
+          // Fetch a tiny resource to verify connection
+          // cached responses might fool us, so we add a timestamp
+          await fetch('/favicon.ico?' + new Date().getTime(), { 
+              method: 'HEAD',
+              mode: 'no-cors',
+              cache: 'no-store' 
+          });
+          
+          // If we reach here, we are online
+          if (isOffline) {
+              console.log("🌐 [Status] Connection Restored (Ping Success)");
+              setIsOffline(false);
+          }
+        } catch (err) {
+          // Network error implies offline
+          if (!isOffline) {
+              console.log("❌ [Status] Connection Lost (Ping Failed)");
+              setIsOffline(true);
+          }
+        }
+      };
+
+      // Start polling
+      intervalId = setInterval(checkConnection, 5000);
+
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
+        clearInterval(intervalId);
       };
     }
-  }, []);
+  }, [isOffline]);
 
   if (!isOffline) return null;
 
