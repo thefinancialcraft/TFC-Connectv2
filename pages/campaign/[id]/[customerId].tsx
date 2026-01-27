@@ -482,22 +482,21 @@ export default function CallingPage() {
             }
 
             // 3. Fetch History (Call Logs) - Always attempt this
-            const { data: historyData, error: historyError } = await supabase
-                .from('call_logs')
-                .select(`
-                    *,
-                    agent:agent_id(user_name, employee_id),
-                    updater:last_updated_by(user_name, employee_id)
-                `)
-                .eq('customer_id', idToFetch)
-                .order('created_at', { ascending: false });
-            
-            if (historyError) {
-                console.error("[Fetch] History error:", historyError);
-                setHistory([]);
-            } else {
-                console.log(`[Fetch] Found ${historyData?.length || 0} history records.`);
-                setHistory(historyData || []);
+            // 3. Fetch History (Call Logs) - Use Secure API to bypass RLS
+            try {
+                const historyResponse = await fetch(`/api/call/history?customerId=${idToFetch}`);
+                const historyResult = await historyResponse.json();
+                
+                if (historyResult.success && historyResult.data) {
+                    console.log(`[Fetch] Found ${historyResult.data.length} history records via API.`);
+                    setHistory(historyResult.data);
+                } else {
+                    console.error("[Fetch] History API error:", historyResult.error);
+                    setHistory([]);
+                }
+            } catch (err) {
+                 console.error("[Fetch] History API exception:", err);
+                 setHistory([]);
             }
 
         } catch (err: any) {
@@ -853,14 +852,49 @@ export default function CallingPage() {
                 }
             }
 
-            // 1. Save Call Log FIRST (before customer might be deleted/moved)
+            // Determine Correct Assignment for Log
+            // Priority: Existing Owner > New Owner (Self)
+            const currentOwner = customer?.assigned_to;
+            let finalLogAssignedTo = currentOwner; 
+
+            // If no owner, or if we are taking ownership (logic below handles the DB update, but log needs to reflect INTENT)
+            // Ideally, we should mirror the logic we are about to run?
+            // "assigned_to" in call_logs usually means "Who is responsible for this lead AFTER this call?"
+            
+            // Re-evaluating the user requirement: "assigned_to me actual assigned user id"
+            // If I am overriding, the actual assigned user is the OTHER person.
+            // If I am taking ownership, the actual assigned user is ME.
+            
+            const shouldAssignToSelfLog = !currentOwner || currentOwner === user?.uid;
+            
+            if (shouldAssignToSelfLog) {
+                // If it was unassigned, or mine, it is now mine (or stays mine)
+                // UNLESS it is valid for retry/followup?
+                if (logStatus === 'followup' || logStatus === 'active') { // Only active/followup have owners
+                     finalLogAssignedTo = user?.uid;
+                } else {
+                     finalLogAssignedTo = null; // Closed/Rejected have no owner usually
+                }
+            } else {
+                // It is owned by someone else. We preserve that owner in the log.
+                finalLogAssignedTo = currentOwner;
+            }
+
+            // 1. Save Call Log FIRST
+            // agent_id: The "Lead Owner" (or the person responsible).
+            //           If lead is owned by someone else -> Use THEIR ID.
+            //           If lead is mine or fresh -> Use MY ID.
+            // last_updated_by: The person doing the work (Me/TL)
+            
+            const logAgentId = finalLogAssignedTo || user?.uid; 
+
             const { error: logError } = await supabase
                 .from('call_logs')
                 .insert({
                     customer_id: customerId,
                     campaign_id: campaignId,
-                    agent_id: user?.uid,
-                    last_updated_by: user?.uid,
+                    agent_id: logAgentId, // The Owner
+                    last_updated_by: user?.uid, // The Actor (Me)
                     disposition: disposition,
                     sub_disposition: subDisposition,
                     is_connected: isConnected,
@@ -870,11 +904,12 @@ export default function CallingPage() {
                     updated_at: now,
                     next_called_at: logNextCalledAt,
                     status: logStatus,
-                    assigned_to: logAssignedTo
+                    assigned_to: finalLogAssignedTo // The Assigned To
                 });
 
             if (logError) throw logError;
 
+            // 2. Perform Movement Logic or Update Status
             // 2. Perform Movement Logic or Update Status
             if (isRejected) {
                 // Move to rejected table and delete from customers
@@ -912,18 +947,31 @@ export default function CallingPage() {
                     is_connected: isConnected
                 };
 
+                // ASSIGNMENT GUARD LOGIC:
+                // Only take ownership if:
+                // 1. Lead is fresh (assigned_to is NULL)
+                // 2. Lead is ALREADY mine
+                // 3. DO NOT STEAL if assigned to someone else
+                const currentAssignedTo = customer?.assigned_to;
+                const shouldAssignToSelf = !currentAssignedTo || currentAssignedTo === user?.uid;
+
                 if (isRetryable) {
                     updatePayload = {
                         ...updatePayload,
                         attempt_count: newAttempts,
                         last_attempt_at: now,
                         next_called_at: nextCallTime,
-                        assigned_to: user?.uid,
                         disposition: disposition,
                         sub_disposition: subDisposition
                     };
+                    
+                    if (shouldAssignToSelf) {
+                         updatePayload.assigned_to = user?.uid;
+                         logAssignedTo = user?.uid;
+                    }
+                    // Else: leaves assigned_to as is (preserved)
+
                     logNextCalledAt = nextCallTime;
-                    logAssignedTo = user?.uid;
                     logStatus = 'active';
                 } else {
                     updatePayload = {
@@ -931,7 +979,7 @@ export default function CallingPage() {
                         attempt_count: 0,
                         last_attempt_at: null,
                         next_called_at: null,
-                        assigned_to: null,
+                        assigned_to: null, // Reset assignment if retry failed (back to pool)
                         status: 'active',
                         disposition: disposition,
                         sub_disposition: subDisposition
@@ -958,8 +1006,26 @@ export default function CallingPage() {
                     last_called_at: now,
                     updated_at: now,
                     last_updated_by: user?.uid,
-                    assigned_to: (isFollowup) ? user?.uid : null
                 };
+
+                // ASSIGNMENT GUARD LOGIC:
+                const currentAssignedTo = customer?.assigned_to;
+                const shouldAssignToSelf = !currentAssignedTo || currentAssignedTo === user?.uid;
+
+                if (isFollowup && shouldAssignToSelf) {
+                    updatePayload.assigned_to = user?.uid;
+                    logAssignedTo = user?.uid;
+                } 
+                // Else: if follow-up but owned by someone else -> Keep original owner
+                // Unless we want to explicitly steal it? Requirement says NO conflict. 
+                // So we preserve the original owner.
+
+                if (!isFollowup && shouldAssignToSelf) {
+                     // If moving back to active/fresh state and was mine -> release it?
+                     // Usually standard flow releases it to NULL.
+                     updatePayload.assigned_to = null;
+                     logAssignedTo = null;
+                }
 
                 updatePayload.attempt_count = 0;
                 updatePayload.last_attempt_at = null;
@@ -976,7 +1042,6 @@ export default function CallingPage() {
                 }
 
                 logStatus = updatePayload.status;
-                logAssignedTo = updatePayload.assigned_to;
 
                 const { error: customerUpdateError } = await supabase
                     .from('customers')
