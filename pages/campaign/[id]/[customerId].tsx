@@ -832,7 +832,7 @@ export default function CallingPage() {
                 : (disposition === 'Not Contactable' ? 'uncontactable' : null);
 
             // Calculate preliminary log values
-            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO' || disposition === 'Ported / Expired';
+            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO' || disposition === 'Ported / Expired' || disposition === 'Not Intrested';
             const isClosed = disposition === 'Deal Done';
             
             let logNextCalledAt = null;
@@ -931,7 +931,7 @@ export default function CallingPage() {
                     p_final_disposition: finalDisposition
                 });
                 if (closeError) throw closeError;
-            } else if (disposition === 'Not Contactable' || disposition === 'Not Intrested') {
+            } else if (disposition === 'Not Contactable') {
                 // Return to General Pool immediately (per new user requirement)
                 
                 const updatePayload: any = {
