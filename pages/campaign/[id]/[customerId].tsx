@@ -931,61 +931,26 @@ export default function CallingPage() {
                 });
                 if (closeError) throw closeError;
             } else if (disposition === 'Not Contactable' || disposition === 'Not Intrested') {
-                // --- Specific Logic for Retries (Not Contactable or Not Interested) ---
-                const currentAttempts = customer?.attempt_count || 0;
-                const newAttempts = currentAttempts + 1;
-                // User Request: Retry 1 time only (previously 3)
-                const isRetryable = newAttempts <= 1;
+                // Return to General Pool immediately (per new user requirement)
                 
-                // User Request: 2 hour gap (previously 1h + 2m)
-                const nextCallTime = new Date(new Date(now).getTime() + 2 * 60 * 60 * 1000).toISOString();
-
-                let updatePayload: any = {
+                const updatePayload: any = {
                     last_called_at: now,
                     updated_at: now,
                     last_updated_by: user?.uid,
-                    is_connected: isConnected
+                    is_connected: isConnected,
+                    
+                    // Reset assignment and attempts (Back to Pool)
+                    attempt_count: 0,
+                    last_attempt_at: null,
+                    next_called_at: null,
+                    assigned_to: null, 
+                    
+                    status: 'active',
+                    disposition: disposition,
+                    sub_disposition: subDisposition
                 };
 
-                // ASSIGNMENT GUARD LOGIC:
-                // Only take ownership if:
-                // 1. Lead is fresh (assigned_to is NULL)
-                // 2. Lead is ALREADY mine
-                // 3. DO NOT STEAL if assigned to someone else
-                const currentAssignedTo = customer?.assigned_to;
-                const shouldAssignToSelf = !currentAssignedTo || currentAssignedTo === user?.uid;
-
-                if (isRetryable) {
-                    updatePayload = {
-                        ...updatePayload,
-                        attempt_count: newAttempts,
-                        last_attempt_at: now,
-                        next_called_at: nextCallTime,
-                        disposition: disposition,
-                        sub_disposition: subDisposition
-                    };
-                    
-                    if (shouldAssignToSelf) {
-                         updatePayload.assigned_to = user?.uid;
-                         logAssignedTo = user?.uid;
-                    }
-                    // Else: leaves assigned_to as is (preserved)
-
-                    logNextCalledAt = nextCallTime;
-                    logStatus = 'active';
-                } else {
-                    updatePayload = {
-                        ...updatePayload,
-                        attempt_count: 0,
-                        last_attempt_at: null,
-                        next_called_at: null,
-                        assigned_to: null, // Reset assignment if retry failed (back to pool)
-                        status: 'active',
-                        disposition: disposition,
-                        sub_disposition: subDisposition
-                    };
-                    logStatus = 'active';
-                }
+                logStatus = 'active';
 
                 const { error: customerUpdateError } = await supabase
                     .from('customers')
