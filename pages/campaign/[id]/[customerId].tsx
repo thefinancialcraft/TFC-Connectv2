@@ -1521,9 +1521,41 @@ export default function CallingPage() {
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="px-6 py-3 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3">
-                                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Session Logged • Set Outcome</span>
+                                                    <div className="flex flex-col sm:flex-row items-center justify-end gap-3 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                                        <div className="px-5 py-3 h-14 rounded-2xl bg-emerald-50/80 backdrop-blur-sm border border-emerald-100/50 flex items-center justify-center gap-3 w-full sm:w-auto shadow-sm">
+                                                            <div className="relative flex h-2.5 w-2.5">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                                            </div>
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 whitespace-nowrap">Session Pending</span>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                            {/* Redial Button */}
+                                                             <button 
+                                                                onClick={handleStartCall}
+                                                                className="flex-1 sm:flex-none h-14 w-full sm:w-16 rounded-2xl bg-indigo-50 border border-indigo-100/50 text-indigo-600 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 flex items-center justify-center group"
+                                                                title="Redial Customer"
+                                                            >
+                                                                <i className="fi flex fi-rr-refresh text-xl group-hover:rotate-180 transition-transform duration-500"></i>
+                                                            </button>
+
+                                                            {/* WhatsApp Button */}
+                                                            <button 
+                                                                onClick={() => {
+                                                                    if (customer?.phone_no) {
+                                                                        const cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                        window.open(`https://wa.me/${cleanNumber}`, '_blank');
+                                                                    } else {
+                                                                        alert("No phone number available");
+                                                                    }
+                                                                }}
+                                                                className="flex-1 sm:flex-none h-14 w-full sm:w-16 rounded-2xl bg-emerald-50 border border-emerald-100/50 text-emerald-600 hover:bg-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 flex items-center justify-center group"
+                                                                title="Chat on WhatsApp"
+                                                            >
+                                                                <i className="fi flex fi-brands-whatsapp text-xl"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
