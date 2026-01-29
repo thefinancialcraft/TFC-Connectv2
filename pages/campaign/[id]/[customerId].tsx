@@ -1506,7 +1506,12 @@ export default function CallingPage() {
                                                         <button 
                                                             onClick={() => {
                                                                 if (customer?.phone_no) {
-                                                                    const cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                    let cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                    if (cleanNumber.length === 10) {
+                                                                        cleanNumber = '91' + cleanNumber;
+                                                                    } else if (cleanNumber.length > 10 && cleanNumber.startsWith('0')) {
+                                                                        cleanNumber = '91' + cleanNumber.substring(1);
+                                                                    }
                                                                     window.open(`https://wa.me/${cleanNumber}`, '_blank');
                                                                 } else {
                                                                     alert("No phone number available");
@@ -1544,7 +1549,12 @@ export default function CallingPage() {
                                                             <button 
                                                                 onClick={() => {
                                                                     if (customer?.phone_no) {
-                                                                        const cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                        let cleanNumber = customer.phone_no.replace(/\D/g, '');
+                                                                        if (cleanNumber.length === 10) {
+                                                                            cleanNumber = '91' + cleanNumber;
+                                                                        } else if (cleanNumber.length > 10 && cleanNumber.startsWith('0')) {
+                                                                            cleanNumber = '91' + cleanNumber.substring(1);
+                                                                        }
                                                                         window.open(`https://wa.me/${cleanNumber}`, '_blank');
                                                                     } else {
                                                                         alert("No phone number available");
