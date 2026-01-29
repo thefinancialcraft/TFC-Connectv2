@@ -208,6 +208,7 @@ export default function CallingPage() {
         "Language barrier": [],
         "DND": [],
         "Wrong NO": [],
+        "Ported / Expired": [],
         "Not Contactable": ["hang up", "busy","Switch off", "Ring", "not reacable", "others"],
         "Call Back": ["intrested", "follow up","Switch off", "busy", "Ring", "not reacable", "others"],
         "Deal Done": [],
@@ -831,7 +832,7 @@ export default function CallingPage() {
                 : (disposition === 'Not Contactable' ? 'uncontactable' : null);
 
             // Calculate preliminary log values
-            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO';
+            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO' || disposition === 'Ported / Expired';
             const isClosed = disposition === 'Deal Done';
             
             let logNextCalledAt = null;
