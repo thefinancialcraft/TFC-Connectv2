@@ -124,12 +124,16 @@ export default function CallingPage() {
             console.log('📬 [Bridge] Received Message:', data);
             
             const eventType = data?.type;
+            const eventVal = String(data?.value || "").toLowerCase();
+            
             const isDisconnectMsg = eventType === 'call_disconected' || 
                                     eventType === 'call_disconnect' || 
-                                    eventType === 'call_disconnected';
+                                    eventType === 'call_disconnected' ||
+                                    eventType === 'disconnected' ||
+                                    eventVal === 'disconnected';
             
             if (isDisconnectMsg) {
-                console.log('📬 [Bridge] Disconnect event detected:', eventType);
+                console.log('📬 [Bridge] Disconnect event detected:', eventType || eventVal);
                 
                 // Clear calling_status on disconnect
                 if (user?.employeeId) {
@@ -137,21 +141,18 @@ export default function CallingPage() {
                 }
                 setLocalCallingStatus(null);
 
-                if (data?.value) {
-                    const disconnectedPhone = String(data.value).replace(/\D/g, '').slice(-10);
-                    const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
+                // Match logic: If no phone provided, assume it's the current call. 
+                // If phone provided, check last 10 digits.
+                const disconnectedPhone = data?.value ? String(data.value).replace(/\D/g, '').slice(-10) : null;
+                const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
 
-                    console.log(`📬 [Bridge] Comparing numbers: Received=${disconnectedPhone}, PageTarget=${currentPhone}`);
+                console.log(`📬 [Bridge] Matching: Received=${disconnectedPhone || 'NONE'}, Current=${currentPhone}`);
 
-                    // Only trigger if this is the SAME phone number
-                    if (disconnectedPhone && disconnectedPhone === currentPhone) {
-                        console.log('📬 [Bridge] ✅ MATCH! Triggering handleEndCall(true)...');
-                        handleEndCall(true);
-                    } else {
-                        console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring disconnect event.');
-                    }
+                if (!disconnectedPhone || disconnectedPhone === currentPhone) {
+                    console.log('📬 [Bridge] ✅ MATCH (or generic disconnect). Triggering handleEndCall(true)...');
+                    handleEndCall(true);
                 } else {
-                    console.warn('📬 [Bridge] ⚠️ Disconnect event received but value (phone) is missing.');
+                    console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring.');
                 }
             } else if (eventType === 'connecting' || eventType === 'connected') {
                 console.log(`📬 [Bridge] Setting status to: ${eventType}`);
