@@ -43,7 +43,23 @@ export default function GlobalCallHandler() {
             
             console.log(`[Global-Call] 🔔 Notifying owner ${ownerId} about reach attempt to ${customerName}`);
             
-            // Broadcast to real-time channel for notifications
+            // 1. Persist to Database for persistence
+            try {
+                await supabase.from('notifications').insert({
+                    user_id: ownerId,
+                    type: 'lead_access',
+                    message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`,
+                    actor_id: user.employeeId,
+                    metadata: { 
+                        customer_name: customerName,
+                        actor_name: user.displayName
+                    }
+                });
+            } catch (err) {
+                console.error("[Global-Call] Failed to save notification:", err);
+            }
+
+            // 2. Broadcast for real-time UI reaction
             await supabase.channel(`agent_notifications_${ownerId}`).send({
                 type: 'broadcast',
                 event: 'manual_lead_access',

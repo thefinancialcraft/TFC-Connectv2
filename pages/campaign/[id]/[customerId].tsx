@@ -1260,6 +1260,7 @@ export default function CallingPage() {
                         profilePicUrl: user.profilePicUrl
                     } : undefined} 
                     onLogout={() => handleLogout(router)} 
+                    hideSidebar={false}
                 />
                 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] relative" style={{ backgroundColor: "#f8fafc" }}>

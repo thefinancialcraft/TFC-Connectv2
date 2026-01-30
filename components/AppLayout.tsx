@@ -42,16 +42,12 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       setStableUser((prev: any) => {
         if (!prev) {
           return {
-            displayName: user.displayName || null,
-            email: user.email || "",
-            employeeId: user.employeeId || null,
-            lastSignInAt: user.lastSignInAt || null,
-            profilePicUrl: user.profilePicUrl || null,
             isClient: user.isClient,
             designation: user.designation,
+            uid: user.uid || (user as any).id,
           };
         }
-
+ 
         const hasChanged =
           prev.displayName !== (user.displayName || null) ||
           prev.email !== (user.email || "") ||
@@ -59,8 +55,9 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           prev.lastSignInAt !== (user.lastSignInAt || null) ||
           prev.profilePicUrl !== (user.profilePicUrl || null) ||
           prev.isClient !== user.isClient ||
-          prev.designation !== user.designation;
-
+          prev.designation !== user.designation ||
+          prev.uid !== (user.uid || (user as any).id);
+ 
         if (hasChanged) {
           return {
             displayName: user.displayName || null,
@@ -70,6 +67,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
             profilePicUrl: user.profilePicUrl || null,
             isClient: user.isClient,
             designation: user.designation,
+            uid: user.uid || (user as any).id,
           };
         }
         return prev;
@@ -154,6 +152,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           <Header
             user={stableUser}
             onLogout={handleLogoutClick}
+            hideSidebar={hideSidebar}
           />
         )}
 
