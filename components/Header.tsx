@@ -391,6 +391,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
               });
           }
       })
+      // Keep broadcast for ultra-fast immediate reactions (Backup to DB)
+      .on('broadcast', { event: 'manual_lead_access' }, (payload) => {
+          console.log('🔔 [Header] Fast broadcast signal received:', payload);
+          // Show alert immediately without waiting for DB
+          showWarning(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
+      })
       .subscribe();
 
     return () => {
