@@ -500,6 +500,40 @@ export default function CallingPage() {
                  setHistory([]);
             }
 
+            // 4. Initial Session State (Active Call/Disposition Recovery)
+            // Check if there is an active session for the CURRENT lead (Primary or Manual)
+            const { data: sData } = await supabase
+                .from('call_sessions')
+                .select('*')
+                .eq('user_id', user.uid)
+                .maybeSingle();
+
+            if (sData) {
+                const session = sData;
+                const isManualMode = session.is_manual === true;
+                
+                // Determine which lead this session is actually tracking for the current view
+                const sessionCustomerId = isManualMode ? session.manual_customer_id : session.customer_id;
+                const sessionStatus = isManualMode ? (session.manual_status || session.status) : session.status;
+                const sessionStartTime = session.call_start_at;
+
+                if (String(sessionCustomerId) === String(idToFetch)) {
+                    console.log(`[Fetch-Session] Active session found for this lead: ${sessionStatus}`);
+                    
+                    if (sessionStatus === 'active') {
+                        setIsCalling(true);
+                        setPostCall(false);
+                        if (sessionStartTime) {
+                            const start = parseUTCtoMS(sessionStartTime);
+                            if (start) setCallStartTime(start);
+                        }
+                    } else if (sessionStatus === 'disposition_pending') {
+                        setIsCalling(false);
+                        setPostCall(true);
+                    }
+                }
+            }
+
         } catch (err: any) {
             console.error("[Fetch] Error in fetchData:", err);
             setError(err.message);
@@ -573,38 +607,42 @@ export default function CallingPage() {
                     
                     if (!session) return;
 
-                    const currentCampaignId = String(campaignId || campaign?.id || "");
                     const currentCustomerId = String(customerId || "");
-                    const incomingCampaignId = String(session.campaign_id);
-                    const incomingCustomerId = String(session.customer_id);
+                    
+                    // DUAL SESSION REAL-TIME LOGIC
+                    const isManualMode = session.is_manual === true;
+                    const sessionCustomerId = isManualMode ? session.manual_customer_id : session.customer_id;
+                    const sessionStatus = isManualMode ? (session.manual_status || session.status) : session.status;
+                    const sessionCampaignId = isManualMode ? (session.manual_campaign_id || session.campaign_id) : session.campaign_id;
 
-                    if (!incomingCampaignId || incomingCampaignId === "undefined" || !incomingCustomerId || incomingCustomerId === "undefined") return;
+                    if (!sessionCustomerId || sessionCustomerId === "undefined") return;
 
-                    if (incomingCampaignId === currentCampaignId && incomingCustomerId === currentCustomerId) {
-                        if (session.status === 'active') {
+                    if (String(sessionCustomerId) === currentCustomerId) {
+                        if (sessionStatus === 'active') {
                             setPostCall(false);
                             setIsCalling(true);
                             if (session.call_start_at) {
                                 const start = parseUTCtoMS(session.call_start_at);
                                 if (start) setCallStartTime(start);
                             }
-                        } else if (session.status === 'assigned') {
+                        } else if (sessionStatus === 'assigned') {
                             setIsCalling(false);
                             setPostCall(false);
                             setCallDuration(0);
                             setCallStartTime(null);
-                        } else if (session.status === 'disposition_pending') {
+                        } else if (sessionStatus === 'disposition_pending') {
                             setIsCalling(false);
                             setPostCall(true);
-                        } else if (session.status === 'closed') {
+                        } else if (sessionStatus === 'closed') {
                             setIsCalling(false);
                             setPostCall(false);
                             setCallDuration(0);
                             setCallStartTime(null);
                         }
-                    } else if (incomingCustomerId && incomingCustomerId !== currentCustomerId) {
-                        if (session.status === 'paused' || session.is_manual) return;
-                        router.push(`/campaign/${incomingCampaignId}/${incomingCustomerId}`);
+                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId) {
+                        // Redirect to another lead only if NOT in a manual interruption or if that manual lead is active
+                        if (sessionStatus === 'paused') return;
+                        router.push(`/campaign/${sessionCampaignId}/${sessionCustomerId}`);
                     }
                 }
             )
