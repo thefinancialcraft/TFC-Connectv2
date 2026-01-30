@@ -450,45 +450,80 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     };
   }, [mounted, displayUser?.uid]);
 
-  const markAsSeen = async (id?: string) => {
-    if (!displayUser?.uid) return;
-    
+  const markAsSeen = async (id?: string | number) => {
     try {
-        if (id) {
-            // Mark specific
-            await supabase.from('notifications').update({ is_seen: true }).eq('id', id);
-            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_seen: true } : n));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const idStr = id ? String(id) : null;
+        
+        // Optimistic UI update
+        if (idStr && idStr.startsWith('temp_')) {
+            setNotifications(prev => prev.map(n => String(n.id) === idStr ? { ...n, is_seen: true } : n));
             setUnreadCount(c => Math.max(0, c - 1));
-        } else {
-            // Mark all
-            await supabase.from('notifications').update({ is_seen: true }).eq('user_id', displayUser.uid).eq('is_seen', false);
-            setNotifications(prev => prev.map(n => ({ ...n, is_seen: true })));
-            setUnreadCount(0);
+            return;
+        }
+
+        const response = await fetch('/api/notifications/mark-as-seen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ id: id, markAll: !id })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            if (id) {
+                setNotifications(prev => prev.map(n => String(n.id) === idStr ? { ...n, is_seen: true } : n));
+                setUnreadCount(c => Math.max(0, c - 1));
+            } else {
+                setNotifications(prev => prev.map(n => ({ ...n, is_seen: true })));
+                setUnreadCount(0);
+            }
+            console.log("✅ [Header] Mark as seen success via API");
         }
     } catch (err) {
-        console.error("Failed to update notification status:", err);
+        console.error("❌ [Header] Failed to mark as seen:", err);
     }
   };
 
-  const deleteNotification = async (id: string) => {
-      // MASTER MOVE: Optimistically update UI first
+  const deleteNotification = async (id: string | number) => {
+      const idStr = String(id);
+      console.log(`🗑️ [Header] Deleting notification ${idStr} via API`);
+      
+      // 1. UI update (Optimistic)
       setNotifications(prev => {
-          const item = prev.find(n => n.id === id);
+          const item = prev.find(n => String(n.id) === idStr);
           if (item && !item.is_seen) setUnreadCount(c => Math.max(0, c - 1));
-          return prev.filter(n => n.id !== id);
+          return prev.filter(n => String(n.id) !== idStr);
       });
 
-      // Only delete from DB if it's NOT a temporary optimistic notification
-      if (id && !id.toString().startsWith('temp_')) {
+      // 2. DB update (API Call)
+      if (!idStr.startsWith('temp_')) {
           try {
-              const { error } = await supabase.from('notifications').delete().eq('id', id);
-              if (error) throw error;
-              console.log("🗑️ [Header] Notification deleted from DB:", id);
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session) return;
+
+              const response = await fetch('/api/notifications/delete', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${session.access_token}`
+                  },
+                  body: JSON.stringify({ id: id })
+              });
+
+              const result = await response.json();
+              if (result.success) {
+                  console.log(`✅ [Header] DB Delete Success. Rows affected: ${result.deletedCount}`);
+              } else {
+                  console.error("❌ [Header] API Delete Error:", result.error);
+              }
           } catch (err) {
-              console.error("Failed to delete notification from DB:", err);
+              console.error("❌ [Header] Fatal Delete Exception:", err);
           }
-      } else {
-          console.log("🗑️ [Header] Removed temporary notification from UI:", id);
       }
   };
 
@@ -846,14 +881,20 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
                       <div className="flex flex-col gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                         {!notif.is_seen && (
                           <button 
-                            onClick={() => markAsSeen(notif.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                markAsSeen(notif.id);
+                            }}
                             className="p-1.5 bg-white shadow-sm border border-gray-100 rounded-lg text-indigo-600 hover:bg-slate-50"
                           >
                             <Check className="w-3 h-3" />
                           </button>
                         )}
                         <button 
-                          onClick={() => deleteNotification(notif.id)}
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notif.id);
+                          }}
                           className="p-1.5 bg-white shadow-sm border border-gray-100 rounded-lg text-red-500 hover:bg-slate-50"
                         >
                           <Trash2 className="w-3 h-3" />
