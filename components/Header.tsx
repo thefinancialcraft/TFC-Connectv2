@@ -48,6 +48,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
         email: cached.email || '',
         employeeId: cached.employee_id || null,
         profilePicUrl: cached.profile_pic_url || null,
+        uid: (cached as any).id || (cached as any).uid || null // Grab UID/ID
       };
     }
     return undefined;
@@ -325,82 +326,105 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
       setCachedUser(prev => {
         // ... (existing code)
         if (!prev) return user;
-        const hasChanged = prev.displayName !== user.displayName || prev.employeeId !== user.employeeId || prev.email !== user.email || prev.profilePicUrl !== user.profilePicUrl;
+        const hasChanged = 
+            prev.displayName !== user.displayName || 
+            prev.employeeId !== user.employeeId || 
+            prev.email !== user.email || 
+            prev.profilePicUrl !== user.profilePicUrl ||
+            prev.uid !== user.uid;
         if (hasChanged) return user;
         return prev;
       });
     }
-  }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl]);
+  }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl, user?.uid]);
 
   // Real-time Notification Listener
   useEffect(() => {
-    const currentUid = displayUser?.uid;
-    if (!mounted || !currentUid) return;
-
-    // 1. Initial Fetch
-    const fetchNotifications = async () => {
-        const { data, error } = await supabase
-            .from('notifications')
-            .select('*')
-            .eq('user_id', currentUid)
-            .order('created_at', { ascending: false })
-            .limit(20);
+    let currentUid = displayUser?.uid;
+    
+    // Fallback: If UID is still missing, try to get it from active auth session
+    const syncNotificationChannel = async () => {
+        if (!mounted) return;
         
-        if (!error && data) {
-            setNotifications(data);
-            setUnreadCount(data.filter(n => !n.is_seen).length);
+        let activeUid = currentUid;
+        if (!activeUid) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user?.id) {
+                activeUid = session.user.id;
+                console.log("🔑 [Header] Recovered UID from session:", activeUid);
+            }
         }
-    };
-    fetchNotifications();
 
-    const channelName = `agent_notifications_${currentUid}`;
-    console.log(`📡 [Header] Monitoring notifications: ${channelName}`);
+        if (!activeUid) return;
 
-    // 2. Real-time Subscription (Full Sync: Insert, Update, Delete)
-    const channel = supabase
-      .channel(channelName)
-      .on('postgres_changes', { 
-         event: '*', // Listen to ALL changes (Insert, Update, Delete)
-         schema: 'public', 
-         table: 'notifications', 
-         filter: `user_id=eq.${currentUid}` 
-      }, (payload) => {
-          console.log(`🔔 [Header] Realtime Database ${payload.eventType}:`, payload);
-          
-          if (payload.eventType === 'INSERT') {
-              setNotifications(prev => [payload.new, ...prev].slice(0, 20));
-              setUnreadCount(c => c + 1);
-              if (payload.new.type === 'lead_access') {
-                  showWarning(payload.new.message, "Lead Access Alert");
-              }
-          } 
-          else if (payload.eventType === 'UPDATE') {
-              setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new : n));
-              // Fast unread count update: if it was transition from unseen to seen
-              if (payload.old && !payload.old.is_seen && payload.new.is_seen) {
-                  setUnreadCount(c => Math.max(0, c - 1));
-              } else if (payload.old && payload.old.is_seen && !payload.new.is_seen) {
+        // 1. Initial Fetch
+        const fetchNotifications = async () => {
+            const { data, error } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', activeUid)
+                .order('created_at', { ascending: false })
+                .limit(20);
+            
+            if (!error && data) {
+                setNotifications(data);
+                setUnreadCount(data.filter(n => !n.is_seen).length);
+            }
+        };
+        fetchNotifications();
+
+        const channelName = `agent_notifications_${activeUid}`;
+        console.log(`📡 [Header] Monitoring notifications: ${channelName}`);
+
+        // 2. Real-time Subscription (Full Sync: Insert, Update, Delete)
+        const channel = supabase
+          .channel(channelName)
+          .on('postgres_changes', { 
+             event: '*', 
+             schema: 'public', 
+             table: 'notifications', 
+             filter: `user_id=eq.${activeUid}` 
+          }, (payload: any) => {
+              console.log(`🔔 [Header] Realtime Database ${payload.eventType}:`, payload);
+              
+              if (payload.eventType === 'INSERT') {
+                  setNotifications(prev => [payload.new, ...prev].slice(0, 20));
                   setUnreadCount(c => c + 1);
+                  if (payload.new.type === 'lead_access') {
+                      showWarning(payload.new.message, "Lead Access Alert");
+                  }
+              } 
+              else if (payload.eventType === 'UPDATE') {
+                  setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new : n));
+                  if (payload.old && !payload.old.is_seen && payload.new.is_seen) {
+                      setUnreadCount(c => Math.max(0, c - 1));
+                  } else if (payload.old && payload.old.is_seen && !payload.new.is_seen) {
+                      setUnreadCount(c => c + 1);
+                  }
               }
-          }
-          else if (payload.eventType === 'DELETE') {
-              setNotifications(prev => {
-                  const deletedItem = prev.find(n => n.id === payload.old.id);
-                  if (deletedItem && !deletedItem.is_seen) setUnreadCount(c => Math.max(0, c - 1));
-                  return prev.filter(n => n.id !== payload.old.id);
-              });
-          }
-      })
-      // Keep broadcast for ultra-fast immediate reactions (Backup to DB)
-      .on('broadcast', { event: 'manual_lead_access' }, (payload) => {
-          console.log('🔔 [Header] Fast broadcast signal received:', payload);
-          // Show alert immediately without waiting for DB
-          showWarning(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
-      })
-      .subscribe();
+              else if (payload.eventType === 'DELETE') {
+                  setNotifications(prev => {
+                      const deletedItem = prev.find(n => n.id === payload.old.id);
+                      if (deletedItem && !deletedItem.is_seen) setUnreadCount(c => Math.max(0, c - 1));
+                      return prev.filter(n => n.id !== payload.old.id);
+                  });
+              }
+          })
+          .on('broadcast', { event: 'manual_lead_access' }, (payload: any) => {
+              console.log('🔔 [Header] Fast broadcast signal received:', payload);
+              showWarning(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
+          })
+          .subscribe();
+
+        return channel;
+    };
+
+    const channelPromise = syncNotificationChannel();
 
     return () => {
-      supabase.removeChannel(channel);
+      channelPromise.then((channel: any) => {
+          if (channel) supabase.removeChannel(channel);
+      });
     };
   }, [mounted, displayUser?.uid]);
 
