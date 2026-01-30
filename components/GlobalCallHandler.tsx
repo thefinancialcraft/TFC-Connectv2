@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
+import { globalBridgeLogger } from "../lib/bridgeLogger";
 
 export default function GlobalCallHandler() {
     const router = useRouter();
@@ -8,6 +9,8 @@ export default function GlobalCallHandler() {
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
+
+        console.log("[Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.");
 
         const updateSessionInBackground = async (campaignId: string, customerId: string) => {
             try {
@@ -36,6 +39,11 @@ export default function GlobalCallHandler() {
             const data = e.detail;
             const eventType = data?.type;
             const phoneNo = data?.value;
+
+            // Log to internal Bridge Logger for Settings > Bridge Tab visibility
+            if (eventType) {
+                globalBridgeLogger.addLog('in', `global_${eventType}`, phoneNo);
+            }
 
             // Verbose logging for ALL bridge messages to confirm bridge is working
             console.log(`[Bridge-Debug] Message received: type="${eventType}", value="${phoneNo}"`);

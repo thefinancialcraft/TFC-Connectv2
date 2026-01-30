@@ -16,6 +16,7 @@ import GlobalCallHandler from "../components/GlobalCallHandler";
 if (typeof window !== 'undefined') {
   globalLogger.init();
   initNetworkInterceptors();
+  console.log("[App] Logger and Interceptors initialized.");
 }
 
 
