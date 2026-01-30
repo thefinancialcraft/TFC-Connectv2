@@ -84,7 +84,7 @@ export default function GlobalCallHandler() {
         const handleBridgeMessage = async (e: any) => {
             const data = e.detail;
             const eventType = data?.type;
-            const phoneNo = data?.value;
+            const phoneNo = data?.value || data?.payload;
 
             // Log to internal Bridge Logger for Settings > Bridge Tab visibility
             if (eventType) {
@@ -100,7 +100,9 @@ export default function GlobalCallHandler() {
                               eventType === 'dial';
 
             const isEndEvent = eventType === 'disconnected' || 
-                             eventType === 'call_disconnected';
+                             eventType === 'call_disconnected' ||
+                             eventType === 'call_disconected' ||
+                             eventType === 'call_disconnect';
 
             if ((isDialEvent || isEndEvent) && phoneNo) {
                 // 1. Clean phone number

@@ -124,7 +124,8 @@ export default function CallingPage() {
             console.log('📬 [Bridge] Received Message:', data);
             
             const eventType = data?.type;
-            const eventVal = String(data?.value || "").toLowerCase();
+            const phoneNo = data?.value || data?.payload;
+            const eventVal = String(phoneNo || "").toLowerCase();
             
             const isDisconnectMsg = eventType === 'call_disconected' || 
                                     eventType === 'call_disconnect' || 
@@ -143,7 +144,7 @@ export default function CallingPage() {
 
                 // Match logic: If no phone provided, assume it's the current call. 
                 // If phone provided, check last 10 digits.
-                const disconnectedPhone = data?.value ? String(data.value).replace(/\D/g, '').slice(-10) : null;
+                const disconnectedPhone = phoneNo ? String(phoneNo).replace(/\D/g, '').slice(-10) : null;
                 const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
 
                 console.log(`📬 [Bridge] Matching: Received=${disconnectedPhone || 'NONE'}, Current=${currentPhone}`);
