@@ -18,14 +18,20 @@ export default function SessionRedirect() {
             const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
             const normalizedTarget = targetPath.replace(/\/$/, "");
 
+            console.log(`[Redirect-Debug] Current: "${currentPath}", Target: "${normalizedTarget}", Status: ${status}`);
+
             if (currentPath !== normalizedTarget && lastRedirectedPath.current !== normalizedTarget) {
-                console.log(`[Redirect] Enforcing session: ${status}. Target: ${normalizedTarget}`);
+                console.log(`[Redirect] 🚀 Enforcing session redirect to: ${normalizedTarget}`);
                 lastRedirectedPath.current = normalizedTarget;
                 router.replace(normalizedTarget);
                 
                 // Clear the ref after redirect to allow future navigations if session changes again
                 setTimeout(() => { lastRedirectedPath.current = null; }, 2000);
+            } else if (currentPath === normalizedTarget) {
+                console.log(`[Redirect-Debug] ℹ️ Already on target page. No action needed.`);
             }
+        } else {
+            console.log(`[Redirect-Debug] ℹ️ Session status is "${status}". No redirect needed.`);
         }
     }, [router]);
 

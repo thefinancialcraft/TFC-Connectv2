@@ -16,6 +16,7 @@ export default async function handler(
   }
 
   const { phone } = req.query;
+  console.log(`[API-Search] Search Request Received. Query Phone: "${phone}"`);
 
   if (!phone) {
     return res.status(400).json({ error: 'Phone number is required' });
@@ -23,6 +24,7 @@ export default async function handler(
 
   // Normalize phone number (last 10 digits to be safe)
   const searchPhone = String(phone).replace(/\D/g, '').slice(-10);
+  console.log(`[API-Search] Normalized Search Phone (Last 10): ${searchPhone}`);
 
   try {
     const client = supabaseAdmin;
@@ -40,6 +42,7 @@ export default async function handler(
       .maybeSingle();
 
     if (customer) {
+      console.log(`[API-Search] ✅ Found in 'customers' table. ID: ${customer.id}`);
       return res.status(200).json({ success: true, lead: { ...customer, table: 'customers' } });
     }
 
@@ -53,6 +56,7 @@ export default async function handler(
       .maybeSingle();
 
     if (rejected) {
+      console.log(`[API-Search] ✅ Found in 'rejected_leads' table. ID: ${rejected.id}`);
       return res.status(200).json({ success: true, lead: { ...rejected, table: 'rejected_leads' } });
     }
 
@@ -66,6 +70,7 @@ export default async function handler(
       .maybeSingle();
 
     if (closed) {
+      console.log(`[API-Search] ✅ Found in 'closed_deals' table. ID: ${closed.id || (closed as any).customer_id}`);
       return res.status(200).json({ 
         success: true, 
         lead: { 
