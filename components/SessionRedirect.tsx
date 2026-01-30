@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
 import { checkAuthAndFetchProfile } from "../lib/authService";
 import { supabase } from "../lib/supabase";
@@ -6,83 +6,87 @@ import { supabase } from "../lib/supabase";
 export default function SessionRedirect() {
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
+    const lastRedirectedPath = useRef<string | null>(null);
 
-    // Initial check and set userId
+    // Stable redirect function
+    const applyRedirect = useCallback((session: any) => {
+        if (!session) return;
+        
+        const { status, campaign_id, customer_id } = session;
+        if (status === 'active' || status === 'disposition_pending') {
+            const targetPath = `/campaign/${campaign_id}/${customer_id}`;
+            const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
+            const normalizedTarget = targetPath.replace(/\/$/, "");
+
+            if (currentPath !== normalizedTarget && lastRedirectedPath.current !== normalizedTarget) {
+                console.log(`[Redirect] Enforcing session: ${status}. Target: ${normalizedTarget}`);
+                lastRedirectedPath.current = normalizedTarget;
+                router.replace(normalizedTarget);
+                
+                // Clear the ref after redirect to allow future navigations if session changes again
+                setTimeout(() => { lastRedirectedPath.current = null; }, 2000);
+            }
+        }
+    }, [router]);
+
+    // Initial check
     useEffect(() => {
         const init = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user?.id) {
                 setUserId(session.user.id);
             }
-            if (router.isReady) {
-                checkActiveSession();
+            
+            if (router.isReady && router.pathname !== "/login") {
+                const result = await checkAuthAndFetchProfile();
+                if (result.user?.currentCallSession) {
+                    applyRedirect(result.user.currentCallSession);
+                }
             }
         };
         init();
-    }, [router.isReady]);
-
-    // Re-check on path changes
-    useEffect(() => {
-        if (router.isReady) {
-            checkActiveSession();
-        }
-    }, [router.asPath]);
-
-    const checkActiveSession = async () => {
-        if (router.pathname === "/login") return;
-
-        const result = await checkAuthAndFetchProfile();
-        if (result.user) {
-            applyRedirect(result.user.currentCallSession);
-        }
-    };
-
-    const applyRedirect = (session: any) => {
-        if (session && (session.status === 'active' || session.status === 'disposition_pending')) {
-            const targetPath = `/campaign/${session.campaign_id}/${session.customer_id}`;
-            const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
-            const normalizedTarget = targetPath.replace(/\/$/, "");
-
-            if (currentPath !== normalizedTarget) {
-                console.log(`[Redirect] Enforcing session: ${session.status}. Target: ${normalizedTarget}`);
-                router.replace(normalizedTarget);
-            }
-        }
-    };
+    }, [router.isReady, applyRedirect]);
 
     // Real-time listener for session changes
     useEffect(() => {
         if (!userId) return;
 
-        console.log(`[Realtime] Subscribing to session updates for: ${userId}`);
+        console.log(`[Realtime-Redirect] Monitoring session for: ${userId}`);
         
         const channel = supabase
-            .channel(`public:call_sessions:user_id=eq.${userId}`)
+            .channel(`session_sync_${userId}`)
             .on(
                 'postgres_changes',
                 {
-                    event: '*',
+                    event: 'INSERT',
                     schema: 'public',
                     table: 'call_sessions',
                     filter: `user_id=eq.${userId}`
                 },
                 (payload: any) => {
-                    console.log('[Realtime] Session payload received:', payload);
-                    const newSession = payload.new;
-                    if (newSession) {
-                        applyRedirect(newSession);
-                    }
+                    console.log('[Realtime-Redirect] New session:', payload.new);
+                    applyRedirect(payload.new);
                 }
             )
-            .subscribe((status) => {
-                console.log(`[Realtime] Subscription status: ${status}`);
-            });
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'call_sessions',
+                    filter: `user_id=eq.${userId}`
+                },
+                (payload: any) => {
+                    console.log('[Realtime-Redirect] Session updated:', payload.new);
+                    applyRedirect(payload.new);
+                }
+            )
+            .subscribe();
 
         return () => {
-            console.log('[Realtime] Cleaning up subscription');
             supabase.removeChannel(channel);
         };
-    }, [userId, router.asPath]);
+    }, [userId, applyRedirect]);
 
     return null;
 }

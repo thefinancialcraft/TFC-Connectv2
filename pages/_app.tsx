@@ -11,6 +11,7 @@ import LogPip from "../components/LogPip";
 import "../lib/flutterBridge"; // Initialize bridge listeners
 
 import OfflineOverlay from "../components/OfflineOverlay";
+import GlobalCallHandler from "../components/GlobalCallHandler";
 
 if (typeof window !== 'undefined') {
   globalLogger.init();
@@ -24,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <DialogProvider>
         <OfflineOverlay />
         <SessionRedirect />
+        <GlobalCallHandler />
         <LogPip />
         <Component {...pageProps} />
       </DialogProvider>
