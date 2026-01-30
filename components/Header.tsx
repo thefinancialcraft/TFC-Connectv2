@@ -412,7 +412,29 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
           })
           .on('broadcast', { event: 'manual_lead_access' }, (payload: any) => {
               console.log('🔔 [Header] Fast broadcast signal received:', payload);
+              
+              // 1. Show alert immediately
               showWarning(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
+
+              // 2. MASTER MOVE: Optimistically update local UI state immediately
+              // This ensures the bell shakes and count increases INSTANTLY
+              const optimisticNotification = {
+                  id: `temp_${Date.now()}`,
+                  type: 'lead_access',
+                  message: payload.payload.message,
+                  actor_id: payload.payload.actor_id,
+                  is_seen: false,
+                  created_at: new Date().toISOString(),
+                  metadata: payload.payload
+              };
+
+              setNotifications(prev => {
+                  // Prevent duplicate if DB insert was somehow faster
+                  const exists = prev.some(n => n.message === optimisticNotification.message && (Date.now() - new Date(n.created_at).getTime() < 5000));
+                  if (exists) return prev;
+                  return [optimisticNotification, ...prev].slice(0, 20);
+              });
+              setUnreadCount(c => c + 1);
           })
           .subscribe();
 
@@ -449,15 +471,24 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
   };
 
   const deleteNotification = async (id: string) => {
-      try {
-          await supabase.from('notifications').delete().eq('id', id);
-          setNotifications(prev => {
-              const item = prev.find(n => n.id === id);
-              if (item && !item.is_seen) setUnreadCount(c => Math.max(0, c - 1));
-              return prev.filter(n => n.id !== id);
-          });
-      } catch (err) {
-          console.error("Failed to delete notification:", err);
+      // MASTER MOVE: Optimistically update UI first
+      setNotifications(prev => {
+          const item = prev.find(n => n.id === id);
+          if (item && !item.is_seen) setUnreadCount(c => Math.max(0, c - 1));
+          return prev.filter(n => n.id !== id);
+      });
+
+      // Only delete from DB if it's NOT a temporary optimistic notification
+      if (id && !id.toString().startsWith('temp_')) {
+          try {
+              const { error } = await supabase.from('notifications').delete().eq('id', id);
+              if (error) throw error;
+              console.log("🗑️ [Header] Notification deleted from DB:", id);
+          } catch (err) {
+              console.error("Failed to delete notification from DB:", err);
+          }
+      } else {
+          console.log("🗑️ [Header] Removed temporary notification from UI:", id);
       }
   };
 
@@ -804,6 +835,11 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
                         <p className={`text-sm leading-relaxed ${notif.is_seen ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
                           {notif.message}
                         </p>
+                        {notif.metadata?.employee_id && (
+                          <div className="mt-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                             ID: {notif.metadata.employee_id}
+                          </div>
+                        )}
                       </div>
 
                       {/* Actions */}

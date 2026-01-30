@@ -50,10 +50,11 @@ export default function GlobalCallHandler() {
                     user_id: ownerId,
                     type: 'lead_access',
                     message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`,
-                    actor_id: user.employeeId,
+                    actor_id: user.uid,
                     metadata: { 
                         customer_name: customerName,
-                        actor_name: user.displayName
+                        actor_name: user.displayName,
+                        employee_id: user.employeeId
                     }
                 });
             } catch (err) {
@@ -68,10 +69,11 @@ export default function GlobalCallHandler() {
                         type: 'broadcast',
                         event: 'manual_lead_access',
                         payload: {
-                            actor_id: user.employeeId,
+                            actor_id: user.uid,
                             actor_name: user.displayName || (user as any).user_name,
                             customer_name: customerName,
-                            message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`
+                            message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`,
+                            employee_id: user.employeeId
                         },
                     });
                     console.log(`[Global-Call] 🚀 Broadcast sent to ${channelName}`);
