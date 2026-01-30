@@ -44,6 +44,33 @@ export default function CallingPage() {
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
+    
+    const handleWhatsAppClick = useCallback(() => {
+        if (!customer?.phone_no) {
+            alert("No phone number available");
+            return;
+        }
+
+        let cleanNumber = customer.phone_no.replace(/\D/g, '');
+        
+        // Robust Indian Number Formatting
+        if (cleanNumber.length === 10) {
+            // 7523010366 -> 917523010366
+            cleanNumber = '91' + cleanNumber;
+        } else if (cleanNumber.length === 11 && cleanNumber.startsWith('0')) {
+            // 07523010366 -> 917523010366
+            cleanNumber = '91' + cleanNumber.substring(1);
+        } else if (cleanNumber.length > 10 && !cleanNumber.startsWith('91')) {
+            // If it's 11+ digits but doesn't start with 91 (and not handled by '0' case), 
+            // we assume it's either a different country or needs 91 if it's 10 digits + some garbage prefix
+            if (cleanNumber.endsWith(cleanNumber.slice(-10))) {
+                cleanNumber = '91' + cleanNumber.slice(-10);
+            }
+        }
+        
+        console.log(`[WhatsApp] Redirecting to: ${cleanNumber}`);
+        window.open(`https://wa.me/${cleanNumber}`, '_blank');
+    }, [customer?.phone_no]);
 
     const handleEndCall = useCallback(async (isFromBridge = false) => {
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
@@ -1557,19 +1584,7 @@ export default function CallingPage() {
                                                         </button>
 
                                                         <button 
-                                                            onClick={() => {
-                                                                if (customer?.phone_no) {
-                                                                    let cleanNumber = customer.phone_no.replace(/\D/g, '');
-                                                                    if (cleanNumber.length === 10) {
-                                                                        cleanNumber = '91' + cleanNumber;
-                                                                    } else if (cleanNumber.length > 10 && cleanNumber.startsWith('0')) {
-                                                                        cleanNumber = '91' + cleanNumber.substring(1);
-                                                                    }
-                                                                    window.open(`https://wa.me/${cleanNumber}`, '_blank');
-                                                                } else {
-                                                                    alert("No phone number available");
-                                                                }
-                                                            }}
+                                                            onClick={handleWhatsAppClick}
                                                             className="w-16 sm:w-auto px-0 sm:px-4 h-16 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group shrink-0"
                                                             title="Chat on WhatsApp"
                                                         >
@@ -1600,19 +1615,7 @@ export default function CallingPage() {
 
                                                             {/* WhatsApp Button */}
                                                             <button 
-                                                                onClick={() => {
-                                                                    if (customer?.phone_no) {
-                                                                        let cleanNumber = customer.phone_no.replace(/\D/g, '');
-                                                                        if (cleanNumber.length === 10) {
-                                                                            cleanNumber = '91' + cleanNumber;
-                                                                        } else if (cleanNumber.length > 10 && cleanNumber.startsWith('0')) {
-                                                                            cleanNumber = '91' + cleanNumber.substring(1);
-                                                                        }
-                                                                        window.open(`https://wa.me/${cleanNumber}`, '_blank');
-                                                                    } else {
-                                                                        alert("No phone number available");
-                                                                    }
-                                                                }}
+                                                                onClick={handleWhatsAppClick}
                                                                 className="flex-1 sm:flex-none h-14 w-full sm:w-16 rounded-2xl bg-emerald-50 border border-emerald-100/50 text-emerald-600 hover:bg-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 flex items-center justify-center group"
                                                                 title="Chat on WhatsApp"
                                                             >
