@@ -34,72 +34,70 @@ export default async function handler(
         campaign_id, 
         customer_id, 
         status, 
-        is_manual_event, // Special flag for dialer calls
-        manual_override // Flag to force clear manual session
+        is_manual_event, 
+        manual_override 
     } = req.body;
 
-    // 1. Fetch Current Holistic Session
-    const { data: session } = await client
-        .from('call_sessions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    console.log(`[API-Session] Request Target: User=${user.id}, Campaign=${campaign_id}, Manual=${is_manual_event}`);
 
-    let updateData: any = {
+    let updatePayload: any = {
+        user_id: user.id,
+        campaign_id: campaign_id,
         updated_at: new Date().toISOString()
     };
 
-    // LOGIC SWITCH:
-    // If we receive a manual event (dialer), we populate the manual_ columns
-    // and set is_manual = true while preserving original campaign/customer IDs.
-    
     if (manual_override) {
-        // Clear manual session and return to primary
-        updateData = {
-            ...updateData,
+        // Clear manual state for THIS specific campaign row
+        console.log(`[API-Session] Force clearing manual state for campaign: ${campaign_id}`);
+        updatePayload = {
+            ...updatePayload,
             is_manual: false,
             manual_campaign_id: null,
             manual_customer_id: null,
             manual_status: null
         };
     } else if (is_manual_event) {
-        console.log(`[API-Session] 📱 Handling Manual Interruption for Lead: ${customer_id}`);
-        updateData = {
-            ...updateData,
+        // TARGETED MANUAL UPDATE: 
+        // We find if this user already has a lead assigned in this specific campaign
+        const { data: existing } = await client
+            .from('call_sessions')
+            .select('customer_id, status')
+            .eq('user_id', user.id)
+            .eq('campaign_id', campaign_id)
+            .maybeSingle();
+
+        console.log(`[API-Session] Manual Event for Lead Campaign: ${campaign_id}. Existing Primary Lead: ${existing?.customer_id || 'None'}`);
+
+        updatePayload = {
+            ...updatePayload,
+            // If row exists, keep primary lead. If new, set this lead as primary too as fallback.
+            customer_id: existing?.customer_id || customer_id, 
+            status: existing?.status || 'assigned',
             is_manual: true,
             manual_campaign_id: campaign_id,
             manual_customer_id: customer_id,
             manual_status: status,
-            // If starting manual call, update start time
             ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
         };
     } else {
-        // Standard CRM Workflow
-        // If we are NOT in a manual call, update primary columns
-        // If we ARE in a manual call but UI sends a standard update, we update primary but keep is_manual=true
-        updateData = {
-            ...updateData,
-            campaign_id: campaign_id,
+        // STANDARD CRM WORKFLOW
+        updatePayload = {
+            ...updatePayload,
             customer_id: customer_id,
             status: status,
-            is_manual: session?.is_manual || false,
+            is_manual: false,
             ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
         };
     }
 
     const { data: updated, error: upsertError } = await client
         .from('call_sessions')
-        .upsert({
-            user_id: user.id,
-            ...updateData
-        }, { onConflict: 'user_id' })
+        .upsert(updatePayload, { onConflict: 'user_id,campaign_id' })
         .select('*')
         .single();
 
     if (upsertError) {
-        console.error('[API-Session] Error:', upsertError);
+        console.error('[API-Session] DB Error:', upsertError);
         return res.status(500).json({ error: upsertError.message });
     }
 
