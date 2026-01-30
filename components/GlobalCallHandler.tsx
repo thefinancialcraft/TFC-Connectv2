@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import { globalBridgeLogger } from "../lib/bridgeLogger";
+import { useUser } from "../context/UserContext";
 
 export default function GlobalCallHandler() {
     const router = useRouter();
+    const { user } = useUser();
     const lastNavigatedCustomerId = useRef<string | null>(null);
 
     useEffect(() => {
@@ -25,14 +27,33 @@ export default function GlobalCallHandler() {
                         body: JSON.stringify({
                             campaign_id: campaignId,
                             customer_id: customerId,
-                            status: 'active'
+                            status: 'active',
+                            is_manual_event: true  // This tells API to use manual_ columns
                         })
                     });
-                    console.log(`[Global-Call] Session updated to active in background for ${customerId}`);
+                    console.log(`[Global-Call] Session updated to active (MANUAL) in background for ${customerId}`);
                 }
             } catch (err) {
-                console.error("[Global-Call] Failed to update session in background:", err);
+                console.error("[Global-Call] Failed to update manual session:", err);
             }
+        };
+
+        const notifyLeadOwner = async (ownerId: string, customerName: string) => {
+            if (!user) return;
+            
+            console.log(`[Global-Call] 🔔 Notifying owner ${ownerId} about reach attempt to ${customerName}`);
+            
+            // Broadcast to real-time channel for notifications
+            await supabase.channel(`agent_notifications_${ownerId}`).send({
+                type: 'broadcast',
+                event: 'manual_lead_access',
+                payload: {
+                    actor_id: user.employeeId,
+                    actor_name: user.displayName || (user as any).user_name,
+                    customer_name: customerName,
+                    message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`
+                },
+            });
         };
 
         const handleBridgeMessage = async (e: any) => {
@@ -55,68 +76,55 @@ export default function GlobalCallHandler() {
                               eventType === 'dial';
 
             if (isDialEvent && phoneNo) {
-                // 1. Clean phone number but keep all digits (removed .slice(-10) and length check for dummy numbers)
+                // 1. Clean phone number
                 const cleanPhone = String(phoneNo).replace(/\D/g, '');
-                
-                if (!cleanPhone) {
-                    console.log(`[Global-Call] ⚠️ Empty phone number received: "${phoneNo}". Ignoring.`);
-                    return;
-                }
+                if (!cleanPhone) return;
 
                 console.log(`[Global-Call] 🎯 Detect Dial Event: ${eventType} for ${cleanPhone}`);
 
                 // 2. Search for the lead
                 try {
-                    console.log(`[Global-Call] 🔍 Searching database for lead with phone: ${cleanPhone}...`);
                     const response = await fetch(`/api/customer/find-by-phone?phone=${cleanPhone}`);
                     const result = await response.json();
 
                     if (result.success && result.lead) {
-                        const { id: customerId, campaign_id: campaignId } = result.lead;
-                        console.log(`[Global-Call] ✅ Lead Found! ID: ${customerId}, Campaign: ${campaignId}`);
+                        const { id: customerId, campaign_id: campaignId, assigned_to: ownerId, customer_name: customerName } = result.lead;
                         
-                        // 3. Optimistic Navigation Guard
-                        if (lastNavigatedCustomerId.current === customerId) {
-                            console.log(`[Global-Call] 🛡️ Redirection guard: Already redirected to ${customerId} recently. Skipping.`);
-                            return;
+                        // 3. Ownership Check
+                        if (user) {
+                            const currentUserId = user.uid || (user as any).id; 
+                            if (ownerId && ownerId !== currentUserId) {
+                                 notifyLeadOwner(ownerId, customerName);
+                            }
                         }
+
+                        // 4. Optimistic Navigation Guard
+                        if (lastNavigatedCustomerId.current === customerId) return;
                         
                         const currentPath = router.asPath;
                         const targetPath = `/campaign/${campaignId}/${customerId}`;
                         
                         if (!currentPath.includes(customerId)) {
-                            console.log(`[Global-Call] 🚀 REDIRECTING to: ${targetPath}`);
+                            console.log(`[Global-Call] 🚀 REDIRECTING to manual lead: ${targetPath}`);
                             
-                            // Track to prevent loops
                             lastNavigatedCustomerId.current = customerId;
-                            
-                            // Navigate IMMEDIATELY
                             router.push(targetPath);
                             
-                            // Update session in background so we don't block the UI
-                            console.log(`[Global-Call] 🔄 Updating session to 'active' in background...`);
+                            // 5. Update Manual Session State
                             updateSessionInBackground(campaignId, customerId);
 
-                            // Reset the guard after some time
-                            setTimeout(() => { 
-                                console.log(`[Global-Call] 🛡️ Redirection guard reset for next calls.`);
-                                lastNavigatedCustomerId.current = null; 
-                            }, 5000);
-                        } else {
-                            console.log(`[Global-Call] ℹ️ Agent is already on the target lead page: ${customerId}`);
+                            setTimeout(() => { lastNavigatedCustomerId.current = null; }, 5000);
                         }
-                    } else {
-                        console.log(`[Global-Call] ❌ No lead found in CRM for phone: ${cleanPhone}`);
                     }
                 } catch (err) {
-                    console.error("[Global-Call] 💥 Error during lead search/redirection:", err);
+                    console.error("[Global-Call] Error searching/redirecting:", err);
                 }
             }
         };
 
         window.addEventListener('tfc-bridge-message' as any, handleBridgeMessage);
         return () => window.removeEventListener('tfc-bridge-message' as any, handleBridgeMessage);
-    }, [router]);
+    }, [router, user]);
 
     return null;
 }

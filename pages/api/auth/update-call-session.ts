@@ -17,10 +17,8 @@ export default async function handler(
   }
 
   try {
-    console.log('[API] Update Call Session Request Received');
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.error('[API] Missing or invalid authorization header');
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
@@ -28,141 +26,91 @@ export default async function handler(
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
-      console.error('[API] User verification failed:', userError?.message);
       return res.status(401).json({ error: 'Invalid session' });
     }
 
-    // Set session for RLS if admin client is not available
-    if (!supabaseAdmin) {
-      console.log('[API] Using Anon Client, setting session for RLS');
-      await supabase.auth.setSession({
-        access_token: token,
-        refresh_token: '',
-      });
-    }
-
-    const { campaign_id, customer_id, status } = req.body;
-    console.log('[API] Session Data:', { user_id: user.id, campaign_id, customer_id, status });
-
-    if (!campaign_id || !customer_id || !status) {
-      console.error('[API] Missing required fields');
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Use admin client to ensure we can upsert regardless of RLS complexities for now
     const client = supabaseAdmin || supabase;
+    const { 
+        campaign_id, 
+        customer_id, 
+        status, 
+        is_manual_event, // Special flag for dialer calls
+        manual_override // Flag to force clear manual session
+    } = req.body;
 
-    // 1. Fetch Existing Session
-    const { data: existingSession } = await client
+    // 1. Fetch Current Holistic Session
+    const { data: session } = await client
         .from('call_sessions')
         .select('*')
         .eq('user_id', user.id)
-        .eq('campaign_id', campaign_id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
-    let updatedSession;
+    let updateData: any = {
+        updated_at: new Date().toISOString()
+    };
 
-    // Normalize customer IDs for comparison (ensure both are strings and trimmed)
-    const incomingCustomerId = String(customer_id || '').trim();
-    const existingCustomerId = existingSession ? String(existingSession.customer_id || '').trim() : '';
-
-    console.log('[API] Existing session check:', {
-        exists: !!existingSession,
-        existingCustomerId: existingCustomerId,
-        incomingCustomerId: incomingCustomerId,
-        isMatch: existingCustomerId === incomingCustomerId,
-        existingStatus: existingSession?.status,
-        existingIsManual: existingSession?.is_manual
-    });
-
-    // 2. Check for Manual Call (Mismatch)
-    if (existingSession && existingCustomerId !== incomingCustomerId) {
-        console.log(`[API] 🔴 Manual Call Detected!`);
-        console.log(`[API]    Assigned CRM Lead: ${existingCustomerId}`);
-        console.log(`[API]    Dialing Customer:  ${incomingCustomerId}`);
-        
-        // Manual Call Logic:
-        // Do NOT overwrite customer_id/campaign_id.
-        // If starting manual call ('active'), PAUSE the main session AND set is_manual = true.
-        // If ending manual call ('disposition_pending' or 'closed'), RESUME the main session AND set is_manual = false.
-
-        let newStatus = existingSession.status;
-        let isManual = existingSession.is_manual || false;
-
-        console.log('[API] Before update - Status:', existingSession.status, 'is_manual:', existingSession.is_manual);
-        console.log('[API] Incoming status:', status);
-
-        if (status === 'active') {
-             newStatus = 'paused';
-             isManual = true;
-             console.log('[API] ✅ Setting is_manual=true, status=paused (Manual call starting)');
-        } else if (status === 'disposition_pending') {
-             // User ended the manual call, is now in disposition screen.
-             // We MUST keep the session on the ASSIGNED lead as 'paused'/'manual' state
-             // so the system knows the user is still busy and avoids redirecting.
-             newStatus = 'paused';
-             isManual = true;
-             console.log('[API] ✅ Keeping is_manual=true, status=paused (Manual call disposition pending)');
-        } else if (status === 'closed') {
-             newStatus = 'assigned'; // Resume as 'assigned' to hold the lead, not 'active' to auto-call
-             isManual = false;
-             console.log('[API] ✅ Setting is_manual=false, status=assigned (Manual call ending)');
-        }
-
-        console.log('[API] After calculation - newStatus:', newStatus, 'isManual:', isManual);
-
-        const { data: session, error: updateError } = await client
-            .from('call_sessions')
-            .update({
-                status: newStatus,
-                is_manual: isManual,
-                updated_at: new Date().toISOString(),
-                ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
-            })
-            .eq('user_id', user.id)
-            .eq('campaign_id', campaign_id)
-            .select('campaign_id, customer_id, status, call_start_at, is_manual')
-            .single();
-
-        if (updateError) {
-             console.error('[API] Error updating manual session state:', updateError);
-             return res.status(500).json({ error: updateError.message });
-        }
-        updatedSession = session;
-
-    } else {
-        // 3. Standard CRM Call (Upsert)
-        const { data: session, error: upsertError } = await client
-          .from('call_sessions')
-          .upsert({
-            user_id: user.id,
-            campaign_id,
-            customer_id,
-            status,
+    // LOGIC SWITCH:
+    // If we receive a manual event (dialer), we populate the manual_ columns
+    // and set is_manual = true while preserving original campaign/customer IDs.
+    
+    if (manual_override) {
+        // Clear manual session and return to primary
+        updateData = {
+            ...updateData,
             is_manual: false,
-            updated_at: new Date().toISOString(),
+            manual_campaign_id: null,
+            manual_customer_id: null,
+            manual_status: null
+        };
+    } else if (is_manual_event) {
+        console.log(`[API-Session] 📱 Handling Manual Interruption for Lead: ${customer_id}`);
+        updateData = {
+            ...updateData,
+            is_manual: true,
+            manual_campaign_id: campaign_id,
+            manual_customer_id: customer_id,
+            manual_status: status,
+            // If starting manual call, update start time
             ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
-          }, { onConflict: 'user_id,campaign_id' })
-          .select('campaign_id, customer_id, status, call_start_at, is_manual')
-          .single();
-
-        if (upsertError) {
-          console.error('[API] Upsert Error:', upsertError);
-          return res.status(500).json({ error: upsertError.message });
-        }
-        updatedSession = session;
+        };
+    } else {
+        // Standard CRM Workflow
+        // If we are NOT in a manual call, update primary columns
+        // If we ARE in a manual call but UI sends a standard update, we update primary but keep is_manual=true
+        updateData = {
+            ...updateData,
+            campaign_id: campaign_id,
+            customer_id: customer_id,
+            status: status,
+            is_manual: session?.is_manual || false,
+            ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
+        };
     }
 
+    const { data: updated, error: upsertError } = await client
+        .from('call_sessions')
+        .upsert({
+            user_id: user.id,
+            ...updateData
+        }, { onConflict: 'user_id' })
+        .select('*')
+        .single();
 
+    if (upsertError) {
+        console.error('[API-Session] Error:', upsertError);
+        return res.status(500).json({ error: upsertError.message });
+    }
 
-    console.log('[API] Session updated successfully');
     return res.status(200).json({ 
         success: true, 
-        session: updatedSession,
+        session: updated,
         server_now: new Date().toISOString()
     });
+
   } catch (error: any) {
-    console.error('[API] Internal Server Error:', error);
+    console.error('[API-Session] Fatal:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

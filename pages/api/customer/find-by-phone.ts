@@ -35,7 +35,7 @@ export default async function handler(
     // 1. Try customers
     const { data: customer } = await client
       .from('customers')
-      .select('id, campaign_id, customer_name, phone_no')
+      .select('id, campaign_id, customer_name, phone_no, assigned_to')
       .ilike('phone_no', `%${searchPhone}`)
       .order('updated_at', { ascending: false })
       .limit(1)
@@ -49,7 +49,7 @@ export default async function handler(
     // 2. Try rejected_leads
     const { data: rejected } = await client
       .from('rejected_leads')
-      .select('id, campaign_id, customer_name, phone_no')
+      .select('id, campaign_id, customer_name, phone_no, agent_id')
       .ilike('phone_no', `%${searchPhone}`)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -57,13 +57,13 @@ export default async function handler(
 
     if (rejected) {
       console.log(`[API-Search] ✅ Found in 'rejected_leads' table. ID: ${rejected.id}`);
-      return res.status(200).json({ success: true, lead: { ...rejected, table: 'rejected_leads' } });
+      return res.status(200).json({ success: true, lead: { ...rejected, table: 'rejected_leads', assigned_to: rejected.agent_id } });
     }
 
     // 3. Try closed_deals
     const { data: closed } = await client
       .from('closed_deals')
-      .select('id, customer_id, campaign_id, customer_name, phone_no')
+      .select('id, customer_id, campaign_id, customer_name, phone_no, agent_id')
       .ilike('phone_no', `%${searchPhone}`)
       .order('created_at', { ascending: false })
       .limit(1)

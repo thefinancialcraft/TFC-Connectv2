@@ -1044,16 +1044,28 @@ export default function CallingPage() {
 
             // 3. Handle Manual Call vs CRM Call differently
             if (isManualCall) {
-                // Manual Call: Just redirect back to the preserved CRM lead
-                console.log('[Disposition] Manual call detected. Redirecting to preserved lead:', preservedCustomerId);
+                // Manual Call: Clear manual session via API and redirect back to preserved lead
+                console.log('[Disposition] Manual call detected. Returning to primary lead context.');
                 
-                // Update the session to mark manual call as complete (is_manual=false, status=assigned)
-                if (user?.uid) {
-                    await supabase.from('call_sessions').update({
-                        is_manual: false,
-                        status: 'assigned',
-                        updated_at: new Date().toISOString()
-                    }).eq('user_id', user.uid);
+                try {
+                    const { data: { session: authSession } } = await supabase.auth.getSession();
+                    if (authSession) {
+                        await fetch("/api/auth/update-call-session", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${authSession.access_token}`,
+                            },
+                            body: JSON.stringify({
+                                campaign_id: preservedCampaignId,
+                                customer_id: preservedCustomerId,
+                                status: 'assigned',
+                                manual_override: true // Force clear manual_ columns
+                            })
+                        });
+                    }
+                } catch (err) {
+                    console.error("[Disposition] Failed to clear manual session:", err);
                 }
 
                 // Redirect to the preserved CRM lead

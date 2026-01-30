@@ -4,6 +4,7 @@ import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
 import { supabase } from "../lib/supabase";
 import { notifyFlutter, sendHeartbeat, requestDeviceInfoFromFlutter } from "../lib/flutterBridge";
+import { showWarning } from "../lib/dialogUtils";
 
 interface HeaderProps {
   user?: {
@@ -315,28 +316,39 @@ function HeaderComponent({ user, onLogout }: HeaderProps) {
   useEffect(() => {
     if (user) {
       setCachedUser(prev => {
-        // If no previous cached data, use props
-        if (!prev) {
-          return user;
-        }
-        
-        // Compare data - only update if changed
-        const hasChanged = 
-          prev.displayName !== user.displayName ||
-          prev.employeeId !== user.employeeId ||
-          prev.email !== user.email ||
-          prev.profilePicUrl !== user.profilePicUrl;
-        
-        // Only update if data has actually changed
-        if (hasChanged) {
-          return user;
-        }
-        
-        // Return previous data to prevent unnecessary re-render
+        // ... (existing code)
+        if (!prev) return user;
+        const hasChanged = prev.displayName !== user.displayName || prev.employeeId !== user.employeeId || prev.email !== user.email || prev.profilePicUrl !== user.profilePicUrl;
+        if (hasChanged) return user;
         return prev;
       });
     }
   }, [user?.displayName, user?.employeeId, user?.email, user?.profilePicUrl]);
+
+  // Real-time Notification Listener
+  useEffect(() => {
+    if (!mounted || !displayUser?.employeeId) return;
+
+    const channelName = `agent_notifications_${displayUser.employeeId}`;
+    console.log(`📡 [Header] Subscribing to notifications: ${channelName}`);
+
+    const channel = supabase
+      .channel(channelName)
+      .on('broadcast', { event: 'manual_lead_access' }, (payload) => {
+        console.log('🔔 [Header] Lead Access Notification:', payload);
+        const { actor_name, customer_name, message } = payload.payload;
+        
+        showWarning(
+          message || `${actor_name} is trying to reach ${customer_name}`,
+          "Lead Access Alert"
+        );
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [mounted, displayUser?.employeeId]);
 
 
   // Stable logout handler

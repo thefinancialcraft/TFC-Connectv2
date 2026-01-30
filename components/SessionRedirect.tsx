@@ -12,26 +12,27 @@ export default function SessionRedirect() {
     const applyRedirect = useCallback((session: any) => {
         if (!session) return;
         
-        const { status, campaign_id, customer_id } = session;
+        // DUAL SESSION LOGIC: 
+        // If is_manual is true, use manual columns, otherwise use primary columns
+        const isManual = session.is_manual === true;
+        const status = isManual ? (session.manual_status || session.status) : session.status;
+        const campaignId = (isManual && session.manual_campaign_id) ? session.manual_campaign_id : session.campaign_id;
+        const customerId = (isManual && session.manual_customer_id) ? session.manual_customer_id : session.customer_id;
+
         if (status === 'active' || status === 'disposition_pending') {
-            const targetPath = `/campaign/${campaign_id}/${customer_id}`;
+            const targetPath = `/campaign/${campaignId}/${customerId}`;
             const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
             const normalizedTarget = targetPath.replace(/\/$/, "");
 
-            console.log(`[Redirect-Debug] Current: "${currentPath}", Target: "${normalizedTarget}", Status: ${status}`);
+            console.log(`[Redirect-Debug] Mode: ${isManual ? 'MANUAL' : 'PRIMARY'}, Current: "${currentPath}", Target: "${normalizedTarget}"`);
 
             if (currentPath !== normalizedTarget && lastRedirectedPath.current !== normalizedTarget) {
-                console.log(`[Redirect] 🚀 Enforcing session redirect to: ${normalizedTarget}`);
+                console.log(`[Redirect] 🚀 Redirection triggered to: ${normalizedTarget}`);
                 lastRedirectedPath.current = normalizedTarget;
                 router.replace(normalizedTarget);
                 
-                // Clear the ref after redirect to allow future navigations if session changes again
                 setTimeout(() => { lastRedirectedPath.current = null; }, 2000);
-            } else if (currentPath === normalizedTarget) {
-                console.log(`[Redirect-Debug] ℹ️ Already on target page. No action needed.`);
             }
-        } else {
-            console.log(`[Redirect-Debug] ℹ️ Session status is "${status}". No redirect needed.`);
         }
     }, [router]);
 
