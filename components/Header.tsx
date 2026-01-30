@@ -356,29 +356,40 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     const channelName = `agent_notifications_${currentUid}`;
     console.log(`📡 [Header] Monitoring notifications: ${channelName}`);
 
-    // 2. Real-time Subscription
+    // 2. Real-time Subscription (Full Sync: Insert, Update, Delete)
     const channel = supabase
       .channel(channelName)
-      // Listen for database inserts
       .on('postgres_changes', { 
-         event: 'INSERT', 
+         event: '*', // Listen to ALL changes (Insert, Update, Delete)
          schema: 'public', 
          table: 'notifications', 
          filter: `user_id=eq.${currentUid}` 
       }, (payload) => {
-          console.log('🔔 [Header] New persistent notification:', payload.new);
-          setNotifications(prev => [payload.new, ...prev].slice(0, 20));
-          setUnreadCount(c => c + 1);
+          console.log(`🔔 [Header] Realtime Database ${payload.eventType}:`, payload);
           
-          // Show immediate alert for critical types
-          if (payload.new.type === 'lead_access') {
-             showWarning(payload.new.message, "Lead Access Alert");
+          if (payload.eventType === 'INSERT') {
+              setNotifications(prev => [payload.new, ...prev].slice(0, 20));
+              setUnreadCount(c => c + 1);
+              if (payload.new.type === 'lead_access') {
+                  showWarning(payload.new.message, "Lead Access Alert");
+              }
+          } 
+          else if (payload.eventType === 'UPDATE') {
+              setNotifications(prev => prev.map(n => n.id === payload.new.id ? payload.new : n));
+              // Fast unread count update: if it was transition from unseen to seen
+              if (payload.old && !payload.old.is_seen && payload.new.is_seen) {
+                  setUnreadCount(c => Math.max(0, c - 1));
+              } else if (payload.old && payload.old.is_seen && !payload.new.is_seen) {
+                  setUnreadCount(c => c + 1);
+              }
           }
-      })
-      // Keep broadcast for legacy support/sync if needed
-      .on('broadcast', { event: 'manual_lead_access' }, (payload) => {
-        // Fallback or double-check (usually DB insert covers this)
-        console.log('🔔 [Header] Broadcast legacy event:', payload);
+          else if (payload.eventType === 'DELETE') {
+              setNotifications(prev => {
+                  const deletedItem = prev.find(n => n.id === payload.old.id);
+                  if (deletedItem && !deletedItem.is_seen) setUnreadCount(c => Math.max(0, c - 1));
+                  return prev.filter(n => n.id !== payload.old.id);
+              });
+          }
       })
       .subscribe();
 

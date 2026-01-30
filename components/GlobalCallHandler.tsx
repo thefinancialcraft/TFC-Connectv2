@@ -14,7 +14,7 @@ export default function GlobalCallHandler() {
 
         console.log("[Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.");
 
-        const updateSessionInBackground = async (campaignId: string, customerId: string) => {
+        const updateSessionInBackground = async (campaignId: string, customerId: string, status: string = 'active') => {
             try {
                 const { data: { session: authSession } } = await supabase.auth.getSession();
                 if (authSession) {
@@ -27,7 +27,7 @@ export default function GlobalCallHandler() {
                         body: JSON.stringify({
                             campaign_id: campaignId,
                             customer_id: customerId,
-                            status: 'active',
+                            status: status,
                             is_manual_event: true  // This tells API to use manual_ columns
                         })
                     });
@@ -85,18 +85,20 @@ export default function GlobalCallHandler() {
             // Verbose logging for ALL bridge messages to confirm bridge is working
             console.log(`[Bridge-Debug] Message received: type="${eventType}", value="${phoneNo}"`);
 
-            // List of events that indicate a call is starting or dialled
             const isDialEvent = eventType === 'connecting' || 
                               eventType === 'connected' ||
                               eventType === 'call_to' || 
                               eventType === 'dial';
 
-            if (isDialEvent && phoneNo) {
+            const isEndEvent = eventType === 'disconnected' || 
+                             eventType === 'call_disconnected';
+
+            if ((isDialEvent || isEndEvent) && phoneNo) {
                 // 1. Clean phone number
                 const cleanPhone = String(phoneNo).replace(/\D/g, '');
                 if (!cleanPhone) return;
 
-                console.log(`[Global-Call] 🎯 Detect Dial Event: ${eventType} for ${cleanPhone}`);
+                console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${cleanPhone}`);
 
                 // 2. Search for the lead
                 try {
@@ -106,34 +108,42 @@ export default function GlobalCallHandler() {
                     if (result.success && result.lead) {
                         const { id: customerId, campaign_id: campaignId, assigned_to: ownerId, customer_name: customerName } = result.lead;
                         
-                        // 3. Ownership Check
-                        if (user) {
-                            const currentUserId = user.uid || (user as any).id; 
-                            if (ownerId && ownerId !== currentUserId) {
-                                 notifyLeadOwner(ownerId, customerName);
+                        if (isDialEvent) {
+                            // --- START CALL LOGIC ---
+                            // 3. Ownership Check
+                            if (user) {
+                                const currentUserId = user.uid || (user as any).id; 
+                                if (ownerId && ownerId !== currentUserId) {
+                                     notifyLeadOwner(ownerId, customerName);
+                                }
                             }
-                        }
 
-                        // 4. Optimistic Navigation Guard
-                        if (lastNavigatedCustomerId.current === customerId) return;
-                        
-                        const currentPath = router.asPath;
-                        const targetPath = `/campaign/${campaignId}/${customerId}`;
-                        
-                        if (!currentPath.includes(customerId)) {
-                            console.log(`[Global-Call] 🚀 REDIRECTING to manual lead: ${targetPath}`);
+                            // 4. Optimistic Navigation Guard
+                            if (lastNavigatedCustomerId.current === customerId) return;
                             
-                            lastNavigatedCustomerId.current = customerId;
-                            router.push(targetPath);
+                            const currentPath = router.asPath;
+                            const targetPath = `/campaign/${campaignId}/${customerId}`;
                             
-                            // 5. Update Manual Session State
-                            updateSessionInBackground(campaignId, customerId);
+                            if (!currentPath.includes(customerId)) {
+                                console.log(`[Global-Call] 🚀 REDIRECTING to manual lead: ${targetPath}`);
+                                
+                                lastNavigatedCustomerId.current = customerId;
+                                router.push(targetPath);
+                                
+                                // 5. Update Manual Session State to 'active'
+                                await updateSessionInBackground(campaignId, customerId, 'active');
 
-                            setTimeout(() => { lastNavigatedCustomerId.current = null; }, 5000);
+                                setTimeout(() => { lastNavigatedCustomerId.current = null; }, 5000);
+                            }
+                        } else {
+                            // --- END CALL LOGIC ---
+                            console.log(`[Global-Call] 🛑 Updating manual session to DISPOSITION_PENDING for ${customerId}`);
+                            // Update session through API to trigger real-time sync on the page
+                            await updateSessionInBackground(campaignId, customerId, 'disposition_pending');
                         }
                     }
                 } catch (err) {
-                    console.error("[Global-Call] Error searching/redirecting:", err);
+                    console.error("[Global-Call] Error searching/updating session:", err);
                 }
             }
         };
