@@ -55,10 +55,11 @@ export default function GlobalCallHandler() {
                               eventType === 'dial';
 
             if (isDialEvent && phoneNo) {
-                // 1. Normalize phone to last 10 digits
-                const cleanPhone = String(phoneNo).replace(/\D/g, '').slice(-10);
-                if (!cleanPhone || cleanPhone.length < 10) {
-                    console.log(`[Global-Call] ⚠️ Invalid phone number format: "${phoneNo}". Ignoring.`);
+                // 1. Clean phone number but keep all digits (removed .slice(-10) and length check for dummy numbers)
+                const cleanPhone = String(phoneNo).replace(/\D/g, '');
+                
+                if (!cleanPhone) {
+                    console.log(`[Global-Call] ⚠️ Empty phone number received: "${phoneNo}". Ignoring.`);
                     return;
                 }
 

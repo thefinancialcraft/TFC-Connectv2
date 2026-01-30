@@ -22,9 +22,9 @@ export default async function handler(
     return res.status(400).json({ error: 'Phone number is required' });
   }
 
-  // Normalize phone number (last 10 digits to be safe)
-  const searchPhone = String(phone).replace(/\D/g, '').slice(-10);
-  console.log(`[API-Search] Normalized Search Phone (Last 10): ${searchPhone}`);
+  // Normalize phone number (removed .slice(-10) to support dummy numbers)
+  const searchPhone = String(phone).replace(/\D/g, '');
+  console.log(`[API-Search] Search Phone: ${searchPhone}`);
 
   try {
     const client = supabaseAdmin;
