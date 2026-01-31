@@ -1110,9 +1110,12 @@ export default function CallingPage() {
             }
 
             // 3. Handle Manual Call vs CRM Call differently
-            if (isManualCall) {
-                // Manual Call: Clear manual session via API and redirect back to preserved lead
-                console.log('[Disposition] Manual call detected. Returning to primary lead context.');
+            // CRITICAL FIX: Only treat as "interruption" if manual lead is DIFFERENT from primary lead
+            const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
+
+            if (isInterruption) {
+                // Manual Interruption: Clear manual columns and return to preserved lead
+                console.log('[Disposition] Manual interruption finished. Returning to primary lead context.');
                 
                 try {
                     const { data: { session: authSession } } = await supabase.auth.getSession();
@@ -1135,7 +1138,7 @@ export default function CallingPage() {
                     console.error("[Disposition] Failed to clear manual session:", err);
                 }
 
-                // Redirect to the preserved CRM lead
+                // Redirect to the preserved primary lead
                 if (preservedCampaignId && preservedCustomerId) {
                     router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
                 } else {
@@ -1144,8 +1147,10 @@ export default function CallingPage() {
                 setSaving(false);
                 return;
             } else {
-                // CRM Call: Clear session and run auto-assignment
+                // CRM Call (or Manual lead that IS the primary lead): Clear session and run auto-assignment
+                console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 if (user?.uid) {
+                    // Full reset of session for this campaign to allow clean next-lead assignment
                     await supabase.from('call_sessions').delete().eq('user_id', user.uid);
                 }
 
