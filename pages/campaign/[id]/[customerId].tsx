@@ -1246,12 +1246,26 @@ export default function CallingPage() {
                 } else {
                 // CRM Call (Authorized): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
-                if (user?.uid) {
-                    // Full reset of session for THIS campaign to allow clean next-lead assignment
-                    await supabase.from('call_sessions')
-                        .delete()
-                        .eq('user_id', user.uid)
-                        .eq('campaign_id', campaignId);
+                
+                try {
+                    const { data: { session: authSession } } = await supabase.auth.getSession();
+                    if (authSession?.access_token) {
+                        // Use TERMINATE API for reliable cleanup of the current session
+                        await fetch("/api/auth/update-call-session", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${authSession.access_token}`,
+                            },
+                            body: JSON.stringify({
+                                campaign_id: campaignId,
+                                terminate: true 
+                            })
+                        });
+                        console.log('[Disposition] CRM session terminated via API.');
+                    }
+                } catch (cleanupErr) {
+                    console.error("[Disposition] Cleanup error during CRM save:", cleanupErr);
                 }
 
                 // Automated Re-assignment Flow
