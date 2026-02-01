@@ -378,6 +378,25 @@ export default function CallingPage() {
         
         try {
             setLoading(true);
+
+            // 0. STRICT PERMISSION GUARD
+            // Validate if user is actually assigned to THIS campaign before proceeding or creating sessions
+            try {
+                const { data: campData } = await supabase.from('campaigns').select('users').eq('id', campaignId).single();
+                if (campData?.users && user) {
+                    const assignedList = Array.isArray(campData.users) ? campData.users : [];
+                    const isAssignee = assignedList.some((u: any) => String(u.user_id) === String(user.uid));
+                    
+                    if (!isAssignee && user.isClient) {
+                         console.warn("[Guard] Unauthorized access detected. Session blocked. Redirecting to dashboard.");
+                         setLoading(false);
+                         router.push(`/campaign/${campaignId}`);
+                         return;
+                    }
+                }
+            } catch (e) {
+                console.error("[Guard] Permission check error:", e);
+            }
             
             // 1. Fetch Campaign (Static for the page)
             if (!campaign) {
@@ -782,6 +801,14 @@ export default function CallingPage() {
         }
     }, [callbackTime, callbackDate]);
 
+    type Data = {
+        success?: boolean;
+        error?: string;
+        session?: any;
+        message?: string;
+        server_now?: string;
+    };
+
     const handleStartCall = async () => {
         const cId = campaignId as string;
         const custId = customerId as string;
@@ -1185,12 +1212,19 @@ export default function CallingPage() {
                              }
 
                              // 2. Delete the session for the campaign we just finished disposing
-                             if (uidToCleanup) {
-                                await supabase.from('call_sessions')
-                                    .delete()
-                                    .eq('user_id', uidToCleanup)
-                                    .eq('campaign_id', campaignId);
-                             }
+                             // CONSISTENCY FIX: Use the special terminate flag via API for reliable cleanup
+                             console.log(`[Disposition] Terminating manual session via API: ${campaignId}`);
+                             await fetch("/api/auth/update-call-session", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${authSession.access_token}`,
+                                },
+                                body: JSON.stringify({
+                                    campaign_id: campaignId,
+                                    terminate: true 
+                                })
+                             });
                         }
                     } catch (err) {
                         console.error("[Disposition] Cleanup error:", err);
