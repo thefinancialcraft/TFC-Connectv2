@@ -891,6 +891,24 @@ export default function CallingPage() {
 
         try {
             setSaving(true);
+
+            // 0. CAPTURE CAMPAIGN PERMISSION EARLY
+            let isAssignedToCampaign = false;
+            try {
+                const { data: campData } = await supabase
+                    .from('campaigns')
+                    .select('users')
+                    .eq('id', campaignId)
+                    .single();
+                
+                if (campData?.users && user?.uid) {
+                    const assignedUsers = Array.isArray(campData.users) ? campData.users : [];
+                    isAssignedToCampaign = assignedUsers.some((u: any) => String(u.user_id) === String(user.uid));
+                }
+                if (user && !user.isClient) isAssignedToCampaign = true;
+            } catch (err) {
+                console.error("[Disposition] Permission check failed:", err);
+            }
             
             const now = new Date().toISOString();
 
@@ -1046,10 +1064,16 @@ export default function CallingPage() {
                 const currentAssignedTo = customer?.assigned_to;
                 const shouldAssignToSelf = !currentAssignedTo || currentAssignedTo === user?.uid;
 
-                if (isFollowup && shouldAssignToSelf) {
+                if (isFollowup && shouldAssignToSelf && isAssignedToCampaign) {
                     updatePayload.assigned_to = user?.uid;
                     logAssignedTo = user?.uid;
-                } 
+                } else if (isFollowup && !isAssignedToCampaign) {
+                    // Unauthorized: Force unassign even if it's a follow-up
+                    updatePayload.assigned_to = null;
+                    logAssignedTo = null;
+                    console.warn("[Disposition] Unauthorized assignment blocked for manual lead.");
+                }
+                
                 // Else: if follow-up but owned by someone else -> Keep original owner
                 // Unless we want to explicitly steal it? Requirement says NO conflict. 
                 // So we preserve the original owner.
@@ -1111,26 +1135,6 @@ export default function CallingPage() {
                 }
             }
 
-            // 2.6 CAPTURE CAMPAIGN PERMISSION
-            // Check if user is authorized for THIS campaign to prevent assignment loopholes
-            let isAssignedToCampaign = false;
-            try {
-                const { data: campData } = await supabase
-                    .from('campaigns')
-                    .select('users')
-                    .eq('id', campaignId)
-                    .single();
-                
-                if (campData?.users && user?.uid) {
-                    const assignedUsers = Array.isArray(campData.users) ? campData.users : [];
-                    isAssignedToCampaign = assignedUsers.some((u: any) => String(u.user_id) === String(user.uid));
-                }
-                
-                // Internal staff / Global Admins always have permission
-                if (user && !user.isClient) isAssignedToCampaign = true;
-            } catch (err) {
-                console.error("[Disposition] Permission check failed:", err);
-            }
 
             // 3. Handle Manual Call vs CRM Call differently
             // CRITICAL FIX: Only treat as "interruption" if manual lead is DIFFERENT from primary lead
@@ -1168,7 +1172,17 @@ export default function CallingPage() {
                     router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
                 } else if (!isAssignedToCampaign) {
                     // User was calling a lead from a campaign they aren't assigned to. 
-                    // Don't give them more leads from here. Go to dashboard.
+                    // 1. Unassign the lead so it returns to the pool
+                    await supabase.from('customers')
+                        .update({ assigned_to: null, status: 'active' })
+                        .eq('id', customerId);
+                    
+                    // 2. Clear the call session for this campaign entirely
+                    await supabase.from('call_sessions')
+                        .delete()
+                        .eq('user_id', user?.uid)
+                        .eq('campaign_id', campaignId);
+
                     alert("Disposition saved. Campaign access is restricted, returning to dashboard.");
                     router.push(`/campaign/${campaignId}`);
                 } else {

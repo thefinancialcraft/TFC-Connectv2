@@ -110,88 +110,57 @@
 
 				const normalizedDesignation = (user.designation || "").toLowerCase();
 
-				// Level 1: Client Agent (or any other client role - Fail Secure)
-				if (user.isClient && (normalizedDesignation === 'agent' || !normalizedDesignation || !['team_leader', 'ceo', 'developer'].includes(normalizedDesignation))) {
-					// 1. Own Organization
+				// Level 4: Internal Staff (Global Admin) - No filters
+				if (!user.isClient) {
+					// No filters applied
+				} 
+				// Client Users (Everyone Else)
+				else {
+					// 1. Mandatory Organization Filter
 					if (user.organization_id) {
 						query = query.eq('organization_id', user.organization_id);
 					} else {
-						// Fail-secure
+						// Fail-secure: No organization, no campaigns
 						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
 					}
 
-					// 2. Active Only
-					query = query.eq('status', 'active');
+					// 2. Assignment Filters based on Level
+					if (normalizedDesignation === 'team_leader') {
+						// Level 2: Team Leader (Self + Team)
+						let teamMemberIds: string[] = [user.uid];
+						const { data: teamData } = await supabase
+							.from('teams')
+							.select('members')
+							.eq('leader_id', user.uid)
+							.eq('is_active', true);
 
-					// 3. Self Assigned (Check if user_id is in the users JSON array)
-					// Assuming users column is JSONB array of objects [{id: "..."}]
-					// We construct a partial object to match.
-					// Note: Supabase JSONB containment operator @>
-					// This requires the object in the array to contain the checking object.
-					// If users = [{id: 123, name: "..."}], searching for [{id: 123}] works.
-					if (user.uid) { 
-						// Search by user_id which is the actual field in the JSON array based on data inspection
-                        // The structure is [{"user_id": "...", "id": "...", ...}]
-						query = query.contains('users', JSON.stringify([{ user_id: user.uid }]));
+						if (teamData) {
+							teamData.forEach(team => {
+								if (Array.isArray(team.members)) {
+									team.members.forEach((member: any) => {
+										if (typeof member === 'string') teamMemberIds.push(member);
+									});
+								}
+							});
+						}
+						teamMemberIds = [...new Set(teamMemberIds)];
+
+						if (teamMemberIds.length > 0) {
+							const orFilter = teamMemberIds.map(id => `users.cs.[{"user_id":"${id}"}]`).join(',');
+							query = query.or(orFilter);
+						}
+					} 
+					else if (['ceo', 'developer'].includes(normalizedDesignation)) {
+						// Level 3: Client Admin (Sees all in organization - no extra filter)
+					} 
+					else {
+						// Level 1: Client Agent (Strictest)
+						query = query.eq('status', 'active');
+						if (user.uid) { 
+							query = query.contains('users', JSON.stringify([{ user_id: user.uid }]));
+						}
 					}
 				}
-				// Level 2: Team Leader
-				else if (user.isClient && normalizedDesignation === 'team_leader') {
-					// 1. Own Organization
-					if (user.organization_id) {
-						query = query.eq('organization_id', user.organization_id);
-					} else {
-						// Fail-secure
-						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
-					}
-
-					// 2. Fetch Team Members
-                    // Reuse team fetching logic from customer page pattern
-					let teamMemberIds: string[] = [user.uid]; // Include self
-					
-					const { data: teamData } = await supabase
-						.from('teams')
-						.select('members')
-						.eq('leader_id', user.uid)
-						.eq('is_active', true);
-
-					if (teamData) {
-						teamData.forEach(team => {
-							if (Array.isArray(team.members)) {
-								team.members.forEach((member: any) => {
-									if (typeof member === 'string') teamMemberIds.push(member);
-								});
-							} else if (typeof team.members === 'string') {
-								try {
-									const parsedIds = JSON.parse(team.members);
-									if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => teamMemberIds.push(String(id))); 
-								} catch (e) {}
-							}
-						});
-					}
-					// Unique IDs
-					teamMemberIds = [...new Set(teamMemberIds)];
-
-					// 3. Filter by Team Assignment
-					// Show campaign if ANY team member is assigned
-                    // Construct OR filter: users.cs.[{"user_id":"ID1"}],users.cs.[{"user_id":"ID2"}]
-					if (teamMemberIds.length > 0) {
-						const orFilter = teamMemberIds.map(id => `users.cs.[{"user_id":"${id}"}]`).join(',');
-						query = query.or(orFilter);
-					}
-				}
-				// Level 3: Client Admin
-				else if (user.isClient && ['ceo', 'developer'].includes(normalizedDesignation)) {
-					// 1. Own Organization
-					if (user.organization_id) {
-						query = query.eq('organization_id', user.organization_id);
-					} else {
-						// Fail-secure
-						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
-					}
-				}
-				// Level 4: Internal Staff (Global Admin)
-				// No filters applied - fetch all campaigns across all organizations
 
 				const { data: campaignData, error: campaignError } = await query;
 				
