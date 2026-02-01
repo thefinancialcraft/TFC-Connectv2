@@ -75,6 +75,12 @@ export default function CallingPage() {
     const handleEndCall = useCallback(async (isFromBridge = false) => {
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
         
+        // If the call never reached 'connected' status, force duration to 0
+        if (localCallingStatus !== 'connected') {
+            console.log('🤙 [EndCall] Call never connected. Forcing Talk Time to 0.');
+            setCallDuration(0);
+        }
+
         setIsCalling(false);    
         setPostCall(true);
         setCallAlive(false);
@@ -185,6 +191,37 @@ export default function CallingPage() {
             } else if (eventType === 'connecting' || eventType === 'connected') {
                 console.log(`📬 [Bridge] Setting status to: ${eventType}`);
                 setLocalCallingStatus(eventType);
+                
+                // RESET TIMER ON CONNECTION: Talk time only starts when 'connected'
+                if (eventType === 'connected') {
+                    const actualNow = Date.now();
+                    setCallStartTime(actualNow);
+                    setCallDuration(0);
+                    console.log('📬 [Bridge] ⏱️ Call CONNECTED. Resetting timer to start accurate Talk Time.');
+                    
+                    // Sync this accurate start time to server session so other devices match
+                    if (user?.uid) {
+                        const syncConnectedTime = async () => {
+                             const { data: { session: authSession } } = await supabase.auth.getSession();
+                             if (authSession) {
+                                 await fetch("/api/auth/update-call-session", {
+                                     method: "POST",
+                                     headers: {
+                                         "Content-Type": "application/json",
+                                         Authorization: `Bearer ${authSession.access_token}`,
+                                     },
+                                     body: JSON.stringify({
+                                         campaign_id: campaignId,
+                                         customer_id: customerId,
+                                         status: 'active' // This will set call_start_at to 'now' on server
+                                     })
+                                 });
+                             }
+                        };
+                        syncConnectedTime();
+                    }
+                }
+
                 // Sync to DB so Header and other components see it
                 if (user?.employeeId) {
                     updateSyncMetaCallingStatus(user.employeeId, eventType);
@@ -238,8 +275,8 @@ export default function CallingPage() {
         "DND": [],
         "Wrong NO": [],
         "Ported / Expired": [],
-        "Not Contactable": ["hang up", "busy","Switch off", "Ring", "not reacable", "others"],
-        "Call Back": ["intrested", "follow up","Switch off", "busy", "Ring", "not reacable", "others"],
+        "Not Contactable": ["busy","Switch off", "Ring", "not reacable", "others"],
+        "Call Back": ["intrested", "follow up", "hang up","Switch off", "busy", "Ring", "not reacable", "others"],
         "Deal Done": [],
     };
 
@@ -1081,7 +1118,7 @@ export default function CallingPage() {
                     sub_disposition: subDisposition,
                     is_connected: isConnected,
                     notes: notes,
-                    duration: callDuration,
+                    duration: (disposition === 'Not Contactable') ? 0 : callDuration,
                     last_called_at: now,
                     updated_at: now,
                     next_called_at: logNextCalledAt,

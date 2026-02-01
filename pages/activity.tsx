@@ -476,7 +476,7 @@ export default function Activity() {
                               fontFamily: "'Poppins', sans-serif",
                             }}
                           >
-                            {stats.lastCallTime}
+                            {stats.lastCallTime !== "N/A" ? `${formatDisplayDate(selectedDate)} / ${stats.lastCallTime}` : "N/A"}
                           </p>
                           <p
                             className="text-[10px] sm:text-xs font-medium"
@@ -722,6 +722,9 @@ export default function Activity() {
                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
                             Callback
                           </th>
+                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[180px]">
+                            Disposition
+                          </th>
                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
                             Campaign
                           </th>
@@ -750,16 +753,27 @@ export default function Activity() {
                                 {activity.agent?.user_name || "Unknown Agent"}
                               </td>
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-700 font-medium">
-                                {activity.customer?.customer_name || "Unknown Customer"}
+                                {activity.customer?.customer_name || activity.rejected_customer?.customer_name || "Unknown Customer"}
                               </td>
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
                                 {activity.next_called_at ? formatDisplayDate(activity.next_called_at) : "No Followup"}
+                              </td>
+                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-bold text-slate-700">
+                                <div className="flex flex-col">
+                                   <span className="text-indigo-600 font-black tracking-tight">{activity.disposition || "N/A"}</span>
+                                   {activity.sub_disposition && (
+                                     <span className="text-[10px] text-gray-400 font-medium lowercase italic leading-none">{activity.sub_disposition}</span>
+                                   )}
+                                </div>
                               </td>
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-indigo-600 font-bold uppercase tracking-tighter">
                                 {activity.campaign?.name || "General"}
                               </td>
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
-                                {formatTime(activity.created_at)}
+                                <div className="flex flex-col">
+                                  <span className="text-gray-900 font-medium">{formatTime(activity.created_at)}</span>
+                                  <span className="text-[10px] text-gray-400">{formatDisplayDate(activity.created_at)}</span>
+                                </div>
                               </td>
                               <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-mono font-bold text-gray-600">
                                 {activity.duration ? formatSeconds(activity.duration) : "00:00:00"}

@@ -7,6 +7,7 @@ export interface FollowUpLead {
   customer_name: string;
   phone_no: string;
   disposition: string;
+  sub_disposition?: string;
   next_called_at: string;
   campaign_id: string;
   organization_id: string;
@@ -201,6 +202,7 @@ export function useFollowUpLeads() {
     return leads.filter(lead => 
       lead.customer_name?.toLowerCase().includes(query) || 
       lead.phone_no?.includes(query) ||
+      lead.disposition?.toLowerCase().includes(query) ||
       lead.campaign_name?.toLowerCase().includes(query) ||
       lead.organization_name?.toLowerCase().includes(query) ||
       lead.assigned_name?.toLowerCase().includes(query)
