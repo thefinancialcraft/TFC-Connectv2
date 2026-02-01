@@ -880,6 +880,13 @@ export default function CallingPage() {
 
         if (customer?.phone_no) {
             // Trigger Flutter bridge call event
+            // SET FLAG: Inform GlobalCallHandler that this is NOT a manual dial
+            if (typeof window !== 'undefined') {
+                (window as any).isCrmCallActive = true;
+                // Safety timeout to reset flag in case start fails or disconnect event is missed
+                setTimeout(() => { (window as any).isCrmCallActive = false; }, 15000);
+            }
+            
             const bridgeConnected = notifyFlutter('call_to', customer.phone_no);
             
             if (bridgeConnected) {

@@ -111,6 +111,18 @@ export default function GlobalCallHandler() {
                 if (!cleanPhone) return;
 
                 console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${cleanPhone}`);
+                
+                // 1.1 SOURCE SECURITY: 
+                // If the call was initiated by the CRM page, ignore the dial event in Global handler
+                if (isDialEvent && typeof window !== 'undefined' && (window as any).isCrmCallActive) {
+                    console.log(`[Global-Call] 🛡️ CRM-initiated activity detected for ${cleanPhone}. Ignoring to prevent manual session overwrite.`);
+                    return;
+                }
+
+                // 1.2 RESET FLAG on any end/disconnect event
+                if (isEndEvent && typeof window !== 'undefined') {
+                    (window as any).isCrmCallActive = false;
+                }
 
                 // 2. Search for the lead
                 try {
