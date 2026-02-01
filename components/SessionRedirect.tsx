@@ -7,6 +7,7 @@ export default function SessionRedirect() {
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
     const lastRedirectedPath = useRef<string | null>(null);
+    const lastRedirectTimestamp = useRef<number>(0);
 
     // Stable redirect function
     const applyRedirect = useCallback((session: any) => {
@@ -19,19 +20,23 @@ export default function SessionRedirect() {
         const campaignId = (isManual && session.manual_campaign_id) ? session.manual_campaign_id : session.campaign_id;
         const customerId = (isManual && session.manual_customer_id) ? session.manual_customer_id : session.customer_id;
 
-        if (status === 'active' || status === 'disposition_pending') {
+        if (status === 'active' || status === 'disposition_pending' || status === 'assigned') {
             const targetPath = `/campaign/${campaignId}/${customerId}`;
             const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
             const normalizedTarget = targetPath.replace(/\/$/, "");
 
-            console.log(`[Redirect-Debug] Mode: ${isManual ? 'MANUAL' : 'PRIMARY'}, Current: "${currentPath}", Target: "${normalizedTarget}"`);
+            const now = Date.now();
+            const stabilityCooldown = 3000; // 3 seconds cooldown to prevent race conditions
 
-            if (currentPath !== normalizedTarget && lastRedirectedPath.current !== normalizedTarget) {
+            if (currentPath !== normalizedTarget && 
+                (lastRedirectedPath.current !== normalizedTarget || (now - lastRedirectTimestamp.current) > stabilityCooldown)) {
+                
                 console.log(`[Redirect] 🚀 Redirection triggered to: ${normalizedTarget}`);
                 lastRedirectedPath.current = normalizedTarget;
+                lastRedirectTimestamp.current = now;
                 router.replace(normalizedTarget);
                 
-                setTimeout(() => { lastRedirectedPath.current = null; }, 2000);
+                setTimeout(() => { lastRedirectedPath.current = null; }, 5000);
             }
         } else {
             // EXIT LOGIC: If session is no longer active/pending, and we are ON that campaign's lead profile, leave.

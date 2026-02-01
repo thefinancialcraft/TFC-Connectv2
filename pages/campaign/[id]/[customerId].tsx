@@ -1307,28 +1307,8 @@ export default function CallingPage() {
                 // CRM Call (Authorized): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 
-                try {
-                    const { data: { session: authSession } } = await supabase.auth.getSession();
-                    if (authSession?.access_token) {
-                        // Use TERMINATE API for reliable cleanup of the current session
-                        await fetch("/api/auth/update-call-session", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${authSession.access_token}`,
-                            },
-                            body: JSON.stringify({
-                                campaign_id: campaignId,
-                                terminate: true 
-                            })
-                        });
-                        console.log('[Disposition] CRM session terminated via API.');
-                    }
-                } catch (cleanupErr) {
-                    console.error("[Disposition] Cleanup error during CRM save:", cleanupErr);
-                }
-
-                // Automated Re-assignment Flow
+                // STEP 1: Find next lead first WITHOUT terminating the session yet.
+                // This prevents other devices from jumping to dashboard prematurely.
                 const { data: nextLeadId, error: reassignError } = await supabase.rpc('assign_next_lead', {
                     p_campaign_id: campaignId,
                     p_user_id: user?.uid,
@@ -1371,8 +1351,25 @@ export default function CallingPage() {
                     setSaving(false);
                     return; 
                 } else if (effectiveCampaignId) {
-                    // No more leads or No user, go to dashboard
-                    console.log('[Disposition] No more leads. Returning to campaign dashboard.');
+                    // No more leads: TERMINATE the session so devices return to dashboard
+                    console.log('[Disposition] No more leads. Terminating session and returning to campaign dashboard.');
+                    
+                    try {
+                        const { data: { session: authSession } } = await supabase.auth.getSession();
+                        if (authSession?.access_token) {
+                            await fetch("/api/auth/update-call-session", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${authSession.access_token}`,
+                                },
+                                body: JSON.stringify({ campaign_id: effectiveCampaignId, terminate: true })
+                            });
+                        }
+                    } catch (e) {
+                         console.error("[Disposition] Final cleanup error:", e);
+                    }
+
                     alert('No more leads available in this campaign.');
                     setLocalCallingStatus(null);
                     router.push(`/campaign/${effectiveCampaignId}`);
