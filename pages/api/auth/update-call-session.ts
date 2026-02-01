@@ -89,7 +89,10 @@ export default async function handler(
             customer_id: customer_id,
             status: status,
             is_manual: false,
-            ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
+            manual_campaign_id: null,
+            manual_customer_id: null,
+            manual_status: null,
+            ...(status === 'active' ? { call_start_at: new Date().toISOString() } : { call_start_at: null })
         };
     }
 

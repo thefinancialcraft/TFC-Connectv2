@@ -486,6 +486,11 @@ export default function CallingPage() {
                             campaign_id: targetCampaignId,
                             customer_id: nextLeadId,
                             status: 'assigned',
+                            is_manual: false, // STANDARD CRM WORKFLOW
+                            manual_campaign_id: null,
+                            manual_customer_id: null,
+                            manual_status: null,
+                            call_start_at: null,
                             updated_at: new Date().toISOString()
                         }, { onConflict: 'user_id,campaign_id' });
                         router.push(`/campaign/${targetCampaignId}/${nextLeadId}`);
@@ -1140,57 +1145,69 @@ export default function CallingPage() {
             // CRITICAL FIX: Only treat as "interruption" if manual lead is DIFFERENT from primary lead
             const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
 
-            if (isInterruption || !isAssignedToCampaign) {
-                // Manual Interruption OR Unauthorized Manual Call: 
-                // Clear manual columns and return to preserved/authorized lead
-                console.log(`[Disposition] Flow Exit: IsInterruption=${isInterruption}, IsAuthorized=${isAssignedToCampaign}. Returning to safety.`);
-                
-                try {
-                    const { data: { session: authSession } } = await supabase.auth.getSession();
-                    if (authSession) {
-                        await fetch("/api/auth/update-call-session", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${authSession.access_token}`,
-                            },
-                            body: JSON.stringify({
-                                campaign_id: preservedCampaignId || campaignId,
-                                customer_id: preservedCustomerId || customerId,
-                                status: isInterruption ? 'assigned' : 'disposed',
-                                manual_override: true // Force clear manual_ columns
-                            })
-                        });
-                    }
-                } catch (err) {
-                    console.error("[Disposition] Failed to clear manual session:", err);
-                }
-
                 // Redirect Logic:
-                if (isInterruption && preservedCampaignId && preservedCustomerId) {
-                    // Back to the lead we were working on
-                    router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
-                } else if (!isAssignedToCampaign) {
-                    // User was calling a lead from a campaign they aren't assigned to. 
-                    // 1. Unassign the lead so it returns to the pool
-                    await supabase.from('customers')
-                        .update({ assigned_to: null, status: 'active' })
-                        .eq('id', customerId);
+                if (isInterruption || !isAssignedToCampaign) {
+                    // Manual Interruption OR Unauthorized Manual Call: 
+                    // Clear manual columns and return to preserved/authorized lead
+                    console.log(`[Disposition] Flow Exit Path: IsInterruption=${isInterruption}, IsAuthorized=${isAssignedToCampaign}.`);
                     
-                    // 2. Clear the call session for this campaign entirely
-                    await supabase.from('call_sessions')
-                        .delete()
-                        .eq('user_id', user?.uid)
-                        .eq('campaign_id', campaignId);
+                    try {
+                        const { data: { session: authSession } } = await supabase.auth.getSession();
+                        const uidToCleanup = user?.uid || authSession?.user?.id;
 
-                    alert("Disposition saved. Campaign access is restricted, returning to dashboard.");
-                    router.push(`/campaign/${campaignId}`);
+                        // Scenario 1: Returning to a DIFFERENT authorized campaign/lead
+                        if (authSession && preservedCampaignId && preservedCustomerId) {
+                            await fetch("/api/auth/update-call-session", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${authSession.access_token}`,
+                                },
+                                body: JSON.stringify({
+                                    campaign_id: preservedCampaignId,
+                                    customer_id: preservedCustomerId,
+                                    status: 'assigned',
+                                    manual_override: true 
+                                })
+                            });
+                        }
+                        
+                        // Scenario 2: If this was a manual call (Interruption or Unauthorized),
+                        // we MUST delete THE CURRENT session so it doesn't get stuck in disposition_pending
+                        if (isInterruption || !isAssignedToCampaign) {
+                             console.log(`[Disposition] Cleaning up manual session: ${campaignId}`);
+                             
+                             // 1. If unauthorized, force unassign lead
+                             if (!isAssignedToCampaign) {
+                                 await supabase.from('customers')
+                                    .update({ assigned_to: null, status: 'active' })
+                                    .eq('id', customerId);
+                             }
+
+                             // 2. Delete the session for the campaign we just finished disposing
+                             if (uidToCleanup) {
+                                await supabase.from('call_sessions')
+                                    .delete()
+                                    .eq('user_id', uidToCleanup)
+                                    .eq('campaign_id', campaignId);
+                             }
+                        }
+                    } catch (err) {
+                        console.error("[Disposition] Cleanup error:", err);
+                    }
+
+                    // Execution of Redirects
+                    if (isInterruption && preservedCampaignId && preservedCustomerId) {
+                        router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
+                    } else if (!isAssignedToCampaign) {
+                        alert("Disposition saved. Campaign access is restricted, returning to dashboard.");
+                        router.push(`/campaign/${campaignId}`);
+                    } else {
+                        router.push(`/campaign/${campaignId}`);
+                    }
+                    setSaving(false);
+                    return;
                 } else {
-                    router.push(`/campaign/${campaignId}`);
-                }
-                setSaving(false);
-                return;
-            } else {
                 // CRM Call (Authorized): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 if (user?.uid) {
@@ -1224,6 +1241,11 @@ export default function CallingPage() {
                         campaign_id: effectiveCampaignId,
                         customer_id: nextLeadId,
                         status: 'assigned',
+                        is_manual: false,
+                        manual_campaign_id: null,
+                        manual_customer_id: null,
+                        manual_status: null,
+                        call_start_at: null,
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'user_id,campaign_id' });
                     
