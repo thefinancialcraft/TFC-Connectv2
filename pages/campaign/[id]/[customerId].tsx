@@ -1111,13 +1111,35 @@ export default function CallingPage() {
                 }
             }
 
+            // 2.6 CAPTURE CAMPAIGN PERMISSION
+            // Check if user is authorized for THIS campaign to prevent assignment loopholes
+            let isAssignedToCampaign = false;
+            try {
+                const { data: campData } = await supabase
+                    .from('campaigns')
+                    .select('users')
+                    .eq('id', campaignId)
+                    .single();
+                
+                if (campData?.users && user?.uid) {
+                    const assignedUsers = Array.isArray(campData.users) ? campData.users : [];
+                    isAssignedToCampaign = assignedUsers.some((u: any) => String(u.user_id) === String(user.uid));
+                }
+                
+                // Internal staff / Global Admins always have permission
+                if (user && !user.isClient) isAssignedToCampaign = true;
+            } catch (err) {
+                console.error("[Disposition] Permission check failed:", err);
+            }
+
             // 3. Handle Manual Call vs CRM Call differently
             // CRITICAL FIX: Only treat as "interruption" if manual lead is DIFFERENT from primary lead
             const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
 
-            if (isInterruption) {
-                // Manual Interruption: Clear manual columns and return to preserved lead
-                console.log('[Disposition] Manual interruption finished. Returning to primary lead context.');
+            if (isInterruption || !isAssignedToCampaign) {
+                // Manual Interruption OR Unauthorized Manual Call: 
+                // Clear manual columns and return to preserved/authorized lead
+                console.log(`[Disposition] Flow Exit: IsInterruption=${isInterruption}, IsAuthorized=${isAssignedToCampaign}. Returning to safety.`);
                 
                 try {
                     const { data: { session: authSession } } = await supabase.auth.getSession();
@@ -1129,9 +1151,9 @@ export default function CallingPage() {
                                 Authorization: `Bearer ${authSession.access_token}`,
                             },
                             body: JSON.stringify({
-                                campaign_id: preservedCampaignId,
-                                customer_id: preservedCustomerId,
-                                status: 'assigned',
+                                campaign_id: preservedCampaignId || campaignId,
+                                customer_id: preservedCustomerId || customerId,
+                                status: isInterruption ? 'assigned' : 'disposed',
                                 manual_override: true // Force clear manual_ columns
                             })
                         });
@@ -1140,16 +1162,22 @@ export default function CallingPage() {
                     console.error("[Disposition] Failed to clear manual session:", err);
                 }
 
-                // Redirect to the preserved primary lead
-                if (preservedCampaignId && preservedCustomerId) {
+                // Redirect Logic:
+                if (isInterruption && preservedCampaignId && preservedCustomerId) {
+                    // Back to the lead we were working on
                     router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
+                } else if (!isAssignedToCampaign) {
+                    // User was calling a lead from a campaign they aren't assigned to. 
+                    // Don't give them more leads from here. Go to dashboard.
+                    alert("Disposition saved. Campaign access is restricted, returning to dashboard.");
+                    router.push(`/campaign/${campaignId}`);
                 } else {
                     router.push(`/campaign/${campaignId}`);
                 }
                 setSaving(false);
                 return;
             } else {
-                // CRM Call (or Manual lead that IS the primary lead): Clear session and run auto-assignment
+                // CRM Call (Authorized): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 if (user?.uid) {
                     // Full reset of session for THIS campaign to allow clean next-lead assignment
