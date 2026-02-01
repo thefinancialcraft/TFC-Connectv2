@@ -535,6 +535,7 @@ export default function CallingPage() {
                 .from('call_sessions')
                 .select('*')
                 .eq('user_id', user.uid)
+                .eq('campaign_id', campaignId)
                 .maybeSingle();
 
             if (sData) {
@@ -1097,6 +1098,7 @@ export default function CallingPage() {
                     .from('call_sessions')
                     .select('is_manual, campaign_id, customer_id')
                     .eq('user_id', user.uid)
+                    .eq('campaign_id', campaignId)
                     .limit(1);
 
                 const currentSession = sRows ? sRows[0] : null;
@@ -1150,8 +1152,11 @@ export default function CallingPage() {
                 // CRM Call (or Manual lead that IS the primary lead): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 if (user?.uid) {
-                    // Full reset of session for this campaign to allow clean next-lead assignment
-                    await supabase.from('call_sessions').delete().eq('user_id', user.uid);
+                    // Full reset of session for THIS campaign to allow clean next-lead assignment
+                    await supabase.from('call_sessions')
+                        .delete()
+                        .eq('user_id', user.uid)
+                        .eq('campaign_id', campaignId);
                 }
 
                 // Automated Re-assignment Flow
@@ -1178,7 +1183,7 @@ export default function CallingPage() {
                         customer_id: nextLeadId,
                         status: 'assigned',
                         updated_at: new Date().toISOString()
-                    });
+                    }, { onConflict: 'user_id,campaign_id' });
                     
                     // Redirect to the next lead automatically
                     console.log('[Disposition] Redirecting to next lead:', nextLeadId);
