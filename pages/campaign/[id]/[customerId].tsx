@@ -1327,6 +1327,8 @@ export default function CallingPage() {
 
                 if (nextLeadId && user?.uid && effectiveCampaignId) {
                     // Update session to 'assigned' for the NEW lead
+                    console.log(`[Disposition] RPC Result - Next Lead: ${nextLeadId}. Current Lead: ${customerId}`);
+                    
                     await supabase.from('call_sessions').upsert({
                         user_id: user.uid,
                         campaign_id: effectiveCampaignId,
