@@ -108,9 +108,10 @@
 					.select("*, organizations(id, company_name, org_code)")
 					.order("created_at", { ascending: false });
 
-				// Apply Filters
-				// Level 1: Client Agent
-				if (user.isClient && (user.designation === 'agent' || !user.designation)) {
+				const normalizedDesignation = (user.designation || "").toLowerCase();
+
+				// Level 1: Client Agent (or any other client role - Fail Secure)
+				if (user.isClient && (normalizedDesignation === 'agent' || !normalizedDesignation || !['team_leader', 'ceo', 'developer'].includes(normalizedDesignation))) {
 					// 1. Own Organization
 					if (user.organization_id) {
 						query = query.eq('organization_id', user.organization_id);
@@ -135,7 +136,7 @@
 					}
 				}
 				// Level 2: Team Leader
-				else if (user.isClient && user.designation === 'team_leader') {
+				else if (user.isClient && normalizedDesignation === 'team_leader') {
 					// 1. Own Organization
 					if (user.organization_id) {
 						query = query.eq('organization_id', user.organization_id);
@@ -180,7 +181,7 @@
 					}
 				}
 				// Level 3: Client Admin
-				else if (user.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
+				else if (user.isClient && ['ceo', 'developer'].includes(normalizedDesignation)) {
 					// 1. Own Organization
 					if (user.organization_id) {
 						query = query.eq('organization_id', user.organization_id);
