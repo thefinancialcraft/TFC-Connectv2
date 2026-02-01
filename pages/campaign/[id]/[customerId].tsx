@@ -1331,7 +1331,8 @@ export default function CallingPage() {
                 // Automated Re-assignment Flow
                 const { data: nextLeadId, error: reassignError } = await supabase.rpc('assign_next_lead', {
                     p_campaign_id: campaignId,
-                    p_user_id: user?.uid
+                    p_user_id: user?.uid,
+                    p_exclude_lead_id: customerId 
                 });
 
                 if (reassignError) {
