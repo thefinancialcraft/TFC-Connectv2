@@ -28,10 +28,7 @@ export default function FollowUp() {
   } = useFollowUpLeads();
 
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
-  const [pipelines, setPipelines] = useState<Pipeline[]>([
-    { id: '1', name: 'Interested', filters: { dispositions: ['Call Back'], sub_dispositions: ['intrested'] } },
-    { id: '2', name: 'Follow Up', filters: { dispositions: ['Call Back'], sub_dispositions: ['follow up'] } },
-  ]);
+  const [pipelines, setPipelines] = useState<Pipeline[]>([]);
   const [showConfig, setShowConfig] = useState(false);
   const [editingPipelineId, setEditingPipelineId] = useState<string | null>(null);
   const [showMenuId, setShowMenuId] = useState<string | null>(null);
@@ -409,18 +406,49 @@ export default function FollowUp() {
 
                 {/* Mobile Search & Actions */}
                 <div className="mb-4 sm:hidden space-y-3">
-                     <div className="relative w-full">
-                        <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input 
-                            placeholder="Search leads..." 
-                            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
-                            type="text" 
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                     <div className="flex items-center gap-2">
+                        <div className="flex-1 relative">
+                            <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input 
+                                placeholder="Search leads..." 
+                                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                                type="text" 
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <button 
+                             onClick={() => setShowConfig(!showConfig)}
+                             className={`h-9 w-9 border border-gray-300 rounded-lg transition-colors flex items-center justify-center flex-shrink-0 ${showConfig ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white text-gray-600'}`} 
+                        >
+                            <i className="fi flex fi-rr-settings-sliders text-sm"></i>
+                        </button>
+                        <button 
+                            onClick={() => fetchLeads()}
+                            disabled={loading}
+                            className="h-9 w-9 border border-gray-300 rounded-lg bg-white flex items-center justify-center flex-shrink-0"
+                        >
+                            <i className={`fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`}></i>
+                        </button>
                      </div>
-                     {/* Mobile Filters could go here */}
+
+                     <div className="flex bg-gray-100 rounded-lg p-1">
+                        <button 
+                            onClick={() => setViewMode('table')}
+                            className={`flex-1 py-2 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-2 ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
+                        >
+                            <i className="fi fi-rr-apps-sort"></i>
+                            Table
+                        </button>
+                        <button 
+                            onClick={() => setViewMode('kanban')}
+                            className={`flex-1 py-2 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-2 ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
+                        >
+                            <i className="fi fi-rr-columns"></i>
+                            Kanban
+                        </button>
+                     </div>
                 </div>
 
                 {/* Desktop Header & Controls */}
@@ -709,7 +737,7 @@ export default function FollowUp() {
                         </table>
                     </div>
                 ) : (
-                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide min-h-[500px]">
+                    <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide min-h-[500px] snap-x">
                         {pipelines.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl py-20 text-gray-400">
                                 <i className="fi fi-rr-plus text-3xl mb-2"></i>
@@ -725,7 +753,7 @@ export default function FollowUp() {
                                 });
 
                                 return (
-                                    <div key={pipeline.id} className="flex-shrink-0 w-80 bg-gray-50/50 rounded-2xl p-3 border border-gray-100 flex flex-col h-full max-h-[700px]">
+                                    <div key={pipeline.id} className="flex-shrink-0 w-[280px] sm:w-80 bg-gray-50/50 rounded-2xl p-3 border border-gray-100 flex flex-col h-full max-h-[700px] snap-center">
                                         <div className="flex items-center justify-between mb-4 px-1">
                                             <div className="flex items-center gap-2">
                                                 <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tighter">{pipeline.name}</h3>
