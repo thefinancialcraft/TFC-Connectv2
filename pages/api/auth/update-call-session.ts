@@ -47,14 +47,17 @@ export default async function handler(
     };
 
     if (manual_override) {
-        // Clear manual state for THIS specific campaign row
-        console.log(`[API-Session] Force clearing manual state for campaign: ${campaign_id}`);
+        // Clear manual state and RESTORE primary lead context
+        console.log(`[API-Session] Force clearing manual state and restoring lead: ${customer_id}`);
         updatePayload = {
             ...updatePayload,
+            customer_id: customer_id,
+            status: status || 'assigned',
             is_manual: false,
             manual_campaign_id: null,
             manual_customer_id: null,
-            manual_status: null
+            manual_status: null,
+            call_start_at: null 
         };
     } else if (is_manual_event) {
         // TARGETED MANUAL UPDATE: 
