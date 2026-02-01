@@ -33,6 +33,17 @@ export default function SessionRedirect() {
                 
                 setTimeout(() => { lastRedirectedPath.current = null; }, 2000);
             }
+        } else {
+            // EXIT LOGIC: If session is no longer active/pending, and we are ON that campaign's lead profile, leave.
+            const currentPath = router.asPath;
+            const pathParts = currentPath.split('/').filter(Boolean);
+            if (pathParts[0] === 'campaign' && pathParts.length >= 3) {
+                const campaignIdInPath = pathParts[1];
+                if (campaignIdInPath === session.campaign_id) {
+                    console.log(`[Redirect] 🏠 Session status for ${session.campaign_id} is "${status}". Exiting profile.`);
+                    router.push(`/campaign/${session.campaign_id}`);
+                }
+            }
         }
     }, [router]);
 
@@ -86,6 +97,29 @@ export default function SessionRedirect() {
                 (payload: any) => {
                     console.log('[Realtime-Redirect] Session updated:', payload.new);
                     applyRedirect(payload.new);
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'call_sessions',
+                    filter: `user_id=eq.${userId}`
+                },
+                (payload: any) => {
+                    console.log('[Realtime-Redirect] Session deleted:', payload.old);
+                    // Handle EXIT on deletion
+                    const currentPath = router.asPath;
+                    const pathParts = currentPath.split('/').filter(Boolean);
+                    if (pathParts[0] === 'campaign' && pathParts.length >= 3) {
+                         const campaignIdInPath = pathParts[1];
+                         const deletedCampaignId = payload.old?.campaign_id;
+                         if (!deletedCampaignId || campaignIdInPath === deletedCampaignId) {
+                             console.log(`[Realtime-Redirect] Session deleted. Returning to dashboard.`);
+                             router.push('/campaign');
+                         }
+                    }
                 }
             )
             .subscribe();
