@@ -5,6 +5,7 @@ type Data = {
   success?: boolean;
   error?: string;
   session?: any;
+  message?: string;
   server_now?: string;
 };
 
@@ -35,10 +36,27 @@ export default async function handler(
         customer_id, 
         status, 
         is_manual_event, 
-        manual_override 
+        manual_override,
+        terminate
     } = req.body;
 
-    console.log(`[API-Session] Request Target: User=${user.id}, Campaign=${campaign_id}, Manual=${is_manual_event}`);
+    console.log(`[API-Session] Request Target: User=${user.id}, Campaign=${campaign_id}, Manual=${is_manual_event}, Terminate=${terminate}`);
+
+    // ACTION: TERMINATE SESSION
+    if (terminate) {
+        const { error: deleteError } = await client
+            .from('call_sessions')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('campaign_id', campaign_id);
+        
+        if (deleteError) {
+            console.error('[API-Session] Delete Error:', deleteError);
+            return res.status(500).json({ error: deleteError.message });
+        }
+        const responseData: Data = { success: true, message: 'Session terminated' };
+        return res.status(200).json(responseData);
+    }
 
     let updatePayload: any = {
         user_id: user.id,

@@ -129,7 +129,26 @@ export default function GlobalCallHandler() {
                                 }
                             }
 
-                            // 4. Optimistic Navigation Guard
+                            // 4. Permission Check before navigation/session update
+                            let isAuthorized = false;
+                            try {
+                                const { data: campData } = await supabase.from('campaigns').select('users').eq('id', campaignId).single();
+                                if (campData?.users && user) {
+                                    const assigned = Array.isArray(campData.users) ? campData.users : [];
+                                    const uid = user.uid || (user as any).id;
+                                    isAuthorized = assigned.some((u: any) => String(u.user_id) === String(uid));
+                                }
+                                if (user && !user.isClient) isAuthorized = true;
+                            } catch (e) {
+                                console.error("[Global-Call] Permission check failed:", e);
+                            }
+
+                            if (!isAuthorized) {
+                                console.warn(`[Global-Call] 🚫 Unauthorized manual call to campaign ${campaignId}. Blocking portal sync.`);
+                                return; 
+                            }
+
+                            // 5. Navigate and Update
                             if (lastNavigatedCustomerId.current === customerId) return;
                             
                             const currentPath = router.asPath;
@@ -141,7 +160,7 @@ export default function GlobalCallHandler() {
                                 lastNavigatedCustomerId.current = customerId;
                                 router.push(targetPath);
                                 
-                                // 5. Update Manual Session State to 'active'
+                                // 6. Update Manual Session State to 'active'
                                 await updateSessionInBackground(campaignId, customerId, 'active');
 
                                 setTimeout(() => { lastNavigatedCustomerId.current = null; }, 5000);

@@ -1214,17 +1214,19 @@ export default function CallingPage() {
                              // 2. Delete the session for the campaign we just finished disposing
                              // CONSISTENCY FIX: Use the special terminate flag via API for reliable cleanup
                              console.log(`[Disposition] Terminating manual session via API: ${campaignId}`);
-                             await fetch("/api/auth/update-call-session", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: `Bearer ${authSession.access_token}`,
-                                },
-                                body: JSON.stringify({
-                                    campaign_id: campaignId,
-                                    terminate: true 
-                                })
-                             });
+                             if (authSession?.access_token) {
+                                 await fetch("/api/auth/update-call-session", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${authSession.access_token}`,
+                                    },
+                                    body: JSON.stringify({
+                                        campaign_id: campaignId,
+                                        terminate: true 
+                                    })
+                                 });
+                             }
                         }
                     } catch (err) {
                         console.error("[Disposition] Cleanup error:", err);
