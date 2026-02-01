@@ -11,7 +11,7 @@ export default function SessionRedirect() {
     // Stable redirect function
     const applyRedirect = useCallback((session: any) => {
         if (!session) return;
-        
+            
         // DUAL SESSION LOGIC: 
         // If is_manual is true, use manual columns, otherwise use primary columns
         const isManual = session.is_manual === true;
