@@ -884,7 +884,12 @@ export default function CallingPage() {
             if (typeof window !== 'undefined') {
                 (window as any).isCrmCallActive = true;
                 // Safety timeout to reset flag in case start fails or disconnect event is missed
-                setTimeout(() => { (window as any).isCrmCallActive = false; }, 15000);
+                setTimeout(() => { 
+                    if ((window as any).isCrmCallActive) {
+                        console.log('[CRM-Call] 🛡️ Safety timeout triggered. Re-enabling GlobalCallHandler.');
+                        (window as any).isCrmCallActive = false; 
+                    }
+                }, 20000);
             }
             
             const bridgeConnected = notifyFlutter('call_to', customer.phone_no);
@@ -1233,7 +1238,7 @@ export default function CallingPage() {
             const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
 
                 // Redirect Logic:
-                if (isManualCall || !isAssignedToCampaign) {
+                if (isInterruption || !isAssignedToCampaign) {
                     console.log(`[Disposition] Flow Exit Path: IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
                     try {

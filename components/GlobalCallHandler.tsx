@@ -105,24 +105,31 @@ export default function GlobalCallHandler() {
                              eventType === 'call_disconected' ||
                              eventType === 'call_disconnect';
 
+            // STRICT CRM FLOW TOGGLE
+            if (eventType === 'call_to') {
+                console.log(`[Global-Call] 🛡️ CRM Call Initiated (call_to). Locking global handler.`);
+                if (typeof window !== 'undefined') (window as any).isCrmCallActive = true;
+                return; // Strictly Inactive
+            }
+
+            if (eventType === 'call_disconnect' || eventType === 'call_disconnected') {
+                console.log(`[Global-Call] � CRM Call Ended. Re-activating global handler.`);
+                if (typeof window !== 'undefined') (window as any).isCrmCallActive = false;
+                return; // Strictly Skip this end event for manual logic
+            }
+
+            // HARD BYPASS: if flag is true, ignore ALL other bridge events (connecting, connected, dial, etc.)
+            if (typeof window !== 'undefined' && (window as any).isCrmCallActive) {
+                console.log(`[Global-Call] 🛡️ Handler Bypassed: CRM call in progress (${eventType})`);
+                return; 
+            }
+
             if ((isDialEvent || isEndEvent) && phoneNo) {
                 // 1. Clean phone number
                 const cleanPhone = String(phoneNo).replace(/\D/g, '');
                 if (!cleanPhone) return;
 
                 console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${cleanPhone}`);
-                
-                // 1.1 SOURCE SECURITY: 
-                // If the call was initiated by the CRM page, ignore the dial event in Global handler
-                if (isDialEvent && typeof window !== 'undefined' && (window as any).isCrmCallActive) {
-                    console.log(`[Global-Call] 🛡️ CRM-initiated activity detected for ${cleanPhone}. Ignoring to prevent manual session overwrite.`);
-                    return;
-                }
-
-                // 1.2 RESET FLAG on any end/disconnect event
-                if (isEndEvent && typeof window !== 'undefined') {
-                    (window as any).isCrmCallActive = false;
-                }
 
                 // 2. Search for the lead
                 try {
