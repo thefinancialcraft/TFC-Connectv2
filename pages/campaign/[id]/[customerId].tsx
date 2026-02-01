@@ -381,31 +381,69 @@ export default function CallingPage() {
 
             // 0. STRICT PERMISSION GUARD
             // Validate if user is actually assigned to THIS campaign before proceeding or creating sessions
+            let campData: any = null;
             try {
-                const { data: campData } = await supabase.from('campaigns').select('users').eq('id', campaignId).single();
-                if (campData?.users && user) {
+                const { data: fetchedCamp, error: campErr } = await supabase.from('campaigns').select('*, organizations(id, company_name, org_code)').eq('id', campaignId).single();
+                if (campErr) throw campErr;
+                campData = fetchedCamp;
+
+                if (campData && user) {
+                    const normalizedDesignation = (user.designation || "").toLowerCase();
                     const assignedList = Array.isArray(campData.users) ? campData.users : [];
-                    const isAssignee = assignedList.some((u: any) => String(u.user_id) === String(user.uid));
                     
-                    if (!isAssignee && user.isClient) {
-                         console.warn("[Guard] Unauthorized access detected. Session blocked. Redirecting to dashboard.");
+                    // Robust Assignment Check (Checks both user_id and id for compatibility)
+                    const isAssignee = assignedList.some((u: any) => 
+                        (u.user_id && String(u.user_id) === String(user.uid)) || 
+                        (u.id && String(u.id) === String(user.uid))
+                    );
+                    
+                    let hasAccess = !user.isClient; // Internal staff always has global access
+                    
+                    if (user.isClient) {
+                         // 1. Organization Check (Mandatory)
+                         if (campData.organization_id === user.organization_id) {
+                              // 2. Role Check
+                              if (['ceo', 'developer'].includes(normalizedDesignation)) {
+                                  hasAccess = true; // Admins see everything in their org
+                              } else if (normalizedDesignation === 'team_leader') {
+                                  // For TL, we just check if they are explicitly assigned to this CAM
+                                  // In the future, we could check if any of their team members are assigned.
+                                  if (isAssignee) hasAccess = true;
+                                  else {
+                                      // Special TL Access: If TL is not explicitly in list, but it's THEIR org, 
+                                      // we might allow it depending on business rules.
+                                      // For now, let's just stick to the assignment list but be aware of this.
+                                      hasAccess = isAssignee; 
+                                  }
+                              } else {
+                                  // Agents MUST be assigned
+                                  hasAccess = isAssignee;
+                              }
+                         }
+                    }
+
+                    if (!hasAccess && user.isClient) {
+                         console.warn(`[Guard] Access Denied for ${user.email} (Role: ${normalizedDesignation}) to Campaign ${campaignId}. Redirecting.`);
                          setLoading(false);
                          router.push(`/campaign/${campaignId}`);
                          return;
                     }
                 }
             } catch (e) {
-                console.error("[Guard] Permission check error:", e);
+                console.error("[Guard] Permission check bypass/error (Proceeding with caution):", e);
             }
             
             // 1. Fetch Campaign (Static for the page)
-            if (!campaign) {
-                const { data: campData, error: campaignError } = await supabase
+            // Use the data retrieved during the guard to avoid double query
+            if (campData) {
+                setCampaign(campData);
+            } else if (!campaign) {
+                const { data: fallbackData } = await supabase
                     .from('campaigns')
-                    .select('*')
+                    .select('*, organizations(id, company_name, org_code)')
                     .eq('id', campaignId)
                     .limit(1);
-                if (!campaignError && campData?.[0]) setCampaign(campData[0]);
+                if (fallbackData?.[0]) setCampaign(fallbackData[0]);
             }
 
             // 2. Fetch Customer (Try all three tables)
