@@ -5,7 +5,9 @@ import Header from "../../../components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "../../../lib/authService";
 import { supabase } from "../../../lib/supabase";
 import BottomNav from "../../../components/BottomNav";
-import { notifyFlutter, requestDeviceInfoFromFlutter, updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "../../../lib/flutterBridge";
+import { notifyFlutter, requestDeviceInfoFromFlutter } from "../../../lib/flutterBridge";
+import { decryptPhone, formatMaskedPhone, computePhoneHash } from "../../../lib/phoneUtils";
+import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "../../../lib/flutterBridge";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -929,17 +931,18 @@ export default function CallingPage() {
                 }, 20000);
             }
             
-            const bridgeConnected = notifyFlutter('call_to', customer.phone_no);
+            const decryptedPhone = decryptPhone(customer.phone_no);
+            const bridgeConnected = notifyFlutter('call_to', decryptedPhone);
             
             if (bridgeConnected) {
                 setCallAlive(true);
             } else {
-                window.location.href = `tel:${customer.phone_no}`;
+                window.location.href = `tel:${decryptedPhone}`;
             }
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', customer.phone_no);
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone);
                 updateSyncMetaCallingStatus(user.employeeId, 'preparing');
             }
             setLocalCallingStatus('preparing');
@@ -1137,7 +1140,8 @@ export default function CallingPage() {
                     p_agent_id: user?.uid,
                     p_notes: notes,
                     p_disposition: disposition,
-                    p_sub_disposition: subDisposition
+                    p_sub_disposition: subDisposition,
+                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no))
                 });
                 if (rejectError) throw rejectError;
             } else if (isClosed) {
@@ -1146,7 +1150,8 @@ export default function CallingPage() {
                     p_customer_id: customerId,
                     p_agent_id: user?.uid,
                     p_notes: notes,
-                    p_final_disposition: finalDisposition
+                    p_final_disposition: finalDisposition,
+                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no))
                 });
                 if (closeError) throw closeError;
             } else if (disposition === 'Not Contactable') {
@@ -1624,7 +1629,7 @@ export default function CallingPage() {
                                                 <div className="w-1 h-1 rounded-full bg-slate-300" />
                                                 <div className="flex items-center gap-1.5">
                                                     <i className="fi flex  fi-rr-phone-call text-indigo-400"></i>
-                                                    <span>{customer?.phone_no || 'N/A'}</span>
+                                                    <span>{formatMaskedPhone(customer?.phone_no) || 'N/A'}</span>
                                                 </div>
                                             </div>
                                         </div>

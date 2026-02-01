@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { encryptPhone, computePhoneHash } from "../lib/phoneUtils";
 
 interface ImportCustomersModalProps {
   show: boolean;
@@ -298,7 +299,8 @@ export default function ImportCustomersModal({
           customers.push({
             lead_id: generateLeadId(),
             customer_name: customerName,
-            phone_no: phoneNo || null,
+            phone_no: encryptPhone(phoneNo) || null,
+            phone_search_hash: computePhoneHash(phoneNo) || null,
             expiry_date: parsedExpiryDate,
             campaign_id: selectedCampaignId || null,
             organization_id: selectedOrgId || null,

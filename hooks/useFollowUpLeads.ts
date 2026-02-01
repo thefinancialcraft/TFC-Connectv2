@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import { decryptPhone } from "../lib/phoneUtils";
 import { useUser } from "../context/UserContext";
 
 export interface FollowUpLead {
@@ -143,6 +144,7 @@ export function useFollowUpLeads() {
 
           return {
             ...lead,
+            phone_no: decryptPhone(lead.phone_no),
             isOverdue,
             isUpcoming,
             campaign_name: campaignMap[lead.campaign_id] || 'Unknown Campaign',

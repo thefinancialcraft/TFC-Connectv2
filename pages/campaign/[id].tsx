@@ -14,6 +14,7 @@ import {
     PieChart, Pie, Legend
 } from 'recharts';
 import ImportCustomersModal from "../../components/ImportCustomersModal";
+import { formatMaskedPhone, computePhoneHash } from "../../lib/phoneUtils";
 import CampaignStatsGrid from "../../components/campaign/CampaignStatsGrid";
 import CampaignHeader from "../../components/campaign/CampaignHeader";
 
@@ -509,7 +510,16 @@ export default function CampaignDetails() {
             }
 
             if (searchQuery) {
-                countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
+                let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`;
+                
+                // If search looks like a phone number
+                if (searchQuery.replace(/\D/g, '').length > 0) {
+                     const hash = computePhoneHash(searchQuery);
+                     if (hash) {
+                         orConditions += `,phone_search_hash.eq.${hash}`;
+                     }
+                }
+                countQuery = countQuery.or(orConditions);
             }
 
             const { count: totalCount } = await countQuery;
@@ -533,7 +543,16 @@ export default function CampaignDetails() {
             }
 
             if (searchQuery) {
-                dataQuery = dataQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`);
+                let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%`;
+                
+                // If search looks like a phone number
+                if (searchQuery.replace(/\D/g, '').length > 0) {
+                     const hash = computePhoneHash(searchQuery);
+                     if (hash) {
+                         orConditions += `,phone_search_hash.eq.${hash}`;
+                     }
+                }
+                dataQuery = dataQuery.or(orConditions);
             }
 
             const { data, error } = await dataQuery
@@ -1542,7 +1561,7 @@ export default function CampaignDetails() {
                                                         </td>
                                                         <td className="px-4 py-4">
                                                             <div className="flex flex-col">
-                                                                <span className="text-xs font-medium text-gray-700 leading-none mb-1">{lead.phone_no || 'No Contact'}</span>
+                                                                <span className="text-xs font-medium text-gray-700 leading-none mb-1">{formatMaskedPhone(lead.phone_no)}</span>
                                                                 <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">Verified Lead</span>
                                                             </div>
                                                         </td>

@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useRouter } from "next/router";
 import AppLayout, { useUser } from "../components/AppLayout";
 import { useFollowUpLeads, FollowUpLead } from "../hooks/useFollowUpLeads";
+import { formatMaskedPhone } from "../lib/phoneUtils";
 
 interface Pipeline {
   id: string;
@@ -672,7 +673,7 @@ export default function FollowUp() {
                                         </td>
                                         <td className="px-4 py-4">
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-medium text-gray-700 leading-none mb-1">{lead.phone_no}</span>
+                                                <span className="text-xs font-medium text-gray-700 leading-none mb-1">{formatMaskedPhone(lead.phone_no)}</span>
                                                 <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">Verified Lead</span>
                                             </div>
                                         </td>
@@ -817,7 +818,7 @@ export default function FollowUp() {
                                                                         {lead.customer_name || 'Anonymous'}
                                                                     </h4>
                                                                     <div className="flex items-center gap-1 text-gray-400">
-                                                                        <span className="text-[10px] font-medium tracking-tight mb-0.5">{lead.phone_no}</span>
+                                                                        <span className="text-[10px] font-medium tracking-tight mb-0.5">{formatMaskedPhone(lead.phone_no)}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -4,12 +4,14 @@ import Head from "next/head";
 import AppLayout, { useUser } from "../components/AppLayout";
 import { supabase } from "../lib/supabase";
 import ImportCustomersModal from "../components/ImportCustomersModal";
+import { formatMaskedPhone, computePhoneHash, decryptPhone } from "../lib/phoneUtils";
 
 interface Customer {
   id: string;
   lead_id: string | null;
   customer_name: string | null;
   phone_no: string | null;
+  phone_search_hash: string | null;
   expiry_date: string | null;
   customer_details: string | null;
   utilities: string | null;
@@ -509,7 +511,18 @@ export default function Customer() {
                 .order("created_at", { ascending: false });
 
             if (searchQuery) {
-                batchQuery = batchQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+                let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
+                
+                // If the search looks like a phone number (mostly digits), try hashing it for exact match
+                if (searchQuery.replace(/\D/g, '').length > 0) {
+                     const hash = computePhoneHash(searchQuery);
+                     if (hash) {
+                         // Add exact match check on phone_search_hash
+                         orConditions += `,phone_search_hash.eq.${hash}`;
+                     }
+                }
+                
+                batchQuery = batchQuery.or(orConditions);
             }
 
             // --- DATA MINING ALGORITHM (Batch Query) ---
@@ -791,6 +804,7 @@ export default function Customer() {
               customer_id: lead.id,
               customer_name: lead.customer_name,
               phone_no: lead.phone_no,
+              phone_search_hash: lead.phone_search_hash || computePhoneHash(decryptPhone(lead.phone_no)),
               campaign_id: lead.campaign_id,
               disposition: value,
               sub_disposition: lead.sub_disposition,
@@ -2155,7 +2169,7 @@ export default function Customer() {
                                 className="text-xs text-gray-600 truncate"
                                 style={{ fontFamily: "'Roboto', sans-serif" }}
                               >
-                                {customer.phone_no || "N/A"}
+                                {formatMaskedPhone(customer.phone_no) || "N/A"}
                               </p>
                             </div>
                           </div>
@@ -2489,7 +2503,7 @@ export default function Customer() {
                       className="text-sm text-gray-900"
                       style={{ fontFamily: "'Roboto', sans-serif" }}
                     >
-                      {selectedCustomer.phone_no || "N/A"}
+                      {formatMaskedPhone(selectedCustomer.phone_no) || "N/A"}
                     </p>
                   </div>
                   <div>
