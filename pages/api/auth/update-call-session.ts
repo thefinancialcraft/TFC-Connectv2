@@ -37,10 +37,11 @@ export default async function handler(
         status, 
         is_manual_event, 
         manual_override,
-        terminate
+        terminate,
+        is_unassigned
     } = req.body;
 
-    console.log(`[API-Session] Request Target: User=${user.id}, Campaign=${campaign_id}, Manual=${is_manual_event}, Terminate=${terminate}`);
+    console.log(`[API-Session] Request Target: User=${user.id}, Campaign=${campaign_id}, Manual=${is_manual_event}, Terminate=${terminate}, Unassigned=${is_unassigned}`);
 
     // ACTION: TERMINATE SESSION
     if (terminate) {
@@ -75,6 +76,7 @@ export default async function handler(
             manual_campaign_id: null,
             manual_customer_id: null,
             manual_status: null,
+            is_unassigned: false,
             call_start_at: null 
         };
     } else if (is_manual_event) {
@@ -98,6 +100,7 @@ export default async function handler(
             manual_campaign_id: campaign_id,
             manual_customer_id: customer_id,
             manual_status: status,
+            is_unassigned: is_unassigned || false,
             ...(status === 'active' ? { call_start_at: new Date().toISOString() } : {})
         };
     } else {

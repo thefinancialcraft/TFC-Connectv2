@@ -14,7 +14,7 @@ export default function GlobalCallHandler() {
 
         console.log("[Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.");
 
-        const updateSessionInBackground = async (campaignId: string, customerId: string, status: string = 'active') => {
+        const updateSessionInBackground = async (campaignId: string, customerId: string, status: string = 'active', isUnassigned: boolean = false) => {
             try {
                 const { data: { session: authSession } } = await supabase.auth.getSession();
                 if (authSession) {
@@ -28,10 +28,11 @@ export default function GlobalCallHandler() {
                             campaign_id: campaignId,
                             customer_id: customerId,
                             status: status,
-                            is_manual_event: true  // This tells API to use manual_ columns
+                            is_manual_event: true,  // This tells API to use manual_ columns
+                            is_unassigned: isUnassigned
                         })
                     });
-                    console.log(`[Global-Call] Session updated to active (MANUAL) in background for ${customerId}`);
+                    console.log(`[Global-Call] Session updated to ${status} (MANUAL, Unassigned=${isUnassigned}) in background for ${customerId}`);
                 }
             } catch (err) {
                 console.error("[Global-Call] Failed to update manual session:", err);
@@ -143,12 +144,7 @@ export default function GlobalCallHandler() {
                                 console.error("[Global-Call] Permission check failed:", e);
                             }
 
-                            if (!isAuthorized) {
-                                console.warn(`[Global-Call] 🚫 Unauthorized manual call to campaign ${campaignId}. Blocking portal sync.`);
-                                return; 
-                            }
-
-                            // 5. Navigate and Update
+                            // 5. Navigate and Update (Now allowing unassigned but marking them)
                             if (lastNavigatedCustomerId.current === customerId) return;
                             
                             const currentPath = router.asPath;
@@ -161,7 +157,8 @@ export default function GlobalCallHandler() {
                                 router.push(targetPath);
                                 
                                 // 6. Update Manual Session State to 'active'
-                                await updateSessionInBackground(campaignId, customerId, 'active');
+                                // Mark as unassigned if user is not authorized for THIS campaign
+                                await updateSessionInBackground(campaignId, customerId, 'active', !isAuthorized);
 
                                 setTimeout(() => { lastNavigatedCustomerId.current = null; }, 5000);
                             }

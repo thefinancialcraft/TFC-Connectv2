@@ -407,18 +407,31 @@ export default function CallingPage() {
                                   hasAccess = true; // Admins see everything in their org
                               } else if (normalizedDesignation === 'team_leader') {
                                   // For TL, we just check if they are explicitly assigned to this CAM
-                                  // In the future, we could check if any of their team members are assigned.
                                   if (isAssignee) hasAccess = true;
-                                  else {
-                                      // Special TL Access: If TL is not explicitly in list, but it's THEIR org, 
-                                      // we might allow it depending on business rules.
-                                      // For now, let's just stick to the assignment list but be aware of this.
-                                      hasAccess = isAssignee; 
-                                  }
+                                  else hasAccess = isAssignee; 
                               } else {
                                   // Agents MUST be assigned
                                   hasAccess = isAssignee;
                               }
+                         }
+
+                         // 3. SPECIAL MANUAL OVERRIDE (Allow if an active manual session exists for this user/campaign)
+                         if (!hasAccess) {
+                             try {
+                                 const { data: sData } = await supabase
+                                     .from('call_sessions')
+                                     .select('is_unassigned, is_manual')
+                                     .eq('user_id', user.uid)
+                                     .eq('campaign_id', campaignId)
+                                     .maybeSingle();
+                                     
+                                 if (sData?.is_unassigned && sData?.is_manual) {
+                                     console.log("[Guard] Allowing access via active unassigned manual session.");
+                                     hasAccess = true;
+                                 }
+                             } catch (e) {
+                                 console.error("[Guard] Manual session check error:", e);
+                             }
                          }
                     }
 
@@ -1184,13 +1197,14 @@ export default function CallingPage() {
 
             // 2.5 Check if this is a manual call before clearing session
             let isManualCall = false;
+            let isUnassignedCall = false;
             let preservedCampaignId = null;
             let preservedCustomerId = null;
 
             if (user?.uid) {
                 const { data: sRows } = await supabase
                     .from('call_sessions')
-                    .select('is_manual, campaign_id, customer_id')
+                    .select('is_manual, campaign_id, customer_id, is_unassigned')
                     .eq('user_id', user.uid)
                     .eq('campaign_id', campaignId)
                     .limit(1);
@@ -1199,9 +1213,10 @@ export default function CallingPage() {
 
                 if (currentSession) {
                     isManualCall = currentSession.is_manual || false;
+                    isUnassignedCall = currentSession.is_unassigned || false;
                     preservedCampaignId = currentSession.campaign_id;
                     preservedCustomerId = currentSession.customer_id;
-                    console.log('[Disposition] Current session check:', { isManualCall, preservedCampaignId, preservedCustomerId });
+                    console.log('[Disposition] Current session check:', { isManualCall, isUnassignedCall, preservedCampaignId, preservedCustomerId });
                 }
             }
 
@@ -1211,77 +1226,84 @@ export default function CallingPage() {
             const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
 
                 // Redirect Logic:
-                if (isInterruption || !isAssignedToCampaign) {
-                    // Manual Interruption OR Unauthorized Manual Call: 
-                    // Clear manual columns and return to preserved/authorized lead
-                    console.log(`[Disposition] Flow Exit Path: IsInterruption=${isInterruption}, IsAuthorized=${isAssignedToCampaign}.`);
+                if (isManualCall || !isAssignedToCampaign) {
+                    console.log(`[Disposition] Flow Exit Path: IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
                     try {
                         const { data: { session: authSession } } = await supabase.auth.getSession();
-                        const uidToCleanup = user?.uid || authSession?.user?.id;
+                        if (!authSession) throw new Error("No Auth Session");
 
-                        // Scenario 1: Returning to a DIFFERENT authorized campaign/lead
-                        if (authSession && preservedCampaignId && preservedCustomerId) {
+                        if (isUnassignedCall || !isAssignedToCampaign) {
+                            // Scenario 2: Unassigned Manual Call -> DELETE & REDIRECT TO ANY OTHER SESSION OR DASHBOARD
+                            console.log(`[Disposition] Cleaning up unassigned manual session: ${campaignId}`);
+                            
+                            // 1. Force unassign lead if it was unauthorizedly dialled
+                            await supabase.from('customers')
+                               .update({ assigned_to: null, status: 'active' })
+                               .eq('id', customerId);
+
+                            // 2. Terminate the session via API for reliable cleanup
                             await fetch("/api/auth/update-call-session", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: `Bearer ${authSession.access_token}`,
-                                },
-                                body: JSON.stringify({
-                                    campaign_id: preservedCampaignId,
-                                    customer_id: preservedCustomerId,
-                                    status: 'assigned',
-                                    manual_override: true 
-                                })
+                               method: "POST",
+                               headers: {
+                                   "Content-Type": "application/json",
+                                   Authorization: `Bearer ${authSession.access_token}`,
+                               },
+                               body: JSON.stringify({
+                                   campaign_id: campaignId,
+                                   terminate: true 
+                               })
                             });
-                        }
-                        
-                        // Scenario 2: If this was a manual call (Interruption or Unauthorized),
-                        // we MUST delete THE CURRENT session so it doesn't get stuck in disposition_pending
-                        if (isInterruption || !isAssignedToCampaign) {
-                             console.log(`[Disposition] Cleaning up manual session: ${campaignId}`);
-                             
-                             // 1. If unauthorized, force unassign lead
-                             if (!isAssignedToCampaign) {
-                                 await supabase.from('customers')
-                                    .update({ assigned_to: null, status: 'active' })
-                                    .eq('id', customerId);
-                             }
 
-                             // 2. Delete the session for the campaign we just finished disposing
-                             // CONSISTENCY FIX: Use the special terminate flag via API for reliable cleanup
-                             console.log(`[Disposition] Terminating manual session via API: ${campaignId}`);
-                             if (authSession?.access_token) {
-                                 await fetch("/api/auth/update-call-session", {
+                            // 3. Find another session to redirect to
+                            const { data: otherSessions } = await supabase
+                                .from('call_sessions')
+                                .select('campaign_id, customer_id, is_manual, manual_customer_id')
+                                .eq('user_id', user?.uid)
+                                .neq('campaign_id', campaignId)
+                                .limit(1);
+                            
+                            if (otherSessions && otherSessions.length > 0) {
+                                const target = otherSessions[0];
+                                const tid = target.is_manual ? target.manual_customer_id : target.customer_id;
+                                console.log(`[Disposition] Redirecting to another available session: ${tid}`);
+                                router.push(`/campaign/${target.campaign_id}/${tid}`);
+                            } else {
+                                console.log(`[Disposition] No other sessions found. Returning to dashboard.`);
+                                router.push(`/campaign`);
+                            }
+                        } else {
+                            // Scenario 1: Authorized Manual Interrupt -> RESTORE Primary Lead Context
+                            console.log(`[Disposition] Restoring original lead context for authorized campaign: ${campaignId}`);
+                            
+                            if (preservedCampaignId && preservedCustomerId) {
+                                await fetch("/api/auth/update-call-session", {
                                     method: "POST",
                                     headers: {
                                         "Content-Type": "application/json",
                                         Authorization: `Bearer ${authSession.access_token}`,
                                     },
                                     body: JSON.stringify({
-                                        campaign_id: campaignId,
-                                        terminate: true 
+                                        campaign_id: preservedCampaignId,
+                                        customer_id: preservedCustomerId,
+                                        status: 'assigned', // Move back to assigned state
+                                        manual_override: true 
                                     })
-                                 });
-                             }
+                                });
+                                router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
+                            } else {
+                                // Fallback to current campaign dashboard
+                                router.push(`/campaign/${campaignId}`);
+                            }
                         }
                     } catch (err) {
-                        console.error("[Disposition] Cleanup error:", err);
-                    }
-
-                    // Execution of Redirects
-                    if (isInterruption && preservedCampaignId && preservedCustomerId) {
-                        router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
-                    } else if (!isAssignedToCampaign) {
-                        alert("Disposition saved. Campaign access is restricted, returning to dashboard.");
-                        router.push(`/campaign/${campaignId}`);
-                    } else {
+                        console.error("[Disposition] Cleanup/Redirect error:", err);
                         router.push(`/campaign/${campaignId}`);
                     }
                     setSaving(false);
                     return;
-                } else {
+                }
+ else {
                 // CRM Call (Authorized): Clear session and run auto-assignment
                 console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
                 
