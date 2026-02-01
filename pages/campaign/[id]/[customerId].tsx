@@ -1373,6 +1373,7 @@ export default function CallingPage() {
                 } else if (effectiveCampaignId) {
                     // No more leads or No user, go to dashboard
                     console.log('[Disposition] No more leads. Returning to campaign dashboard.');
+                    alert('No more leads available in this campaign.');
                     setLocalCallingStatus(null);
                     router.push(`/campaign/${effectiveCampaignId}`);
                     setSaving(false);
