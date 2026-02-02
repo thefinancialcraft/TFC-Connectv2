@@ -80,7 +80,7 @@ export default function TeamDetails() {
       
       console.log("Starting team data fetch for:", id);
       
-      // 1. Fetch Team Details - Keep it simple first to rule out join errors
+      // 1. Fetch Team Details
       const { data: teamData, error: teamError } = await supabase
         .from('teams')
         .select(`
@@ -118,33 +118,62 @@ export default function TeamDetails() {
         return;
       }
 
-      // 2. Fetch Related Data
+      // 2. Fetch Members (Profiles) First to get Employee IDs & Names
+      const { data: membersData, error: membersError } = await supabase
+        .from('user_profiles')
+        .select('user_id, user_name, employee_id, profile_pic_url')
+        .in('user_id', memberIds);
+
+      if (membersError) throw new Error(`Members fetch failed: ${membersError.message}`);
+      
+      const validMembers = membersData || [];
+      setMembers(validMembers);
+
+      const employeeIds = validMembers.map(m => m.employee_id).filter(id => !!id);
+      
+      // 3. Fetch History (using employee IDs) & Customers (using user IDs)
       const { start, end } = getDateRange(dateFilter);
       
-      const [membersRes, logsRes, customersRes] = await Promise.all([
-        supabase.from('user_profiles').select('user_id, user_name, employee_id, profile_pic_url').in('user_id', memberIds),
-        supabase.from('call_logs').select('agent_id, created_at, duration, is_connected, status, disposition').in('agent_id', memberIds).gte('created_at', dateFilter !== 'all_time' ? start : '2000-01-01').lte('created_at', dateFilter !== 'all_time' ? end : '2099-01-01'),
-        supabase.from('customers').select('assigned_to, next_called_at, created_at, customer_details, disposition').in('assigned_to', memberIds)
-      ]);
+      const queries: any[] = [
+         supabase.from('customers').select('assigned_to, next_called_at, created_at, customer_details, disposition').in('assigned_to', memberIds)
+      ];
 
-      if (membersRes.error) throw new Error(`Members fetch failed: ${membersRes.error.message}`);
-      if (logsRes.error) throw new Error(`Logs fetch failed: ${logsRes.error.message}`);
-      if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
-      
-      const employeeIds = (membersRes.data || []).map(m => m.employee_id).filter(id => !!id);
-      let finalSyncMeta: any[] = [];
-      
+      // Only fetch history if we have employee IDs
       if (employeeIds.length > 0) {
-        const { data: syncData } = await supabase.from('sync_meta')
-          .select('employee_id, on_call, is_personal')
-          .in('employee_id', employeeIds);
-        finalSyncMeta = syncData || [];
+          queries.push(
+              supabase.from('call_history')
+                .select('employee_id, duration, call_type, timestamp, device_id, number, name') // Added extra fields for potential future use or debugging
+                .in('employee_id', employeeIds)
+                .gte('timestamp', dateFilter !== 'all_time' ? start : '2000-01-01')
+                .lte('timestamp', dateFilter !== 'all_time' ? end : '2099-01-01')
+          );
+      } else {
+        queries.push(Promise.resolve({ data: [] })); // Empty history if no employee IDs
       }
 
-      setMembers(membersRes.data || []);
-      setRawLogs(logsRes.data || []);
+      // Fetch Sync Meta
+      if (employeeIds.length > 0) {
+        queries.push(
+            supabase.from('sync_meta')
+            .select('employee_id, on_call, is_personal')
+            .in('employee_id', employeeIds)
+        );
+      } else {
+        queries.push(Promise.resolve({ data: [] }));
+      }
+
+      // Execute promises
+      const results = await Promise.all(queries);
+      const customersRes = results[0];
+      const historyRes = results[1];
+      const syncMetaRes = results[2];
+
+      if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
+      if (historyRes.error) throw new Error(`History fetch failed: ${historyRes.error.message}`);
+
+      setRawLogs(historyRes.data || []); // Now containing call_history
       setRawCustomers(customersRes.data || []);
-      setRawSyncMeta(finalSyncMeta);
+      setRawSyncMeta(syncMetaRes?.data || []);
 
       if (memberIds.length > 0) {
         const { data: sessionData } = await supabase
@@ -220,14 +249,21 @@ export default function TeamDetails() {
       // 1. Build Lookup Maps for efficiency
       const logsByAgent: Record<string, any[]> = {};
       const customersByAgent: Record<string, any[]> = {};
-      
+      const employeeIdToUserId: Record<string, string> = {};
+
       members.forEach(m => {
         logsByAgent[m.user_id] = [];
         customersByAgent[m.user_id] = [];
+        if (m.employee_id) employeeIdToUserId[m.employee_id] = m.user_id;
       });
 
+      // Distribute logs (history) to agents via employeeID -> userID mapping
       rawLogs.forEach(l => {
-        if (logsByAgent[l.agent_id]) logsByAgent[l.agent_id].push(l);
+          // l is now from call_history: { employee_id, ... }
+          if (l.employee_id && employeeIdToUserId[l.employee_id]) {
+              const uId = employeeIdToUserId[l.employee_id];
+              logsByAgent[uId].push(l);
+          }
       });
 
       rawCustomers.forEach(c => {
@@ -242,24 +278,24 @@ export default function TeamDetails() {
       // 2. Process Member Stats
       members.forEach((member) => {
         const mId = member.user_id;
-        const userLogs = logsByAgent[mId] || [];
+        const userLogs = logsByAgent[mId] || []; // These are call_history items
         const userCustomers = customersByAgent[mId] || [];
         
         const totalCalls = userLogs.length;
-        const connectedCount = userLogs.filter(l => 
-          l.is_connected === true || 
-          l.is_connected === 'true' || 
-          l.is_connected === 'contactable'
-        ).length;
+        
+        // Connected logic for call_history
+        const connectedCount = userLogs.filter(l => {
+            const type = (l.call_type || '').toLowerCase();
+            const duration = Number(l.duration) || 0;
+            return (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
+        }).length;
         
         const totalDuration = userLogs.reduce((acc, l) => acc + (Number(l.duration) || 0), 0);
         const avgDurationSec = totalCalls ? Math.floor(totalDuration / totalCalls) : 0;
         
-        // Extract revenue from customer_details JSON or disposition in logs
-        const closedDeals = userLogs.filter(l => 
-          ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'].some(s => l.disposition?.toLowerCase().includes(s.toLowerCase()))
-        );
-        const dealsCount = closedDeals.length;
+        // Deals are NOT available in call_history. We'll leave it as 0 for now.
+        // If we want deals, we'd need to fetch legacy call_logs specifically for dispositions.
+        const dealsCount = 0; 
         
         // Calculate revenue - Try to find premium in associated customer_details
         const revenue = userCustomers.reduce((acc, c) => {
@@ -282,12 +318,13 @@ export default function TeamDetails() {
         let idleTimeStr = "N/A";
         
         if (userLogs.length > 0) {
+          // call_history uses 'timestamp'
           const recentLog = userLogs.reduce((prev, curr) => 
-            new Date(curr.created_at).getTime() > new Date(prev.created_at).getTime() ? curr : prev
+            new Date(curr.timestamp).getTime() > new Date(prev.timestamp).getTime() ? curr : prev
           );
-          lastActive = recentLog.created_at;
+          lastActive = recentLog.timestamp;
           
-          const diffMs = now.getTime() - new Date(recentLog.created_at).getTime();
+          const diffMs = now.getTime() - new Date(recentLog.timestamp).getTime();
           const diffSec = Math.floor(diffMs / 1000);
           
           if (diffSec < 60) {
@@ -332,7 +369,15 @@ export default function TeamDetails() {
       // 3. Chart Data Generation
       const outcomeCounts: Record<string, number> = {};
       rawLogs.forEach(l => {
-        const status = l.status || 'Unknown';
+        // Map call_type to Outcome Status
+        // Incoming, Outgoing, Missed, Rejected
+        const type = (l.call_type || 'Unknown').toLowerCase();
+        let status = 'Unknown';
+        if (type.includes('outgoing')) status = 'Outgoing';
+        else if (type.includes('incoming')) status = 'Incoming';
+        else if (type.includes('missed')) status = 'Missed';
+        else if (type.includes('reject')) status = 'Rejected';
+        
         outcomeCounts[status] = (outcomeCounts[status] || 0) + 1;
       });
       const outcomeData = Object.entries(outcomeCounts).map(([name, value]) => ({ name, value }));
@@ -343,7 +388,7 @@ export default function TeamDetails() {
       }
       const hourlyMap = Object.fromEntries(hourLabels.map(l => [l, 0]));
       rawLogs.forEach(l => {
-        const h = new Date(l.created_at).getHours();
+        const h = new Date(l.timestamp).getHours(); // Use timestamp
         for (let i = 8; i <= 20; i += 2) {
           if (h >= i && h < i + 2) {
             hourlyMap[hourLabels[(i - 8) / 2]]++;
@@ -353,6 +398,7 @@ export default function TeamDetails() {
       });
       const hourlyData = hourLabels.map(name => ({ name, count: hourlyMap[name] }));
 
+      // Disposition Data (From customers, assumes customers have disposition) - this remains valid
       const dispCounts: Record<string, number> = {};
       rawCustomers.forEach(c => {
         const d = c.disposition || 'Fresh';
@@ -365,7 +411,7 @@ export default function TeamDetails() {
 
       const dailyMap: Record<string, { ts: number, label: string, count: number }> = {};
       rawLogs.forEach(l => {
-        const d = new Date(l.created_at);
+        const d = new Date(l.timestamp); // Use timestamp
         const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         const dayStartTs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
         

@@ -14,7 +14,9 @@ export default function Activity() {
     setSearchQuery,
     formatSeconds,
     formatTime,
-    formatDisplayDate
+    formatDisplayDate,
+    source,
+    setSource
   } = useActivityData();
 
   const [activeNav] = useState("activity");
@@ -580,6 +582,33 @@ export default function Activity() {
                     >
                       Detailed view of all employee activities
                     </p>
+
+                    {/* Source Toggle */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg mb-4 w-full sm:w-auto self-start">
+                        <button
+                          onClick={() => setSource('crm')}
+                          className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            source === 'crm' 
+                              ? 'bg-white text-purple-600 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                          style={{ fontFamily: "'Poppins', sans-serif" }}
+                        >
+                          CRM Activity
+                        </button>
+                        <button
+                          onClick={() => setSource('mobile')}
+                          className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            source === 'mobile' 
+                              ? 'bg-white text-purple-600 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                          style={{ fontFamily: "'Poppins', sans-serif" }}
+                        >
+                          Mobile History
+                        </button>
+                    </div>
+
                     <div className="mb-3 flex items-center gap-2">
                       <div className="relative flex-1">
                         <i className="fi flex  fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
@@ -623,6 +652,33 @@ export default function Activity() {
                         Detailed view of all employee activities
                       </p>
                     </div>
+
+                    {/* Desktop Source Toggle */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                        <button
+                          onClick={() => setSource('crm')}
+                          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            source === 'crm' 
+                              ? 'bg-white text-purple-600 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                          style={{ fontFamily: "'Poppins', sans-serif" }}
+                        >
+                          CRM Activity
+                        </button>
+                        <button
+                          onClick={() => setSource('mobile')}
+                          className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            source === 'mobile' 
+                              ? 'bg-white text-purple-600 shadow-sm' 
+                              : 'text-gray-500 hover:text-gray-700'
+                          }`}
+                          style={{ fontFamily: "'Poppins', sans-serif" }}
+                        >
+                          Mobile History
+                        </button>
+                    </div>
+
                     <div className="flex items-center gap-3">
                       <div className="relative w-64">
                         <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -708,102 +764,173 @@ export default function Activity() {
 
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
+                      <thead className="bg-[#e4ebf5] sticky top-0 z-10">
                         <tr>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">
-                            Emp. ID
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">
-                            Emp Name
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">
-                            Customer
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
-                            Callback
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[180px]">
-                            Disposition
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
-                            Campaign
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">
-                            Last Call
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">
-                            Talk Time
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">
-                            Dialed
-                          </th>
-                          <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[200px]">
-                            Remark
-                          </th>
+                          {source === 'mobile' ? (
+                            <>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Time
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Type
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Customer
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Number
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Duration
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Device
+                                </th>
+                            </>
+                          ) : (
+                           // CRM Columns (Reverting to original style)
+                           <>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Emp. ID</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Emp Name</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Customer</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Callback</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[180px]">Disposition</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Campaign</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Last Call</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Talk Time</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Dialed</th>
+                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[200px]">Remark</th>
+                           </>
+                          )}
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredActivities.length > 0 ? (
-                          filteredActivities.map((activity) => (
-                            <tr key={activity.id} className="hover:bg-gray-50 transition-colors">
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-medium text-gray-900">
-                                {activity.agent?.employee_id || "N/A"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-semibold text-gray-800">
-                                {activity.agent?.user_name || "Unknown Agent"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-700 font-medium">
-                                {activity.customer?.customer_name || activity.rejected_customer?.customer_name || "Unknown Customer"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
-                                {activity.next_called_at ? formatDisplayDate(activity.next_called_at) : "No Followup"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-bold text-slate-700">
-                                <div className="flex flex-col">
-                                   <span className="text-indigo-600 font-black tracking-tight">{activity.disposition || "N/A"}</span>
-                                   {activity.sub_disposition && (
-                                     <span className="text-[10px] text-gray-400 font-medium lowercase italic leading-none">{activity.sub_disposition}</span>
-                                   )}
-                                </div>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-indigo-600 font-bold uppercase tracking-tighter">
-                                {activity.campaign?.name || "General"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
-                                <div className="flex flex-col">
-                                  <span className="text-gray-900 font-medium">{formatTime(activity.created_at)}</span>
-                                  <span className="text-[10px] text-gray-400">{formatDisplayDate(activity.created_at)}</span>
-                                </div>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-mono font-bold text-gray-600">
-                                {activity.duration ? formatSeconds(activity.duration) : "00:00:00"}
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4">
-                                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${activity.is_connected === 'contactable' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                  {activity.is_connected || "N/A"}
-                                </span>
-                              </td>
-                              <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-500 italic max-w-xs truncate" title={activity.notes}>
-                                {activity.notes || "No remark provided"}
-                              </td>
-                            </tr>
-                          ))
+                        {filteredActivities.length === 0 ? (
+                           <tr>
+                             <td colSpan={source === 'mobile' ? 6 : 10} className="px-6 py-12 text-center">
+                               <div className="flex flex-col items-center justify-center">
+                                 <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
+                                  <i className="fi fi-rr-search text-2xl text-purple-600"></i>
+                                 </div>
+                                 <h3 className="text-lg font-medium text-gray-900 mb-1">No activities found</h3>
+                                 <p className="text-sm text-gray-500">Try adjusting your search or date filter</p>
+                               </div>
+                             </td>
+                           </tr>
                         ) : (
-                          <tr>
-                            <td colSpan={9} className="px-6 py-12 text-center">
-                              <div className="flex flex-col items-center justify-center">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
-                                  <i className="fi flex fi-rr-time-past text-3xl" style={{ color: "#4b33e8" }}></i>
-                                </div>
-                                <h3 className="text-lg font-semibold mb-2" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>
-                                  No Activity Data
-                                </h3>
-                                <p className="text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
-                                  Activity records will appear here once employees start making calls.
-                                </p>
-                              </div>
-                            </td>
-                          </tr>
+                          filteredActivities.map((activity, index) => {
+                             if (source === 'mobile') {
+                                 // Mobile History Row
+                                 const callDate = new Date(activity.timestamp);
+                                 const type = (activity.call_type || 'unknown').toLowerCase();
+                                 let iconClass = "fi-rr-question";
+                                 let iconColor = "text-gray-400";
+                                 
+                                 if (type.includes('outgoing')) { iconClass="fi-rr-arrow-up-right"; iconColor="text-blue-500"; }
+                                 else if (type.includes('incoming')) { iconClass="fi-rr-arrow-down-left"; iconColor="text-green-500"; }
+                                 else if (type.includes('missed')) { iconClass="fi-rr-cross-circle"; iconColor="text-red-500"; }
+                                 else if (type.includes('reject')) { iconClass="fi-rr-ban"; iconColor="text-red-500"; }
+                                 
+                                 return (
+                                    <tr
+                                      key={activity.id || index}
+                                      className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                                    >
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
+                                         <div className="flex flex-col">
+                                            <span className="font-medium text-gray-800">{callDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <span className="text-[10px] text-gray-400">{callDate.getDate()}/{callDate.getMonth()+1}</span>
+                                         </div>
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            <i className={`fi flex ${iconClass} ${iconColor} text-sm`}></i>
+                                            <span className="text-xs uppercase font-semibold text-gray-600">{type}</span>
+                                        </div>
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-800 font-medium">
+                                        {activity.name || "Unknown"}
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-blue-600 font-mono">
+                                        {activity.number || "—"}
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
+                                        {formatSeconds(activity.duration || 0)}
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                                        <div className="flex items-center gap-1" title={activity.device_id}>
+                                            <i className="fi flex fi-rr-smartphone text-xs"></i>
+                                            <span className="max-w-[100px] truncate">{activity.device_id || "Unknown"}</span>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                 );
+                             } else {
+                                // Default CRM Row
+                                return (
+                                <tr key={activity.id} className="hover:bg-gray-50 transition-colors">
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-medium text-gray-900">
+                                    {activity.agent?.employee_id || "N/A"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-semibold text-gray-800">
+                                    {activity.agent?.user_name || "Unknown Agent"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-700 font-medium">
+                                    {activity.customer?.customer_name || activity.rejected_customer?.customer_name || "Unknown Customer"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
+                                    {activity.next_called_at ? formatDisplayDate(activity.next_called_at) : "No Followup"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-bold text-slate-700">
+                                    <div className="flex flex-col">
+                                       <span className="text-indigo-600 font-black tracking-tight">{activity.disposition || "N/A"}</span>
+                                       {activity.sub_disposition && (
+                                         <span className="text-[10px] text-gray-400 font-medium lowercase italic leading-none">{activity.sub_disposition}</span>
+                                       )}
+                                    </div>
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-indigo-600 font-bold uppercase tracking-tighter">
+                                    {activity.campaign?.name || "General"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-600">
+                                    <div className="flex flex-col">
+                                      <span className="text-gray-900 font-medium">{formatTime(activity.created_at)}</span>
+                                      <span className="text-[10px] text-gray-400">{formatDisplayDate(activity.created_at)}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs font-mono font-bold text-gray-600">
+                                    {activity.duration ? formatSeconds(activity.duration) : "00:00:00"}
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4">
+                                    <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${activity.is_connected === 'contactable' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                      {activity.is_connected || "N/A"}
+                                    </span>
+                                  </td>
+                                  <td className="px-2 md:px-6 py-3 md:py-4 text-xs text-gray-500 italic max-w-xs truncate" title={activity.notes}>
+                                    {activity.notes || "No remark provided"}
+                                  </td>
+                                </tr>
+                                );
+                             }
+                          })
                         )}
                       </tbody>
                     </table>

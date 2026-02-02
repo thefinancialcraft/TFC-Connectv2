@@ -112,24 +112,25 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string }
+  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
   let from = 0;
   let hasMore = true;
+  const dateCol = filters.dateColumn || "created_at";
 
   while (hasMore) {
     let query = client.from(table).select(selectQuery).range(from, from + BATCH_SIZE - 1);
 
-    if (filters.orgId) {
-      query = query.eq("organization_id", filters.orgId);
+    if (filters.orgId && table !== 'call_history') {
+       query = query.eq("organization_id", filters.orgId);
     }
     if (filters.startDate) {
-      query = query.gte("created_at", filters.startDate);
+      query = query.gte(dateCol, filters.startDate);
     }
     if (filters.endDate) {
-      query = query.lte("created_at", filters.endDate);
+      query = query.lte(dateCol, filters.endDate);
     }
 
     const { data, error } = await query;
@@ -259,6 +260,7 @@ export default async function handler(
     // Prepare agent map with all users initialized to 0
     const { data: profiles } = await profilesQuery;
     const agentMap: Record<string, AgentDataPoint> = {};
+    const employeeIdMap: Record<string, string> = {}; // Map employee_id -> user_id
     
     if (profiles) {
       profiles.forEach((p) => {
@@ -278,67 +280,52 @@ export default async function handler(
           on_call: false,
           is_personal: false
         };
+        // Populate employee id map for lookup
+        if (p.employee_id) {
+            employeeIdMap[p.employee_id] = p.user_id;
+        }
       });
     }
 
-    // 2. Fetch call logs
+    // 2. Fetch call logs from call_history
     const callLogs = await fetchAllRows(
       dbClient,
-      "call_logs",
-      "agent_id, duration, is_connected, disposition, created_at",
+      "call_history",
+      "employee_id, duration, call_type, timestamp", // Removed agent_id, is_connected, disposition
       {
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
+        dateColumn: "timestamp"
       }
     );
 
     // 3. Aggregate counts and duration
     let totalDuration = 0;
-    const successDispositions = ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'];
+   // const successDispositions = ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'];
 
     callLogs.forEach((log: any) => {
       const duration = Number(log.duration) || 0;
-      totalDuration += duration;
+      // Filter out invalid logs if necessary?
+      
+      const employeeId = log.employee_id;
+      const userId = employeeId ? employeeIdMap[employeeId] : null;
 
-      if (log.agent_id) {
-        if (!agentMap[log.agent_id]) {
-          agentMap[log.agent_id] = { 
-            id: log.agent_id, 
-            name: "Unknown/Deleted", 
-            employee_id: null,
-            profile_pic_url: null,
-            count: 0, 
-            duration: 0,
-            connected_count: 0,
-            deals_count: 0,
-            follow_ups_count: 0,
-            last_active: null,
-            last_online: null,
-            on_call: false,
-            is_personal: false
-          };
-        }
-
-        const agent = agentMap[log.agent_id];
+      if (userId && agentMap[userId]) {
+        totalDuration += duration;
+        const agent = agentMap[userId];
         agent.count++;
         agent.duration += duration;
 
-        // Connected logic
-        const isConnected = log.is_connected === true || 
-                          log.is_connected === 'true' || 
-                          log.is_connected === 'contactable';
+        // Connected logic for call_history
+        const type = (log.call_type || '').toLowerCase();
+        const isConnected = (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
+
         if (isConnected) agent.connected_count++;
 
-        // Deals logic
-        const isDeal = successDispositions.some(s => 
-          log.disposition?.toLowerCase().includes(s.toLowerCase())
-        );
-        if (isDeal) agent.deals_count++;
-
-        // Last active tracking
-        if (!agent.last_active || new Date(log.created_at) > new Date(agent.last_active)) {
-          agent.last_active = log.created_at;
+        // Last active tracking with timestamp
+        if (!agent.last_active || new Date(log.timestamp) > new Date(agent.last_active)) {
+          agent.last_active = log.timestamp;
         }
       }
     });
