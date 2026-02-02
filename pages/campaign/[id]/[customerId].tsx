@@ -1455,6 +1455,42 @@ export default function CallingPage() {
                     updatePayload.expiry_date = combinedDateTime;
                     updatePayload.next_called_at = combinedDateTime;
                     logNextCalledAt = combinedDateTime;
+
+                    // --- Google Calendar Sync Logic ---
+                    if (user?.googleCalendarConnected) {
+                        try {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            const providerToken = session?.provider_token;
+
+                            if (providerToken) {
+                                const endTime = new Date(new Date(combinedDateTime).getTime() + 30 * 60000).toISOString(); // +30 mins
+
+                                fetch('/api/google/create-event', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        summary: `Call Back: ${customer?.customer_name || 'Lead'}`,
+                                        description: `Phone: ${customer?.phone_no || 'N/A'}\nNotes: ${notes || 'No notes'}\nCampaign: ${campaign?.name || campaignId}`,
+                                        startTime: combinedDateTime,
+                                        endTime: endTime,
+                                        providerToken: providerToken
+                                    })
+                                }).then(async (res) => {
+                                    const data = await res.json();
+                                    if (data.success) {
+                                        console.log("✅ [Calendar] Event created successfully:", data.eventId);
+                                        alert("Calendar invite sent!");
+                                    } else {
+                                        console.warn("⚠️ [Calendar] Failed to create event:", data.error);
+                                    }
+                                }).catch(err => console.error("❌ [Calendar] Network error:", err));
+                            } else {
+                                console.warn("⚠️ [Calendar] No provider_token found in session. Re-login might be required.");
+                            }
+                        } catch (calErr) {
+                            console.error("❌ [Calendar] execution error:", calErr);
+                        }
+                    }
                 } else {
                     updatePayload.next_called_at = null;
                 }
