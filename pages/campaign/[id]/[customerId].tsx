@@ -753,20 +753,34 @@ export default function CallingPage() {
                                 promises.push(
                                     supabase
                                         .from('sync_meta')
-                                        .select('device_id, device_model')
+                                        .select('device_id, device_model, employee_id')
                                         .in('device_id', deviceIds)
                                 );
                             }
 
                             const results = await Promise.all(promises);
-                            const users = (empIds.length > 0 ? results[0].data : []) as any[];
+                            const rawUsers = (empIds.length > 0 ? results[0].data : []) as any[];
                             const devices = (deviceIds.length > 0 ? (empIds.length > 0 ? results[1]?.data : results[0]?.data) : []) as any[];
 
+                            // If some logs didn't have employee_id, try to recover from sync_meta and fetch more users
+                            let allUsers = [...rawUsers];
+                            const recoveredEmpIds = devices?.map(d => d.employee_id).filter(id => id && !empIds.includes(id));
+                            
+                            if (recoveredEmpIds && recoveredEmpIds.length > 0) {
+                                const { data: moreUsers } = await supabase
+                                    .from('user_profiles')
+                                    .select('employee_id, user_name')
+                                    .in('employee_id', recoveredEmpIds);
+                                if (moreUsers) allUsers = [...allUsers, ...moreUsers];
+                            }
+
                             enrichedLogs = enrichedLogs.map(log => {
-                                const foundUser = users?.find((u: any) => u.employee_id === log.employee_id);
                                 const foundDevice = devices?.find((d: any) => d.device_id === log.device_id);
+                                const effectiveEmpId = log.employee_id || foundDevice?.employee_id;
+                                const foundUser = allUsers?.find((u: any) => u.employee_id === effectiveEmpId);
                                 return { 
                                     ...log, 
+                                    employee_id: effectiveEmpId,
                                     agent_name: foundUser?.user_name,
                                     device_model: foundDevice?.device_model 
                                 };
