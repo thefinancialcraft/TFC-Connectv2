@@ -11,6 +11,7 @@ interface Pipeline {
   filters: {
     dispositions: string[];
     sub_dispositions: string[];
+    outcomes?: string[];
   };
 }
 
@@ -33,7 +34,16 @@ export default function FollowUp() {
   const [showConfig, setShowConfig] = useState(false);
   const [editingPipelineId, setEditingPipelineId] = useState<string | null>(null);
   const [showMenuId, setShowMenuId] = useState<string | null>(null);
-  const [newPipeline, setNewPipeline] = useState({ name: '', dispositions: [] as string[], sub_dispositions: [] as string[] });
+  const [newPipeline, setNewPipeline] = useState({ name: '', dispositions: [] as string[], sub_dispositions: [] as string[], outcomes: [] as string[] });
+  const [userOutcomes, setUserOutcomes] = useState<any[]>([]);
+
+  // Fetch user outcomes when config opens
+  useEffect(() => {
+    if (showConfig && user?.uid) {
+        supabase.from('user_outcomes').select('*').eq('user_id', user.uid)
+        .then(({ data }) => setUserOutcomes(data || []));
+    }
+  }, [showConfig, user?.uid]);
 
   const toggleSelection = (list: string[], item: string) => {
     return list.includes(item) ? list.filter(i => i !== item) : [...list, item];
@@ -46,7 +56,7 @@ export default function FollowUp() {
     "Wrong NO": [],
     "Ported / Expired": [],
     "Not Contactable": ["busy","Switch off", "Ring", "not reacable", "others"],
-    "Call Back": ["intrested", "follow up", "hang up","Switch off", "busy", "Ring", "not reacable", "others"],
+    "Call Back": ["Interested", "Follow up", "Not Connected"],
     "Deal Done": [],
   };
 
@@ -60,7 +70,8 @@ export default function FollowUp() {
         name: newPipeline.name,
         filters: {
           dispositions: newPipeline.dispositions,
-          sub_dispositions: newPipeline.sub_dispositions
+          sub_dispositions: newPipeline.sub_dispositions,
+          outcomes: newPipeline.outcomes
         }
       } : p));
       setEditingPipelineId(null);
@@ -72,12 +83,13 @@ export default function FollowUp() {
         name: newPipeline.name, 
         filters: { 
           dispositions: newPipeline.dispositions, 
-          sub_dispositions: newPipeline.sub_dispositions 
+          sub_dispositions: newPipeline.sub_dispositions,
+          outcomes: newPipeline.outcomes
         } 
       }]);
     }
     
-    setNewPipeline({ name: '', dispositions: [], sub_dispositions: [] });
+    setNewPipeline({ name: '', dispositions: [], sub_dispositions: [], outcomes: [] });
     setShowConfig(false);
   };
 
@@ -90,7 +102,8 @@ export default function FollowUp() {
     setNewPipeline({
       name: p.name,
       dispositions: p.filters.dispositions,
-      sub_dispositions: p.filters.sub_dispositions
+      sub_dispositions: p.filters.sub_dispositions,
+      outcomes: p.filters.outcomes || []
     });
     setEditingPipelineId(p.id);
     setShowConfig(true);
@@ -118,8 +131,8 @@ export default function FollowUp() {
           user_id: user.uid,
           view_mode: 'table',
           pipelines: [
-            { id: '1', name: 'Interested', filters: { dispositions: ['Call Back'], sub_dispositions: ['intrested'] } },
-            { id: '2', name: 'Follow Up', filters: { dispositions: ['Call Back'], sub_dispositions: ['follow up'] } },
+            { id: '1', name: 'Interested', filters: { dispositions: ['Call Back'], sub_dispositions: ['intrested'], outcomes: [] } },
+            { id: '2', name: 'Follow Up', filters: { dispositions: ['Call Back'], sub_dispositions: ['follow up'], outcomes: [] } },
           ]
         });
       }
@@ -571,6 +584,35 @@ export default function FollowUp() {
                                 </div>
                             </div>
 
+                            <div className="p-3 bg-white border border-indigo-100 rounded-lg">
+                                <label className="block text-[10px] font-bold text-indigo-900 uppercase tracking-wider mb-2">Outcomes (Multiple)</label>
+                                <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto custom-scrollbar">
+                                    {newPipeline.sub_dispositions.length > 0 ? (
+                                        (userOutcomes && userOutcomes.length > 0) ? (
+                                            userOutcomes
+                                            .filter(out => newPipeline.sub_dispositions.includes(out.parent_category))
+                                            .map((out: any) => (
+                                                <button 
+                                                    key={out.id}
+                                                    onClick={() => setNewPipeline({...newPipeline, outcomes: toggleSelection(newPipeline.outcomes || [], out.outcome_label)})}
+                                                    className={`px-2 py-1 rounded text-[10px] font-bold transition-all border ${newPipeline.outcomes?.includes(out.outcome_label) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'}`}
+                                                >
+                                                    {out.outcome_label} <span className="opacity-60 text-[9px] lowercase">({out.parent_category})</span>
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <p className="text-[10px] text-gray-400 italic">No custom outcomes found. Add them from the calling page.</p>
+                                        )
+                                    ) : (
+                                        <p className="text-[10px] text-gray-400 italic">Select sub-disposition first to view outcomes</p>
+                                    )}
+                                    
+                                    {newPipeline.sub_dispositions.length > 0 && userOutcomes.filter(out => newPipeline.sub_dispositions.includes(out.parent_category)).length === 0 && (
+                                         <p className="text-[10px] text-gray-400 italic w-full">No outcomes found for selected sub-dispositions.</p>
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="flex justify-end">
                                 <button 
                                     onClick={addPipeline}
@@ -583,7 +625,7 @@ export default function FollowUp() {
                                     <button 
                                         onClick={() => {
                                             setEditingPipelineId(null);
-                                            setNewPipeline({ name: '', dispositions: [], sub_dispositions: [] });
+                                            setNewPipeline({ name: '', dispositions: [], sub_dispositions: [], outcomes: [] });
                                             setShowConfig(false);
                                         }}
                                         className="h-10 px-4 text-gray-500 text-[11px] font-bold hover:text-gray-700"
@@ -601,6 +643,7 @@ export default function FollowUp() {
                                     <span className="text-[10px] opacity-40 px-1 bg-indigo-50 rounded">
                                         {p.filters.dispositions.length > 0 ? p.filters.dispositions.join(', ') : 'Any'}
                                         {p.filters.sub_dispositions.length > 0 ? ` > ${p.filters.sub_dispositions.join(', ')}` : ''}
+                                        {p.filters.outcomes && p.filters.outcomes.length > 0 ? ` [${p.filters.outcomes.join(', ')}]` : ''}
                                     </span>
                                     <button onClick={() => removePipeline(p.id)} className="hover:text-red-500 transition-colors">
                                         <i className="fi fi-rr-cross-circle"></i>
@@ -750,7 +793,8 @@ export default function FollowUp() {
                                 const leadsInPipeline = filteredLeads.filter((l: FollowUpLead) => {
                                     const matchDisp = pipeline.filters.dispositions.length === 0 || pipeline.filters.dispositions.includes(l.disposition);
                                     const matchSub = pipeline.filters.sub_dispositions.length === 0 || (l.sub_disposition && pipeline.filters.sub_dispositions.includes(l.sub_disposition));
-                                    return matchDisp && matchSub;
+                                    const matchOutcome = !pipeline.filters.outcomes || pipeline.filters.outcomes.length === 0 || (l.outcome && pipeline.filters.outcomes.includes(l.outcome));
+                                    return matchDisp && matchSub && matchOutcome;
                                 });
 
                                 return (
@@ -832,6 +876,11 @@ export default function FollowUp() {
                                                             {lead.sub_disposition && (
                                                                 <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[8px] font-bold lowercase italic">
                                                                     {lead.sub_disposition}
+                                                                </span>
+                                                            )}
+                                                            {lead.outcome && (
+                                                                <span className="px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[8px] font-bold uppercase tracking-tight">
+                                                                    {lead.outcome}
                                                                 </span>
                                                             )}
                                                         </div>

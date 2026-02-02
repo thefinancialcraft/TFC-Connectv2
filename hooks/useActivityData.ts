@@ -60,8 +60,7 @@ export function useActivityData() {
         .select(`
           *,
           agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
-          campaign:campaigns!campaign_id(name),
-          customer:customers(customer_name)
+          campaign:campaigns!campaign_id(name)
         `)
         .gte("created_at", startOfDay)
         .lte("created_at", endOfDay)
@@ -193,32 +192,64 @@ export function useActivityData() {
 
       // Hydrate missing customer names AND phone numbers
         try {
-          // Hydrate by Phone Number (Hash) as it's more persistent than IDs across table moves
-          const missingHashes = combined
-             .filter(a => !a.customer?.customer_name && a.phone_search_hash)
-             .map(a => a.phone_search_hash);
+          // Hydrate Logic: 
+          // 1. Identify missing IDs
+          const missingCustomerIds = combined
+             .filter(a => !a.customer?.customer_name && a.customer_id)
+             .map(a => a.customer_id);
+             
+          const uniqueIds = [...new Set(missingCustomerIds)];
 
-          // Remove duplicates
+          // 2. Identify missing Hashes (mostly for mobile history if any)
+          const missingHashes = combined
+             .filter(a => !a.customer?.customer_name && !a.customer_id && a.phone_search_hash)
+             .map(a => a.phone_search_hash);
           const uniqueHashes = [...new Set(missingHashes)];
 
+          let activeHydrate: any[] = [], rHydrate: any[] = [], cHydrate: any[] = [];
+
+          const promises = [];
+          
+          if (uniqueIds.length > 0) {
+              // Active (by id)
+              promises.push(supabase.from('customers').select('id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => activeHydrate.push(...(r.data || []))));
+              
+              // Rejected/Closed: Check 'customer_id' column (mapped from original id) AND 'id' (new pk)
+              promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', uniqueIds).then(r => rHydrate.push(...(r.data || []))));
+              promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => rHydrate.push(...(r.data || []))));
+              
+              promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', uniqueIds).then(r => cHydrate.push(...(r.data || []))));
+              promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => cHydrate.push(...(r.data || []))));
+          }
+          
           if (uniqueHashes.length > 0) {
-              const [
-                { data: activeHydrate },
-                { data: rHydrate },
-                { data: cHydrate }
-              ] = await Promise.all([
-                supabase.from('customers').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes),
-                supabase.from('rejected_leads').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes),
-                supabase.from('closed_deals').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes)
-              ]);
+              promises.push(supabase.from('customers').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => activeHydrate.push(...(r.data || []))));
+              promises.push(supabase.from('rejected_leads').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => rHydrate.push(...(r.data || []))));
+              promises.push(supabase.from('closed_deals').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => cHydrate.push(...(r.data || []))));
+          }
+          
+          if (promises.length > 0) {
+              await Promise.all(promises);
               
               setActivities(prev => prev.map(act => {
-                 if (act.customer?.customer_name) return act; // Already has name
+                 if (act.customer?.customer_name) return act; 
                  
-                 // Match by Phone Hash
-                 const match = activeHydrate?.find(a => a.phone_search_hash === act.phone_search_hash) ||
-                               rHydrate?.find(r => r.phone_search_hash === act.phone_search_hash) ||
-                               cHydrate?.find(c => c.phone_search_hash === act.phone_search_hash);
+                 // Match Priority: 
+                 // 1. Customer ID (Exact match to id or customer_id)
+                 // 2. Phone Hash
+                 
+                 let match = null;
+                 if (act.customer_id) {
+                     match = activeHydrate.find(a => a.id === act.customer_id) ||
+                             rHydrate.find(r => r.id === act.customer_id || r.customer_id === act.customer_id) ||
+                             cHydrate.find(c => c.id === act.customer_id || c.customer_id === act.customer_id);
+                 }
+                 
+                 if (!match && act.phone_search_hash) {
+                     match = activeHydrate.find(a => a.phone_search_hash === act.phone_search_hash) ||
+                             rHydrate.find(r => r.phone_search_hash === act.phone_search_hash) ||
+                             cHydrate.find(c => c.phone_search_hash === act.phone_search_hash);
+                 }
       
                 if (match) {
                    return { 

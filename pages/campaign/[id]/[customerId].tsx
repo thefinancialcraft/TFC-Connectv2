@@ -280,8 +280,59 @@ export default function CallingPage() {
         "Wrong NO": [],
         "Ported / Expired": [],
         "Not Contactable": ["busy","Switch off", "Ring", "not reacable", "others"],
-        "Call Back": ["intrested", "follow up", "hang up","Switch off", "busy", "Ring", "not reacable", "others"],
+      "Call Back": ["Interested", "Follow up", "Not Connected"],
         "Deal Done": [],
+    };
+
+    const [outcome, setOutcome] = useState("");
+    const [userOutcomes, setUserOutcomes] = useState<any[]>([]);
+    const [newOutcomeInput, setNewOutcomeInput] = useState("");
+    const [isAddingOutcome, setIsAddingOutcome] = useState(false);
+
+    useEffect(() => {
+        if (user && subDisposition && disposition === 'Call Back') {
+            fetchUserOutcomes();
+        } else {
+            setUserOutcomes([]);
+        }
+    }, [user, subDisposition, disposition]);
+
+    const fetchUserOutcomes = async () => {
+        if (!user?.uid || !subDisposition) return;
+        const { data } = await supabase
+            .from('user_outcomes')
+            .select('*')
+            .eq('user_id', user.uid)
+            .eq('parent_category', subDisposition);
+        setUserOutcomes(data || []);
+    };
+
+    const handleAddOutcome = async () => {
+        if (!newOutcomeInput.trim() || !user?.uid || !subDisposition) return;
+        
+        try {
+            const { error } = await supabase.from('user_outcomes').insert({
+                user_id: user.uid,
+                parent_category: subDisposition,
+                outcome_label: newOutcomeInput.trim()
+            });
+            if (error) throw error;
+            setNewOutcomeInput("");
+            setIsAddingOutcome(false);
+            fetchUserOutcomes();
+        } catch (e) {
+            console.error("Error adding outcome:", e);
+            alert("Failed to add outcome");
+        }
+    };
+
+    const handleDeleteOutcome = async (id: string) => {
+        try {
+            await supabase.from('user_outcomes').delete().eq('id', id);
+            fetchUserOutcomes();
+        } catch (e) {
+            console.error("Error deleting outcome:", e);
+        }
     };
 
     const primaryDispositions = Object.keys(dispositionHierarchy);
@@ -1065,7 +1116,7 @@ export default function CallingPage() {
             // Pre-calculate status for log
             if (isRejected) logStatus = 'rejected';
             else if (isClosed) logStatus = 'closed';
-            else if (disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'follow up') {
+            else if (disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'Interested' || subDisposition === 'follow up' || subDisposition === 'Follow up') {
                 logStatus = 'followup';
                 logAssignedTo = user?.uid;
                 if (disposition === 'Call Back' && callbackDate) {
@@ -1129,7 +1180,8 @@ export default function CallingPage() {
                     updated_at: now,
                     next_called_at: logNextCalledAt,
                     status: logStatus,
-                    assigned_to: finalLogAssignedTo // The Assigned To
+                    assigned_to: finalLogAssignedTo, // The Assigned To
+                    outcome: outcome // New outcome field
                 });
 
             if (logError) throw logError;
@@ -1144,7 +1196,8 @@ export default function CallingPage() {
                     p_notes: notes,
                     p_disposition: disposition,
                     p_sub_disposition: subDisposition,
-                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no))
+                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no)),
+                    p_outcome: outcome
                 });
                 if (rejectError) throw rejectError;
             } else if (isClosed) {
@@ -1154,7 +1207,8 @@ export default function CallingPage() {
                     p_agent_id: user?.uid,
                     p_notes: notes,
                     p_final_disposition: finalDisposition,
-                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no))
+                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no)),
+                    p_outcome: outcome
                 });
                 if (closeError) throw closeError;
             } else if (disposition === 'Not Contactable') {
@@ -1174,7 +1228,8 @@ export default function CallingPage() {
                     
                     status: 'active',
                     disposition: disposition,
-                    sub_disposition: subDisposition
+                    sub_disposition: subDisposition,
+                    outcome: outcome
                 };
 
                 logStatus = 'active';
@@ -1188,7 +1243,7 @@ export default function CallingPage() {
 
             } else {
                 // Regular Update (Call Back, etc.)
-                const isFollowup = disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'follow up';
+                const isFollowup = disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'Interested' || subDisposition === 'follow up' || subDisposition === 'Follow up';
                 
                 let updatePayload: any = { 
                     disposition: disposition,
@@ -1198,6 +1253,7 @@ export default function CallingPage() {
                     last_called_at: now,
                     updated_at: now,
                     last_updated_by: user?.uid,
+                    outcome: outcome
                 };
 
                 // ASSIGNMENT GUARD LOGIC:
@@ -1985,8 +2041,11 @@ export default function CallingPage() {
                                                             {dispositionHierarchy[disposition].map((sub) => (
                                                                     <button
                                                                         key={sub}
-                                                                        onClick={() => setSubDisposition(sub)}
-                                                                        className={`px-3 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                                                        onClick={() => {
+                                                                            setSubDisposition(sub);
+                                                                            setOutcome("");
+                                                                        }}
+                                                                        className={`px-1 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                                                             subDisposition === sub 
                                                                             ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
                                                                             : 'bg-white text-indigo-500 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-sm'
@@ -1995,6 +2054,76 @@ export default function CallingPage() {
                                                                     {sub}
                                                                 </button>
                                                             ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Outcomes (Conditional on Sub-Disposition for Call Back) */}
+                                                {disposition === 'Call Back' && subDisposition && (
+                                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                        <div className="flex items-center justify-between pl-1">
+                                                            <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Outcome</p>
+                                                            <button 
+                                                                onClick={() => setIsAddingOutcome(true)}
+                                                                className="text-[10px] text-indigo-600 font-bold hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 transition-all hover:bg-indigo-100"
+                                                            >
+                                                                <i className="fi flex fi-rr-plus-small"></i> Add New
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        {isAddingOutcome && (
+                                                            <div className="flex items-center gap-2 mb-2 animate-in fade-in slide-in-from-top-1 bg-indigo-50/50 p-2 rounded-xl border border-indigo-100">
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={newOutcomeInput}
+                                                                    onChange={(e) => setNewOutcomeInput(e.target.value)}
+                                                                    className="flex-1 text-gray-500 px-3 py-2 text-xs border border-indigo-200 rounded-lg focus:outline-none focus:border-indigo-500 bg-white"
+                                                                    placeholder="New outcome label..."
+                                                                    autoFocus
+                                                                />
+                                                                <button 
+                                                                    onClick={handleAddOutcome}
+                                                                    className="px-3 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200"
+                                                                >
+                                                                    Add
+                                                                </button>
+                                                                <button 
+                                                                     onClick={() => setIsAddingOutcome(false)}
+                                                                     className="px-3 py-2 bg-white text-slate-500 rounded-lg text-xs font-bold hover:bg-slate-50 border border-slate-200"
+                                                                >
+                                                                     Cancel
+                                                                </button>
+                                                            </div>
+                                                        )}
+
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {userOutcomes.map((out) => (
+                                                                <div 
+                                                                    key={out.id}
+                                                                    className={`group relative flex items-center px-3 py-2 rounded-lg border transition-all cursor-pointer ${
+                                                                        outcome === out.outcome_label 
+                                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-105' 
+                                                                        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50'
+                                                                    }`}
+                                                                    onClick={() => setOutcome(out.outcome_label)}
+                                                                >
+                                                                    <span className="text-[10px] font-bold uppercase tracking-wider">{out.outcome_label}</span>
+                                                                    <button 
+                                                                        onClick={(e) => {
+                                                                             e.stopPropagation();
+                                                                             handleDeleteOutcome(out.id);
+                                                                        }}
+                                                                        className={`absolute -top-2 -right-2 w-5 h-5 bg-white text-red-500 border border-red-100 rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex shadow-sm hover:bg-red-50`}
+                                                                    >
+                                                                         <i className="fi fi-rr-cross-small text-[10px]"></i>
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                             {userOutcomes.length === 0 && !isAddingOutcome && (
+                                                                 <div className="w-full text-center py-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                                                    <p className="text-[10px] text-slate-400 italic">No custom outcomes added yet. Click "+ Add New" to create one.</p>
+                                                                 </div>
+                                                             )}
                                                         </div>
                                                     </div>
                                                 )}

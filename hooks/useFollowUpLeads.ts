@@ -19,6 +19,7 @@ export interface FollowUpLead {
   isOverdue: boolean;
   isUpcoming: boolean;
   status_label: string;
+  outcome?: string;
 }
 
 export function useFollowUpLeads() {
