@@ -1736,7 +1736,7 @@ export default function CallingPage() {
                                             <div className="flex items-center gap-4">
                                                 {/* Avatar with Ring */}
                                                 <div className="relative">
-                                                    <div className="w-12  h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-200 ">
+                                                    <div className="w-14  h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold  ">
                                                         {customer?.customer_name?.charAt(0) || 'C'}
                                                     </div>
                                                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-white flex items-center justify-center ${
