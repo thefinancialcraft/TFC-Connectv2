@@ -609,6 +609,34 @@ export default function Settings() {
                           Connected
                         </div>
                         <p className="text-[10px] text-slate-400 font-medium">Synced with your Google Account</p>
+                        
+                        <button
+                          onClick={async () => {
+                            if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
+
+                            try {
+                              // 1. Update DB to disconnect
+                              await supabase.from('user_profiles').update({ 
+                                google_calendar_connected: false,
+                                google_calendar_skipped: false 
+                              }).eq('user_id', user.uid);
+
+                              // 2. Clear Local Storage Token
+                              localStorage.removeItem("google_provider_token");
+
+                              // 3. User Feedback
+                              showSuccess("Google Calendar disconnected.");
+                              
+                              // 4. Force Reload to refresh auth state
+                              setTimeout(() => window.location.reload(), 1000);
+                            } catch (err) {
+                              showError("Failed to disconnect.");
+                            }
+                          }}
+                          className="mt-2 text-xs text-red-500 hover:text-red-700 font-semibold underline decoration-red-200 hover:decoration-red-500 transition-all"
+                        >
+                          Disconnect
+                        </button>
                       </div>
                     ) : (
                       <button
