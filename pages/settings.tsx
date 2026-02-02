@@ -53,7 +53,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav] = useState("settings");
-  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices" | "console_logs">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices" | "console_logs" | "integrations">("profile");
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   
   // Form state
@@ -328,6 +328,7 @@ export default function Settings() {
               { id: "profile", label: "Profile", icon: "fi-rr-user" },
               { id: "security", label: "Security", icon: "fi-rr-lock" },
               { id: "devices", label: "Devices", icon: "fi-rr-devices" },
+              { id: "integrations", label: "Integrations", icon: "fi-rr-apps" },
               { id: "flutter_bridge", label: "Bridge", icon: "fi-rr-smartphone" },
               { id: "console_logs", label: "Logs", icon: "fi-rr-journal" },
             ].map((tab) => (
@@ -572,6 +573,61 @@ export default function Settings() {
           {activeTab === "devices" && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
               <DevicesTab employeeId={user?.employeeId} />
+            </div>
+          )}
+
+          { activeTab === "integrations" && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6 sm:p-8" style={{ borderColor: "#E0E0E0" }}>
+                <h3 className="text-lg font-bold mb-8 text-[#263238] flex items-center gap-2">
+                  <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
+                  Connected Apps
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Google Calendar Card */}
+                  <div className="p-6 rounded-[2rem] border border-slate-100 bg-slate-50/50 flex flex-col items-center text-center group transition-all hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -rotate-6 mb-6 group-hover:rotate-0 transition-transform">
+                      <i className="fi fi-brands-google text-3xl text-indigo-600"></i>
+                    </div>
+                    
+                    <h4 className="text-lg font-bold text-slate-800 mb-2">Google Calendar</h4>
+                    <p className="text-sm text-slate-500 mb-8 max-w-[200px]">
+                      Sync follow-up appointments directly to your calendar for real-time reminders.
+                    </p>
+
+                    {user?.googleCalendarConnected ? (
+                      <div className="flex flex-col items-center gap-3 w-full">
+                        <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-bold flex items-center gap-2 border border-emerald-100">
+                          <i className="fi fi-rr-check-circle"></i>
+                          Connected
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-medium">Synced with your Google Account</p>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          supabase.auth.signInWithOAuth({
+                            provider: 'google',
+                            options: {
+                              queryParams: {
+                                access_type: 'offline',
+                                prompt: 'consent',
+                              },
+                              scopes: 'https://www.googleapis.com/auth/calendar.events',
+                              redirectTo: `${window.location.origin}/settings`
+                            }
+                          });
+                        }}
+                        className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                      >
+                        <i className="fi fi-brands-google"></i>
+                        Connect Now
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

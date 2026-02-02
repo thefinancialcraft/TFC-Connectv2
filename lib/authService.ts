@@ -64,6 +64,8 @@ export interface UserProfile {
   approvalStatus: string | null;
   accountStatus: string | null;
   updatedAt: string | null;
+  googleCalendarConnected: boolean;
+  googleCalendarSkipped: boolean;
   profilePicUrl?: string | null;
   profile_complete?: boolean;
   statusReason?: string | null;
@@ -206,6 +208,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         activeCustomerId: userMetadata.active_customer_id || null,
         activeSessionState: userMetadata.active_session_state || null,
         activeSessionStart: userMetadata.active_session_start || null,
+        googleCalendarConnected: userMetadata.google_calendar_connected || false,
+        googleCalendarSkipped: userMetadata.google_calendar_skipped || false,
       };
     }
 
@@ -241,6 +245,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
               approvalStatus: null,
               accountStatus: null,
               updatedAt: null,
+              googleCalendarConnected: false,
+              googleCalendarSkipped: false,
             };
           }
           return {
@@ -270,6 +276,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             profile_pic_url: userData.profilePicUrl || undefined,
             all_time_active: userData.allTimeActive,
             is_caller: userData.isCaller,
+            google_calendar_connected: userData.googleCalendarConnected,
+            google_calendar_skipped: userData.googleCalendarSkipped,
           };
           addUserToStore(profileData);
         }
@@ -294,6 +302,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
           activeCustomerId: userMetadata.active_customer_id || null,
           activeSessionState: userMetadata.active_session_state || null,
           activeSessionStart: userMetadata.active_session_start || null,
+          googleCalendarConnected: userMetadata.google_calendar_connected || false,
+          googleCalendarSkipped: userMetadata.google_calendar_skipped || false,
         };
       }
     } catch (fetchError: any) {
@@ -373,6 +383,8 @@ export interface UserProfileData {
   expire_at?: string;
   created_at?: string;
   updated_at?: string;
+  google_calendar_connected?: boolean;
+  google_calendar_skipped?: boolean;
   is_caller?: boolean;
   designation?: string;
   token_id?: string; // TFC Session Token ID

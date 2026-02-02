@@ -41,6 +41,7 @@ export default function CallingPage() {
     const [calendarViewDate, setCalendarViewDate] = useState(new Date());
     const [callAlive, setCallAlive] = useState(false);
     const [localCallingStatus, setLocalCallingStatus] = useState<string | null>(null);
+    const [showCalendarModal, setShowCalendarModal] = useState(false);
     
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
@@ -1167,6 +1168,43 @@ export default function CallingPage() {
 
     
 
+    const handleSkipCalendar = async () => {
+        if (!user?.uid) return;
+        try {
+            const { error } = await supabase
+                .from('user_profiles')
+                .update({ google_calendar_skipped: true })
+                .eq('user_id', user.uid);
+            
+            if (!error) {
+                setUser(prev => prev ? { ...prev, googleCalendarSkipped: true } : null);
+                setShowCalendarModal(false);
+                // Continue with saving disposition after state is updated
+                executeSaveDisposition();
+            }
+        } catch (err) {
+            console.error("Error skipping calendar:", err);
+            setShowCalendarModal(false);
+            executeSaveDisposition();
+        }
+    };
+
+    const handleConnectCalendar = () => {
+        // Redirect to Google OAuth
+        // Note: Client ID and Redirect URI are managed in Supabase Dashboard
+        supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                },
+                scopes: 'https://www.googleapis.com/auth/calendar.events',
+                redirectTo: `${window.location.origin}/campaign/${campaignId}/${customerId}`
+            }
+        });
+    };
+
     const handleSaveDisposition = async () => {
         if (!disposition) {
             alert("Please select a primary status");
@@ -1190,8 +1228,18 @@ export default function CallingPage() {
             }
         }
 
-        const finalDisposition = subDisposition ? `${disposition} > ${subDisposition}` : disposition;
+        const isFollowup = disposition === 'Call Back' || subDisposition?.toLowerCase().includes('interested') || subDisposition?.toLowerCase().includes('follow up');
+        
+        // Show Calendar Modal if user hasn't connected or skipped
+        if (isFollowup && user && !user.googleCalendarConnected && !user.googleCalendarSkipped) {
+            setShowCalendarModal(true);
+            return;
+        }
 
+        executeSaveDisposition();
+    };
+
+    const executeSaveDisposition = async () => {
         try {
             setSaving(true);
 
@@ -1317,6 +1365,7 @@ export default function CallingPage() {
                 if (rejectError) throw rejectError;
             } else if (isClosed) {
                 // Move to closed table and delete from customers
+                const finalDisposition = subDisposition ? `${disposition} > ${subDisposition}` : disposition;
                 const { error: closeError } = await supabase.rpc('move_to_closed', {
                     p_customer_id: customerId,
                     p_agent_id: user?.uid,
@@ -2729,6 +2778,52 @@ export default function CallingPage() {
                     background: #cbd5e1;
                 }
             `}</style>
+
+            {/* Google Calendar Prompt Modal */}
+            {showCalendarModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100">
+                        {/* Header Image/Icon */}
+                        <div className="h-32 bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center relative">
+                            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }}></div>
+                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -rotate-6">
+                                <i className="fi fi-brands-google text-3xl text-indigo-600"></i>
+                            </div>
+                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg absolute transform translate-x-8 translate-y-4 rotate-12">
+                                <i className="fi fi-rr-calendar-clock text-3xl text-blue-500"></i>
+                            </div>
+                        </div>
+
+                        <div className="p-8 pt-10 text-center">
+                            <h3 className="text-2xl font-black text-slate-800 mb-2">Connect Google Calendar?</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed mb-8">
+                                Get automatic reminders for your follow-ups directly on your phone and laptop by connecting your Google Calendar.
+                            </p>
+
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handleConnectCalendar}
+                                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                                >
+                                    <i className="fi fi-brands-google"></i>
+                                    Connect & Sync Now
+                                </button>
+                                
+                                <button
+                                    onClick={handleSkipCalendar}
+                                    className="w-full py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-2xl font-bold transition-all active:scale-95 text-sm"
+                                >
+                                    Skip for now
+                                </button>
+                            </div>
+
+                            <p className="mt-6 text-[11px] text-slate-400 font-medium">
+                                You can also connect this later from your Profile Settings.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-}3
+}
