@@ -51,6 +51,8 @@ export default function CreateOrganization() {
         profilePicUrl: cachedData.profile_pic_url || null,
         isClient: cachedData.is_client,
         designation: cachedData.designation,
+        googleCalendarConnected: cachedData.google_calendar_connected ?? false,
+        googleCalendarSkipped: cachedData.google_calendar_skipped ?? false,
       };
     }
     return null;

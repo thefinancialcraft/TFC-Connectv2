@@ -99,7 +99,9 @@ export default function CampaignDetails() {
                 profilePicUrl: cachedData.profile_pic_url || null,
                 isCaller: cachedData.is_caller ?? false,
                 isClient: cachedData.is_client ?? true,
-                designation: cachedData.designation || null
+                designation: cachedData.designation || null,
+                googleCalendarConnected: cachedData.google_calendar_connected ?? false,
+                googleCalendarSkipped: cachedData.google_calendar_skipped ?? false,
             };
         }
         return null;
