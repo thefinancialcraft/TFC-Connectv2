@@ -29,19 +29,21 @@ const Users = () => {
   useEffect(() => {
     if (mounted && user) {
       // Visibility logic (Strict: Hidden by default)
-      const allowedClientDesignations = ['ceo', 'developer'];
-      const userDesignation = user.designation?.toLowerCase() || '';
-      
-      const isUserPageVisible = user.isClient === false || 
-                               (user.isClient === true && allowedClientDesignations.includes(userDesignation));
-      
+      const allowedClientDesignations = ["ceo", "developer"];
+      const userDesignation = user.designation?.toLowerCase() || "";
+
+      const isUserPageVisible =
+        user.isClient === false ||
+        (user.isClient === true &&
+          allowedClientDesignations.includes(userDesignation));
+
       if (!isUserPageVisible) {
         console.warn("Unauthorized access to users page, redirecting...");
-        router.replace('/dashboard');
+        router.replace("/dashboard");
       }
     }
   }, [mounted, user, router]);
-  
+
   // 1.5 Auth state for data filtering
   const isAuthorisedUser = useMemo(() => {
     if (!user) return false;
@@ -201,7 +203,7 @@ const Users = () => {
     // Apply filters
     if (filters.approval_status) {
       filtered = filtered.filter(
-        (user) => user.approval_status === filters.approval_status
+        (user) => user.approval_status === filters.approval_status,
       );
     }
     if (filters.role) {
@@ -209,22 +211,24 @@ const Users = () => {
     }
     if (filters.department) {
       filtered = filtered.filter(
-        (user) => user.department === filters.department
+        (user) => user.department === filters.department,
       );
     }
     if (filters.designation) {
       filtered = filtered.filter(
-        (user) => user.designation === filters.designation
+        (user) => user.designation === filters.designation,
       );
     }
     if (filters.work_type) {
       filtered = filtered.filter(
-        (user) => user.work_type === filters.work_type
+        (user) => user.work_type === filters.work_type,
       );
     }
     // user_type filtering is handled by hook mostly, but if 'all' is toggled and dropdown is used
     if (filters.user_type) {
-       filtered = filtered.filter((user) => user.user_type === filters.user_type);
+      filtered = filtered.filter(
+        (user) => user.user_type === filters.user_type,
+      );
     }
 
     if (filters.status) {
@@ -232,19 +236,28 @@ const Users = () => {
     }
     if (filters.organization_id) {
       filtered = filtered.filter(
-        (user) => user.organization_id === filters.organization_id
+        (user) => user.organization_id === filters.organization_id,
       );
     }
-    
+
     // Explicit string comparison for boolean/string mixed types from filters
     if (filters.is_client !== "") {
-      filtered = filtered.filter((user) => String(user.is_client) === filters.is_client);
+      filtered = filtered.filter(
+        (user) => String(user.is_client) === filters.is_client,
+      );
     }
     if (filters.is_caller !== "") {
-        filtered = filtered.filter((user) => String(user.is_caller) === filters.is_caller);
+      filtered = filtered.filter(
+        (user) => String(user.is_caller) === filters.is_caller,
+      );
     }
 
-    return filtered;
+    // Sort by user name alphabetically (create copy to avoid mutating original state)
+    return [...filtered].sort((a, b) => {
+      const nameA = (a.user_name || "").toLowerCase();
+      const nameB = (b.user_name || "").toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
   }, [allUsers, searchQuery, filters]);
 
   return (
@@ -279,25 +292,28 @@ const Users = () => {
             pendingUsers={pendingUsers}
             mounted={mounted}
             onStatusChange={async (userId, status) => {
-                if (status === 'approved') {
-                    const user = pendingUsers.find(u => u.id === userId);
-                    if (user) {
-                        setApprovalUserData(user as any); // pendingUser is structurally similar
-                        setApprovalFormData({
-                        role: "user",
-                        department: "sales",
-                        designation: "agent",
-                        work_type: "on_site",
-                        user_type: user.user_type === 'posp_agent' ? 'posp_agent' : 'employee',
-                        status: "active",
-                      });
-                      setShowApprovalModal(true);
-                    }
-                } else if (status === 'rejected') {
-                    if (confirm("Are you sure you want to reject this user?")) {
-                        await handleStatusChange(userId, "rejected");
-                    }
+              if (status === "approved") {
+                const user = pendingUsers.find((u) => u.id === userId);
+                if (user) {
+                  setApprovalUserData(user as any); // pendingUser is structurally similar
+                  setApprovalFormData({
+                    role: "user",
+                    department: "sales",
+                    designation: "agent",
+                    work_type: "on_site",
+                    user_type:
+                      user.user_type === "posp_agent"
+                        ? "posp_agent"
+                        : "employee",
+                    status: "active",
+                  });
+                  setShowApprovalModal(true);
                 }
+              } else if (status === "rejected") {
+                if (confirm("Are you sure you want to reject this user?")) {
+                  await handleStatusChange(userId, "rejected");
+                }
+              }
             }}
           />
 
@@ -321,7 +337,7 @@ const Users = () => {
                 organizations={organizations}
                 onAddUserClick={() => setShowAddUserModal(true)}
                 onBulkDelete={() => {
-                    handleBulkDelete();
+                  handleBulkDelete();
                 }}
                 userTypeToggle={userTypeToggle}
               />
@@ -385,7 +401,7 @@ const Users = () => {
         show={showImportModal}
         onClose={() => setShowImportModal(false)}
         onSuccess={() => {
-            refreshData();
+          refreshData();
         }}
         organizations={organizations}
       />

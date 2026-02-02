@@ -60,7 +60,8 @@ export function useActivityData() {
         .select(`
           *,
           agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
-          campaign:campaigns!campaign_id(name)
+          campaign:campaigns!campaign_id(name),
+          customer:customers(customer_name)
         `)
         .gte("created_at", startOfDay)
         .lte("created_at", endOfDay)
@@ -191,34 +192,50 @@ export function useActivityData() {
       setActivities(combined);
 
       // Hydrate missing customer names AND phone numbers
-      const missingCustomerIds = combined.filter(a => !a.customer?.customer_name).map(a => a.customer_id);
-      
-      if (missingCustomerIds.length > 0) {
-        const [{ data: activeHydrate }, { data: rHydrate }, { data: cHydrate }] = await Promise.all([
-          supabase.from('customers').select('id, customer_name, phone_no, phone_search_hash').in('id', missingCustomerIds),
-          supabase.from('rejected_leads').select('customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', missingCustomerIds),
-          supabase.from('closed_deals').select('customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', missingCustomerIds)
-        ]);
-        
-        setActivities(prev => prev.map(act => {
-          const match = activeHydrate?.find(a => a.id === act.customer_id) ||
-                        rHydrate?.find(r => r.customer_id === act.customer_id) || 
-                        cHydrate?.find(c => c.customer_id === act.customer_id);
+        try {
+          // Hydrate by Phone Number (Hash) as it's more persistent than IDs across table moves
+          const missingHashes = combined
+             .filter(a => !a.customer?.customer_name && a.phone_search_hash)
+             .map(a => a.phone_search_hash);
 
-          if (match) {
-             return { 
-                ...act, 
-                customer: { 
-                    ...act.customer, 
-                    customer_name: match.customer_name 
-                },
-                phone_no: match.phone_no,
-                phone_search_hash: match.phone_search_hash
-             };
+          // Remove duplicates
+          const uniqueHashes = [...new Set(missingHashes)];
+
+          if (uniqueHashes.length > 0) {
+              const [
+                { data: activeHydrate },
+                { data: rHydrate },
+                { data: cHydrate }
+              ] = await Promise.all([
+                supabase.from('customers').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes),
+                supabase.from('rejected_leads').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes),
+                supabase.from('closed_deals').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes)
+              ]);
+              
+              setActivities(prev => prev.map(act => {
+                 if (act.customer?.customer_name) return act; // Already has name
+                 
+                 // Match by Phone Hash
+                 const match = activeHydrate?.find(a => a.phone_search_hash === act.phone_search_hash) ||
+                               rHydrate?.find(r => r.phone_search_hash === act.phone_search_hash) ||
+                               cHydrate?.find(c => c.phone_search_hash === act.phone_search_hash);
+      
+                if (match) {
+                   return { 
+                      ...act, 
+                      customer: { 
+                          ...act.customer, 
+                          customer_name: match.customer_name || "Unknown"
+                      },
+                      phone_no: match.phone_no 
+                   };
+                }
+                return act;
+              }));
           }
-          return act;
-        }));
-      }
+        } catch (err) {
+           console.error("Hydration failed:", err);
+        }
 
       // Calculate Stats
       const totalTalkTimeSec = combined.reduce((acc, curr) => acc + (curr.duration || 0), 0);

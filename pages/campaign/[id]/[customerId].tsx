@@ -1115,7 +1115,7 @@ export default function CallingPage() {
             const { error: logError } = await supabase
                 .from('call_logs')
                 .insert({
-                    customer_id: customerId,
+                    customer_id: customerId, // Ensure this is not null/undefined from scope
                     campaign_id: campaignId,
                     organization_id: campaign?.organization_id || customer?.organization_id,
                     agent_id: logAgentId, // The Owner
