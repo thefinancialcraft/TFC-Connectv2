@@ -1475,8 +1475,25 @@ export default function CallingPage() {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
-                                        summary: `Call Back: ${customer?.customer_name || 'Lead'}`,
-                                        description: `Phone: ${customer?.phone_no || 'N/A'}\nNotes: ${notes || 'No notes'}\nCampaign: ${campaign?.name || campaignId}`,
+                                        summary: `Call Back: ${customer?.customer_name || 'Customer'}`,
+                                        description: `
+👤 Customer: ${customer?.customer_name || 'N/A'}
+📄 Policy Number: ${customer?.policy_number || 'N/A'}
+📅 Expiry Date: ${customer?.expiry_date ? new Date(customer.expiry_date).toDateString() : 'N/A'}
+
+📋 Policy Details:
+${customer?.customer_details ? Object.entries(customer.customer_details).map(([k, v]) => `• ${k.replace(/_/g, ' ').toUpperCase()}: ${v}`).join('\n') : 'N/A'}
+
+📊 Status:
+• Disposition: ${disposition}
+• Sub-Disposition: ${subDisposition || 'N/A'}
+• Outcome: ${outcome || 'N/A'}
+
+📝 Notes: 
+${notes || 'No notes provided'}
+
+Campaign: ${campaign?.name || campaignId}
+                                        `.trim(),
                                         startTime: combinedDateTime,
                                         endTime: endTime,
                                         providerToken: providerToken

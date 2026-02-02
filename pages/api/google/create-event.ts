@@ -43,8 +43,7 @@ export default async function handler(
         reminders: {
             useDefault: false,
             overrides: [
-              { method: 'popup', minutes: 10 },
-              { method: 'email', minutes: 60 }
+              { method: 'popup', minutes: 3 }
             ],
         },
       }),
