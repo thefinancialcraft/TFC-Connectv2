@@ -606,8 +606,10 @@ export default function Settings() {
                       </div>
                     ) : (
                       <button
-                        onClick={() => {
-                          supabase.auth.signInWithOAuth({
+                        onClick={async () => {
+                          const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
+                          
+                          const { data, error } = await supabase.auth.signInWithOAuth({
                             provider: 'google',
                             options: {
                               queryParams: {
@@ -615,9 +617,20 @@ export default function Settings() {
                                 prompt: 'consent',
                               },
                               scopes: 'https://www.googleapis.com/auth/calendar.events',
-                              redirectTo: `${window.location.origin}/settings`
+                              redirectTo: `${window.location.origin}/settings`,
+                              skipBrowserRedirect: isMobile
                             }
                           });
+
+                          if (error) {
+                            showError(error.message, "Connection Error");
+                            return;
+                          }
+
+                          if (isMobile && data?.url) {
+                            const { notifyFlutter } = await import("../lib/flutterBridge");
+                            notifyFlutter('open_external_url', data.url);
+                          }
                         }}
                         className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-100 active:scale-95"
                       >
