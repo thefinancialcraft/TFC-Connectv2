@@ -282,7 +282,7 @@ export default function CampaignDetails() {
                 qTotal,
                 qFollowup,
                 qOverdue,
-                supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).is('assigned_to', null), // Fresh is always unassigned
+                supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).is('assigned_to', null).eq('attempt_count', 0), // Fresh is always unassigned and has 0 attempts
                 qUpcoming,
                 qRecentCount,
                 qManaged,
@@ -291,7 +291,11 @@ export default function CampaignDetails() {
                     .select('duration, created_at, is_connected, disposition, sub_disposition, agent_id')
                     .eq('campaign_id', id)
                     .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
-                    .filter('agent_id', isLevel1User ? 'eq' : (isLevel2User ? 'in' : 'not.is'), isLevel1User ? userId : (isLevel2User ? `(${effectiveTeamMembers.length > 0 ? effectiveTeamMembers.join(',') : '00000000-0000-0000-0000-000000000000'})` : 'null'))
+                    .filter(
+                        'agent_id', 
+                        isLevel1User ? 'eq' : (isLevel2User ? 'in' : 'not.is'), 
+                        isLevel1User ? userId : (isLevel2User ? (effectiveTeamMembers.length > 0 ? effectiveTeamMembers : ['00000000-0000-0000-0000-000000000000']) : 'null')
+                    )
             ]);
 
             setStats({
@@ -317,44 +321,9 @@ export default function CampaignDetails() {
 
             const findUser = (targetId: string) => userProfiles.find((p: any) => p.user_id === targetId || p.id === targetId);
 
-            // Process Analytics
+            // Process Analytics (Always use RPC result which now uses call_history)
             const { data: analyticsResult, error: analyticsError } = analyticsResponse;
-            const { data: todayStatsData } = todayStatsResponse;
-
-            if ((isLevel1User || isLevel2User) && todayStatsData) {
-                // Calculate Hourly Stats for the specific Agent or Team
-                const hoursMap: Record<number, any> = {};
-                todayStatsData.forEach((log: any) => {
-                    const hour = new Date(log.created_at).getHours();
-                    if (!hoursMap[hour]) {
-                        hoursMap[hour] = { 
-                            hour, total_calls: 0, connected_calls: 0, outgoing_calls: 0, 
-                            incoming_calls: 0, missed_calls: 0, total_duration: 0 
-                        };
-                    }
-                    hoursMap[hour].total_calls++;
-                    if (log.is_connected) hoursMap[hour].connected_calls++;
-                    hoursMap[hour].total_duration += (log.duration || 0);
-                });
-
-                const myHourlyDetailed = Object.values(hoursMap).sort((a: any, b: any) => a.hour - b.hour);
-                const myHourlyCalls = myHourlyDetailed.map(h => ({ hour: h.hour, count: h.total_calls }));
-
-                // Filter Caller Performance
-                const allowedIds = isLevel1User ? [userId] : effectiveTeamMembers;
-                const myCallerPerformance = (analyticsResult?.caller_performance || []).filter((row: any) => 
-                     allowedIds.some(id => row.employee_id === userProfiles.find(p => p.user_id === id)?.employee_id) ||
-                     (isLevel1User && user?.displayName && row.caller && row.caller.toLowerCase() === user.displayName.toLowerCase())
-                );
-
-                setAnalytics({
-                    hourly_calls: myHourlyCalls,
-                    agent_performance: (analyticsResult?.agent_performance || []).filter((row: any) => allowedIds.includes(userProfiles.find(p => p.employee_id === row.employee_id)?.user_id || '')),
-                    disposition_stats: analyticsResult?.disposition_stats || [], 
-                    hourly_detailed: myHourlyDetailed,
-                    caller_performance: myCallerPerformance
-                });
-            } else if (!analyticsError && analyticsResult) {
+            if (!analyticsError && analyticsResult) {
                 setAnalytics({
                     hourly_calls: analyticsResult.hourly_calls || [],
                     agent_performance: analyticsResult.agent_performance || [],
@@ -362,20 +331,21 @@ export default function CampaignDetails() {
                     hourly_detailed: analyticsResult.hourly_detailed || [],
                     caller_performance: analyticsResult.caller_performance || []
                 });
-            } else if (analyticsError) {
-                 console.error("Analytics fetch error:", analyticsError);
-            }
 
-            // Process Campaign Stats
-            const todayStats = todayStatsData;
-            if (todayStats) {
-                const totalDuration = todayStats.reduce((sum, log) => sum + (log.duration || 0), 0);
+                // Update Campaign-wide Stats (Talktime & Dials) from the new data source
+                const perfData = analyticsResult.caller_performance || [];
+                const totalDials = perfData.reduce((sum: number, row: any) => sum + (Number(row.total_calls) || 0), 0);
+                const totalDuration = perfData.reduce((sum: number, row: any) => sum + (Number(row.total_duration) || 0), 0);
+                
                 const hours = Math.floor(totalDuration / 3600);
                 const minutes = Math.floor((totalDuration % 3600) / 60);
+                
                 setCampaignStats({
                     talkTime: `${hours}h ${minutes}m`,
-                    totalDials: todayStats.length
+                    totalDials: totalDials
                 });
+            } else if (analyticsError) {
+                  console.error("Analytics fetch error:", analyticsError);
             }
 
             // 3. Fetch Tile Data (Recent, Overdue, Upcoming, Managed) in Parallel

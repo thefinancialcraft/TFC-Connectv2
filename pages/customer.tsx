@@ -334,7 +334,8 @@ export default function Customer() {
       let freshCountQuery = supabase
         .from("customers")
         .select("*", { count: "exact", head: true })
-        .is("assigned_to", null);
+        .is("assigned_to", null)
+        .eq("attempt_count", 0);
 
       if (searchQuery) {
         freshCountQuery = freshCountQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);

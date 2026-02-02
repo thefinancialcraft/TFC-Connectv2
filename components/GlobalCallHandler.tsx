@@ -8,7 +8,6 @@ export default function GlobalCallHandler() {
     const router = useRouter();
     const { user } = useUser();
     const lastNavigatedCustomerId = useRef<string | null>(null);
-    const lastAttemptRef = useRef<{id: string, time: number} | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -114,7 +113,7 @@ export default function GlobalCallHandler() {
             }
 
             if (eventType === 'call_disconnect' || eventType === 'call_disconnected') {
-                console.log(`[Global-Call] 🛡️ CRM Call Ended. Re-activating global handler.`);
+                console.log(`[Global-Call] � CRM Call Ended. Re-activating global handler.`);
                 if (typeof window !== 'undefined') (window as any).isCrmCallActive = false;
                 return; // Strictly Skip this end event for manual logic
             }
@@ -142,23 +141,6 @@ export default function GlobalCallHandler() {
                         
                         if (isDialEvent) {
                             // --- START CALL LOGIC ---
-                            
-                            // INCREMENT ATTEMPT COUNT (Manual/External Calls)
-                            const now = Date.now();
-                            const lastAttempt = lastAttemptRef.current;
-                            if (!lastAttempt || lastAttempt.id !== customerId || (now - lastAttempt.time > 10000)) {
-                                console.log(`[Global-Call] Incrementing attempt count for manual dial: ${customerId}`);
-                                lastAttemptRef.current = { id: customerId, time: now };
-                                try {
-                                    supabase.rpc('increment_attempt_count', { p_customer_id: customerId })
-                                            .then(({ error }) => {
-                                                if(error) console.error("[Global-Call] RPC Error:", error);
-                                            });
-                                } catch (e) {
-                                     console.error("[Global-Call] Attempt increment exception:", e);
-                                }
-                            }
-
                             // 3. Ownership Check
                             if (user) {
                                 const currentUserId = user.uid || (user as any).id; 

@@ -918,14 +918,6 @@ export default function CallingPage() {
         setPostCall(false);
         setCallDuration(0);
         // ----------------------------
-        
-        // INCREMENT ATTEMPT COUNT (As per user request: "Every dial attempt +1")
-        try {
-            await supabase.rpc('increment_attempt_count', { p_customer_id: custId });
-            console.log('[Session] Attempt count incremented');
-        } catch (e) {
-            console.error('[Session] Failed to increment attempt count:', e);
-        }
 
         if (customer?.phone_no) {
             // Trigger Flutter bridge call event
@@ -1125,6 +1117,7 @@ export default function CallingPage() {
                 .insert({
                     customer_id: customerId,
                     campaign_id: campaignId,
+                    organization_id: campaign?.organization_id || customer?.organization_id,
                     agent_id: logAgentId, // The Owner
                     last_updated_by: user?.uid, // The Actor (Me)
                     disposition: disposition,
@@ -1173,9 +1166,9 @@ export default function CallingPage() {
                     last_updated_by: user?.uid,
                     is_connected: isConnected,
                     
-                    // Reset assignment and attempts (Back to Pool)
-                    attempt_count: 0,
-                    last_attempt_at: null,
+                    // Reset assignment (Keep attempts tracking)
+                    attempt_count: (customer?.attempt_count || 0) + 1,
+                    last_attempt_at: now,
                     next_called_at: null,
                     assigned_to: null, 
                     
@@ -1232,8 +1225,8 @@ export default function CallingPage() {
                      logAssignedTo = null;
                 }
 
-                updatePayload.attempt_count = 0;
-                updatePayload.last_attempt_at = null;
+                updatePayload.attempt_count = (customer?.attempt_count || 0) + 1;
+                updatePayload.last_attempt_at = now;
 
                 if (disposition === 'Call Back' && callbackDate) {
                     const combinedDateTime = callbackTime 
