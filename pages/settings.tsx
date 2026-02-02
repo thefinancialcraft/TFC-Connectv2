@@ -138,6 +138,19 @@ export default function Settings() {
             if (session.provider_token) {
               localStorage.setItem("google_provider_token", session.provider_token);
               console.log("✅ [Settings] Google Token persisted.");
+              
+              // Explicitly mark as connected in DB if we have a fresh token
+              // This fixes the issue where re-connecting doesn't flip the flag back to true
+              if (fullProfile && !fullProfile.google_calendar_connected) {
+                 await supabase.from('user_profiles').update({
+                    google_calendar_connected: true,
+                    google_calendar_skipped: false
+                 }).eq('user_id', user.uid);
+                 console.log("✅ [Settings] DB Status updated to Connected.");
+                 
+                 // Reload to reflect state
+                 window.location.reload();
+              }
             }
             
             setFormData((prev) => ({
