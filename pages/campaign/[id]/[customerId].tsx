@@ -918,6 +918,14 @@ export default function CallingPage() {
         setPostCall(false);
         setCallDuration(0);
         // ----------------------------
+        
+        // INCREMENT ATTEMPT COUNT (As per user request: "Every dial attempt +1")
+        try {
+            await supabase.rpc('increment_attempt_count', { p_customer_id: custId });
+            console.log('[Session] Attempt count incremented');
+        } catch (e) {
+            console.error('[Session] Failed to increment attempt count:', e);
+        }
 
         if (customer?.phone_no) {
             // Trigger Flutter bridge call event
