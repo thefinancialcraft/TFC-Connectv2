@@ -70,25 +70,41 @@ export default function CallingPage() {
             return;
         }
 
-        let cleanNumber = customer.phone_no.replace(/\D/g, '');
+        // 1. Decrypt if necessary
+        let rawPhone = decryptPhone(customer.phone_no);
+
+        // 2. Comprehensive Cleaning
+        // Remove all non-numeric characters first
+        let cleanNumber = rawPhone.replace(/\D/g, '');
         
-        // Robust Indian Number Formatting
+        // 3. Remove all leading zeros (e.g., 0091... or 098...)
+        cleanNumber = cleanNumber.replace(/^0+/, '');
+
+        // 4. International Normalization (Primarily for India '91')
         if (cleanNumber.length === 10) {
-            // 7523010366 -> 917523010366
+            // Case: 9876543210 -> 919876543210 (Classic 10-digit)
             cleanNumber = '91' + cleanNumber;
-        } else if (cleanNumber.length === 11 && cleanNumber.startsWith('0')) {
-            // 07523010366 -> 917523010366
-            cleanNumber = '91' + cleanNumber.substring(1);
-        } else if (cleanNumber.length > 10 && !cleanNumber.startsWith('91')) {
-            // If it's 11+ digits but doesn't start with 91 (and not handled by '0' case), 
-            // we assume it's either a different country or needs 91 if it's 10 digits + some garbage prefix
-            if (cleanNumber.endsWith(cleanNumber.slice(-10))) {
-                cleanNumber = '91' + cleanNumber.slice(-10);
+        } else if (cleanNumber.length > 10) {
+            // Check if it's an Indian number already (12 digits starting with 91)
+            // But verify it doesn't have a '0' after 91 (e.g. 9109876...)
+            const isStandardIndian = cleanNumber.startsWith('91') && cleanNumber.length === 12 && cleanNumber[2] !== '0';
+            
+            if (!isStandardIndian) {
+                // If it's mangled (e.g. 009198..., 91098..., +91-98...), take the reliable last 10 digits
+                const last10 = cleanNumber.slice(-10);
+                cleanNumber = '91' + last10;
             }
         }
         
-        console.log(`[WhatsApp] Redirecting to: ${cleanNumber}`);
-        window.open(`https://wa.me/${cleanNumber}`, '_blank');
+        // 5. Final validation: Ensure it's not empty and has a reasonable length
+        if (cleanNumber.length < 10) {
+            alert("Invalid phone number format: " + rawPhone);
+            return;
+        }
+
+        console.log(`[WhatsApp] Final formatted number: ${cleanNumber}`);
+        const waUrl = `https://wa.me/${cleanNumber}`;
+        window.open(waUrl, '_blank');
     }, [customer?.phone_no]);
 
     const handleEndCall = useCallback(async (isFromBridge = false) => {
@@ -717,9 +733,7 @@ export default function CallingPage() {
             if (foundCustomer?.phone_no) {
                 try {
                     // Clean phone number for matching (remove special chars, take last 10 digits)
-                    const rawPhone = foundCustomer.phone_no.includes('::') 
-                        ? (await import('../../../lib/phoneUtils')).decryptPhone(foundCustomer.phone_no) 
-                        : foundCustomer.phone_no;
+                    const rawPhone = decryptPhone(foundCustomer.phone_no);
                         
                     const cleanPhone = String(rawPhone || "").replace(/\D/g, '').slice(-10);
 
@@ -1732,11 +1746,19 @@ export default function CallingPage() {
 
                                     <div className="relative z-10 p-6 h-full flex flex-col justify-between gap-3">
                                         {/* Top Section: Identity */}
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-4">
-                                                {/* Avatar with Ring */}
-                                                <div className="relative">
-                                                    <div className="w-14  h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold  ">
+                                        <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between w-full">
+                                            {/* Lead Score (Mobile Only) */}
+                                            <div className="sm:hidden mb-3 text-center">
+                                                <div className={`flex items-center justify-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full border border-slate-100`}>
+                                                    <i className={`fi ${leadScore.icon} ${leadScore.color} text-[10px]`}></i>
+                                                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{leadScore.label} Lead</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
+                                                {/* Avatar with Ring (Desktop Only) */}
+                                                <div className="relative hidden sm:block">
+                                                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold">
                                                         {customer?.customer_name?.charAt(0) || 'C'}
                                                     </div>
                                                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-white flex items-center justify-center ${
@@ -1751,15 +1773,13 @@ export default function CallingPage() {
                                                 </div>
 
                                                 {/* Name & ID */}
-                                                <div>
-                                                    <div className="flex  items-center gap-2 mb-1">
-                                                        <h2 className="text-3xl font-bold text-slate-800 tracking-tight">
+                                                <div className="text-center sm:text-left">
+                                                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                                                        <h2 className="text-4xl mt-4 sm:text-3xl font-bold text-slate-800 tracking-tight">
                                                             {customer?.customer_name || 'Anonymous User'}
                                                         </h2>
-
                                                     </div>
-                                                    <div className="flex items-center gap-4 text-slate-500">
-                                                        
+                                                    <div className="flex  mb-4  items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
                                                             <i className="fi fi-rr-id-badge text-xs opacity-50"></i>
                                                             <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
@@ -1768,7 +1788,7 @@ export default function CallingPage() {
                                                 </div>
                                             </div>
 
-                                            {/* KPI / Lead Score Badge */}
+                                            {/* KPI / Lead Score Badge (Desktop Only) */}
                                             <div className="hidden sm:block text-right">
                                                 <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Lead Score</p>
                                                 <div className="flex items-center justify-end gap-1">
@@ -1779,41 +1799,41 @@ export default function CallingPage() {
                                         </div>
 
                                         {/* Bottom Section: Info Tiles */}
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                                             {/* Manager Tile */}
-                                            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-indigo-100 transition-all cursor-default group/tile">
-                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 mb-1 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-user flex text-xs"></i>
+                                            <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-indigo-100 transition-all cursor-default group/tile">
+                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-user flex text-[10px] sm:text-xs"></i>
                                                 </div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Manager</p>
-                                                <p className="text-xs font-bold text-slate-800 truncate w-full px-2">{managedByInfo?.name || 'Self'}</p>
+                                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Manager</p>
+                                                <p className="text-[10px] sm:text-xs font-bold text-slate-800 truncate w-full px-1 sm:px-2">{managedByInfo?.name || 'Self'}</p>
                                             </div>
 
                                             {/* Disposition Tile */}
-                                            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-purple-100 transition-all cursor-default group/tile">
-                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-purple-400 mb-1 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-comment-alt text-xs"></i>
+                                            <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-purple-100 transition-all cursor-default group/tile">
+                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-purple-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-comment-alt text-[10px] sm:text-xs"></i>
                                                 </div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Status</p>
-                                                <p className="text-xs font-bold text-purple-600 truncate w-full px-2">{customer?.disposition || 'Fresh'}</p>
+                                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Status</p>
+                                                <p className="text-[10px] sm:text-xs font-bold text-purple-600 truncate w-full px-1 sm:px-2">{customer?.disposition || 'Fresh'}</p>
                                             </div>
 
-                                            {/* Valid Until Tile */}
-                                             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-amber-100 transition-all cursor-default group/tile">
-                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-amber-400 mb-1 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-calendar-clock text-xs"></i>
+                                             {/* Valid Until Tile */}
+                                             <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-amber-100 transition-all cursor-default group/tile">
+                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-amber-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-calendar-clock text-[10px] sm:text-xs"></i>
                                                 </div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry</p>
-                                                <p className="text-xs font-bold text-slate-700 truncate w-full px-2">{formatDate(customer?.expiry_date)}</p>
+                                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry</p>
+                                                <p className="text-[10px] sm:text-xs font-bold text-slate-700 truncate w-full px-1 sm:px-2">{formatDate(customer?.expiry_date)}</p>
                                             </div>
 
                                              {/* Campaign Tile */}
-                                             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-emerald-100 transition-all cursor-default group/tile">
-                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-emerald-500 mb-1 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-bullhorn text-xs"></i>
+                                             <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-emerald-100 transition-all cursor-default group/tile">
+                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-emerald-500 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-bullhorn text-[10px] sm:text-xs"></i>
                                                 </div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Campaign</p>
-                                                <p className="text-xs font-bold text-slate-700 truncate w-full px-2">{campaign?.name || 'N/A'}</p>
+                                                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Campaign</p>
+                                                <p className="text-[10px] sm:text-xs font-bold text-emerald-600 truncate w-full px-1 sm:px-2">{campaign?.name || 'Global'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1953,10 +1973,10 @@ export default function CallingPage() {
                                                             onClick={handleStartCall}
                                                             className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
                                                         >
-                                                            <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center relative z-10 group-hover:shake">
+                                                            <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
                                                                 <i className="fi flex fi-rr-phone-call text-sm"></i>
                                                             </div>
-                                                            <span className="relative z-10">Call</span>
+                                                            <span className="relative z-10">Call Now</span>
                                                         </button>
                                                         <button 
                                                             onClick={handleWhatsAppClick}
