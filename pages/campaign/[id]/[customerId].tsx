@@ -17,6 +17,8 @@ export default function CallingPage() {
     const [customer, setCustomer] = useState<any>(null);
     const [campaign, setCampaign] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
+    const [mobileLogs, setMobileLogs] = useState<any[]>([]);
+    const [timelineView, setTimelineView] = useState<'timeline' | 'call_logs'>('timeline');
     const [managedByInfo, setManagedByInfo] = useState<{name: string, empId: string} | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -42,6 +44,21 @@ export default function CallingPage() {
     
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
+    
+    // Calculate Lead Score based on unique interactions
+    const leadScore = (() => {
+        const uniqueAgents = new Set([
+            ...mobileLogs.map(log => log.employee_id).filter(Boolean),
+            ...(history || []).map(log => log.created_by).filter(Boolean)
+        ]);
+        
+        const count = uniqueAgents.size;
+        
+        if (count === 0) return { label: 'Fresh', color: 'text-emerald-500', icon: 'fi-rr-sparkles' };
+        if (count <= 3) return { label: 'High', color: 'text-blue-500', icon: 'fi-sr-star' };
+        if (count <= 8) return { label: 'Medium', color: 'text-amber-500', icon: 'fi-sr-star' };
+        return { label: 'Low', color: 'text-rose-500', icon: 'fi-sr-star' };
+    })();
 
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
@@ -694,6 +711,76 @@ export default function CallingPage() {
             } catch (err) {
                  console.error("[Fetch] History API exception:", err);
                  setHistory([]);
+            }
+
+            // 4. Fetch Mobile Call Logs (New Logic)
+            if (foundCustomer?.phone_no) {
+                try {
+                    // Clean phone number for matching (remove special chars, take last 10 digits)
+                    const rawPhone = foundCustomer.phone_no.includes('::') 
+                        ? (await import('../../../lib/phoneUtils')).decryptPhone(foundCustomer.phone_no) 
+                        : foundCustomer.phone_no;
+                        
+                    const cleanPhone = String(rawPhone || "").replace(/\D/g, '').slice(-10);
+
+                    if (cleanPhone && cleanPhone.length >= 10) {
+                        const { data: mobileData, error: mobileError } = await supabase
+                            .from('call_history')
+                            .select('*')
+                            .or(`number.eq.${cleanPhone},number.ilike.%${cleanPhone}`)
+                            .order('timestamp', { ascending: false });
+                        
+                        if (mobileError) throw mobileError;
+
+                        // Fetch User Names
+                        let enrichedLogs = mobileData || [];
+                        if (enrichedLogs.length > 0) {
+                            const empIds = [...new Set(enrichedLogs.map(l => l.employee_id).filter(Boolean))];
+                            const deviceIds = [...new Set(enrichedLogs.map(l => l.device_id).filter(Boolean))];
+
+                            const promises = [];
+
+                            if (empIds.length > 0) {
+                                promises.push(
+                                    supabase
+                                        .from('user_profiles')
+                                        .select('employee_id, user_name')
+                                        .in('employee_id', empIds)
+                                );
+                            }
+
+                            if (deviceIds.length > 0) {
+                                promises.push(
+                                    supabase
+                                        .from('sync_meta')
+                                        .select('device_id, device_model')
+                                        .in('device_id', deviceIds)
+                                );
+                            }
+
+                            const results = await Promise.all(promises);
+                            const users = (empIds.length > 0 ? results[0].data : []) as any[];
+                            const devices = (deviceIds.length > 0 ? (empIds.length > 0 ? results[1]?.data : results[0]?.data) : []) as any[];
+
+                            enrichedLogs = enrichedLogs.map(log => {
+                                const foundUser = users?.find((u: any) => u.employee_id === log.employee_id);
+                                const foundDevice = devices?.find((d: any) => d.device_id === log.device_id);
+                                return { 
+                                    ...log, 
+                                    agent_name: foundUser?.user_name,
+                                    device_model: foundDevice?.device_model 
+                                };
+                            });
+                        }
+                        
+                        setMobileLogs(enrichedLogs);
+                    } else {
+                        setMobileLogs([]);
+                    }
+                } catch (err) {
+                    console.error("[Fetch] Mobile logs error:", err);
+                    setMobileLogs([]);
+                }
             }
 
             // 4. Initial Session State (Active Call/Disposition Recovery)
@@ -1616,321 +1703,282 @@ export default function CallingPage() {
 
                     <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-32 lg:pb-12 max-w-7xl">
                         
-                        {/* 1. Header & Navigation */}
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                    <button onClick={() => router.push('/campaign')} className="hover:text-indigo-600 transition-colors">Campaigns</button>
-                                    <span className="opacity-30">/</span>
-                                    <button onClick={() => router.push(`/campaign/${campaignId}`)} className="hover:text-indigo-600 transition-colors">{campaign?.name || 'Campaign'}</button>
-                                    <span className="opacity-30">/</span>
-                                    <span className="text-indigo-500">{customer?.lead_id}</span>
-                                </div>
-                                <h1 className="text-2xl font-semibold text-slate-900 tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                    Call Interface
-                                </h1>
-                            </div>
 
-                            <div className="flex items-center gap-3">
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-semibold text-slate-400">
-                                            {String.fromCharCode(64 + i)}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="h-8 w-px bg-slate-200 mx-1" />
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-[10px] font-semibold text-slate-400 ">Active Operator</p>
-                                    <p className="text-xs font-semibold text-slate-700">{user?.displayName}</p>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* 2. Primary Customer Profile Card */}
-                        <div className="relative mb-6 rounded-2xl bg-white border border-slate-100 overflow-hidden group">
-                            {/* Decorative Background Elements */}
-                            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-indigo-50/50 to-transparent pointer-events-none" />
-                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
-                            <div className="absolute top-12 left-1/4 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                        {/* REDESIGNED LAYOUT: Profile Side-by-Side with Call Engine */}
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-3">
+                            
+                            {/* LEFT: Profile Card (Takes 7 columns) */}
+                            <div className="xl:col-span-8">
+                                <div className="h-full relative rounded-[1rem] bg-white border border-slate-200 overflow-hidden group       transition-shadow duration-500">
+                                    {/* Modern Background */}
+                                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-50/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-50/30 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none" />
 
-                            <div className="relative z-10 p-4 sm:p-6 lg:p-10">
-                                <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10">
-                                    {/* Profile Meta */}
-                                    <div className="flex items-center gap-6 sm:gap-8">
-                                        <div className="relative">
-                                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-2xl sm:text-2xl font-semibold shadow-2xl shadow-indigo-200 transform group-hover:scale-105 transition-all duration-500">
-                                                {customer?.customer_name?.charAt(0) || 'C'}
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center text-indigo-600">
-                                                <i className="fi flex  fi-rr-star text-xs"></i>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="space-y-2">
-                                            <div className="flex flex-wrap items-center gap-3">
-                                                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                                                    {customer?.customer_name || 'Anonymous Customer'}
-                                                </h2>
-                                                <span className={`px-3 py-1 rounded-xl text-[10px] font-semibold  ${
-                                                    customer?.status === 'followup' 
-                                                    ? 'bg-amber-50 text-amber-600 border border-amber-100' 
-                                                    : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                                                }`}>
-                                                    {customer?.status || 'Active'}
-                                                </span>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500">
-                                                <div className="flex items-center gap-1.5">
-                                                    <i className="fi flex  fi-rr-id-badge text-indigo-400"></i>
-                                                    <span>{customer?.lead_id}</span>
+                                    <div className="relative z-10 p-6 h-full flex flex-col justify-between gap-3">
+                                        {/* Top Section: Identity */}
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-4">
+                                                {/* Avatar with Ring */}
+                                                <div className="relative">
+                                                    <div className="w-12  h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-200 ">
+                                                        {customer?.customer_name?.charAt(0) || 'C'}
+                                                    </div>
+                                                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-white flex items-center justify-center ${
+                                                         customer?.status === 'followup' ? 'bg-amber-400' : 'bg-emerald-500'
+                                                    }`}>
+                                                         {customer?.status === 'followup' ? (
+                                                            <i className="fi fi-rr-clock text-[10px] text-white mt-0.5"></i>
+                                                         ) : (
+                                                            <i className="fi fi-rr-check text-[10px] text-white mt-0.5"></i>
+                                                         )}
+                                                    </div>
                                                 </div>
-                                                <div className="w-1 h-1 rounded-full bg-slate-300" />
-                                                <div className="flex items-center gap-1.5">
-                                                    <i className="fi flex  fi-rr-phone-call text-indigo-400"></i>
-                                                    <span>{formatMaskedPhone(customer?.phone_no) || 'N/A'}</span>
+
+                                                {/* Name & ID */}
+                                                <div>
+                                                    <div className="flex  items-center gap-2 mb-1">
+                                                        <h2 className="text-3xl font-bold text-slate-800 tracking-tight">
+                                                            {customer?.customer_name || 'Anonymous User'}
+                                                        </h2>
+
+                                                    </div>
+                                                    <div className="flex items-center gap-4 text-slate-500">
+                                                        
+                                                        <div className="flex items-center gap-1.5">
+                                                            <i className="fi fi-rr-id-badge text-xs opacity-50"></i>
+                                                            <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* KPI / Lead Score Badge */}
+                                            <div className="hidden sm:block text-right">
+                                                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Lead Score</p>
+                                                <div className="flex items-center justify-end gap-1">
+                                                    <i className={`fi flex mr-2 ${leadScore.icon} ${leadScore.color} text-sm`}></i>
+                                                    <span className="text-xl font-black text-slate-800">{leadScore.label}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Stats Row */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 xl:gap-12 w-full xl:w-auto pt-6 xl:pt-0 border-t xl:border-t-0 xl:border-l border-slate-100 xl:pl-12">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-slate-400 ">Manager</p>
-                                            <div className="flex flex-col">
-                                                <span className="text-base font-semibold text-slate-800">{managedByInfo?.name || 'Self'}</span>
-                                                <span className="text-[10px] text-slate-400">{managedByInfo?.empId ? `ID: ${managedByInfo.empId}` : 'No Manager'}</span>
+                                        {/* Bottom Section: Info Tiles */}
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                            {/* Manager Tile */}
+                                            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-indigo-100 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 mb-1 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-user flex text-xs"></i>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Manager</p>
+                                                <p className="text-xs font-bold text-slate-800 truncate w-full px-2">{managedByInfo?.name || 'Self'}</p>
                                             </div>
-                                        </div>
 
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-slate-400 ">Experience</p>
-                                            <div className="flex flex-col">
-                                                <span className="text-base font-semibold text-slate-800">{customer?.disposition || 'Fresh Lead'}</span>
-                                                <span className="text-[10px] text-slate-400">Past Interaction</span>
+                                            {/* Disposition Tile */}
+                                            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-purple-100 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-purple-400 mb-1 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-comment-alt text-xs"></i>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Status</p>
+                                                <p className="text-xs font-bold text-purple-600 truncate w-full px-2">{customer?.disposition || 'Fresh'}</p>
                                             </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-slate-400 ">Valid Until</p>
-                                            <div className="flex flex-col">
-                                                <span className="text-base font-semibold text-slate-800">
-                                                    {formatDate(customer?.expiry_date)}
-                                                </span>
-                                                <span className="text-[10px] text-slate-400">Expiry Schedule</span>
+
+                                            {/* Valid Until Tile */}
+                                             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-amber-100 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-amber-400 mb-1 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-calendar-clock text-xs"></i>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry</p>
+                                                <p className="text-xs font-bold text-slate-700 truncate w-full px-2">{formatDate(customer?.expiry_date)}</p>
                                             </div>
-                                        </div>
-                                        <div className="space-y-1 col-span-2 sm:col-span-1">
-                                            <p className="text-[10px] font-semibold text-slate-400 ">Campaign</p>
-                                            <div className="flex flex-col">
-                                                <span className="text-base font-semibold text-indigo-600 line-clamp-1">{campaign?.name || 'N/A'}</span>
-                                                <span className="text-[10px] text-slate-400 uppercase">Current Source</span>
+
+                                             {/* Campaign Tile */}
+                                             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-1 hover:bg-white    hover:border-emerald-100 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-emerald-500 mb-1 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex fi-rr-bullhorn text-xs"></i>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Campaign</p>
+                                                <p className="text-xs font-bold text-slate-700 truncate w-full px-2">{campaign?.name || 'N/A'}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Detail Tags Area */}
-                                {customer?.utilities && (
-                                    <div className="mt-6 sm:mt-10 pt-6 sm:pt-10 border-t border-slate-50">
-                                        <div className="flex items-center gap-3 mb-6">
-                                            <i className="fi flex  fi-rr-layers text-indigo-500"></i>
-                                            <h3 className="text-xs font-semibold text-slate-800 uppercase tracking-[0.2em]">Extended Profile Data</h3>
-                                        </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                            {(() => {
-                                                const data = typeof customer.utilities === 'string' ? JSON.parse(customer.utilities) : customer.utilities;
-                                                return Object.entries(data).slice(0, 8).map(([key, value]) => (
-                                                    <div key={key} className="p-4 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-md hover:scale-[1.02] transition-all duration-300">
-                                                        <p className="text-[12px] font-semibold text-slate-400  mb-1 truncate">{key.replace(/_/g, ' ')}</p>
-                                                        <p className="text-xs font-semibold text-slate-800 truncate">{String(value)}</p>
-                                                    </div>
-                                                ));
-                                            })()}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-                        </div>
-
-                        {/* 3. Main Action Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                            
-                            {/* CALLING INTERFACE (Left) */}
-                            <div className="lg:col-span-8 space-y-6">
-                                
+ 
+                            {/* RIGHT: Call Engine (Takes 5 columns) */}
+                            <div className="xl:col-span-4 flex flex-col">
                                 {/* The Call Engine */}
-                                <div className={`relative overflow-hidden rounded-3xl transition-all duration-1000 ${
+                                <div className={`flex-1 relative overflow-hidden rounded-3xl transition-all duration-1000 flex flex-col ${
                                     isCalling 
                                     ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-800' 
-                                    : 'bg-white border border-slate-100 shadow-sm'
+                                    : 'bg-white border border-slate-200   '
                                 }`}>
                                     {/* Abstract Background Visuals */}
                                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                                         <div className={`absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-white/15' : 'bg-indigo-50/50'}`} />
                                         <div className={`absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-purple-500/20' : 'bg-violet-50/50'}`} />
                                         
-                                        {/* Scanline effect for active call */}
-                                        {isCalling && (
-                                            <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 bg-[length:100%_2px,3px_100%]" />
-                                        )}
                                     </div>
+                                    
+                                     {/* Keypad / Actions */}
+                                     {/* ... keeping existing keypad code ... */}
+                                     {/* I need to make sure I don't delete the keypad logic. 
+                                         Since I cannot "skip" content in Replace, 
+                                         I must include the entire Call Engine content or find a precise insertion point.
+                                     */
+                                     } 
+                                     {/* This is risky. The Call Engine is huge. */}
+                                     
+                                     {/* BETTER STRATEGY: 
+                                        I already replaced the START of Call Engine.
+                                        Now I just need to find where the "old" layout structure (Grid Col 8) continues and modify it.
+                                     */
+                                     }
 
                                     {/* Content Container */}
-                                    <div className="relative z-10 p-6 sm:p-10">
-                                        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 text-center lg:text-left">
+                                    <div className="relative z-10 p-3 h-full flex flex-col">
+                                    <div className="flex flex-col h-full justify-between gap-1 relative z-20">
                                             
                                             {/* LEFT: Branding & Status */}
-                                            <div className="flex flex-col md:flex-row items-center gap-5 lg:gap-6 text-center md:text-left">
-                                                {/* Calling Hub Icon */}
-                                                <div className="relative shrink-0 group">
-                                                    {/* Pulse animations */}
-                                                    {isCalling && (
-                                                        <>
-                                                            <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-50" />
-                                                            <div className="absolute inset-2 rounded-full border border-white/10 animate-[ping_3s_linear_infinite] opacity-30" />
-                                                        </>
-                                                    )}
-
-                                                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg ${
-                                                        isCalling 
-                                                        ? 'bg-white text-indigo-600 shadow-indigo-500/20 rotate-3 scale-105' 
-                                                        : 'bg-white text-indigo-500 shadow-indigo-100 group-hover:scale-105 group-hover:rotate-3'
-                                                    }`}>
-                                                        <i className={`fi flex fi-rr-${isCalling ? 'headset' : 'phone-call'} text-2xl sm:text-3xl`}></i>
+                                            {/* ULTRA COMPACT STATUS SECTION */}
+                                            <div className="w-full text-center space-y-1 pt-1">
+                                                {/* Dynamic Status Badge */}
+                                                <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border    backdrop-blur-md transition-all duration-500 mx-auto ${
+                                                    isCalling 
+                                                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-100' 
+                                                    : 'bg-white/60 border-indigo-100 text-indigo-600'
+                                                }`}>
+                                                    
+                                                    <div className="relative flex h-1.5 w-1.5">
+                                                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isCalling ? 'bg-emerald-400' : 'bg-indigo-400'}`}></span>
+                                                        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isCalling ? 'bg-emerald-500' : 'bg-indigo-500'}`}></span>
                                                     </div>
-
-                                                    {/* Status Dot */}
-                                                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-[3px] border-white flex items-center justify-center shadow-sm ${
-                                                        isCalling ? 'bg-emerald-500' : 'bg-indigo-500'
-                                                    }`}>
-                                                        <div className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                                                    </div>
+                                                    <span className="text-[8px] font-black uppercase tracking-widest leading-none pt-px">
+                                                        {localCallingStatus === 'preparing' ? 'Establishing' :
+                                                         localCallingStatus === 'connecting' ? 'Connecting' :
+                                                         isCalling ? 'Live' :
+                                                         postCall ? 'Done' : 
+                                                         'Ready'}
+                                                    </span>
                                                 </div>
 
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center justify-center md:justify-start gap-2">
-                                                        <div className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border flex items-center gap-1.5 ${
-                                                            isCalling 
-                                                            ? 'bg-white/10 text-white border-white/20' 
-                                                            : 'bg-indigo-50 text-indigo-600 border-indigo-100'
-                                                        }`}>
-                                                            <div className={`w-1.5 h-1.5 rounded-full ${isCalling ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-                                                            {isCalling ? 'Live Audio' : 'Ready'}
+                                                {/* Compact Timer / Title */}
+                                                <div>
+                                                    {isCalling ? (
+                                                        <div className="animate-in zoom-in duration-300 flex flex-col items-center">
+                                                            <h1 className="text-2xl sm:text-3xl mt-2 font-bold text-white tracking-tighter tabular-nums " style={{ textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                                                                {formatTime(callDuration)}
+                                                            </h1>
                                                         </div>
-                                                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isCalling ? 'text-indigo-200' : 'text-slate-400'}`}>
-                                                            VoIP Secure
+                                                    ) : (
+                                                        <div className="flex flex-col items-center">
+                                                            <h2 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${postCall ? 'text-slate-400' : 'text-slate-800'}`}>
+                                                                {postCall ? 'Ended' : 'VoIP Control'}
+                                                            </h2>
+                                                            <p className="text-[9px] font-medium text-slate-400 max-w-[160px] leading-tight mt-0.5">
+                                                                {postCall 
+                                                                 ? 'Mark outcome.' 
+                                                                 : 'Line ready.'}
+                                                            </p>
+                                                             <div className="flex mt-4 items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-colors hover:bg-blue-100 hover:border-blue-200 group/phone">
+                                                            <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
+                                                            <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
+                                                                {formatMaskedPhone(customer?.phone_no) || 'N/A'}
+                                                            </span>
+                                                            <span className={`px-2 ml-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                                (customer?.status || 'Active') !== 'Active'
+                                                                ? 'bg-orange-50 text-orange-600 border-orange-200'
+                                                                : 'bg-slate-100 text-slate-500 border-slate-200'
+                                                            }`}>
+                                                            {customer?.status || 'Active'}
                                                         </span>
-                                                    </div>
-                                                    
-                                                    <h4 className={`text-xl sm:text-2xl font-bold tracking-tight ${isCalling ? 'text-white' : 'text-slate-900'}`}>
-                                                        {localCallingStatus === 'preparing' ? 'Preparing...' :
-                                                         localCallingStatus === 'connecting' ? 'Connecting...' :
-                                                         isCalling ? 'Call in Progress' :
-                                                         postCall ? 'Session Ended' : 
-                                                         'Ready to Call'}
-                                                    </h4>
-                                                    
-                                                    <p className={`text-[11px] font-medium max-w-[200px] sm:max-w-md mx-auto md:mx-0 leading-relaxed ${isCalling ? 'text-indigo-100/80' : 'text-slate-400'}`}>
-                                                        {isCalling 
-                                                            ? 'Secure line established. Recording active.' 
-                                                            : 'Initiate connection to start assignment.'}
-                                                    </p>
+                                                        </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Visualizer Spacer (Middle) */}
+                                                <div className="flex mt-4 items-center justify-center min-h-[15px] py-1">
+                                                    {isCalling && (
+                                                        <div className="flex items-center gap-1 h-4">
+                                                            {[...Array(5)].map((_, i) => (
+                                                                <div key={i} className="w-1 bg-white/60 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: `${i * 0.12}s`, height: `${30 + Math.random() * 70}%` }} />
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             {/* RIGHT: Dynamic Action & Stats Area */}
-                                            <div className="w-full lg:w-auto flex flex-col items-center lg:items-end gap-5">
+                                            {/* 3. ULTRA COMPACT ACTIONS */}
+                                            <div className="w-full pb-0">
                                                 {isCalling ? (
-                                                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
-                                                        {/* Modern Timer Card - Only show when connected */}
-                                                        {localCallingStatus === 'connected' ? (
-                                                            <div className="flex-1 lg:flex-none py-3 px-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center lg:text-right min-w-[140px]">
-                                                                <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums tracking-tighter leading-none mb-1">
-                                                                    {formatTime(callDuration)}
-                                                                </p>
-                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-200">Session Time</p>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex-1 lg:flex h-14 py-3 px-6 rounded-2xl bg-white/5 border border-white/10 text-center lg:text-right min-w-[140px]">
-                                                                <div className="flex items-center justify-center lg:justify-end gap-2 text-white">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                                                                    <p className="text-xs font-black uppercase tracking-widest italic opacity-80">Establishing...</p>
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {/* End Call Action */}
+                                                    <div className="grid grid-cols-[1fr_auto] gap-2">
                                                         <button 
                                                             onClick={() => handleEndCall(false)}
-                                                            className="w-full sm:w-auto h-14 sm:h-auto sm:aspect-square sm:p-5 rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-2xl shadow-red-500/30 transition-all hover:scale-105 active:scale-95 group flex items-center justify-center gap-3 sm:gap-0"
+                                                            className="w-full h-12 rounded-xl bg-red-500 hover:bg-red-600 active:bg-red-700 text-white shadow-lg shadow-red-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 group overflow-hidden relative"
                                                         >
-                                                            <i className="fi flex fi-rr-phone-slash text-xl transform group-hover:rotate-12 transition-transform"></i>
-                                                            <span className="sm:hidden font-black text-[10px] uppercase tracking-widest">End Call</span>
+                                                            <div className="w-6 h-6 mr-3 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
+                                                                <i className="fi flex fi-rr-phone-slash text-sm"></i>
+                                                            </div>
+                                                            <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">End</span>
                                                         </button>
+                                                          <button 
+                                                            onClick={handleWhatsAppClick}
+                                                            className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
+                                                        >
+                                                            <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                        </button>
+                                                        
+                                                       
                                                     </div>
                                                 ) : !postCall ? (
-                                                    <div className="flex flex-row gap-3 w-full sm:w-auto">
+                                                    <div className="grid grid-cols-[1fr_auto] gap-2">
                                                         <button 
                                                             onClick={handleStartCall}
-                                                            className="flex-1 sm:flex-none w-auto sm:w-auto px-6 h-16 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group"
+                                                            className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
                                                         >
-                                                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                                                            <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center relative z-10 group-hover:shake">
                                                                 <i className="fi flex fi-rr-phone-call text-sm"></i>
                                                             </div>
-                                                            <span className="whitespace-nowrap">Call Now</span>
+                                                            <span className="relative z-10">Call</span>
                                                         </button>
-
                                                         <button 
                                                             onClick={handleWhatsAppClick}
-                                                            className="w-16 sm:w-auto px-0 sm:px-4 h-16 rounded-2xl bg-[#25D366] hover:bg-[#128C7E] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 group shrink-0"
-                                                            title="Chat on WhatsApp"
+                                                            className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
                                                         >
-                                                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                                                <i className="fi flex fi-brands-whatsapp text-lg"></i>
-                                                            </div>
+                                                            <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex flex-col sm:flex-row items-center justify-end gap-3 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                                        <div className="px-5 py-3 h-14 rounded-2xl bg-emerald-50/80 backdrop-blur-sm border border-emerald-100/50 flex items-center justify-center gap-3 w-full sm:w-auto shadow-sm">
-                                                            <div className="relative flex h-2.5 w-2.5">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                                                            </div>
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 whitespace-nowrap">Session Pending</span>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                                                            {/* Redial Button */}
-                                                             <button 
-                                                                onClick={handleStartCall}
-                                                                className="flex-1 sm:flex-none h-14 w-full sm:w-16 rounded-2xl bg-indigo-50 border border-indigo-100/50 text-indigo-600 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 flex items-center justify-center group"
-                                                                title="Redial Customer"
-                                                            >
-                                                                <i className="fi flex fi-rr-refresh text-xl group-hover:rotate-180 transition-transform duration-500"></i>
-                                                            </button>
-
-                                                            {/* WhatsApp Button */}
-                                                            <button 
-                                                                onClick={handleWhatsAppClick}
-                                                                className="flex-1 sm:flex-none h-14 w-full sm:w-16 rounded-2xl bg-emerald-50 border border-emerald-100/50 text-emerald-600 hover:bg-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 flex items-center justify-center group"
-                                                                title="Chat on WhatsApp"
-                                                            >
-                                                                <i className="fi flex fi-brands-whatsapp text-xl"></i>
-                                                            </button>
-                                                        </div>
+                                                    <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                                        <button 
+                                                            onClick={handleStartCall}
+                                                            className="h-10 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:  "
+                                                        >
+                                                            <i className="fi flex fi-rr-refresh text-xs"></i> Redial
+                                                        </button>
+                                                        <button 
+                                                            onClick={handleWhatsAppClick}
+                                                            className="h-10 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-600 font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:  "
+                                                        >
+                                                            <i className="fi flex fi-brands-whatsapp text-xs"></i> Chat
+                                                        </button>
                                                     </div>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
                                 </div>
+                                </div>
+                        </div>
+                        </div>
+                        </div>
 
-                                {/* Detail Display & Form Area */}
-                                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+                        {/* 3. Main Content Grid (Bottom Row) - Equal 3 Columns */}
+                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                                     {/* INFO CARD */}
-                                    <div className="xl:col-span-5 bg-white rounded-2xl p-5 sm:p-8 border border-slate-100 relative overflow-hidden h-auto xl:min-h-[800px] flex flex-col">
+                                    <div className="xl:col-span-3 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 relative overflow-hidden h-auto xl:min-h-[800px] flex flex-col">
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/30 rounded-bl-[3rem] -z-0" />
                                         <div className="relative z-10 flex flex-col h-full">
                                             <div className="flex items-center gap-3 mb-8">
@@ -1949,7 +1997,7 @@ export default function CallingPage() {
                                     </div>
 
                                     {/* OUTCOME FORM */}
-                                    <div className={`xl:col-span-7 bg-white rounded-2xl p-5 border border-slate-100 relative transition-opacity duration-500 h-auto xl:min-h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
+                                    <div className={`xl:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 relative transition-opacity duration-500 h-auto xl:min-h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50/30 rounded-bl-[3rem] z-0" />
                                          <div className="relative z-10 space-y-6 flex-1 pb-24">
                                             <div className="flex items-center gap-3">
@@ -1979,7 +2027,7 @@ export default function CallingPage() {
                                                             </button>
 
                                                             {isAssignPickerOpen && (
-                                                                <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-[110] animate-in fade-in zoom-in-95 duration-200">
+                                                                <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-[110] animate-in fade-in zoom-in-95 duration-200">
                                                                     <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
                                                                         {(!campaign?.users || campaign.users.length === 0) ? (
                                                                             <div className="p-4 text-center">
@@ -2023,8 +2071,8 @@ export default function CallingPage() {
                                                                 }}
                                                                 className={`px-3 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                                                     disposition === item 
-                                                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
-                                                                    : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-400 hover:text-indigo-600 hover:shadow-sm'
+                                                                    ? 'bg-indigo-600 text-white border-indigo-600   scale-105' 
+                                                                    : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-400 hover:text-indigo-600 hover:  '
                                                                 }`}
                                                             >
                                                                 {item}
@@ -2047,8 +2095,8 @@ export default function CallingPage() {
                                                                         }}
                                                                         className={`px-1 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                                                             subDisposition === sub 
-                                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl scale-105' 
-                                                                            : 'bg-white text-indigo-500 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-sm'
+                                                                            ? 'bg-indigo-600 text-white border-indigo-600   scale-105' 
+                                                                            : 'bg-white text-indigo-500 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 hover:  '
                                                                         }`}
                                                                     >
                                                                     {sub}
@@ -2113,7 +2161,7 @@ export default function CallingPage() {
                                                                              e.stopPropagation();
                                                                              handleDeleteOutcome(out.id);
                                                                         }}
-                                                                        className={`absolute -top-2 -right-2 w-5 h-5 bg-white text-red-500 border border-red-100 rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex shadow-sm hover:bg-red-50`}
+                                                                        className={`absolute -top-2 -right-2 w-5 h-5 bg-white text-red-500 border border-red-100 rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex    hover:bg-red-50`}
                                                                     >
                                                                          <i className="fi fi-rr-cross-small text-[10px]"></i>
                                                                     </button>
@@ -2221,13 +2269,13 @@ export default function CallingPage() {
                                                                 <button 
                                                                     type="button"
                                                                     onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
-                                                                    className="w-full h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
+                                                                    className="w-full h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-200 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
                                                                 >
                                                                     {callbackDate ? formatDate(callbackDate) : 'Select Date'}
                                                                 </button>
 
                                                                 {isDatePickerOpen && (
-                                                                    <div className="absolute top-full mt-2 left-0 w-[240px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                                                    <div className="absolute top-full mt-2 left-0 w-[240px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-[100] animate-in fade-in zoom-in-95 duration-200">
                                                                         {/* Calendar Header */}
                                                                         <div className="flex items-center justify-between mb-4">
                                                                             <button 
@@ -2295,13 +2343,13 @@ export default function CallingPage() {
                                                                 <button 
                                                                     type="button"
                                                                     onClick={() => setIsTimePickerOpen(!isTimePickerOpen)}
-                                                                    className="w-full  h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-100 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
+                                                                    className="w-full  h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-200 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
                                                                 >
                                                                     {callbackTime || 'Select Time'}
                                                                 </button>
 
                                                                  {isTimePickerOpen && (
-                                                                    <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-100 p-3 z-[100] animate-in fade-in zoom-in-95 duration-200">
+                                                                    <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 z-[100] animate-in fade-in zoom-in-95 duration-200">
                                                                         {/* Custom Time Input */}
                                                                         <div className="mb-4 pt-1">
                                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Custom Time</p>
@@ -2310,7 +2358,7 @@ export default function CallingPage() {
                                                                                 value={callbackTime}
                                                                                 onChange={(e) => setCallbackTime(e.target.value)}
                                                                                 onClick={(e) => e.currentTarget.showPicker?.()}
-                                                                                className="w-full h-[32px] bg-slate-50 rounded-xl px-3 text-[10px] font-bold text-slate-700 border border-slate-100 focus:border-indigo-400 outline-none transition-all uppercase tracking-tight cursor-pointer"
+                                                                                className="w-full h-[32px] bg-slate-50 rounded-xl px-3 text-[10px] font-bold text-slate-700 border border-slate-200 focus:border-indigo-400 outline-none transition-all uppercase tracking-tight cursor-pointer"
                                                                                 style={{ colorScheme: 'light' }}
                                                                             />
                                                                         </div>
@@ -2330,7 +2378,7 @@ export default function CallingPage() {
                                                                                     className={`py-2 rounded-xl text-[10px] font-bold transition-all border ${
                                                                                         callbackTime === t
                                                                                         ? 'bg-indigo-600 text-white border-indigo-600'
-                                                                                        : 'bg-slate-50 text-slate-600 border-slate-100 hover:border-indigo-200 hover:text-indigo-600'
+                                                                                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-indigo-200 hover:text-indigo-600'
                                                                                     }`}
                                                                                 >
                                                                                     {t}
@@ -2357,55 +2405,60 @@ export default function CallingPage() {
                                                         value={notes}
                                                         onChange={(e) => setNotes(e.target.value)}
                                                         placeholder="Add specific details about the conversation..."
-                                                        className="w-full bg-slate-50/50 text-gray-700 rounded-2xl p-4 text-xs font-semibold border border-slate-100 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:outline-none transition-all min-h-[80px] resize-none"
+                                                        className="w-full bg-slate-50/50 text-gray-700 rounded-2xl p-4 text-xs font-semibold border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:outline-none transition-all min-h-[80px] resize-none"
                                                     />
                                                 </div>
 
                                                 <button 
                                                     disabled={saving || !postCall}
                                                     onClick={handleSaveDisposition}
-                                                    className="w-full h-11 rounded-2xl bg-indigo-600 hover:bg-slate-900 text-white font-semibold text-xs uppercase tracking-[0.2em] shadow-xl transition-all disabled:opacity-50"
+                                                    className="w-full h-11 rounded-2xl bg-indigo-600 hover:bg-slate-900 text-white font-semibold text-xs uppercase tracking-[0.2em]   transition-all disabled:opacity-50"
                                                 >
                                                     {saving ? 'Processing...' : 'Save & Continue'}
                                                 </button>
                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
+                            
                             {/* ACTIVITY SIDEBAR (Right) */}
-                            <div className="lg:col-span-4">
-                                <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-100 h-auto xl:min-h-[800px] flex flex-col">
-                                    <div className="flex items-center justify-between mb-10">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-white">
-                                                <i className="fi flex  fi-rr-time-past text-sm"></i>
-                                            </div>
-                                            <div>
-                                                <h3 className="font-semibold text-slate-800">Timeline</h3>
-                                                <p className="text-[10px] font-semibold text-slate-400 ">History</p>
-                                            </div>
+                            <div className="xl:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex bg-slate-100 p-1 rounded-xl">
+                                            <button 
+                                                onClick={() => setTimelineView('timeline')}
+                                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'timeline' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                <i className="fi fi-rr-time-past"></i>
+                                                Timeline
+                                            </button>
+                                            <button 
+                                                onClick={() => setTimelineView('call_logs')}
+                                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'call_logs' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                <i className="fi fi-rr-call-history"></i>
+                                                Call Logs
+                                            </button>
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-[10px] font-semibold text-slate-400 border border-slate-100">
-                                            {history.length}
+                                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-[10px] font-semibold text-slate-400 border border-slate-200">
+                                            {timelineView === 'timeline' ? history.length : mobileLogs.length || 0}
                                         </div>
                                     </div>
 
-                                    <div className="h-[800px] overflow-y-auto pr-2 custom-scrollbar">
-                                        {history.length === 0 ? (
-                                            <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
-                                                <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                                                    <i className="fi flex  fi-rr-box-open text-2xl"></i>
+                                    {timelineView === 'timeline' ? (
+                                        <div className="h-[800px] overflow-y-auto px-4 custom-scrollbar">
+                                            {history.length === 0 ? (
+                                                <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
+                                                    <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+                                                        <i className="fi flex  fi-rr-box-open text-2xl"></i>
+                                                    </div>
+                                                    <p className="text-xs font-semibold ">No Activity Yet</p>
                                                 </div>
-                                                <p className="text-xs font-semibold ">No Activity Yet</p>
-                                            </div>
                                         ) : (
-                                            <div className="relative pl-6 border-l-2 border-slate-100 space-y-6">
+                                            <div className="relative pl-6 border-l-2 border-slate-200 space-y-6">
                                                 {history.map((log: any) => (
                                                     <div key={log.id} className="relative">
                                                         {/* Timeline Marker */}
-                                                        <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-4 border-white shadow-sm ${
+                                                        <div className={`absolute -left-[33px] top-1 w-4 h-4 rounded-full border-4 border-white    ${
                                                             log.disposition === 'Deal Done' ? 'bg-green-500' :
                                                             log.disposition === 'Call Back' ? 'bg-amber-500' :
                                                             log.disposition === 'Not Contactable' ? 'bg-red-400' :
@@ -2434,7 +2487,7 @@ export default function CallingPage() {
                                                             </div>
 
                                                             {/* Content Card */}
-                                                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-indigo-100 hover:bg-white hover:shadow-md transition-all space-y-3">
+                                                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 group hover:border-indigo-100 hover:bg-white    transition-all space-y-3">
                                                                 {/* Notes */}
                                                                 {log.notes && (
                                                                     <p className="text-xs font-medium text-slate-500 leading-relaxed italic">
@@ -2443,7 +2496,7 @@ export default function CallingPage() {
                                                                 )}
 
                                                                 {/* Metadata Grid */}
-                                                                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                                                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
                                                                    
                                                                     {/* Next Follow Up */}
                                                                     {log.next_called_at && (
@@ -2513,6 +2566,97 @@ export default function CallingPage() {
                                             </div>
                                         )}
                                     </div>
+                                    ) : (
+                                        // MOBILE LOGS VIEW
+                                        <div className="h-[800px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
+                                            {mobileLogs.length === 0 ? (
+                                                <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
+                                                    <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+                                                        <i className="fi flex fi-rr-smartphone text-2xl"></i>
+                                                    </div>
+                                                    <p className="text-xs font-semibold ">No Mobile Logs Found</p>
+                                                </div>
+                                            ) : (
+                                                mobileLogs.map((log: any) => (
+                                                    <div key={log.id} className="relative p-4 rounded-xl bg-white border border-slate-200/80 hover:border-slate-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                                                         {/* Background Decoration */}
+                                                         <div className={`absolute top-0 right-0 w-16 h-16 rounded-bl-full opacity-5 transition-colors ${
+                                                             log.type === 'INCOMING' ? 'bg-emerald-500' :
+                                                             log.type === 'OUTGOING' ? 'bg-blue-500' :
+                                                             'bg-red-500'
+                                                         }`} />
+
+                                                         <div className="flex items-start gap-4 relative z-10">
+                                                            {/* Icon Box */}
+                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md transform transition-transform group-hover:scale-110 duration-300 mt-1 ${
+                                                                log.type === 'INCOMING' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-200' :
+                                                                log.type === 'OUTGOING' ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-200' :
+                                                                'bg-gradient-to-br from-red-400 to-red-600 shadow-red-200'
+                                                            }`}>
+                                                                <i className={`fi text-lg flex ${
+                                                                    log.type === 'INCOMING' ? 'fi-rr-call-incoming' :
+                                                                    log.type === 'OUTGOING' ? 'fi-rr-call-outgoing' :
+                                                                    'fi-rr-phone-cross'
+                                                                }`}></i>
+                                                            </div>
+
+                                                            {/* Main Content */}
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-sm font-bold text-slate-800 tracking-tight font-heading">{formatMaskedPhone(log.number)}</span>
+                                                                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border ${
+                                                                             log.type === 'INCOMING' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                                             log.type === 'OUTGOING' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                                             'bg-red-50 text-red-600 border-red-100' 
+                                                                        }`}>{log.type}</span>
+                                                                    </div>
+                                                                    <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
+                                                                        <i className="fi fi-rr-calendar-clock text-[10px] opacity-60"></i>
+                                                                        {new Date(log.timestamp).toLocaleDateString([], { day: '2-digit', month: 'short' })}
+                                                                    </span>
+                                                                </div>
+                                                                
+                                                                {/* Secondary Info Row */}
+                                                                 <div className="flex items-center gap-4 text-[11px] text-slate-500 font-medium mt-1.5">
+                                                                    <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-200">
+                                                                         <i className="fi fi-rr-clock-three text-[10px] text-slate-400"></i>
+                                                                         <span className="text-slate-600 font-bold">{formatTime(log.duration || 0)}</span>
+                                                                    </div>
+                                                                    <div className="h-4 w-px bg-slate-200"></div>
+                                                                    <span className="text-slate-400">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                </div>
+                                                            </div>
+                                                         </div>
+
+                                                         {/* Footer Meta - Full Width */}
+                                                         <div className="relative z-10 flex items-center justify-between mt-4 pt-4 border-t border-dashed border-slate-200">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0 border border-indigo-100">
+                                                                     <i className="fi fi-rr-circle-user text-[14px]"></i>
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[11px] font-bold text-slate-700 leading-none mb-0.5">
+                                                                        {log.agent_name || 'Unknown Agent'}
+                                                                    </span>
+                                                                    <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-tight flex items-center gap-1">
+                                                                        <span className="w-1 h-1 rounded-full bg-indigo-400"></span>
+                                                                        {log.employee_id || 'N/A'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200" title={`Device: ${log.device_id || 'Unknown'}`}>
+                                                                <i className="fi fi-rr-smartphone text-[12px] text-slate-400"></i>
+                                                                <span className="text-[10px] font-semibold text-slate-500 font-mono tracking-tight">
+                                                                    {log.device_model || (log.device_id ? log.device_id.substring(0, 8) + '...' : 'Unknown')}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    )}
                                     
                                     <div className="mt-8 p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between">
                                         <div className="flex items-center gap-3">
@@ -2524,7 +2668,6 @@ export default function CallingPage() {
                                         <span className="text-sm font-semibold">{history.filter(h => h.duration > 0).length}</span>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </main>
@@ -2554,4 +2697,4 @@ export default function CallingPage() {
             `}</style>
         </div>
     );
-}
+}3
