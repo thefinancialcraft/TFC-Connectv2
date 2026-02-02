@@ -26,6 +26,8 @@ export interface StoredUserData {
   is_client?: boolean;
   designation?: string | null;
   allowed_tabs?: string[];
+  google_calendar_connected?: boolean;
+  google_calendar_skipped?: boolean;
 }
 
 const STORAGE_KEY = 'tfc_user_data';

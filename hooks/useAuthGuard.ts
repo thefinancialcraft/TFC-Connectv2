@@ -46,6 +46,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
         isCaller: cachedData.is_caller ?? false,
         isClient: cachedData.is_client ?? true,
         designation: cachedData.designation || null,
+        googleCalendarConnected: cachedData.google_calendar_connected ?? false,
+        googleCalendarSkipped: cachedData.google_calendar_skipped ?? false,
       };
     }
     return null;
@@ -267,6 +269,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
           profile_pic_url: userData.profilePicUrl || null,
           approval_status: userData.approvalStatus || null,
           status: userData.accountStatus || null,
+          google_calendar_connected: userData.googleCalendarConnected,
+          google_calendar_skipped: userData.googleCalendarSkipped,
        });
     }
   };

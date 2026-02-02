@@ -31,6 +31,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         profilePicUrl: cached.profile_pic_url || null,
         isClient: cached.is_client,
         designation: cached.designation,
+        googleCalendarConnected: cached.google_calendar_connected ?? false,
+        googleCalendarSkipped: cached.google_calendar_skipped ?? false,
       };
     }
     return null;
@@ -45,6 +47,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
             isClient: user.isClient,
             designation: user.designation,
             uid: user.uid || (user as any).id,
+            googleCalendarConnected: user.googleCalendarConnected,
+            googleCalendarSkipped: user.googleCalendarSkipped,
           };
         }
  
@@ -56,6 +60,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           prev.profilePicUrl !== (user.profilePicUrl || null) ||
           prev.isClient !== user.isClient ||
           prev.designation !== user.designation ||
+          prev.googleCalendarConnected !== user.googleCalendarConnected ||
+          prev.googleCalendarSkipped !== user.googleCalendarSkipped ||
           prev.uid !== (user.uid || (user as any).id);
  
         if (hasChanged) {
@@ -68,6 +74,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
             isClient: user.isClient,
             designation: user.designation,
             uid: user.uid || (user as any).id,
+            googleCalendarConnected: user.googleCalendarConnected,
+            googleCalendarSkipped: user.googleCalendarSkipped,
           };
         }
         return prev;
