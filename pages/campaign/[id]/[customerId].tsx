@@ -1230,8 +1230,10 @@ export default function CallingPage() {
 
         const isFollowup = disposition === 'Call Back' || subDisposition?.toLowerCase().includes('interested') || subDisposition?.toLowerCase().includes('follow up');
         
-        // Show Calendar Modal if user hasn't connected or skipped
-        if (isFollowup && user && !user.googleCalendarConnected && !user.googleCalendarSkipped) {
+        // Show Calendar Modal if user hasn't connected or skipped, AND NOT on mobile (Flutter)
+        const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
+        
+        if (isFollowup && user && !user.googleCalendarConnected && !user.googleCalendarSkipped && !isMobile) {
             setShowCalendarModal(true);
             return;
         }
@@ -1482,7 +1484,13 @@ export default function CallingPage() {
 📅 Expiry Date: ${customer?.expiry_date ? new Date(customer.expiry_date).toDateString() : 'N/A'}
 
 📋 Policy Details:
-${customer?.customer_details ? Object.entries(customer.customer_details).map(([k, v]) => `• ${k.replace(/_/g, ' ').toUpperCase()}: ${v}`).join('\n') : 'N/A'}
+${(() => {
+    let details = customer?.customer_details;
+    if (!details) return 'N/A';
+    if (typeof details === 'string') { try { details = JSON.parse(details); } catch { return String(details); } }
+    if (typeof details !== 'object') return String(details);
+    return Object.entries(details).map(([k, v]) => `• ${k.replace(/_(un)?checked/gi, '').replace(/_/g, ' ').toUpperCase()}: ${v}`).join('\n');
+})()}
 
 📊 Status:
 • Disposition: ${disposition}
