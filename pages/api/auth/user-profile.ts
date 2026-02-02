@@ -171,8 +171,8 @@ export default async function handler(
         isClient: profile?.is_client ?? false,
         designation: profile?.designation || null,
         organization_id: profile?.organization_id || null,
-        googleCalendarConnected: providers.includes('google') || profile?.google_calendar_connected || userMetadata.google_calendar_connected || false,
-        googleCalendarSkipped: profile?.google_calendar_skipped || userMetadata.google_calendar_skipped || false,
+        googleCalendarConnected: profile?.google_calendar_connected ?? userMetadata.google_calendar_connected ?? providers.includes('google') ?? false,
+        googleCalendarSkipped: profile?.google_calendar_skipped ?? userMetadata.google_calendar_skipped ?? false,
       },
     });
   } catch (error: any) {
