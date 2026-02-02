@@ -1460,7 +1460,13 @@ export default function CallingPage() {
                     if (user?.googleCalendarConnected) {
                         try {
                             const { data: { session } } = await supabase.auth.getSession();
-                            const providerToken = session?.provider_token;
+                            let providerToken = session?.provider_token;
+
+                            // Fallback: Try to retrieve from localStorage if session token is missing
+                            if (!providerToken) {
+                                providerToken = localStorage.getItem("google_provider_token");
+                                if (providerToken) console.log("🔄 [Calendar] Using fallback stored token.");
+                            }
 
                             if (providerToken) {
                                 const endTime = new Date(new Date(combinedDateTime).getTime() + 30 * 60000).toISOString(); // +30 mins
@@ -1482,10 +1488,15 @@ export default function CallingPage() {
                                         alert("Calendar invite sent!");
                                     } else {
                                         console.warn("⚠️ [Calendar] Failed to create event:", data.error);
+                                        alert(`Failed to create calendar event: ${data.error}`);
                                     }
-                                }).catch(err => console.error("❌ [Calendar] Network error:", err));
+                                }).catch(err => {
+                                    console.error("❌ [Calendar] Network error:", err);
+                                    alert("Network error while creating calendar event.");
+                                });
                             } else {
-                                console.warn("⚠️ [Calendar] No provider_token found in session. Re-login might be required.");
+                                console.warn("⚠️ [Calendar] No provider_token found in session or storage.");
+                                alert("Google Calendar Token missing. Please go to Settings > Integrations and Reconnect Google Calendar.");
                             }
                         } catch (calErr) {
                             console.error("❌ [Calendar] execution error:", calErr);

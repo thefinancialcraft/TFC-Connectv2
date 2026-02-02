@@ -134,6 +134,12 @@ export default function Settings() {
               .eq('user_id', user.uid)
               .maybeSingle();
             
+            // Capture provider token if available (persist for calendar usage)
+            if (session.provider_token) {
+              localStorage.setItem("google_provider_token", session.provider_token);
+              console.log("✅ [Settings] Google Token persisted.");
+            }
+            
             setFormData((prev) => ({
               ...prev,
               email: profileData.user.email || fullProfile?.email || "",
