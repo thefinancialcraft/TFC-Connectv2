@@ -40,6 +40,8 @@ type Data = {
     isClient: boolean;
     designation: string | null;
     organization_id: string | null;
+    googleCalendarConnected: boolean;
+    googleCalendarSkipped: boolean;
   };
 };
 
@@ -80,7 +82,7 @@ export default async function handler(
       // Use admin client - bypasses RLS
       const result = await supabaseAdmin
         .from('user_profiles')
-        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id')
+        .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id, google_calendar_connected, google_calendar_skipped')
         .eq('user_id', authUser.id)
         .maybeSingle();
       profile = result.data;
@@ -96,7 +98,7 @@ export default async function handler(
       if (!sessionError && sessionData.session) {
         const result = await supabase
           .from('user_profiles')
-          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id')
+          .select('user_name, contact_no, email, employee_id, role, approval_status, status, updated_at, profile_pic_url, profile_complete, status_reason, hold_start_date, hold_end_date, all_time_active, is_caller, is_client, designation, organization_id, google_calendar_connected, google_calendar_skipped')
           .eq('user_id', authUser.id)
           .maybeSingle();
         profile = result.data;
@@ -169,6 +171,8 @@ export default async function handler(
         isClient: profile?.is_client ?? false,
         designation: profile?.designation || null,
         organization_id: profile?.organization_id || null,
+        googleCalendarConnected: providers.includes('google') || profile?.google_calendar_connected || userMetadata.google_calendar_connected || false,
+        googleCalendarSkipped: profile?.google_calendar_skipped || userMetadata.google_calendar_skipped || false,
       },
     });
   } catch (error: any) {
