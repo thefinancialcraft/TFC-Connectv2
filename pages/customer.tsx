@@ -429,7 +429,17 @@ export default function Customer() {
         .order("created_at", { ascending: false });
 
       if (searchQuery) {
-        query = query.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+        let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
+        
+        // If the search looks like a phone number (mostly digits), try hashing it for exact match
+        if (searchQuery.replace(/\D/g, '').length > 0) {
+             const hash = computePhoneHash(searchQuery);
+             if (hash) {
+                 orConditions += `,phone_search_hash.eq.${hash}`;
+             }
+        }
+        
+        query = query.or(orConditions);
       }
 
       // --- DATA MINING ALGORITHM (Main Query) ---

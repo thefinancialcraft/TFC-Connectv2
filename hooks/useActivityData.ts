@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { useUser } from "../context/UserContext";
+import { decryptPhone, computePhoneHash } from "../lib/phoneUtils";
 
 export interface ActivityStats {
   totalDials: number;
@@ -186,20 +187,33 @@ export function useActivityData() {
 
       setActivities(combined);
 
-      // Hydrate missing customer names (from Customers, Rejected, or Closed tables)
-      const missingNamesIds = combined.filter(a => !a.customer?.customer_name).map(a => a.customer_id);
-      if (missingNamesIds.length > 0) {
+      // Hydrate missing customer names AND phone numbers
+      const missingCustomerIds = combined.filter(a => !a.customer?.customer_name).map(a => a.customer_id);
+      
+      if (missingCustomerIds.length > 0) {
         const [{ data: activeHydrate }, { data: rHydrate }, { data: cHydrate }] = await Promise.all([
-          supabase.from('customers').select('id, customer_name').in('id', missingNamesIds),
-          supabase.from('rejected_leads').select('customer_id, customer_name').in('customer_id', missingNamesIds),
-          supabase.from('closed_deals').select('customer_id, customer_name').in('customer_id', missingNamesIds)
+          supabase.from('customers').select('id, customer_name, phone_no, phone_search_hash').in('id', missingCustomerIds),
+          supabase.from('rejected_leads').select('customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', missingCustomerIds),
+          supabase.from('closed_deals').select('customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', missingCustomerIds)
         ]);
         
         setActivities(prev => prev.map(act => {
-          const name = activeHydrate?.find(a => a.id === act.customer_id)?.customer_name ||
-                       rHydrate?.find(r => r.customer_id === act.customer_id)?.customer_name || 
-                       cHydrate?.find(c => c.customer_id === act.customer_id)?.customer_name;
-          return name ? { ...act, customer: { ...act.customer, customer_name: name } } : act;
+          const match = activeHydrate?.find(a => a.id === act.customer_id) ||
+                        rHydrate?.find(r => r.customer_id === act.customer_id) || 
+                        cHydrate?.find(c => c.customer_id === act.customer_id);
+
+          if (match) {
+             return { 
+                ...act, 
+                customer: { 
+                    ...act.customer, 
+                    customer_name: match.customer_name 
+                },
+                phone_no: match.phone_no,
+                phone_search_hash: match.phone_search_hash
+             };
+          }
+          return act;
         }));
       }
 
@@ -250,15 +264,36 @@ export function useActivityData() {
     const query = searchQuery.toLowerCase();
     if (!query) return activities;
     
-    return activities.filter(a => 
-      a.agent?.user_name?.toLowerCase().includes(query) ||
-      a.customer?.customer_name?.toLowerCase().includes(query) ||
-      (a.disposition && a.disposition.toLowerCase().includes(query)) ||
-      (a.sub_disposition && a.sub_disposition.toLowerCase().includes(query)) ||
-      a.agent?.employee_id?.toLowerCase().includes(query) ||
-      a.campaign?.name?.toLowerCase().includes(query) ||
-      (a.notes && a.notes.toLowerCase().includes(query))
-    );
+    // Check if query looks like a phone number
+    const cleanQuery = query.replace(/\D/g, '');
+    const isPhoneSearch = cleanQuery.length > 3;
+    const queryHash = isPhoneSearch ? computePhoneHash(cleanQuery) : null;
+
+    return activities.filter(a => {
+       // 1. Phone Search Strategy
+       if (isPhoneSearch) {
+           // A. Exact Hash Match (Fast & Secure)
+           if (a.phone_search_hash && a.phone_search_hash === queryHash) return true;
+           
+           // B. Decryption Fallback (For legacy data or partial matches if needed - careful with performance)
+           // Only decrypt if we have a phone number and NO hash match yet
+           if (a.phone_no) {
+               const plainPhone = decryptPhone(a.phone_no);
+               if (plainPhone.includes(cleanQuery)) return true;
+           }
+       }
+        
+       // 2. Standard Text Search
+       return (
+          a.agent?.user_name?.toLowerCase().includes(query) ||
+          a.customer?.customer_name?.toLowerCase().includes(query) ||
+          (a.disposition && a.disposition.toLowerCase().includes(query)) ||
+          (a.sub_disposition && a.sub_disposition.toLowerCase().includes(query)) ||
+          a.agent?.employee_id?.toLowerCase().includes(query) ||
+          a.campaign?.name?.toLowerCase().includes(query) ||
+          (a.notes && a.notes.toLowerCase().includes(query))
+       );
+    });
   }, [activities, searchQuery]);
 
   // Utility formatters memoized or optimized
