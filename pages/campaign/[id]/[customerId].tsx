@@ -180,7 +180,9 @@ export default function CallingPage() {
                 // Match logic: If no phone provided, assume it's the current call. 
                 // If phone provided, check last 10 digits.
                 const disconnectedPhone = phoneNo ? String(phoneNo).replace(/\D/g, '').slice(-10) : null;
-                const currentPhone = String(customer?.phone_no || "").replace(/\D/g, '').slice(-10);
+                // Decrypt phone number for matching logic
+                const rawCustomerPhone = customer?.phone_no ? decryptPhone(customer.phone_no) : "";
+                const currentPhone = String(rawCustomerPhone || "").replace(/\D/g, '').slice(-10);
 
                 console.log(`📬 [Bridge] Matching: Received=${disconnectedPhone || 'NONE'}, Current=${currentPhone}`);
 
