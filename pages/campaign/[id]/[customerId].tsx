@@ -45,6 +45,67 @@ export default function CallingPage() {
     
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
+
+    // Slider State
+    const [dragX, setDragX] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const startXRef = useRef(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleSkipCall = () => {
+        console.log("Skipping call, showing disposition form...");
+        setPostCall(true);
+        // Ensure other states are clean
+        setIsCalling(false);
+        setCallAlive(false);
+        setLocalCallingStatus(null);
+    };
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        if((customer?.status || 'Active').toLowerCase() !== 'followup') return;
+        setIsDragging(true);
+        startXRef.current = e.clientX;
+        try {
+            (e.target as Element).setPointerCapture(e.pointerId);
+        } catch(err) {
+            // Ignore if environment doesn't support
+        }
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+         if (!isDragging) return;
+         const currentX = e.clientX;
+         const diff = currentX - startXRef.current;
+         // Only allowing right drag
+         if (diff > 0) {
+             setDragX(diff);
+         }
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (!isDragging) return;
+        setIsDragging(false);
+        try {
+            (e.target as Element).releasePointerCapture(e.pointerId);
+        } catch(err) {}
+
+        const containerWidth = containerRef.current?.clientWidth || 300; 
+        const threshold = containerWidth * 0.4; // 40% slide to skip
+
+        if (dragX > threshold) {
+            // Trigger Skip
+            handleSkipCall(); 
+            // Reset visually after a moment if component doesn't unmount (it should due to postCall change)
+            setTimeout(() => setDragX(0), 500);
+        } else {
+             // If it was a small drag (click-like), treat as Call
+             if (dragX < 5) {
+                 handleStartCall();
+             }
+             // Reset
+             setDragX(0);
+        }
+    };
     
     // Calculate Lead Score based on unique interactions
     const leadScore = (() => {
@@ -2089,15 +2150,52 @@ Campaign: ${campaign?.name || campaignId}
                                                     </div>
                                                 ) : !postCall ? (
                                                     <div className="grid grid-cols-[1fr_auto] gap-2">
-                                                        <button 
-                                                            onClick={handleStartCall}
-                                                            className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
-                                                        >
-                                                            <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
-                                                                <i className="fi flex fi-rr-phone-call text-sm"></i>
+                                                        {(customer?.status || 'Active').toLowerCase() === 'followup' ? (
+                                                            // SLIDE TO SKIP BUTTON (For Followups)
+                                                            <div 
+                                                                ref={containerRef}
+                                                                className="relative h-12 w-full rounded-xl bg-gray-100 overflow-hidden select-none touch-none shadow-inner border border-gray-200"
+                                                                onPointerDown={handlePointerDown}
+                                                                onPointerMove={handlePointerMove}
+                                                                onPointerUp={handlePointerUp}
+                                                                onPointerLeave={handlePointerUp}
+                                                            >
+                                                                {/* Background Layer (Skip) */}
+                                                                <div className="absolute inset-0 flex items-center justify-start pl-6 bg-gray-100">
+                                                                    <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
+                                                                        <i className="fi fi-rr-forward text-xs"></i>
+                                                                        Release to Skip
+                                                                    </span>
+                                                                </div>
+
+                                                                {/* Foreground Layer (Call Now) */}
+                                                                <div 
+                                                                    className="absolute inset-y-0 left-0 bg-indigo-600 flex items-center justify-center gap-2 shadow-xl transition-transform duration-75 ease-out will-change-transform z-10"
+                                                                    style={{ 
+                                                                        width: '100%', 
+                                                                        transform: `translateX(${Math.max(0, dragX)}px)`,
+                                                                        cursor: isDragging ? 'grabbing' : 'grab'
+                                                                    }}
+                                                                >
+                                                                    <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
+                                                                    <span className="text-white font-black text-[11px] uppercase tracking-widest">Call Now</span>
+                                                                    <div className="absolute right-4 opacity-70 animate-pulse">
+                                                                         <i className="fi fi-rr-angle-double-right text-white text-xs"></i>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <span className="relative z-10">Call Now</span>
-                                                        </button>
+                                                        ) : (
+                                                            // STANDARD BUTTON (Other Statuses)
+                                                            <button 
+                                                                onClick={handleStartCall}
+                                                                className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
+                                                            >
+                                                                <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
+                                                                    <i className="fi flex fi-rr-phone-call text-sm"></i>
+                                                                </div>
+                                                                <span className="relative z-10">Call Now</span>
+                                                            </button>
+                                                        )}
                                                         <button 
                                                             onClick={handleWhatsAppClick}
                                                             className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"

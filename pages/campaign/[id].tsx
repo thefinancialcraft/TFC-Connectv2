@@ -149,6 +149,8 @@ export default function CampaignDetails() {
     }, []);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+    const [selectedUserFilter, setSelectedUserFilter] = useState("");
+    const [selectedDispositionFilter, setSelectedDispositionFilter] = useState("");
     const [showImportModal, setShowImportModal] = useState(false);
 
     const formatDate = (dateStr: string) => {
@@ -494,6 +496,17 @@ export default function CampaignDetails() {
                 countQuery = countQuery.or(orConditions);
             }
 
+            if (selectedUserFilter && selectedUserFilter !== 'ALL') {
+                countQuery = countQuery.eq('assigned_to', selectedUserFilter);
+            }
+            if (selectedDispositionFilter) {
+                if (selectedDispositionFilter === 'Fresh') {
+                    countQuery = countQuery.is('disposition', null);
+                } else {
+                    countQuery = countQuery.eq('disposition', selectedDispositionFilter);
+                }
+            }
+
             const { count: totalCount } = await countQuery;
             
             setTotalLeadsCount(totalCount || 0);
@@ -525,6 +538,17 @@ export default function CampaignDetails() {
                      }
                 }
                 dataQuery = dataQuery.or(orConditions);
+            }
+
+            if (selectedUserFilter && selectedUserFilter !== 'ALL') {
+                dataQuery = dataQuery.eq('assigned_to', selectedUserFilter);
+            }
+            if (selectedDispositionFilter) {
+                if (selectedDispositionFilter === 'Fresh') {
+                    dataQuery = dataQuery.is('disposition', null);
+                } else {
+                    dataQuery = dataQuery.eq('disposition', selectedDispositionFilter);
+                }
             }
 
             const { data, error } = await dataQuery
@@ -630,6 +654,12 @@ export default function CampaignDetails() {
         }, 500); 
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    // Handle Filter Changes
+    useEffect(() => {
+        setCurrentPage(1);
+        fetchLeads(1);
+    }, [selectedUserFilter, selectedDispositionFilter]);
 
     const toggleSelect = (id: string) => {
         setSelectedLeads(prev =>
@@ -1424,10 +1454,49 @@ export default function CampaignDetails() {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-3">
+                                        {/* User Filter */}
+                                        <div className="relative group/filter min-w-[140px]">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i className="fi flex fi-rr-user text-gray-400 text-xs"></i>
+                                            </div>
+                                            <select
+                                                value={selectedUserFilter || "ALL"}
+                                                onChange={(e) => setSelectedUserFilter(e.target.value)}
+                                                className="w-full h-[42px] pl-8 pr-8 rounded-xl bg-gray-50 border border-gray-100 text-[10px] font-bold text-gray-600 focus:bg-white focus:border-[#4b33e8]/30 focus:ring-4 focus:ring-[#4b33e8]/5 outline-none transition-all uppercase tracking-wider appearance-none cursor-pointer"
+                                            >
+                                                <option value="ALL">All Users</option>
+                                                {campaign?.users?.map(u => (
+                                                    <option key={u.id} value={(u as any).user_id || u.id}>{u.name || (u as any).displayName || 'User'}</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i className="fi flex fi-rr-angle-small-down text-gray-400"></i>
+                                            </div>
+                                        </div>
+
+                                        {/* Disposition Filter */}
+                                        <div className="relative group/filter min-w-[140px]">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i className="fi flex fi-rr-filter text-gray-400 text-xs"></i>
+                                            </div>
+                                            <select
+                                                value={selectedDispositionFilter}
+                                                onChange={(e) => setSelectedDispositionFilter(e.target.value)}
+                                                className="w-full h-[42px] pl-8 pr-8 rounded-xl bg-gray-50 border border-gray-100 text-[10px] font-bold text-gray-600 focus:bg-white focus:border-[#4b33e8]/30 focus:ring-4 focus:ring-[#4b33e8]/5 outline-none transition-all uppercase tracking-wider appearance-none cursor-pointer"
+                                            >
+                                                <option value="">All Status</option>
+                                                {['Fresh', 'Call Back', 'Not Interested', 'Converted', 'Follow Up', 'DNE', 'Busy', 'No Answer', 'Invalid Number', 'Wrong Number', 'Not Reachable'].map(d => (
+                                                    <option key={d} value={d}>{d}</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                <i className="fi flex fi-rr-angle-small-down text-gray-400"></i>
+                                            </div>
+                                        </div>
                                         {/* Search Bar */}
                                         <div className="relative group/search min-w-[240px]">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <i className="fi fi-rr-search text-gray-400 text-xs group-focus-within/search:text-[#4b33e8] transition-colors"></i>
+                                                <i className="fi flex fi-rr-search text-gray-400 text-xs group-focus-within/search:text-[#4b33e8] transition-colors"></i>
                                             </div>
                                             <input
                                                 type="text"
