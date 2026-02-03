@@ -52,67 +52,7 @@ export default function CallingPage() {
     const startXRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleSkipCall = () => {
-        console.log("Skipping call, treating as disconnected...");
-        setPostCall(true);
-        setIsCalling(false);
-        setCallAlive(false);
-        setLocalCallingStatus(null);
-        
-        // Notify Flutter & SyncMeta to ensure state is clean
-        if (customer?.phone_no) {
-             notifyFlutter('call_disconnect', customer.phone_no);
-             if (user?.employeeId) {
-                  updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
-             }
-        }
-    };
 
-    const handlePointerDown = (e: React.PointerEvent) => {
-        if((customer?.status || 'Active').toLowerCase() !== 'followup') return;
-        setIsDragging(true);
-        startXRef.current = e.clientX;
-        try {
-            (e.target as Element).setPointerCapture(e.pointerId);
-        } catch(err) {
-            // Ignore if environment doesn't support
-        }
-    };
-
-    const handlePointerMove = (e: React.PointerEvent) => {
-         if (!isDragging) return;
-         const currentX = e.clientX;
-         const diff = currentX - startXRef.current;
-         // Only allowing right drag
-         if (diff > 0) {
-             setDragX(diff);
-         }
-    };
-
-    const handlePointerUp = (e: React.PointerEvent) => {
-        if (!isDragging) return;
-        setIsDragging(false);
-        try {
-            (e.target as Element).releasePointerCapture(e.pointerId);
-        } catch(err) {}
-
-        const containerWidth = containerRef.current?.clientWidth || 300; 
-        const threshold = containerWidth * 0.4; // 40% slide to skip
-
-        if (dragX > threshold) {
-            // Trigger Skip
-            handleSkipCall(); 
-            // Reset visually after a moment if component doesn't unmount (it should due to postCall change)
-            setTimeout(() => setDragX(0), 500);
-        } else {
-             // If it was a small drag (click-like), treat as Call
-             if (dragX < 5) {
-                 handleStartCall();
-             }
-             // Reset
-             setDragX(0);
-        }
-    };
     
     // Calculate Lead Score based on unique interactions
     const leadScore = (() => {
@@ -1235,6 +1175,52 @@ export default function CallingPage() {
 
 
     
+
+    const handleSkipCall = () => {
+        console.log("Skipping call -> Triggering handleEndCall");
+        handleEndCall(false);
+    };
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        if((customer?.status || 'Active').toLowerCase() !== 'followup') return;
+        setIsDragging(true);
+        startXRef.current = e.clientX;
+        try {
+            (e.target as Element).setPointerCapture(e.pointerId);
+        } catch(err) {
+             // Ignore
+        }
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+         if (!isDragging) return;
+         const currentX = e.clientX;
+         const diff = currentX - startXRef.current;
+         if (diff > 0) {
+             setDragX(diff);
+         }
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (!isDragging) return;
+        setIsDragging(false);
+        try {
+            (e.target as Element).releasePointerCapture(e.pointerId);
+        } catch(err) {}
+
+        const containerWidth = containerRef.current?.clientWidth || 300; 
+        const threshold = containerWidth * 0.4; 
+
+        if (dragX > threshold) {
+            handleSkipCall(); 
+            setTimeout(() => setDragX(0), 500);
+        } else {
+             if (dragX < 5) {
+                 handleStartCall();
+             }
+             setDragX(0);
+        }
+    };
 
     const handleSkipCalendar = async () => {
         if (!user?.uid) return;
