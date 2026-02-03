@@ -1480,10 +1480,9 @@ export default function CallingPage() {
                                         summary: `Call Back: ${customer?.customer_name || 'Customer'}`,
                                         description: `
 👤 Customer: ${customer?.customer_name || 'N/A'}
-📄 Policy Number: ${customer?.policy_number || 'N/A'}
 📅 Expiry Date: ${customer?.expiry_date ? new Date(customer.expiry_date).toDateString() : 'N/A'}
 
-📋 Policy Details:
+📋 Customer Details:
 ${(() => {
     let details = customer?.customer_details;
     if (!details) return 'N/A';

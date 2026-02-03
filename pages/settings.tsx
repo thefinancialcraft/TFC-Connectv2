@@ -262,6 +262,39 @@ export default function Settings() {
     finally { setIsLoadingSessions(false); }
   };
 
+  const handleUpdateAuthField = async (field: keyof SettingsFormData) => {
+    if (!window.confirm(`Are you sure you want to update your ${field.replace('_', ' ')}?`)) return;
+
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+             showError("Authentication required", "Error");
+             return;
+        }
+
+        const res = await fetch("/api/auth/update-account-info", {
+             method: "PUT",
+             headers: {
+               "Content-Type": "application/json",
+               Authorization: `Bearer ${session.access_token}`,
+             },
+             body: JSON.stringify({ field, value: formData[field] }),
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+            showSuccess(`${field.replace('_', ' ')} updated successfully`, "Success");
+        } else {
+            showError(data.error || "Update failed", "Error");
+        }
+
+    } catch (e: any) {
+        console.error(e);
+        showError(e.message || "Failed to update", "Error");
+    }
+  };
+
   const handleRevokeSession = async (sessionId: string) => {
     if (!window.confirm("Are you sure you want to revoke this session?")) return;
     
@@ -447,22 +480,97 @@ export default function Settings() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                   {/* Password Section */}
-                  <div className="space-y-4">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Update Password</h4>
-                    <div className="space-y-3">
-                      {["Current", "New", "Confirm"].map(p => (
-                        <div key={p} className="space-y-1.5">
-                          <label className="text-xs font-bold text-gray-600">{p} Password</label>
-                          <input 
-                            type="password" 
-                            className="w-full h-11 px-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#4b33e8]/20 outline-none"
-                            placeholder={`Enter ${p.toLowerCase()} password`}
-                          />
+                  {/* Password & Basic Auth Info Section */}
+                  <div className="space-y-8">
+                    {/* Password Section */}
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Update Password</h4>
+                      <div className="space-y-3">
+                        {["Current", "New", "Confirm"].map(p => (
+                          <div key={p} className="space-y-1.5">
+                            <label className="text-xs font-bold text-gray-600">{p} Password</label>
+                            <input 
+                              type="password" 
+                              className="w-full h-11 px-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#4b33e8]/20 outline-none text-sm"
+                              placeholder={`Enter ${p.toLowerCase()} password`}
+                            />
+                          </div>
+                        ))}
+                        <button className="w-full py-3 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-all shadow-lg shadow-gray-200">
+                          Change Password
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="h-px bg-gray-100" />
+
+                    {/* Display Name Update */}
+                    <div className="space-y-4">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Display Name</h4>
+                        <div className="flex gap-3">
+                            <div className="relative flex-1">
+                                <i className="fi fi-rr-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input 
+                                    type="text" 
+                                    value={formData.user_name}
+                                    onChange={(e) => setFormData({...formData, user_name: e.target.value})}
+                                    className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#4b33e8]/20 outline-none text-sm font-bold text-slate-700"
+                                    placeholder="Display Name"
+                                />
+                            </div>
+                            <button 
+                                onClick={() => handleUpdateAuthField('user_name')}
+                                className="px-6 bg-[#4b33e8]/10 text-[#4b33e8] hover:bg-[#4b33e8] hover:text-white rounded-xl text-xs font-bold transition-all border border-[#4b33e8]/20"
+                            >
+                                Update
+                            </button>
                         </div>
-                      ))}
-                      <button className="w-full py-3 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-all">
-                        Change Password
-                      </button>
+                    </div>
+
+                    {/* Email Update */}
+                    <div className="space-y-4">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Email Address</h4>
+                        <div className="flex gap-3">
+                            <div className="relative flex-1">
+                                <i className="fi fi-rr-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input 
+                                    type="email" 
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#4b33e8]/20 outline-none text-sm font-bold text-slate-700"
+                                    placeholder="Email Address"
+                                />
+                            </div>
+                            <button 
+                                onClick={() => handleUpdateAuthField('email')}
+                                className="px-6 bg-[#4b33e8]/10 text-[#4b33e8] hover:bg-[#4b33e8] hover:text-white rounded-xl text-xs font-bold transition-all border border-[#4b33e8]/20"
+                            >
+                                Update
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Phone Update */}
+                    <div className="space-y-4">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Phone Number</h4>
+                        <div className="flex gap-3">
+                            <div className="relative flex-1">
+                                <i className="fi fi-rr-smartphone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input 
+                                    type="text" 
+                                    value={formData.contact_no}
+                                    onChange={(e) => setFormData({...formData, contact_no: e.target.value})}
+                                    className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-[#4b33e8]/20 outline-none text-sm font-bold text-slate-700"
+                                    placeholder="Phone Number"
+                                />
+                            </div>
+                            <button 
+                                onClick={() => handleUpdateAuthField('contact_no')}
+                                className="px-6 bg-[#4b33e8]/10 text-[#4b33e8] hover:bg-[#4b33e8] hover:text-white rounded-xl text-xs font-bold transition-all border border-[#4b33e8]/20"
+                            >
+                                Update
+                            </button>
+                        </div>
                     </div>
                   </div>
 
