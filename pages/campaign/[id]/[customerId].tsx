@@ -2221,9 +2221,9 @@ Campaign: ${campaign?.name || campaignId}
 
 
                         {/* 3. Main Content Grid (Bottom Row) - Equal 3 Columns */}
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                                     {/* INFO CARD */}
-                                    <div className="xl:col-span-3 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 relative overflow-hidden h-auto xl:min-h-[800px] flex flex-col">
+                                    <div className="md:col-span-3 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 relative overflow-hidden h-auto xl:min-h-[800px] flex flex-col">
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/30 rounded-bl-[3rem] -z-0" />
                                         <div className="relative z-10 flex flex-col h-full">
                                             <div className="flex items-center gap-3 mb-8">
@@ -2242,7 +2242,7 @@ Campaign: ${campaign?.name || campaignId}
                                     </div>
 
                                     {/* OUTCOME FORM */}
-                                    <div className={`xl:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 relative transition-opacity duration-500 h-auto xl:min-h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
+                                    <div className={`md:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 relative transition-opacity duration-500 h-auto xl:min-h-[800px] flex flex-col ${!postCall ? 'opacity-40 grayscale pointer-events-none' : 'opacity-100'}`}>
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50/30 rounded-bl-[3rem] z-0" />
                                          <div className="relative z-10 space-y-6 flex-1 pb-24">
                                             <div className="flex items-center gap-3">
@@ -2666,7 +2666,7 @@ Campaign: ${campaign?.name || campaignId}
                                     </div>
                             
                             {/* ACTIVITY SIDEBAR (Right) */}
-                            <div className="xl:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
+                            <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
                                     <div className="flex items-center justify-between mb-6">
                                         <div className="flex bg-slate-100 p-1 rounded-xl">
                                             <button 
