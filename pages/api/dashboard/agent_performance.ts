@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase, supabaseAdmin } from "../../../lib/supabase";
+import { DashboardLevel, getUserDashboardLevel } from "../../../lib/dashboardUtils";
 
 /**
  * Agent Performance API
@@ -112,7 +113,7 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string }
+  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[] }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
@@ -126,6 +127,22 @@ async function fetchAllRows(
     if (filters.orgId && table !== 'call_history') {
        query = query.eq("organization_id", filters.orgId);
     }
+    // Apply user filters
+    if (filters.userId && (table === 'customers' || table === 'user_profiles')) {
+      if (Array.isArray(filters.userId)) {
+        query = query.in(table === 'customers' ? 'assigned_to' : 'user_id', filters.userId);
+      } else {
+        query = query.eq(table === 'customers' ? 'assigned_to' : 'user_id', filters.userId);
+      }
+    }
+    if (filters.employeeId && table === 'call_history') {
+      if (Array.isArray(filters.employeeId)) {
+        query = query.in('employee_id', filters.employeeId);
+      } else {
+        query = query.eq('employee_id', filters.employeeId);
+      }
+    }
+
     if (filters.startDate) {
       query = query.gte(dateCol, filters.startDate);
     }
@@ -193,9 +210,9 @@ export default async function handler(
     }
 
     // Fetch user profile to validate org access
-    const { data: userProfile, error: profileError } = await supabase
+    const { data: userProfile, error: profileError } = await (supabaseAdmin || supabase)
       .from("user_profiles")
-      .select("organization_id, role")
+      .select("organization_id, role, designation")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -204,9 +221,57 @@ export default async function handler(
       return res.status(500).json({ success: false, error: "Database error" });
     }
 
+    // Determine dashboard level
+    const userRole = userProfile?.role || 'user';
+    const userDesignation = userProfile?.designation || '';
+    const dashboardLevel = getUserDashboardLevel({ isClient: true, role: userRole, designation: userDesignation });
+
+    // Team Leader IDs tracking
+    let restrictedUserIds: string[] | undefined = undefined;
+    let restrictedEmployeeIds: string[] | undefined = undefined;
+
+    if (dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES) {
+      const { data: teams } = await (supabaseAdmin || supabase)
+        .from('teams')
+        .select('members')
+        .eq('leader_id', userId)
+        .eq('is_active', true);
+      
+      const memberIds = new Set<string>();
+      memberIds.add(userId);
+      teams?.forEach(t => {
+        if (Array.isArray(t.members)) {
+          t.members.forEach((m: string) => { if (m) memberIds.add(m); });
+        }
+      });
+      restrictedUserIds = Array.from(memberIds);
+
+      // Also get employee IDs for call_history filtering
+      const { data: memberProfiles } = await (supabaseAdmin || supabase)
+        .from('user_profiles')
+        .select('employee_id')
+        .in('user_id', restrictedUserIds);
+      
+      restrictedEmployeeIds = memberProfiles?.map(p => p.employee_id).filter(id => !!id) as string[];
+    }
+
     // Determine target org
     let targetOrgId: string | undefined = undefined;
-    
+
+    // Use admin client
+    const dbClient = supabaseAdmin || supabase;
+
+    // If filterUserId provided, get employee_id for call_history matching
+    let filterEmployeeId: string | undefined;
+    if (filterUserId && filterUserId !== 'all') {
+      const { data: filterUser } = await dbClient
+        .from('user_profiles')
+        .select('employee_id')
+        .eq('user_id', filterUserId)
+        .maybeSingle();
+      if (filterUser?.employee_id) filterEmployeeId = filterUser.employee_id;
+    }
+
     if (orgId && orgId !== "all") {
       if (userProfile) {
         if (
@@ -244,9 +309,6 @@ export default async function handler(
       }
     }
 
-    // Use admin client to bypass RLS
-    const dbClient = supabaseAdmin || supabase;
-
     // 1. Fetch all users for the target org(s)
     let profilesQuery = dbClient
       .from("user_profiles")
@@ -257,8 +319,10 @@ export default async function handler(
       profilesQuery = profilesQuery.eq("organization_id", targetOrgId);
     }
     
-    // Filter by User ID if provided
-    if (filterUserId && filterUserId !== 'all') {
+    // RESTRICTION FOR TL (LEVEL 3)
+    if (restrictedUserIds && (!filterUserId || filterUserId === 'all')) {
+      profilesQuery = profilesQuery.in('user_id', restrictedUserIds);
+    } else if (filterUserId && filterUserId !== 'all') {
       profilesQuery = profilesQuery.eq('user_id', filterUserId);
     }
 
@@ -296,12 +360,13 @@ export default async function handler(
     const callLogs = await fetchAllRows(
       dbClient,
       "call_history",
-      "employee_id, duration, call_type, timestamp", // Removed agent_id, is_connected, disposition
+      "employee_id, duration, call_type, timestamp", 
       {
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
-        dateColumn: "timestamp"
+        dateColumn: "timestamp",
+        employeeId: filterEmployeeId || restrictedEmployeeIds
       }
     );
 

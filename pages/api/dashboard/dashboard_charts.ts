@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase, supabaseAdmin } from "../../../lib/supabase";
+import { DashboardLevel, getUserDashboardLevel } from "../../../lib/dashboardUtils";
 
 /**
  * Dashboard Charts API
@@ -138,7 +139,7 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string; userId?: string }
+  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[] }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
@@ -148,25 +149,33 @@ async function fetchAllRows(
   while (hasMore) {
     let query = client.from(table).select(selectQuery).range(from, from + BATCH_SIZE - 1);
 
-    if (filters.orgId) {
+    const dateCol = filters.dateColumn || "created_at";
+
+    if (filters.orgId && table !== 'call_history') {
       query = query.eq("organization_id", filters.orgId);
     }
     
     // Apply user filters
-    if (filters.userId) {
-        if (table === 'customers') {
-            query = query.eq('assigned_to', filters.userId);
-        } else if (table === 'call_logs') {
-            // call_logs uses agent_id to reference the user
-            query = query.eq('agent_id', filters.userId);
-        }
+    if (filters.userId && table === 'customers') {
+      if (Array.isArray(filters.userId)) {
+        query = query.in('assigned_to', filters.userId);
+      } else {
+        query = query.eq('assigned_to', filters.userId);
+      }
+    }
+    if (filters.employeeId && table === 'call_history') {
+      if (Array.isArray(filters.employeeId)) {
+        query = query.in('employee_id', filters.employeeId);
+      } else {
+        query = query.eq('employee_id', filters.employeeId);
+      }
     }
 
     if (filters.startDate) {
-      query = query.gte("created_at", filters.startDate);
+      query = query.gte(dateCol, filters.startDate);
     }
     if (filters.endDate) {
-      query = query.lte("created_at", filters.endDate);
+      query = query.lte(dateCol, filters.endDate);
     }
 
     const { data, error } = await query;
@@ -228,15 +237,50 @@ export default async function handler(
       });
     }
 
-    const { data: userProfile, error: profileError } = await supabase
+    // Fetch user profile to validate org access
+    const { data: userProfile, error: profileError } = await (supabaseAdmin || supabase)
       .from("user_profiles")
-      .select("organization_id, role")
+      .select("organization_id, role, designation")
       .eq("user_id", requestUserId)
       .maybeSingle();
 
     if (profileError) {
       console.error("Charts API - Profile fetch error:", profileError);
       return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    // Determine dashboard level
+    const userRole = userProfile?.role || 'user';
+    const userDesignation = (userProfile as any)?.designation || '';
+    const dashboardLevel = getUserDashboardLevel({ isClient: true, role: userRole, designation: userDesignation });
+
+    // Team Leader IDs tracking
+    let restrictedUserIds: string[] | undefined = undefined;
+    let restrictedEmployeeIds: string[] | undefined = undefined;
+
+    if (dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES) {
+      const { data: teams } = await (supabaseAdmin || supabase)
+        .from('teams')
+        .select('members')
+        .eq('leader_id', requestUserId)
+        .eq('is_active', true);
+      
+      const memberIds = new Set<string>();
+      memberIds.add(requestUserId);
+      teams?.forEach(t => {
+        if (Array.isArray(t.members)) {
+          t.members.forEach((m: string) => { if (m) memberIds.add(m); });
+        }
+      });
+      restrictedUserIds = Array.from(memberIds);
+
+      // Also get employee IDs for call_history filtering
+      const { data: memberProfiles } = await (supabaseAdmin || supabase)
+        .from('user_profiles')
+        .select('employee_id')
+        .in('user_id', restrictedUserIds);
+      
+      restrictedEmployeeIds = memberProfiles?.map(p => p.employee_id).filter(id => !!id) as string[];
     }
 
     let targetOrgId: string | undefined = undefined;
@@ -281,22 +325,35 @@ export default async function handler(
     // Use admin client to bypass RLS
     const dbClient = supabaseAdmin || supabase;
 
+    // If filterUserId provided, get employee_id for call_history matching
+    let filterEmployeeId: string | undefined;
+    if (filterUserId && filterUserId !== 'all') {
+      const { data: filterUser } = await dbClient
+        .from('user_profiles')
+        .select('employee_id')
+        .eq('user_id', filterUserId)
+        .maybeSingle();
+      if (filterUser?.employee_id) filterEmployeeId = filterUser.employee_id;
+    }
+
     // Fetch ALL data using pagination (no 1000 row limit)
     const [customers, callLogs, campaigns] = await Promise.all([
-      // All customers
       fetchAllRows(dbClient, "customers", "*", {
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
-        userId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined
+        userId: (filterUserId && filterUserId !== 'all') 
+          ? (filterUserId as string) 
+          : restrictedUserIds
       }),
 
-      // All call logs
-      fetchAllRows(dbClient, "call_logs", "*", {
+      // All call logs from call_history
+      fetchAllRows(dbClient, "call_history", "*", {
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
-        userId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined
+        dateColumn: "timestamp",
+        employeeId: filterEmployeeId || restrictedEmployeeIds
       }),
 
       // All campaigns

@@ -44,6 +44,11 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       setStableUser((prev: any) => {
         if (!prev) {
           return {
+            displayName: user.displayName || null,
+            email: user.email || "",
+            employeeId: user.employeeId || null,
+            lastSignInAt: user.lastSignInAt || null,
+            profilePicUrl: user.profilePicUrl || null,
             isClient: user.isClient,
             designation: user.designation,
             uid: user.uid || (user as any).id,
@@ -80,8 +85,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         }
         return prev;
       });
-    } else if (mounted) {
-      // If context says user is null and we are mounted, clear stableUser
+    } else if (mounted && !authLoading) {
+      // Only clear stableUser if we are definitely NOT loading and STILL have no user
       setStableUser(null);
     }
   }, [user, mounted]);

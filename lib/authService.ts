@@ -190,27 +190,51 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
 
     if (cachedUser) {
       // Set minimal user data immediately to avoid spinner
+      // Try to enrich with localStorage data to prevent flickering of "Not assigned" fields
+      let storedLocal: any = null;
+      try {
+          const { getStoredUserData } = await import("./localStorageUtils");
+          storedLocal = getStoredUserData();
+      } catch (e) {
+          console.warn("Could not read local storage for enrichment", e);
+      }
+
+      const isSameUser = storedLocal && storedLocal.user_id === cachedUser.id;
       const userMetadata = cachedUser.user_metadata || {};
+      
       userData = {
         uid: cachedUser.id,
-        displayName: null,
+        displayName: (isSameUser && storedLocal.user_name) ? storedLocal.user_name : null,
         email: cachedUser.email || '',
         phone: null,
         providers: [],
         providerType: null,
         createdAt: cachedUser.created_at,
         lastSignInAt: cachedUser.last_sign_in_at || null,
-        employeeId: null,
-        role: null,
-        approvalStatus: null,
-        accountStatus: null,
+        employeeId: (isSameUser && storedLocal.employee_id) ? storedLocal.employee_id : null,
+        role: (isSameUser && storedLocal.role) ? storedLocal.role : null,
+        approvalStatus: (isSameUser && storedLocal.approval_status) ? storedLocal.approval_status : null,
+        accountStatus: (isSameUser && storedLocal.status) ? storedLocal.status : null,
         updatedAt: null,
+        // Profile Pic
+        profilePicUrl: (isSameUser && storedLocal.profile_pic_url) ? storedLocal.profile_pic_url : null,
+        
         activeCampaignId: userMetadata.active_campaign_id || null,
         activeCustomerId: userMetadata.active_customer_id || null,
         activeSessionState: userMetadata.active_session_state || null,
         activeSessionStart: userMetadata.active_session_start || null,
-        googleCalendarConnected: userMetadata.google_calendar_connected || false,
-        googleCalendarSkipped: userMetadata.google_calendar_skipped || false,
+        googleCalendarConnected: (isSameUser && typeof storedLocal.google_calendar_connected !== 'undefined') 
+           ? storedLocal.google_calendar_connected 
+           : (userMetadata.google_calendar_connected || false),
+        googleCalendarSkipped: (isSameUser && typeof storedLocal.google_calendar_skipped !== 'undefined')
+           ? storedLocal.google_calendar_skipped
+           : (userMetadata.google_calendar_skipped || false),
+          
+        // Restore client/caller flags if available
+        isClient: (isSameUser && typeof storedLocal.is_client !== 'undefined') ? storedLocal.is_client : false,
+        isCaller: (isSameUser && typeof storedLocal.is_caller !== 'undefined') ? storedLocal.is_caller : false,
+        designation: (isSameUser && storedLocal.designation) ? storedLocal.designation : null,
+        department: (isSameUser && storedLocal.department) ? storedLocal.department : null,
       };
     }
 

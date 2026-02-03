@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase, supabaseAdmin } from "../../../lib/supabase";
+import { DashboardLevel, getUserDashboardLevel } from "../../../lib/dashboardUtils";
 
 /**
  * Dashboard Overview API
@@ -119,7 +120,7 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string; employeeId?: string }
+  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[] }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
@@ -137,10 +138,18 @@ async function fetchAllRows(
     
     // Apply user filters
     if (filters.userId && table === 'customers') {
-      query = query.eq('assigned_to', filters.userId);
+      if (Array.isArray(filters.userId)) {
+        query = query.in('assigned_to', filters.userId);
+      } else {
+        query = query.eq('assigned_to', filters.userId);
+      }
     }
     if (filters.employeeId && table === 'call_history') {
-      query = query.eq('employee_id', filters.employeeId);
+      if (Array.isArray(filters.employeeId)) {
+        query = query.in('employee_id', filters.employeeId);
+      } else {
+        query = query.eq('employee_id', filters.employeeId);
+      }
     }
 
     if (filters.startDate) {
@@ -212,7 +221,7 @@ export default async function handler(
     }
 
     // Fetch user profile to validate org access
-    const { data: userProfile, error: profileError } = await supabase
+    const { data: userProfile, error: profileError } = await (supabaseAdmin || supabase)
       .from("user_profiles")
       .select("organization_id, role, designation")
       .eq("user_id", userId)
@@ -221,6 +230,40 @@ export default async function handler(
     if (profileError) {
       console.error("Profile fetch error:", profileError);
       return res.status(500).json({ success: false, error: "Database error" });
+    }
+
+    // Determine dashboard level
+    const userRole = userProfile?.role || 'user';
+    const userDesignation = userProfile?.designation || '';
+    const dashboardLevel = getUserDashboardLevel({ isClient: true, role: userRole, designation: userDesignation });
+
+    // Team Leader IDs tracking
+    let restrictedUserIds: string[] | undefined = undefined;
+    let restrictedEmployeeIds: string[] | undefined = undefined;
+
+    if (dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES) {
+      const { data: teams } = await (supabaseAdmin || supabase)
+        .from('teams')
+        .select('members')
+        .eq('leader_id', userId)
+        .eq('is_active', true);
+      
+      const memberIds = new Set<string>();
+      memberIds.add(userId);
+      teams?.forEach(t => {
+        if (Array.isArray(t.members)) {
+          t.members.forEach((m: string) => { if (m) memberIds.add(m); });
+        }
+      });
+      restrictedUserIds = Array.from(memberIds);
+
+      // Also get employee IDs for call_history filtering
+      const { data: memberProfiles } = await (supabaseAdmin || supabase)
+        .from('user_profiles')
+        .select('employee_id')
+        .in('user_id', restrictedUserIds);
+      
+      restrictedEmployeeIds = memberProfiles?.map(p => p.employee_id).filter(id => !!id) as string[];
     }
 
 
@@ -279,7 +322,9 @@ export default async function handler(
         orgId: targetOrgId,
         startDate: range.start,
         endDate: range.end,
-        userId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined
+        userId: (filterUserId && filterUserId !== 'all') 
+          ? (filterUserId as string) 
+          : restrictedUserIds
       }),
 
       // All call logs from call_history in date range
@@ -288,32 +333,23 @@ export default async function handler(
         startDate: range.start,
         endDate: range.end,
         dateColumn: "timestamp",
-        employeeId: filterEmployeeId
+        employeeId: filterEmployeeId || restrictedEmployeeIds
       }),
 
       // Today's calls count from call_history
       (async () => {
-        const { count } = await dbClient
-          .from("call_history")
-          .select("*", { count: "exact", head: true })
+        let query = dbClient.from("call_history").select("*", { count: "exact", head: true });
+        
+        if (filterEmployeeId) {
+          query = query.eq('employee_id', filterEmployeeId);
+        } else if (restrictedEmployeeIds) {
+          query = query.in('employee_id', restrictedEmployeeIds);
+        }
+
+        const { count } = await query
           .gte("timestamp", todayStart)
-          .lte("timestamp", todayEnd)
-          .then((res: any) => {
-            let query = dbClient.from("call_history").select("*", { count: "exact", head: true });
-            if (targetOrgId) {
-                // If call_history doesn't have org_id, this part is skipped based on logic in fetchAllRows, 
-                // but here we are building query manually.
-                // Assuming call_history DOES NOT have org_id based on fetchAllRows logic above.
-                // But we should filter by employee_id if we have list of employees for org?
-                // For now, if filtered by User, we filter.
-            }
-            if (filterEmployeeId) {
-                query = query.eq('employee_id', filterEmployeeId);
-            }
-            return query
-                .gte("timestamp", todayStart)
-                .lte("timestamp", todayEnd);
-          });
+          .lte("timestamp", todayEnd);
+          
         return count || 0;
       })(),
 
@@ -328,36 +364,41 @@ export default async function handler(
 
       // Team members count
       (async () => {
-        const { count } = await dbClient
+        let query = dbClient
           .from("user_profiles")
           .select("*", { count: "exact", head: true })
-          .eq("status", "active");
+          .eq("approval_status", "active"); 
+        
+        if (targetOrgId) query = query.eq("organization_id", targetOrgId);
+        if (restrictedUserIds) query = query.in("user_id", restrictedUserIds);
+        
+        const { count } = await query;
         return count || 0;
       })(),
-    ]);
+    ]) as [any[], any[], number, number, number];
 
-    console.log(`Overview API Stats: Customers: ${customers.length}, CallHistory: ${callLogs.length}, TodayCalls: ${todayCallsCount}`);
+    console.log(`Overview API Stats: Customers: ${customers.length}, CallHistory: ${callLogs.length}, TodayCalls: ${todayCallsCount as number}`);
 
     // Calculate primary stats
     const totalCustomers = customers.length;
-    const converted = customers.filter((c) =>
-      ["Sold", "Success", "Converted", "Closed"].some((s) =>
+    const converted = customers.filter((c: any) =>
+      ["Sold", "Success", "Converted", "Closed"].some((s: string) =>
         c.disposition?.toLowerCase().includes(s.toLowerCase())
       )
     );
     const totalConverted = converted.length;
-    const totalPremium = converted.reduce((acc, c) => acc + (Number(c.premium) || 0), 0);
+    const totalPremium = converted.reduce((acc: number, c: any) => acc + (Number(c.premium) || 0), 0);
     const conversionRate = totalCustomers ? (totalConverted / totalCustomers) * 100 : 0;
 
     // Calculate secondary stats
     // Fresh Prospects - customers with no disposition or "fresh"
     const freshProspects = customers.filter(
-      (c) => !c.disposition || c.disposition.toLowerCase().includes("fresh")
+      (c: any) => !c.disposition || c.disposition.toLowerCase().includes("fresh")
     ).length;
 
     // Filter customers with "callback" disposition and valid next_called_at
     const callbackCustomers = customers.filter(
-      (c) =>
+      (c: any) =>
         c.disposition &&
         c.disposition.toLowerCase().includes("call back") &&
         c.next_called_at &&
@@ -369,20 +410,18 @@ export default async function handler(
 
     // Overdue Followups = Callbacks scheduled in the past
     const overdueFollowups = callbackCustomers.filter(
-      (c) => new Date(c.next_called_at) < now
+      (c: any) => new Date(c.next_called_at) < now
     ).length;
 
     // New Today - customers created today
     const newProspects = customers.filter(
-      (c) => c.created_at >= todayStart && c.created_at <= todayEnd
+      (c: any) => c.created_at >= todayStart && c.created_at <= todayEnd
     ).length;
 
     // Calculate performance metrics using call_history data
     // call_history structure: { timestamp, duration, call_type, ... }
     const connectedCalls = callLogs.filter(
-      (l) => {
-          // Logic for connected calls in call_history
-          // Assuming 'outgoing' or 'incoming' with duration > 0 is connected
+      (l: any) => {
           const type = (l.call_type || '').toLowerCase();
           const duration = Number(l.duration) || 0;
           return (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
@@ -393,7 +432,7 @@ export default async function handler(
       : 0;
 
     const totalTalkSeconds = callLogs.reduce(
-      (acc, l) => acc + (Number(l.duration) || 0),
+      (acc: number, l: any) => acc + (Number(l.duration) || 0),
       0
     );
     const avgSecs = callLogs.length ? totalTalkSeconds / callLogs.length : 0;
