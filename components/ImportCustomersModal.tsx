@@ -44,6 +44,7 @@ export default function ImportCustomersModal({
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [selectedOrgId, setSelectedOrgId] = useState(preselectedOrgId);
   const [selectedCampaignId, setSelectedCampaignId] = useState(preselectedCampaignId);
+  const [customExpiryDate, setCustomExpiryDate] = useState("");
 
   useEffect(() => {
     setShowImportModal(show);
@@ -191,7 +192,11 @@ export default function ImportCustomersModal({
 
           const customerName = getFieldValue(row, "name", fieldMapping, mergedFields);
           const phoneNo = getFieldValue(row, "phone", fieldMapping, mergedFields);
-          const expiryDate = getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
+          
+          // Use custom expiry date if selected, otherwise get from CSV
+          const expiryDate = (fieldMapping["expiry_date"] === '__CUSTOM_DATE__')
+             ? customExpiryDate
+             : getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
 
           if (!customerName) {
             errors.push(`Row ${i + 1}: Customer name is required`);
@@ -529,14 +534,29 @@ export default function ImportCustomersModal({
                        )}
                     </div>
                     <div className="flex gap-2">
-                        <select
-                          value={fieldMapping[field] || ""}
-                          onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
-                          className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                        >
-                          <option value="">Select column...</option>
-                          {csvColumns.filter(col => !usedColumns.has(col) || col === fieldMapping[field]).map(col => <option key={col} value={col}>{col}</option>)}
-                        </select>
+                        <div className="flex flex-col w-full gap-2">
+                            <select
+                              value={fieldMapping[field] || ""}
+                              onChange={(e) => setFieldMapping({ ...fieldMapping, [field]: e.target.value })}
+                              className="w-full text-gray-500 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                            >
+                              <option value="">Select column...</option>
+                              {field === 'expiry_date' && (
+                                <option value="__CUSTOM_DATE__" className="font-bold text-[#4b33e8]">✨ Set Custom Date</option>
+                              )}
+                              {csvColumns.filter(col => !usedColumns.has(col) || col === fieldMapping[field]).map(col => <option key={col} value={col}>{col}</option>)}
+                            </select>
+                            
+                            {/* Custom Date Picker Input */}
+                            {field === 'expiry_date' && fieldMapping[field] === '__CUSTOM_DATE__' && (
+                                <input 
+                                    type="date"
+                                    value={customExpiryDate}
+                                    onChange={(e) => setCustomExpiryDate(e.target.value)}
+                                    className="w-full px-3 py-2 bg-[#f0f2ff] border border-[#4b33e8] rounded-lg text-sm text-[#4b33e8] font-bold focus:outline-none focus:ring-1 focus:ring-[#4b33e8] animate-in fade-in slide-in-from-top-1"
+                                />
+                            )}
+                        </div>
                         <button 
                             onClick={() => addMergedField(field)}
                             className="p-2 w-9 h-9 bg-blue-50 text-[#4b33e8] rounded-lg hover:bg-blue-100 transition-colors"
