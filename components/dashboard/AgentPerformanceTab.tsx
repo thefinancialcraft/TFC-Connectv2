@@ -27,7 +27,7 @@ export default function AgentPerformanceTab({
   selectedUserId,
 }: AgentPerformanceTabProps) {
   const router = useRouter();
-  const [dateFilter, setDateFilter] = useState("all_time");
+  const [dateFilter, setDateFilter] = useState("today");
   
   const { 
     agentData, 
@@ -36,6 +36,7 @@ export default function AgentPerformanceTab({
     totalDuration
   } = useAgentPerformance();
   const [mounted, setMounted] = useState(false);
+  const [metric, setMetric] = useState<'dials' | 'talktime'>('dials');
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 150);
@@ -186,21 +187,40 @@ export default function AgentPerformanceTab({
                 Total dials and total talktime per agent across all active sessions
               </p>
             </div>
-            <div className="flex items-center gap-3 no-print">
-              <button
-                onClick={handlePrint}
-                className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-[#4b33e8] transition-colors"
-                title="Print Chart"
-              >
-                <i className="fi flex fi-rr-print text-sm"></i>
-              </button>
-              <div className={`px-4 py-2 ${loading ? 'bg-gray-100 text-gray-500' : 'bg-[#4b33e8]/5 text-[#4b33e8]'} rounded-xl text-xs font-bold uppercase tracking-widest transition-colors`}>
-                {loading ? "Updating..." : "Live Tracking"}
+              <div className="flex items-center gap-3 no-print">
+                <div className="flex bg-gray-100/80 p-1 rounded-xl border border-gray-200/50">
+                  <button
+                    onClick={() => setMetric('dials')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${
+                      metric === 'dials' 
+                        ? 'bg-white shadow-sm text-[#4b33e8]' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    Dials
+                  </button>
+                  <button
+                    onClick={() => setMetric('talktime')}
+                    className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${
+                      metric === 'talktime' 
+                        ? 'bg-white shadow-sm text-[#10b981]' 
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    Talktime
+                  </button>
+                </div>
+                <button
+                  onClick={handlePrint}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-[#4b33e8] transition-colors"
+                  title="Print Chart"
+                >
+                  <i className="fi flex fi-rr-print text-sm"></i>
+                </button>
               </div>
-            </div>
           </div>
 
-          <div className="flex-1" style={{ height: '400px', width: '100%', position: 'relative' }}>
+          <div className="flex-1" style={{ minHeight: `${Math.max(400, agentData.length * 32)}px`, width: '100%', position: 'relative' }}>
             {mounted && (
               <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
 
@@ -223,17 +243,20 @@ export default function AgentPerformanceTab({
                     iconType="circle"
                     wrapperStyle={{ paddingBottom: '20px', fontSize: '10px', fontWeight: 'bold' }}
                   />
-                  <YAxis
+                   <YAxis
                     dataKey="name"
                     type="category"
                     axisLine={false}
                     tickLine={false}
+                    interval={0}
                     tick={{
                       fill: "#263238",
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: 700,
+                      textAnchor: "end"
                     }}
-                    width={120}
+                    width={110}
+                    dx={-8}
                   />
                   <Tooltip
                     cursor={{ fill: "#F9FAFB", radius: 8 }}
@@ -254,54 +277,27 @@ export default function AgentPerformanceTab({
                     }}
                   />
                   <Bar
-                    dataKey="count"
-                    xAxisId="cnt"
-                    name="Dials"
-                    fill="#4b33e8"
+                    dataKey={metric === 'dials' ? 'count' : 'duration'}
+                    xAxisId={metric === 'dials' ? 'cnt' : 'dur'}
+                    name={metric === 'dials' ? 'Dials' : 'Talktime'}
+                    fill={metric === 'dials' ? '#4b33e8' : '#10b981'}
                     radius={[0, 20, 20, 0]}
-                    barSize={12}
+                    barSize={26}
                   >
                     <LabelList
-                      dataKey="count"
+                      dataKey={metric === 'dials' ? 'count' : 'duration'}
                       position="right"
                       content={(props: any) => {
                         const { x, y, width, value } = props;
                         return (
                           <text
                             x={x + width + 5}
-                            y={y + 10}
-                            fill="#4b33e8"
+                            y={y + 13}
+                            fill={metric === 'dials' ? '#4b33e8' : '#10b981'}
                             fontSize={10}
                             fontWeight="bold"
                           >
-                            {value}
-                          </text>
-                        );
-                      }}
-                    />
-                  </Bar>
-                  <Bar
-                    dataKey="duration"
-                    xAxisId="dur"
-                    name="Talktime"
-                    fill="#10b981"
-                    radius={[0, 20, 20, 0]}
-                    barSize={12}
-                  >
-                     <LabelList
-                      dataKey="duration"
-                      position="right"
-                      content={(props: any) => {
-                        const { x, y, width, value } = props;
-                        return (
-                          <text
-                            x={x + width + 5}
-                            y={y + 10}
-                            fill="#10b981"
-                            fontSize={10}
-                            fontWeight="bold"
-                          >
-                            {formatDuration(value)}
+                            {metric === 'dials' ? value : formatDuration(value)}
                           </text>
                         );
                       }}
