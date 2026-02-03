@@ -1949,11 +1949,11 @@ Campaign: ${campaign?.name || campaignId}
                                                 {/* Name & ID */}
                                                 <div className="text-center sm:text-left">
                                                     <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                                                        <h2 className="text-4xl mt-4 sm:text-3xl font-bold text-slate-800 tracking-tight">
+                                                        <h2 className="text-4xl  sm:text-3xl font-bold text-slate-800 tracking-tight">
                                                             {customer?.customer_name || 'Anonymous User'}
                                                         </h2>
                                                     </div>
-                                                    <div className="flex  mb-4  items-center justify-center sm:justify-start gap-4 text-slate-500">
+                                                    <div className="flex   items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
                                                             <i className="fi fi-rr-id-badge text-xs opacity-50"></i>
                                                             <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
@@ -2081,8 +2081,8 @@ Campaign: ${campaign?.name || campaignId}
                                                         </div>
                                                     ) : (
                                                         <div className="flex flex-col items-center">
-                                                            <h2 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${postCall ? 'text-slate-400' : 'text-slate-800'}`}>
-                                                                {postCall ? 'Ended' : 'VoIP Control'}
+                                                            <h2 className={`text-xl mt-4 sm:text-2xl font-extrabold tracking-tight ${postCall ? 'text-slate-400' : 'text-slate-800'}`}>
+                                                                {postCall ? 'Ended' : 'Ready To Call'}
                                                             </h2>
                                                             <p className="text-[9px] font-medium text-slate-400 max-w-[160px] leading-tight mt-0.5">
                                                                 {postCall 
@@ -2231,7 +2231,7 @@ Campaign: ${campaign?.name || campaignId}
                                                     <i className="fi flex  fi-rr-document text-sm"></i>
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-semibold text-slate-800">Policy Details</h3>
+                                                    <h3 className="font-semibold text-slate-800"> Details</h3>
                                                     <p className="text-[10px] font-semibold text-slate-400 ">Reference Data</p>
                                                 </div>
                                             </div>
