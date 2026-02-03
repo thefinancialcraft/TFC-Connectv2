@@ -17,12 +17,14 @@ interface AgentPerformanceTabProps {
   agentData?: AgentDataPoint[];
   totalDials?: number;
   selectedOrgId?: string;
+  selectedUserId?: string;
 }
 
 export default function AgentPerformanceTab({
   agentData: initialAgentData,
   totalDials: initialTotal,
   selectedOrgId,
+  selectedUserId,
 }: AgentPerformanceTabProps) {
   const router = useRouter();
   const [dateFilter, setDateFilter] = useState("all_time");
@@ -90,17 +92,19 @@ export default function AgentPerformanceTab({
   // Fetch data when filter changes
   useEffect(() => {
     const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-    fetchAgentPerformance(orgFilter, dateFilter);
-  }, [dateFilter, selectedOrgId, fetchAgentPerformance]);
+    const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+    fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
+  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-      fetchAgentPerformance(orgFilter, dateFilter);
+      const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+      fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
     }, 30000); // 30 seconds
     return () => clearInterval(interval);
-  }, [dateFilter, selectedOrgId, fetchAgentPerformance]);
+  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance]);
 
   const totalDials = agentData.reduce((acc, curr) => acc + curr.count, 0);
 
@@ -385,7 +389,8 @@ export default function AgentPerformanceTab({
                   <button 
                       onClick={() => {
                         const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                        fetchAgentPerformance(orgFilter, dateFilter, undefined, true);
+                        const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+                        fetchAgentPerformance(orgFilter, dateFilter, undefined, true, userFilter);
                       }}
                       disabled={loading}
                       className="group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100 translate-y-[1px]"

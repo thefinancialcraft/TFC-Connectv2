@@ -39,7 +39,7 @@ export interface UseDashboardChartsReturn {
   hourlyStats: HourlyStatPoint[];
   loading: boolean;
   error: string | null;
-  fetchChartData: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }) => Promise<void>;
+  fetchChartData: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, userId?: string) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -76,8 +76,8 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
   }, []);
 
   const fetchChartData = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }) => {
-      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}`;
+    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, userId?: string) => {
+      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
 
       const cached = cacheRef.current[cacheKey];
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -93,7 +93,8 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      abortControllerRef.current = new AbortController();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       try {
         setLoading(true);
@@ -110,11 +111,12 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
           dateFilter,
           ...(orgId && { orgId }),
           ...(customRange && { startDate: customRange.start, endDate: customRange.end }),
+          ...(userId && { userId }),
         });
 
         const response = await fetch(`/api/dashboard/dashboard_charts?${params}`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
-          signal: abortControllerRef.current.signal,
+          signal: controller.signal,
         });
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -140,11 +142,14 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
         console.error("Dashboard Charts Fetch Error:", err);
         setError(err.message || "Unknown error");
       } finally {
-        if (abortControllerRef.current?.signal.aborted) {
+        if (controller.signal.aborted) {
              // Do nothing
          } else {
-             setLoading(false);
-             abortControllerRef.current = null;
+             // Only turn off loading if THIS was the active request
+             if (abortControllerRef.current === controller) {
+                setLoading(false);
+                abortControllerRef.current = null;
+             }
          }
       }
     },

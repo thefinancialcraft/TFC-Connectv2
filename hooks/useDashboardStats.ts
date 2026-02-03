@@ -33,7 +33,7 @@ export interface UseDashboardStatsReturn {
   performanceMetrics: PerformanceMetrics;
   loading: boolean;
   error: string | null;
-  fetchStats: (orgId?: string, dateFilter?: string) => Promise<void>;
+  fetchStats: (orgId?: string, dateFilter?: string, userId?: string) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -90,8 +90,8 @@ export function useDashboardStats(): UseDashboardStatsReturn {
   }, []);
 
   const fetchStats = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month") => {
-      const cacheKey = `${orgId || 'all'}-${dateFilter}`;
+    async (orgId?: string, dateFilter: string = "this_month", userId?: string) => {
+      const cacheKey = `${orgId || 'all'}-${dateFilter}-${userId || 'all'}`;
       
       // Check cache
       const cached = cacheRef.current[cacheKey];
@@ -124,6 +124,7 @@ export function useDashboardStats(): UseDashboardStatsReturn {
         const params = new URLSearchParams({
           dateFilter,
           ...(orgId && { orgId }),
+          ...(userId && { userId }),
         });
 
         const response = await fetch(`/api/dashboard/dashboard_overview?${params}`, {

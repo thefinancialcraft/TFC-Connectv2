@@ -85,6 +85,7 @@ export interface UserProfile {
   isCaller?: boolean;
   isClient?: boolean;
   designation?: string | null;
+  department?: string | null;
   organization_id?: string | null;
 }
 
@@ -276,6 +277,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
             profile_pic_url: userData.profilePicUrl || undefined,
             all_time_active: userData.allTimeActive,
             is_caller: userData.isCaller,
+            designation: userData.designation || undefined,
+            department: userData.department || undefined,
             google_calendar_connected: userData.googleCalendarConnected,
             google_calendar_skipped: userData.googleCalendarSkipped,
           };
@@ -387,6 +390,7 @@ export interface UserProfileData {
   google_calendar_skipped?: boolean;
   is_caller?: boolean;
   designation?: string;
+  department?: string;
   token_id?: string; // TFC Session Token ID
   [key: string]: any; // Allow additional fields
 }

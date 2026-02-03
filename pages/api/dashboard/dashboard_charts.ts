@@ -16,7 +16,13 @@ import { supabase, supabaseAdmin } from "../../../lib/supabase";
  * @route GET /api/dashboard/dashboard_charts
  * @query dateFilter - Date range filter
  * @query orgId - Organization ID (validated)
+ * @query userId - Optional: User ID to filter by
  */
+
+
+// level 3 users login me all team members ke ander usse record puri comany ke team ka dikha rha hai istead of its own team
+
+
 
 interface ChartPoint {
   name: string;
@@ -132,7 +138,7 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string }
+  filters: { orgId?: string; startDate?: string; endDate?: string; userId?: string }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
@@ -145,6 +151,17 @@ async function fetchAllRows(
     if (filters.orgId) {
       query = query.eq("organization_id", filters.orgId);
     }
+    
+    // Apply user filters
+    if (filters.userId) {
+        if (table === 'customers') {
+            query = query.eq('assigned_to', filters.userId);
+        } else if (table === 'call_logs') {
+            // call_logs uses agent_id to reference the user
+            query = query.eq('agent_id', filters.userId);
+        }
+    }
+
     if (filters.startDate) {
       query = query.gte("created_at", filters.startDate);
     }
@@ -200,7 +217,7 @@ export default async function handler(
     }
 
     const requestUserId = authUser.id;
-    const { dateFilter = "this_month", orgId, startDate, endDate } = req.query;
+    const { dateFilter = "this_month", orgId, startDate, endDate, userId: filterUserId } = req.query;
     const startTime = Date.now();
 
     // Ensure the standard supabase client is authenticated for RLS
@@ -271,6 +288,7 @@ export default async function handler(
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
+        userId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined
       }),
 
       // All call logs
@@ -278,6 +296,7 @@ export default async function handler(
         orgId: targetOrgId,
         startDate: start,
         endDate: end,
+        userId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined
       }),
 
       // All campaigns

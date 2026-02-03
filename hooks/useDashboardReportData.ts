@@ -38,13 +38,13 @@ export function useDashboardReportData() {
   const [loading, setLoading] = useState(false);
 
   const fetchReportData = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month") => {
+    async (orgId?: string, dateFilter: string = "this_month", userId?: string) => {
       setLoading(true);
       try {
         await Promise.all([
-            fetchStats(orgId, dateFilter),
-            fetchChartData(orgId, dateFilter),
-            fetchAgentPerformance(orgId, dateFilter)
+            fetchStats(orgId, dateFilter, userId),
+            fetchChartData(orgId, dateFilter, undefined, userId),
+            fetchAgentPerformance(orgId, dateFilter, undefined, false, userId)
         ]);
       } catch (error) {
         console.error("Failed to fetch report data", error);

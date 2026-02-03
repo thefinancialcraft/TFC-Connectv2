@@ -23,7 +23,7 @@ export interface UseAgentPerformanceReturn {
   totalDuration: number;
   loading: boolean;
   error: string | null;
-  fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean) => Promise<void>;
+  fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean, userId?: string) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -56,8 +56,8 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   }, []);
 
   const fetchAgentPerformance = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false) => {
-      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}`;
+    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string) => {
+      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
 
       const cached = cacheRef.current[cacheKey];
       if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -89,6 +89,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
           dateFilter,
           ...(orgId && { orgId }),
           ...(customRange && { startDate: customRange.start, endDate: customRange.end }),
+          ...(userId && { userId }),
         });
 
         const response = await fetch(`/api/dashboard/agent_performance?${params}`, {

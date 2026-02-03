@@ -181,7 +181,7 @@ export default async function handler(
     }
 
     const userId = authUser.id;
-    const { dateFilter = "this_month", orgId, startDate, endDate } = req.query;
+    const { dateFilter = "this_month", orgId, startDate, endDate, userId: filterUserId } = req.query;
     const startTime = Date.now();
 
     // Ensure the standard supabase client is authenticated for RLS
@@ -255,6 +255,11 @@ export default async function handler(
 
     if (targetOrgId) {
       profilesQuery = profilesQuery.eq("organization_id", targetOrgId);
+    }
+    
+    // Filter by User ID if provided
+    if (filterUserId && filterUserId !== 'all') {
+      profilesQuery = profilesQuery.eq('user_id', filterUserId);
     }
 
     // Prepare agent map with all users initialized to 0

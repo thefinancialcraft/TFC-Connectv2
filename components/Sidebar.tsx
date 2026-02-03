@@ -131,6 +131,10 @@ const Sidebar = memo(function Sidebar({
 
   // Memoize filtered navigation items
   const navItems = useMemo(() => {
+    // Hydration Fix: Ensure strictly empty result on first render to match server HTML (skeletons)
+    // We only enable the actual links after the component has mounted on the client.
+    if (!mounted) return [];
+
     // We prioritize the live user object if it exists (from props/auth sync)
     // but fall back to the cachedUser (local storage) immediately to prevent flicker
     const currentUser = user || cachedUser;

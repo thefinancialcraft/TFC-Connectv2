@@ -24,7 +24,7 @@ export default function DashboardReport() {
   const { user, loading: authLoading } = useAuthGuard();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const { orgId, dateFilter } = router.query;
+  const { orgId, dateFilter, userId } = router.query;
   
   const {
     stats,
@@ -43,10 +43,11 @@ export default function DashboardReport() {
     setMounted(true);
     if (user && router.isReady) {
       const oid = orgId === "all" ? undefined : (orgId as string);
+      const uid = userId === "all" ? undefined : (userId as string);
       const dFilter = (dateFilter as string) || "this_month";
-      fetchReportData(oid, dFilter);
+      fetchReportData(oid, dFilter, uid);
     }
-  }, [user, router.isReady, orgId, dateFilter, fetchReportData]);
+  }, [user, router.isReady, orgId, dateFilter, userId, fetchReportData]);
 
   if (authLoading || loading) {
     return (

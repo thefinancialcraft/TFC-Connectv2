@@ -4,11 +4,15 @@ import { HeatmapDataPoint, HourlyStatPoint, useDashboardCharts } from "../../hoo
 interface HourlyAnalyticsTabProps {
   heatmapData?: HeatmapDataPoint[];
   hourlyStats?: HourlyStatPoint[];
+  selectedUserId?: string;
+  selectedOrgId?: string;
 }
 
 export default function HourlyAnalyticsTab({
   heatmapData: initialHeatmap,
   hourlyStats: initialHourly,
+  selectedUserId,
+  selectedOrgId
 }: HourlyAnalyticsTabProps) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -31,10 +35,10 @@ export default function HourlyAnalyticsTab({
       end.setHours(23, 59, 59, 999);
 
       setIsFiltered(true);
-      fetchChartData(undefined, "custom", {
+      fetchChartData(selectedOrgId === 'all' ? undefined : selectedOrgId, "custom", {
         start: start.toISOString(),
         end: end.toISOString()
-      });
+      }, selectedUserId === 'all' ? undefined : selectedUserId);
     }
   };
 
