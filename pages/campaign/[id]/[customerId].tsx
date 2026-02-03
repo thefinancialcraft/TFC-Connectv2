@@ -53,12 +53,19 @@ export default function CallingPage() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleSkipCall = () => {
-        console.log("Skipping call, showing disposition form...");
+        console.log("Skipping call, treating as disconnected...");
         setPostCall(true);
-        // Ensure other states are clean
         setIsCalling(false);
         setCallAlive(false);
         setLocalCallingStatus(null);
+        
+        // Notify Flutter & SyncMeta to ensure state is clean
+        if (customer?.phone_no) {
+             notifyFlutter('call_disconnect', customer.phone_no);
+             if (user?.employeeId) {
+                  updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+             }
+        }
     };
 
     const handlePointerDown = (e: React.PointerEvent) => {
