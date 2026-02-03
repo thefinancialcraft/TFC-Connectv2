@@ -1909,10 +1909,10 @@ Campaign: ${campaign?.name || campaignId}
 
                         {/* 2. Primary Customer Profile Card */}
                         {/* REDESIGNED LAYOUT: Profile Side-by-Side with Call Engine */}
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-3">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3">
                             
                             {/* LEFT: Profile Card (Takes 7 columns) */}
-                            <div className="xl:col-span-8">
+                            <div className="md:col-span-8">
                                 <div className="h-full relative rounded-[1rem] bg-white border border-slate-200 overflow-hidden group       transition-shadow duration-500">
                                     {/* Modern Background */}
                                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-50/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -2015,7 +2015,7 @@ Campaign: ${campaign?.name || campaignId}
                             </div>
  
                             {/* RIGHT: Call Engine (Takes 5 columns) */}
-                            <div className="xl:col-span-4 flex flex-col">
+                            <div className="md:col-span-4 flex flex-col">
                                 {/* The Call Engine */}
                                 <div className={`flex-1 relative overflow-hidden rounded-3xl transition-all duration-1000 flex flex-col ${
                                     isCalling 
