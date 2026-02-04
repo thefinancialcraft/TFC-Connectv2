@@ -109,8 +109,10 @@ const Sidebar = memo(function Sidebar({
   }, [mounted, displayUser]);
 
   const profilePicUrl = useMemo(() => {
-    return mounted ? displayUser?.profilePicUrl : null;
-  }, [mounted, displayUser]);
+    // Priority: 1. Props (user), 2. Cached (cachedUser)
+    if (user?.profilePicUrl) return user.profilePicUrl;
+    return mounted ? cachedUser?.profilePicUrl : null;
+  }, [mounted, user?.profilePicUrl, cachedUser?.profilePicUrl]);
   
   const formattedLastLogin = useMemo(() => {
     const dateString = displayUser?.lastSignInAt;
@@ -160,7 +162,8 @@ const Sidebar = memo(function Sidebar({
       if (isClientAdmin) return true;
 
       const path = item.path;
-      const isAgent = designation === 'agent';
+      // Default to agent if designation is missing or specifically 'agent'
+      const isAgent = designation === 'agent' || !designation;
       if (isAgent) {
         return ['/dashboard', '/campaign', '/activity', '/followup', '/customer'].includes(path);
       }
@@ -174,7 +177,7 @@ const Sidebar = memo(function Sidebar({
     });
 
     return filtered;
-  }, [isAdmin, user, cachedUser]);
+  }, [isAdmin, user, cachedUser, mounted]);
 
   // Effect to sync calculated nav items back to cache
   useEffect(() => {
@@ -258,12 +261,12 @@ const Sidebar = memo(function Sidebar({
         >
           <div className="flex items-start gap-2.5 mb-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0 shadow-md overflow-hidden"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0  overflow-hidden"
               style={{
                 background: profilePicUrl ? "transparent" : "#4b33e8",
               }}
             >
-              {profilePicUrl ? (
+              {mounted && profilePicUrl ? (
                 <img
                   src={profilePicUrl}
                   alt={displayUser?.displayName || 'User'}

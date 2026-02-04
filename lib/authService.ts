@@ -217,7 +217,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         accountStatus: (isSameUser && storedLocal.status) ? storedLocal.status : null,
         updatedAt: null,
         // Profile Pic
-        profilePicUrl: (isSameUser && storedLocal.profile_pic_url) ? storedLocal.profile_pic_url : null,
+        profilePicUrl: (isSameUser && (storedLocal.profile_pic_url || storedLocal.profile_image)) ? (storedLocal.profile_pic_url || storedLocal.profile_image) : null,
         
         activeCampaignId: userMetadata.active_campaign_id || null,
         activeCustomerId: userMetadata.active_customer_id || null,
@@ -284,7 +284,14 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       }
 
       if (data.success && data.user) {
-        userData = data.user;
+        userData = {
+           ...data.user,
+           // IMPORTANT: Persist auth-level timestamps from the active session
+           // The database profile might not have these or might be stale
+           lastSignInAt: authUser?.last_sign_in_at || data.user.lastSignInAt,
+           createdAt: authUser?.created_at || data.user.createdAt,
+           profilePicUrl: data.user.profilePicUrl || data.user.profile_pic_url || data.user.profile_image || null // Fix: fallback to profile_pic_url (API returns snake_case)
+        };
         
         // Store user data in array (convert to UserProfileData format)
         if (userData) {

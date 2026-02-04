@@ -12,6 +12,10 @@ import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "../../../
 export default function CallingPage() {
     const router = useRouter();
     const { id: campaignId, customerId } = router.query;
+
+    const handleLogoutClick = async (tokenId?: string) => {
+        await handleLogout(router, tokenId);
+    };
     
     const [user, setUser] = useState<UserProfile | null>(null);
     const [customer, setCustomer] = useState<any>(null);
@@ -1865,7 +1869,21 @@ Campaign: ${campaign?.name || campaignId}
 
     return (
         <div className="flex min-h-screen w-full" style={{ backgroundColor: "#f8fafc", maxWidth: "100vw" }}>
-            <Sidebar activeNav="campaign" />
+            <Sidebar 
+                activeNav="campaign" 
+                user={user ? {
+                    displayName: user.displayName,
+                    email: user.email,
+                    employeeId: user.employeeId,
+                    profilePicUrl: user.profilePicUrl,
+                    isClient: user.isClient,
+                    designation: user.designation,
+                    lastSignInAt: user.lastSignInAt
+                } : undefined}
+                onLogout={handleLogoutClick}
+            />
+            
+            {/* <div className="hidden">{console.log('Campaign[id]/[customerId] User:', user)}</div> */}
             
             <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
                 <Header 
@@ -1873,9 +1891,11 @@ Campaign: ${campaign?.name || campaignId}
                         displayName: user.displayName,
                         email: user.email,
                         employeeId: user.employeeId,
-                        profilePicUrl: user.profilePicUrl
+                        profilePicUrl: user.profilePicUrl,
+                        lastSignInAt: user.lastSignInAt,
+                        uid: user.uid
                     } : undefined} 
-                    onLogout={() => handleLogout(router)} 
+                    onLogout={handleLogoutClick} 
                     hideSidebar={false}
                 />
                 

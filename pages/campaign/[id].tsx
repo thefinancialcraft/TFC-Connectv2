@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
@@ -28,7 +28,7 @@ interface Campaign {
     employee_id?: string | null;
     talktime?: string | null;
     total_dials?: number | null;
-    users?: { id: string, name: string, email: string, employee_id?: string }[];
+    users?: { id: string, name: string, email: string, employee_id?: string, user_id?: string }[];
     organization_id?: string | null;
     organizations?: { id: string, company_name: string, org_code: string } | null;
     ishourlyactivitywidgevisible?: boolean;
@@ -62,6 +62,7 @@ interface AnalyticsData {
         total_duration: number; 
     }[];
     caller_performance: {
+        user_id: string;
         caller: string;
         employee_id: string;
         total_calls: number;
@@ -138,6 +139,7 @@ export default function CampaignDetails() {
     const [loadingLeads, setLoadingLeads] = useState(false);
     const [expandedChart, setExpandedChart] = useState<'hourly' | 'users' | null>(null);
     const [campaignStats, setCampaignStats] = useState({ talkTime: '0h 0m', totalDials: 0 });
+    const dateInputRef = useRef<HTMLInputElement>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [leadsPerPage] = useState(10);
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
@@ -264,13 +266,99 @@ export default function CampaignDetails() {
             if (isLevel1User && userId) qManaged = qManaged.eq('assigned_to', userId); 
             if (isLevel2User) qManaged = effectiveTeamMembers.length > 0 ? qManaged.in('assigned_to', effectiveTeamMembers) : qManaged.eq('assigned_to', '00000000-0000-0000-0000-000000000000');
             
+            // Fresh (Unassigned or explicitly Fresh)
+            let qFresh = supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).is('disposition', null).eq('attempt_count', 0);
+
+            
             // Recent (Calls made by specific user if L1, or team if L2)
             let qRecentCount = supabase.from('call_logs').select('*', { count: 'exact', head: true }).eq('campaign_id', id).gte('created_at', twentyFourHoursAgoCount);
             if (isLevel1User && userId) qRecentCount = qRecentCount.eq('agent_id', userId);
             if (isLevel2User) qRecentCount = effectiveTeamMembers.length > 0 ? qRecentCount.in('agent_id', effectiveTeamMembers) : qRecentCount.eq('agent_id', '00000000-0000-0000-0000-000000000000');
 
-            // Analytics (Always fetch so breakdown tables work for everyone)
-            const analyticsPromise = supabase.rpc('get_campaign_analytics', { campaign_id_input: id });
+            // Analytics (Client-side aggregation to avoid RPC timeout)
+            const rangeStart = new Date(selectedDate);
+            rangeStart.setHours(0, 0, 0, 0);
+            const rangeEnd = new Date(selectedDate);
+            rangeEnd.setHours(23, 59, 59, 999);
+            
+            const startISO = rangeStart.toISOString();
+            const endISO = rangeEnd.toISOString();
+
+            const analyticsPromise = (async () => {
+                try {
+                    const { data: logs, error: logsError } = await supabase
+                        .from('call_logs')
+                        .select('agent_id, duration, created_at, disposition, is_connected')
+                        .eq('campaign_id', id)
+                        .gte('created_at', startISO)
+                        .lte('created_at', endISO);
+
+                    if (logsError) throw logsError;
+
+                    const hourlyMap: Record<number, any> = {};
+                    const callerMap: Record<string, any> = {};
+                    const dispMap: Record<string, number> = {};
+
+                    (logs || []).forEach(log => {
+                        // Hourly Stats
+                        const hour = new Date(log.created_at).getHours();
+                        if (!hourlyMap[hour]) {
+                            hourlyMap[hour] = { hour, total_calls: 0, connected_calls: 0, outgoing_calls: 0, incoming_calls: 0, missed_calls: 0, total_duration: 0 };
+                        }
+                        const hStats = hourlyMap[hour];
+                        hStats.total_calls++;
+                        hStats.total_duration += (log.duration || 0);
+
+                        // Disposition Stats
+                        const disp = log.disposition || 'No Disposition';
+                        dispMap[disp] = (dispMap[disp] || 0) + 1;
+
+                        // Caller Performance
+                        const agentId = log.agent_id;
+                        if (!callerMap[agentId]) {
+                            callerMap[agentId] = {
+                                user_id: agentId,
+                                total_calls: 0,
+                                connected_calls: 0,
+                                total_duration: 0,
+                                incoming_calls: 0, 
+                                outgoing_calls: 0, 
+                                missed_calls: 0
+                            };
+                        }
+                        const cStats = callerMap[agentId];
+                        cStats.total_calls++;
+                        cStats.total_duration += (log.duration || 0);
+
+                        const isConnected = (log.duration || 0) > 0 || String(log.is_connected).toLowerCase() === 'true' || String(log.is_connected).toLowerCase() === 'yes';
+                        if (isConnected) {
+                            hStats.connected_calls++;
+                            cStats.connected_calls++;
+                        } else {
+                            hStats.missed_calls++;
+                            cStats.missed_calls++;
+                        }
+                        
+                        // Assuming outgoing for campaign dashboard stats
+                        hStats.outgoing_calls++;
+                        cStats.outgoing_calls++;
+                    });
+
+                    return {
+                        data: {
+                            hourly_calls: Object.values(hourlyMap).map(h => ({ hour: h.hour, count: h.total_calls })).sort((a,b) => a.hour - b.hour),
+                            agent_performance: [], 
+                            disposition_stats: Object.entries(dispMap).map(([d, c]) => ({ name: d, value: c })), // mapping to name/value for Recharts
+                            hourly_detailed: Object.values(hourlyMap).sort((a,b) => a.hour - b.hour),
+                            caller_performance: Object.values(callerMap)
+                        },
+                        error: null
+                    };
+                } catch (e: any) {
+                    console.error("Failed to aggregate analytics:", e);
+                    return { data: null, error: e };
+                }
+            })();
             
             const [
                 { count: totalCount },
@@ -283,23 +371,15 @@ export default function CampaignDetails() {
                 analyticsResponse,
                 todayStatsResponse
             ] = await Promise.all([
-                qTotal,
-                qFollowup,
-                qOverdue,
-                supabase.from('customers').select('*', { count: 'exact', head: true }).eq('campaign_id', id).is('assigned_to', null).eq('attempt_count', 0), // Fresh is always unassigned and has 0 attempts
-                qUpcoming,
-                qRecentCount,
-                qManaged,
-                analyticsPromise,
-                supabase.from('call_logs')
-                    .select('duration, created_at, is_connected, disposition, sub_disposition, agent_id')
-                    .eq('campaign_id', id)
-                    .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
-                    .filter(
-                        'agent_id', 
-                        isLevel1User ? 'eq' : (isLevel2User ? 'in' : 'not.is'), 
-                        isLevel1User ? userId : (isLevel2User ? (effectiveTeamMembers.length > 0 ? effectiveTeamMembers : ['00000000-0000-0000-0000-000000000000']) : 'null')
-                    )
+                qTotal, // 0
+                qFollowup, // 1
+                qOverdue, // 2
+                qFresh, // 3
+                qUpcoming, // 4
+                qRecentCount, // 5
+                qManaged, // 6
+                analyticsPromise, // 7
+                supabase.rpc('get_today_campaign_stats', { campaign_id_input: id }) // 8
             ]);
 
             setStats({
@@ -312,28 +392,48 @@ export default function CampaignDetails() {
                 managedCount: managedCount || 0
             });
 
+            // Process Analytics (Always use aggregation result)
+            const { data: analyticsResult, error: analyticsError } = analyticsResponse;
+
             // --- USER PROFILES: Fetch all profiles needed for analytics and tiles ---
-            const initialProfileIds = [userId, ...effectiveTeamMembers].filter(Boolean) as string[];
+            // Collect all agent IDs that appear in today's analytics
+            const analyticsAgentIds = (analyticsResult?.caller_performance || []).map((p: any) => p.user_id).filter(Boolean);
+            
+            const allRequiredProfileIds = [...new Set([
+                userId, 
+                ...effectiveTeamMembers,
+                ...analyticsAgentIds
+            ])].filter(Boolean) as string[];
+
             let userProfiles: any[] = [];
-            if (initialProfileIds.length > 0) {
+            if (allRequiredProfileIds.length > 0) {
                 const { data: profiles } = await supabase
                     .from('user_profiles')
                     .select('id, user_id, user_name, employee_id')
-                    .or(`user_id.in.(${initialProfileIds.join(',')}),id.in.(${initialProfileIds.join(',')})`);
+                    .or(`user_id.in.(${allRequiredProfileIds.join(',')}),id.in.(${allRequiredProfileIds.join(',')})`);
                 userProfiles = profiles || [];
             }
 
             const findUser = (targetId: string) => userProfiles.find((p: any) => p.user_id === targetId || p.id === targetId);
 
-            // Process Analytics (Always use RPC result which now uses call_history)
-            const { data: analyticsResult, error: analyticsError } = analyticsResponse;
             if (!analyticsError && analyticsResult) {
+                // Enrich caller_performance with names from userProfiles
+                const enrichedCallerPerformance = (analyticsResult.caller_performance || []).map((perf: any) => {
+                    const profile = findUser(perf.user_id);
+                    return {
+                        ...perf,
+                        caller: profile?.user_name || 'Unknown Agent',
+                        user_name: profile?.user_name || 'Unknown Agent',
+                        employee_id: profile?.employee_id || 'N/A'
+                    };
+                });
+
                 setAnalytics({
                     hourly_calls: analyticsResult.hourly_calls || [],
                     agent_performance: analyticsResult.agent_performance || [],
                     disposition_stats: analyticsResult.disposition_stats || [],
                     hourly_detailed: analyticsResult.hourly_detailed || [],
-                    caller_performance: analyticsResult.caller_performance || []
+                    caller_performance: enrichedCallerPerformance
                 });
 
                 // Update Campaign-wide Stats (Talktime & Dials) from the new data source
@@ -353,8 +453,8 @@ export default function CampaignDetails() {
             }
 
             // 3. Fetch Tile Data (Recent, Overdue, Upcoming, Managed) in Parallel
-            // Prepare Tile Queries
-            let qRecentLogs = supabase.from('call_logs').select(`id, disposition, sub_disposition, created_at, agent_id, customer_id, customers (customer_name, expiry_date)`).eq('campaign_id', id).gte('created_at', twentyFourHoursAgo).order('created_at', { ascending: false }).limit(3);
+            // Prepare Tile Queries (Modified to avoid Relationship error on call_logs -> customers)
+            let qRecentLogs = supabase.from('call_logs').select(`id, disposition, sub_disposition, created_at, agent_id, customer_id`).eq('campaign_id', id).gte('created_at', twentyFourHoursAgo).order('created_at', { ascending: false }).limit(3);
             if (isLevel1User && userId) qRecentLogs = qRecentLogs.eq('agent_id', userId);
             if (isLevel2User) qRecentLogs = effectiveTeamMembers.length > 0 ? qRecentLogs.in('agent_id', effectiveTeamMembers) : qRecentLogs.eq('agent_id', '00000000-0000-0000-0000-000000000000');
 
@@ -382,7 +482,23 @@ export default function CampaignDetails() {
             const upcomingData = upcomingRes.data || [];
             const managedData = managedRes.data || [];
 
-            // 4. Collect additional User IDs that might have appeared in Tile data but not in team/agent lists
+            // 4. Manual Join for Recent Logs Customers (Fixing missing FK)
+            const recentCustomerIds = [...new Set(recentData.map((d: any) => d.customer_id).filter(Boolean))];
+            let recentCustomerMap: Record<string, any> = {};
+            if (recentCustomerIds.length > 0) {
+               const { data: cData } = await supabase
+                 .from('customers')
+                 .select('id, customer_name, expiry_date')
+                 .in('id', recentCustomerIds);
+               if (cData) {
+                 cData.forEach((c: any) => {
+                   recentCustomerMap[c.id] = c;
+                 });
+               }
+            }
+
+
+            // 4b. Collect additional User IDs that might have appeared in Tile data but not in team/agent lists
             const extraUserIds = [
                 ...new Set([
                     ...recentData.map((d: any) => d.agent_id),
@@ -408,10 +524,15 @@ export default function CampaignDetails() {
             // Enrich Recent Calls
             setRecentCalls(recentData.map((log: any) => {
                 const caller = findUser(log.agent_id);
+                const customer = recentCustomerMap[log.customer_id];
                 return {
                     ...log,
                     caller_name: caller?.user_name || 'System',
-                    caller_emp_id: caller?.employee_id || 'N/A'
+                    caller_emp_id: caller?.employee_id || 'N/A',
+                    customers: customer ? { // Mimic the structure expected by UI
+                        customer_name: customer.customer_name,
+                        expiry_date: customer.expiry_date
+                    } : null
                 };
             }));
 
@@ -633,7 +754,7 @@ export default function CampaignDetails() {
     useEffect(() => {
         if (!router.isReady || !id || isAuthLoading || !user?.uid) return;
         fetchCampaignData();
-    }, [router.isReady, id, user?.uid, isLevel1User, isAuthLoading]);
+    }, [router.isReady, id, user?.uid, isLevel1User, isAuthLoading, selectedDate]);
 
     // Effect for Page Change (Standard pagination)
     useEffect(() => {
@@ -802,13 +923,15 @@ export default function CampaignDetails() {
                     profilePicUrl: user.profilePicUrl,
                     isClient: user.isClient,
                     designation: user.designation,
-                } : undefined} />
+                } : undefined} onLogout={handleLogoutClick} />
                 <div className="flex-1 flex flex-col lg:ml-56 min-w-0 overflow-hidden">
                     <Header user={user ? {
                         displayName: user.displayName,
                         email: user.email,
                         employeeId: user.employeeId,
                         profilePicUrl: user.profilePicUrl,
+                        lastSignInAt: user.lastSignInAt,
+                        uid: user.uid
                     } : undefined} />
                     <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-[60px] lg:pt-[60px]">
                         <div className="max-w-[1600px] mx-auto space-y-8">
@@ -880,7 +1003,11 @@ export default function CampaignDetails() {
                 activeNav="campaign"
                 onNavChange={() => { }}
                 userRole={user?.role || null}
+                onLogout={handleLogoutClick}
             />
+
+            {/* DEBUG: Check User Object */}
+            {/* <div className="hidden">{console.log('Campaign[id] User:', user)}</div> */}
 
             <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
                 <Header
@@ -889,6 +1016,7 @@ export default function CampaignDetails() {
                         email: user.email,
                         employeeId: user.employeeId,
                         profilePicUrl: user.profilePicUrl,
+                        lastSignInAt: user.lastSignInAt
                     } : undefined}
                     onLogout={handleLogoutClick}
                 />
@@ -1065,11 +1193,29 @@ export default function CampaignDetails() {
                         <div className="space-y-8 mb-8">
                              {/* Detailed Hourly Analytics Table */}
                              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-                                <div className="p-6 border-b border-gray-50">
+                                <div className="p-6 border-b border-gray-50 flex items-center justify-between">
                                         <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
                                             <i className="fi fi-rr-time-check text-[#4b33e8]"></i>
                                             Hourly Performance Breakdown
                                         </h3>
+                                        <div className="relative">
+                                            <div className="group relative">
+                                                <button 
+                                                    onClick={() => dateInputRef.current?.showPicker()}
+                                                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 hover:border-indigo-200 hover:bg-white hover:shadow-sm transition-all focus:ring-2 focus:ring-indigo-100 outline-none cursor-pointer"
+                                                >
+                                                    <i className="fi fi-rr-calendar text-indigo-500 text-[10px]"></i>
+                                                    {new Date(selectedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </button>
+                                                <input 
+                                                    ref={dateInputRef}
+                                                    type="date" 
+                                                    value={selectedDate}
+                                                    onChange={(e) => setSelectedDate(e.target.value)}
+                                                    className="absolute inset-0 opacity-0 pointer-events-none w-full"
+                                                />
+                                            </div>
+                                        </div>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
@@ -1115,11 +1261,29 @@ export default function CampaignDetails() {
 
                             {/* Caller Performance Breakdown Table */}
                             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-8">
-                                <div className="p-6 border-b border-gray-50">
+                                <div className="p-6 border-b border-gray-50 flex items-center justify-between">
                                         <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
                                             <i className="fi fi-rr-headset text-[#4b33e8]"></i>
                                             Caller Performance Breakdown
                                         </h3>
+                                        <div className="relative">
+                                            <div className="group relative">
+                                                <button 
+                                                    onClick={() => dateInputRef.current?.showPicker()}
+                                                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 hover:border-indigo-200 hover:bg-white hover:shadow-sm transition-all focus:ring-2 focus:ring-indigo-100 outline-none cursor-pointer"
+                                                >
+                                                    <i className="fi fi-rr-calendar text-indigo-500 text-[10px]"></i>
+                                                    {new Date(selectedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </button>
+                                                <input 
+                                                    ref={dateInputRef}
+                                                    type="date" 
+                                                    value={selectedDate}
+                                                    onChange={(e) => setSelectedDate(e.target.value)}
+                                                    className="absolute inset-0 opacity-0 pointer-events-none w-full"
+                                                />
+                                            </div>
+                                        </div>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
@@ -1137,21 +1301,23 @@ export default function CampaignDetails() {
                                         <tbody className="divide-y divide-gray-50">
                                             {analytics.caller_performance.filter(row => 
                                                     campaign?.users?.some(u => 
-                                                        (u.employee_id && u.employee_id === row.employee_id) || 
-                                                        (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
+                                                        (u.employee_id && row.employee_id && u.employee_id === row.employee_id) || 
+                                                        (u.name && row.caller && u.name.toLowerCase() === row.caller.toLowerCase()) ||
+                                                        (u.id && row.user_id && u.id === row.user_id)
                                                     )
                                                 ).length > 0 ? (
                                                     analytics.caller_performance
                                                         .filter(row => 
                                                             campaign?.users?.some(u => 
-                                                                (u.employee_id && u.employee_id === row.employee_id) || 
-                                                                (u.name && u.name.toLowerCase() === row.caller.toLowerCase())
+                                                                (u.employee_id && row.employee_id && u.employee_id === row.employee_id) || 
+                                                                (u.name && row.caller && u.name.toLowerCase() === row.caller.toLowerCase()) ||
+                                                                (u.id && row.user_id && u.id === row.user_id)
                                                             )
                                                         )
                                                         .map((row, index) => (
                                                         <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                                                             <td className="px-6 py-4 text-xs font-bold text-gray-700 capitalize">
-                                                                {row.caller}
+                                                                {row.caller || 'Unknown Agent'}
                                                             </td>
                                                             <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.total_calls}</td>
                                                             <td className="px-6 py-4 text-xs font-medium text-green-600">{row.connected_calls}</td>
@@ -1159,7 +1325,7 @@ export default function CampaignDetails() {
                                                             <td className="px-6 py-4 text-xs font-medium text-gray-600">{row.incoming_calls}</td>
                                                             <td className="px-6 py-4 text-xs font-medium text-red-500">{row.missed_calls}</td>
                                                             <td className="px-6 py-4 text-xs font-medium text-gray-600">
-                                                                {new Date(row.total_duration * 1000).toISOString().substr(11, 8)}
+                                                                {new Date((row.total_duration || 0) * 1000).toISOString().substr(11, 8)}
                                                             </td>
                                                         </tr>
                                                     ))

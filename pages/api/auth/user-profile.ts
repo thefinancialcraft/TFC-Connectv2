@@ -155,7 +155,7 @@ export default async function handler(
         approvalStatus: profile?.approval_status || null,
         accountStatus: profile?.status || null,
         updatedAt: profile?.updated_at || null,
-        profile_pic_url: profile?.profile_pic_url || null,
+        profile_pic_url: profile?.profile_pic_url || userMetadata.picture || userMetadata.avatar_url || null,
         user_name: profile?.user_name || null,
         profile_complete: profile?.profile_complete ?? false,
         activeCampaignId: userMetadata.active_campaign_id || null,

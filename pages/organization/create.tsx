@@ -102,6 +102,10 @@ export default function CreateOrganization() {
     }
   };
 
+  const handleLogoutClick = async (tokenId?: string) => {
+    await handleLogout(router, tokenId);
+  };
+
   // Page level protection logic (Strict: Hidden by default)
   useEffect(() => {
     if (mounted && user) {
@@ -298,6 +302,7 @@ export default function CreateOrganization() {
         activeNav="organization"
         onNavChange={() => {}}
         userRole={user?.role || null}
+        onLogout={handleLogoutClick}
       />
 
       <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 font-poppins">

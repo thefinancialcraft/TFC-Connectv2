@@ -330,9 +330,9 @@ function UserProfilePage() {
     }
   };
 
-  const handleLogoutClick = async () => {
+  const handleLogoutClick = async (tokenId?: string) => {
     const { handleLogout } = await import("../../lib/authService");
-    await handleLogout(router);
+    await handleLogout(router, tokenId);
   };
 
   const handleChangeAvatar = () => {
@@ -530,6 +530,7 @@ function UserProfilePage() {
         activeNav={activeNav}
         onNavChange={setActiveNav}
         userRole={currentUser?.role || null}
+        onLogout={handleLogoutClick}
       />
 
       {/* Main Content Area */}

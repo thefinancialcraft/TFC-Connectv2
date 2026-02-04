@@ -368,9 +368,13 @@ export default function Settings() {
     <AppLayout>
       <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 space-y-6 pb-24 max-w-7xl">
         {/* Page Header */}
-        <div>
-          <h1 className="text-xl sm:text-3xl font-bold text-[#263238] font-poppins">Settings</h1>
-          <p className="text-sm text-[#787E9D]">Manage your account and preferences</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-xl sm:text-3xl font-bold text-[#263238] font-poppins">Settings</h1>
+            <p className="text-sm text-[#787E9D]">Manage your account and preferences</p>
+          </div>
+          
+         
         </div>
 
         {/* Tabs navigation */}

@@ -14,6 +14,7 @@ interface HeaderProps {
     employeeId?: string | null;
     profilePicUrl?: string | null;
     uid?: string;
+    lastSignInAt?: string | null;
   };
   onLogout?: (tokenId?: string) => void;
   hideSidebar?: boolean;
@@ -73,8 +74,16 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
 
   // Only use profilePicUrl after mount to prevent hydration mismatch
   const profilePicUrl = useMemo(() => {
-    return mounted ? displayUser?.profilePicUrl : null;
-  }, [mounted, displayUser]);
+    // Priority: 1. Props (user), 2. Cached (cachedUser)
+    
+    // DEBUG LOG
+    // if (user?.profilePicUrl) console.log('Header: Using Prop Pic', user.profilePicUrl);
+    // else if (cachedUser?.profilePicUrl) console.log('Header: Using Cached Pic', cachedUser.profilePicUrl);
+    // else console.log('Header: No Pic Found', { user: user, cached: cachedUser });
+
+    if (user?.profilePicUrl) return user.profilePicUrl;
+    return mounted ? cachedUser?.profilePicUrl : null;
+  }, [mounted, user?.profilePicUrl, cachedUser?.profilePicUrl]);
 
   // Set mounted and check for Flutter Bridge
   useEffect(() => {
@@ -575,7 +584,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
             }}
             aria-label="Open Settings"
           >
-            {profilePicUrl ? (
+            {mounted && profilePicUrl ? (
               <img
                 src={profilePicUrl}
                 alt={mounted ? (displayUser?.displayName || 'User') : 'User'}
@@ -658,11 +667,15 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
                 background: profilePicUrl ? "transparent" : "#4b33e8",
               }}
             >
-              {profilePicUrl ? (
+              {mounted && profilePicUrl ? (
                 <img
                   src={profilePicUrl}
                   alt={mounted ? (displayUser?.displayName || 'User') : 'User'}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                      console.error("Image Failed to Load", profilePicUrl);
+                      e.currentTarget.style.display = 'none'; // Hide broken image
+                  }}
                 />
               ) : (
                 initials
