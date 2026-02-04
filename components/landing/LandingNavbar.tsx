@@ -15,19 +15,27 @@ export default function LandingNavbar() {
 
           {/* Desktop Nav Links (Optional - can add later) */}
           <div className="hidden md:flex items-center gap-8">
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Home</a>
             <a href="#features" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Features</a>
             <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">How it Works</a>
+            <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Pricing</a>
             <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Testimonials</a>
           </div>
 
           {/* CTA Button */}
-          <div>
-            <Link 
+          <div className="flex items-center gap-4">
+             <Link 
               href="/login"
+              className="text-sm font-bold text-[#4b33e8] hover:text-[#3b27b8] transition-colors hidden sm:block"
+            >
+              Login
+            </Link>
+            <a
+              href="#contact"
               className="inline-flex items-center justify-center px-5 py-2 border border-transparent text-sm font-bold rounded-full text-white bg-[#4b33e8] hover:bg-[#3b27b8] transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300"
             >
-              Login / Sign Up
-            </Link>
+              Contact Sales
+            </a>
           </div>
         </div>
       </div>

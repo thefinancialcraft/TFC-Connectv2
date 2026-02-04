@@ -34,15 +34,61 @@ export default function HeroSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <span className="w-2 h-2 rounded-full bg-[#4b33e8] animate-pulse"></span>
-          <span className="text-xs font-semibold text-[#4b33e8] tracking-wide uppercase">New v2.0 Live</span>
+          <span className="text-xs font-semibold text-[#4b33e8] tracking-wide uppercase">track • call • close</span>
+        </div> */}
+
+        {/* Low Opacity Excel Background */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100%] h-[400px] z-0 opacity-50 select-none pointer-events-none overflow-hidden rotate-[-2deg] scale-100 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]">
+          <table className="w-full text-left text-xs text-gray-900 border-collapse">
+            <thead>
+              <tr className="border-[0.5px] border-blue-300/50">
+                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((col) => (
+                  <th key={col} className="px-3 py-2 bg-gray-100/50 border-[0.5px] border-gray-300/50 font-normal text-center w-21">{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { name: "Rahul Sharma", phone: "98765 43210", status: "Overdue", disp: "Interested", action: "Call Now", time: "10:30 AM", statusColor: "text-red-500" },
+                { name: "Priya Singh", phone: "99887 76655", status: "New Lead", disp: "Fresh", action: "First Call", time: "10:45 AM", statusColor: "text-blue-500" },
+                { name: "Amit Verma", phone: "91234 56789", status: "Follow Up", disp: "Callback", action: "Reminder", time: "11:00 AM", statusColor: "text-amber-500" },
+                { name: "Sneha Gupta", phone: "88990 01122", status: "Closed", disp: "Converted", action: "Onboard", time: "11:15 AM", statusColor: "text-emerald-500" },
+                { name: "Vikram Malhotra", phone: "90011 22334", status: "Overdue", disp: "Ringing", action: "Retry", time: "11:30 AM", statusColor: "text-red-500" },
+                { name: "Anjali Mehta", phone: "98765 12345", status: "Connected", disp: "Meeting", action: "Zoom Link", time: "12:00 PM", statusColor: "text-purple-500" },
+                { name: "Rohit Kumar", phone: "76543 21098", status: "New Lead", disp: "Fresh", action: "First Call", time: "12:15 PM", statusColor: "text-blue-500" },
+                { name: "Neha Agarwal", phone: "87654 32109", status: "Follow Up", disp: "Busy", action: "Callback", time: "12:45 PM", statusColor: "text-amber-500" },
+                { name: "Suresh Patil", phone: "95678 12340", status: "Closed", disp: "Paid", action: "Invoice", time: "01:00 PM", statusColor: "text-emerald-500" },
+                { name: "Kavita Rao", phone: "94321 87654", status: "Overdue", disp: "Switched Off", action: "WhatsApp", time: "01:15 PM", statusColor: "text-red-500" },
+                { name: "Arjun Das", phone: "91122 33445", status: "Connected", disp: "Pitching", action: "Send Deck", time: "01:45 PM", statusColor: "text-purple-500" },
+                { name: "Meera Iyer", phone: "80099 88776", status: "Follow Up", disp: "Thinking", action: "Nurture", time: "02:00 PM", statusColor: "text-amber-500" },
+                { name: "Rajesh Khanna", phone: "99880 07766", status: "Rejected", disp: "Not Interested", action: "Archive", time: "02:15 PM", statusColor: "text-gray-400" },
+                { name: "Pooja Reddy", phone: "77665 54433", status: "New Lead", disp: "Fresh", action: "Assign", time: "02:30 PM", statusColor: "text-blue-500" },
+                { name: "Varun Nair", phone: "88776 65544", status: "Overdue", disp: "Callback", action: "Urgent", time: "03:00 PM", statusColor: "text-red-500" },
+              ].map((row, i) => (
+                <tr key={i} className="border-[0.5px] border-gray-300/50">
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 bg-white/50 text-center text-gray-500 font-mono">{i + 1}</td>
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 text-gray-600 font-medium">{row.name}</td>
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 text-gray-400 font-mono text-[10px]">+91 {row.phone}</td>
+                  <td className={`px-3 py-1.5 border-[0.5px] border-gray-300/50 ${row.statusColor} font-medium`}>{row.status}</td>
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 text-gray-600">{row.disp}</td>
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 text-gray-600">{row.action}</td>
+                  <td className="px-3 py-1.5 border-[0.5px] border-gray-300/50 font-mono text-gray-400">{row.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+        <h1 className="relative z-10 mt-10 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
           Stop Managing Spreadsheets. <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
+        
+        </h1>
+          <h1 className="relative z-10 mt-1 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+         
+          <span className="text-transparent pb-2  bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
             Start Closing Deals.
           </span>
         </h1>
@@ -54,12 +100,12 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-          <Link 
-            href="/login"
+          <a
+            href="#contact"
             className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#4b33e8] text-white font-bold text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1"
           >
-            Get Started Free
-          </Link>
+            Contact Sales
+          </a>
           <a 
             href="#features"
             className="w-full sm:w-auto px-6 py-3 rounded-full bg-white text-[#263238] border border-gray-200 font-bold text-base hover:bg-gray-50 transition-all hover:-translate-y-1"
