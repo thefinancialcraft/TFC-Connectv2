@@ -8,7 +8,7 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    title: "Welcome to TFC Connect",
+    title: "Welcome to Rynxly",
     image: "https://lh3.googleusercontent.com/d/1At7HgezDw8fFlfowrDBWtmIWVJMhpQI9",
     description: "Transform the way you work with seamless tools designed just for you!"
   },

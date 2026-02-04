@@ -1,15 +1,19 @@
+// Landing page for Rynxly CRM
 import Head from 'next/head';
-import LandingNavbar from '../../components/landing/LandingNavbar';
-import HeroSection from '../../components/landing/HeroSection';
-import ClientLogos from '../../components/landing/ClientLogos';
-import ProblemSolution from '../../components/landing/ProblemSolution';
-import FeaturesSection from '../../components/landing/FeaturesSection';
-import WorkflowSteps from '../../components/landing/WorkflowSteps';
-import AppShowcase from '../../components/landing/AppShowcase';
-import IndustrySolutions from '../../components/landing/IndustrySolutions';
-import Testimonials from '../../components/landing/Testimonials';
-import FAQSection from '../../components/landing/FAQSection';
-import Footer from '../../components/landing/Footer';
+import LandingNavbar from '@/components/landing/LandingNavbar';
+import HeroSection from '@/components/landing/HeroSection';
+import ClientLogos from '@/components/landing/ClientLogos';
+import ProblemSolution from '@/components/landing/ProblemSolution';
+import FeaturesSection from '@/components/landing/FeaturesSection';
+import WorkflowSteps from '@/components/landing/WorkflowSteps';
+import AppShowcase from '@/components/landing/AppShowcase';
+import IndustrySolutions from '@/components/landing/IndustrySolutions';
+import ComparisonSection from '@/components/landing/ComparisonSection';
+import Pricing from '@/components/landing/Pricing';
+import Testimonials from '@/components/landing/Testimonials';
+import FAQSection from '@/components/landing/FAQSection';
+import ContactForm from '@/components/landing/ContactForm';
+import Footer from '@/components/landing/Footer';
 
 export default function LandingPage() {
   return (
@@ -28,9 +32,12 @@ export default function LandingPage() {
         <FeaturesSection />
         <WorkflowSteps />
         <AppShowcase />
+        <ComparisonSection />
+        <Pricing />
         <IndustrySolutions />
         <Testimonials />
         <FAQSection />
+        <ContactForm />
         <Footer />
       </main>
     </>

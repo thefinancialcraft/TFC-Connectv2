@@ -24,32 +24,32 @@ export default function Testimonials() {
     <div id="testimonials" className="py-24 bg-gray-50 border-t border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
             Loved by <span className="text-[#4b33e8]">Performance Teams</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {reviews.map((r, i) => (
             <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative group hover:-translate-y-2 transition-transform duration-300">
               {/* Quote Icon */}
               <div className="absolute top-6 right-8 text-6xl text-gray-100 font-serif leading-none group-hover:text-indigo-50 transition-colors">"</div>
               
               <div className="relative z-10">
-                <div className="flex gap-1 text-amber-400 mb-4 text-sm">
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
-                  <i className="fi fi-rs-star"></i>
+                <div className="flex gap-1 text-amber-400 mb-3 text-xs">
+                  <i className="fi fi-rs-star flex"></i>
+                  <i className="fi fi-rs-star flex"></i>
+                  <i className="fi fi-rs-star flex"></i>
+                  <i className="fi fi-rs-star flex"></i>
+                  <i className="fi fi-rs-star flex"></i>
                 </div>
                 
-                <p className="text-gray-600 mb-8 leading-relaxed italic">
+                <p className="text-gray-600 mb-6 leading-relaxed italic text-sm">
                   "{r.text}"
                 </p>
                 
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full ${r.color} flex items-center justify-center text-white font-bold text-lg`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full ${r.color} flex items-center justify-center text-white font-bold text-base`}>
                     {r.author.charAt(0)}
                   </div>
                   <div>

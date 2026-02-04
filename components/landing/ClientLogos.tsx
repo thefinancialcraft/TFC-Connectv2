@@ -1,17 +1,17 @@
 export default function ClientLogos() {
   const logos = [
-    { name: "TechCorp", icon: "fi-brands-slack" },
-    { name: "FinServe", icon: "fi-brands-stripe" },
-    { name: "EstatePro", icon: "fi-brands-airbnb" },
-    { name: "EduLearn", icon: "fi-brands-discord" },
-    { name: "AutoFix", icon: "fi-brands-uber" },
-    { name: "CloudSystems", icon: "fi-brands-amazon" },
+    { name: "TechCorp", icon: "fi-brands-slack flex" },
+    { name: "FinServe", icon: "fi-brands-stripe flex" },
+    { name: "EstatePro", icon: "fi-brands-airbnb flex" },
+    { name: "EduLearn", icon: "fi-brands-discord flex" },
+    { name: "AutoFix", icon: "fi-brands-uber flex" },
+    { name: "CloudSystems", icon: "fi-brands-amazon flex" },
   ];
 
   return (
-    <div className="py-12 bg-white border-b border-gray-100 overflow-hidden">
+    <div className="py-32 bg-white border-b border-gray-100 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8">
-        <p className="text-sm font-semibold text-gray-400 uppercase tracking-widest">Trusted by fast-growing teams</p>
+        <p className="text-sm font-semibold text-gray-400 mb-16 uppercase tracking-widest">Trusted by fast-growing teams</p>
       </div>
       
       <div className="relative flex overflow-x-hidden group">
