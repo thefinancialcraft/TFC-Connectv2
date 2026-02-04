@@ -204,8 +204,8 @@ const Sidebar = memo(function Sidebar({
       style={{ borderColor: "#E0E0E0" }}
     >
       {/* Logo Section */}
-      <div className="p-4 border-b" style={{ borderColor: "#E0E0E0" }}>
-        <AppLogo size="small" />
+      <div className="p-3.5 border-b flex justify-center" style={{ borderColor: "#E0E0E0" }}>
+        <AppLogo />
       </div>
 
       {/* Navigation Items */}

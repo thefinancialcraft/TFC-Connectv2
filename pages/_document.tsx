@@ -18,6 +18,10 @@ export default function Document() {
           rel="stylesheet"
           href="https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css"
         />
+        <link
+          rel="stylesheet"
+          href="https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css"
+        />
       </Head>
       <body>
         <Main />
