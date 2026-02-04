@@ -685,10 +685,10 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
           </div>
 
           {/* Right: Device Status & Server Status */}
-          <div className="flex items-center gap-3 lg:gap-6 shrink-0 ml-auto">
+          <div className="flex items-center gap-3 lg:gap-3 shrink-0 ml-auto">
             {/* Real-time Device Status */}
             {deviceStatus && (
-              <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50/50 rounded-2xl border border-gray-100/50">
+              <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50/50 rounded-xl border border-gray-200/50">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                   deviceOnlineStatus === 'offline' 
                     ? 'bg-gray-100 text-gray-400' 
@@ -722,64 +722,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
               </div>
             )}
 
-            {/* Server Status */}
-            <div
-              className={`flex items-center justify-center rounded-full text-sm font-medium transition-all duration-700 ease-in-out overflow-hidden cursor-pointer ${
-                showFullStatus ? 'gap-2 px-3 py-1.5 w-auto' : 'gap-0 p-2 w-9 h-9'
-              } ${
-                serverStatus === 'online'
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : serverStatus === 'offline'
-                  ? 'bg-red-50 text-red-700 border border-red-200'
-                  : 'bg-amber-50 text-amber-700 border border-amber-200'
-              }`}
-              onClick={() => setShowFullStatus(!showFullStatus)}
-              title={serverStatus === 'online' ? 'Server Online' : serverStatus === 'offline' ? 'Server Offline' : 'Checking...'}
-            >
-              {serverStatus === 'online' ? (
-                <>
-                  <Wifi className="w-4 h-4 flex-shrink-0" />
-                  <span
-                    className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
-                      showFullStatus ? 'max-w-[100px] opacity-100' : 'max-w-0 opacity-0'
-                    }`}
-                    style={{ overflow: 'hidden', fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    Online
-                  </span>
-                </>
-              ) : serverStatus === 'offline' ? (
-                <>
-                  <WifiOff className="w-4 h-4 flex-shrink-0" />
-                  <span
-                    className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
-                      showFullStatus ? 'max-w-[100px] opacity-100' : 'max-w-0 opacity-0'
-                    }`}
-                    style={{ overflow: 'hidden', fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    Offline
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Wifi className="w-4 h-4 animate-pulse flex-shrink-0" />
-                  <span
-                    className={`whitespace-nowrap transition-all duration-700 ease-in-out ${
-                      showFullStatus ? 'max-w-[100px] opacity-100' : 'max-w-0 opacity-0'
-                    }`}
-                    style={{ overflow: 'hidden', fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    Checking...
-                  </span>
-                </>
-              )}
-            </div>
 
             {/* Notification Bell (Desktop) */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2.5 rounded-xl bg-gray-50/80 hover:bg-gray-100 transition-all active:scale-95 text-gray-600 group relative"
+                className="p-2.5 rounded-xl  bg-gray-50/50 rounded-xl border border-gray-200/50 hover:bg-gray-100 transition-all active:scale-95 text-gray-600 group relative"
               >
                 {unreadCount > 0 ? (
                   <>

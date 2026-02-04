@@ -204,12 +204,12 @@ const Sidebar = memo(function Sidebar({
       style={{ borderColor: "#E0E0E0" }}
     >
       {/* Logo Section */}
-      <div className="p-3.5 border-b flex justify-center" style={{ borderColor: "#E0E0E0" }}>
+      <div className="p-3 border-b flex justify-center" style={{ borderColor: "#E0E0E0" }}>
         <AppLogo />
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto" suppressHydrationWarning>
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto" suppressHydrationWarning>
         {navItems.length > 0 ? (
           navItems.map((item) => {
             const isOnPath = router.pathname.startsWith(item.path);
@@ -221,7 +221,7 @@ const Sidebar = memo(function Sidebar({
                 key={item.path}
                 href={item.path}
                 onClick={() => handleNavClick(item.path)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 relative ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 relative ${
                   isActive
                     ? "text-white shadow-md"
                     : "text-gray-600 hover:bg-gray-50"

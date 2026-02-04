@@ -31,7 +31,7 @@ export default function AppLogo({ size = 'default' }: AppLogoProps) {
 
         {/* App Name */}
         <h1 
-          className={`font-[700] leading-none mt-1.5 ${
+          className={`font-[700]  leading-none mt-1.5 ${
             isSmall ? 'text-xl md:text-xl' : 'text-[26px] md:text-2xl'
           }`}
           style={{ 
