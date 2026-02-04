@@ -78,7 +78,7 @@ export default function Login() {
             }}
           >
           {/* Logo/Title Section */}
-          <div className="text-center mb-6 md:mb-4">
+          <div className="flex justify-center mb-6 md:mb-4">
             <AppLogo />
             {/* <p className="mt-4" style={{ color: '#263238' }}>
              Welcome Back!

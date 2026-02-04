@@ -641,15 +641,15 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
 
       {/* Desktop Header */}
       <header
-        className="hidden lg:block border-b fixed top-0 z-50 backdrop-blur-sm"
+        className="hidden lg:block border-b fixed top-0 z-50 backdrop-blur-sm h-[70px]"
         style={{ 
           borderColor: "#E0E0E0", 
-          left: hideSidebar ? "0" : "224px", 
-          width: hideSidebar ? "100%" : "calc(100% - 224px)",
+          left: hideSidebar ? "0" : "208px", 
+          width: hideSidebar ? "100%" : "calc(100% - 208px)",
           backgroundColor: "rgba(255, 255, 255, 0.8)" 
         }}
       >
-        <div className="w-full px-6 py-2.5 flex items-center justify-between">
+        <div className="w-full h-full px-6 flex items-center justify-between">
           {/* Left: User Profile */}
           <div className="flex items-center gap-2.5">
             <div
@@ -727,7 +727,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2.5 rounded-xl  bg-gray-50/50 rounded-xl border border-gray-200/50 hover:bg-gray-100 transition-all active:scale-95 text-gray-600 group relative"
+                className="p-3 rounded-xl  bg-gray-50/50 rounded-xl border border-gray-200/50 hover:bg-gray-100 transition-all active:scale-95 text-gray-600 group relative"
               >
                 {unreadCount > 0 ? (
                   <>

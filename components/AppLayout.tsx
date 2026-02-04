@@ -159,7 +159,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       )}
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col ${!hideSidebar ? 'lg:ml-56' : ''} w-full min-w-0 overflow-x-hidden`}>
+      <div className={`flex-1 flex flex-col ${!hideSidebar ? 'lg:ml-52' : ''} w-full min-w-0 overflow-x-hidden`}>
         {/* Top Header */}
         {!hideHeader && (
           <Header
@@ -171,7 +171,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
 
         {/* Main Page Content */}
         <main
-          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${!hideHeader ? 'pt-[60px] lg:pt-[60px]' : ''}`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${!hideHeader ? 'pt-[60px] lg:pt-[70px]' : ''}`}
           style={{ backgroundColor: "#f6f5f7" }}
         >
           {children}

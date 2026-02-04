@@ -43,7 +43,7 @@ export default function Dashboard() {
   const { agentData, loading: agentLoading, fetchAgentPerformance } = useAgentPerformance();
 
   // Dashboard Level State
-  const [dashboardLevel, setDashboardLevel] = useState<DashboardLevel>(DashboardLevel.LEVEL_1_ADMIN);
+  const [dashboardLevel, setDashboardLevel] = useState<DashboardLevel>(DashboardLevel.UNKNOWN);
   const [isOrgLocked, setIsOrgLocked] = useState(false);
   const [isUserLocked, setIsUserLocked] = useState(false);
   const hasInitialized = useRef(false);
@@ -58,11 +58,12 @@ export default function Dashboard() {
     setDashboardLevel(level);
 
     // Apply Constraints based on level
+    // Apply Constraints based on level
     if (level === DashboardLevel.LEVEL_1_ADMIN) {
-      // Level 1: Full Access, but default to own stats
+      // Level 1: Full Access, default to ALL stats
       setIsOrgLocked(false);
       setIsUserLocked(false);
-      if (currentId) setSelectedUserId(currentId);
+      setSelectedUserId("all"); 
     } else if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
       setIsOrgLocked(true);
       setIsUserLocked(false);
@@ -99,6 +100,9 @@ export default function Dashboard() {
 
   // Fetch users when org changes
   useEffect(() => {
+    // Skip if level isn't determined yet
+    if (dashboardLevel === DashboardLevel.UNKNOWN) return;
+
     // Skip if user is locked to self (Level 4)
     if (isUserLocked) return;
 
@@ -171,9 +175,8 @@ export default function Dashboard() {
         if (dashboardLevel !== DashboardLevel.LEVEL_4_AGENT_SALES) {
             fetchUsers();
             
-            // Only reset to "all" if NOT LEVEL 4 and NOT locked
-            // Skip for Level 1 on first load to preserve "own" default
-            if (!isUserLocked && (dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN || selectedOrgId !== "all")) {
+            // Only reset to "all" if NOT locked
+            if (!isUserLocked) {
                 setSelectedUserId("all");
             }
         }

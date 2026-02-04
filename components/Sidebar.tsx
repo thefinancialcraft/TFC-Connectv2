@@ -200,11 +200,10 @@ const Sidebar = memo(function Sidebar({
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-56 bg-white border-r fixed left-0 top-0 h-screen z-40"
+      className="hidden lg:flex flex-col w-52 bg-white border-r fixed left-0 top-0 h-screen z-40"
       style={{ borderColor: "#E0E0E0" }}
     >
-      {/* Logo Section */}
-      <div className="p-3 border-b flex justify-center" style={{ borderColor: "#E0E0E0" }}>
+      <div className="h-[70px] border-b flex items-center justify-center" style={{ borderColor: "#E0E0E0" }}>
         <AppLogo />
       </div>
 
