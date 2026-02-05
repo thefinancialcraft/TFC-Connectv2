@@ -1978,7 +1978,7 @@ Campaign: ${campaign?.name || campaignId}
                                                     </div>
                                                     <div className="flex   items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
-                                                            <i className="fi fi-rr-id-badge text-xs opacity-50"></i>
+                                                            <i className="fi flex fi-rr-id-badge text-xs opacity-50"></i>
                                                             <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
                                                         </div>
                                                     </div>
@@ -1996,19 +1996,19 @@ Campaign: ${campaign?.name || campaignId}
                                         </div>
 
                                         {/* Interaction & Status Summary (New Addition) */}
-                                        <div className="flex items-center gap-2 mb-2 px-1 w-full">
+                                        <div className="flex flex-wrap md:flex-nowrap items-center gap-2 mb-2 px-1 w-full">
                                             {/* Total Interactions Badge */}
-                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
-                                                <i className="fi fi-rr-clock-three text-slate-400 text-[10px]"></i>
+                                            <div className="order-1 flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+                                                <i className="fi flex fi-rr-clock-three text-slate-400 text-[10px]"></i>
                                                 <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
                                                     {history?.length || 0} Attempts
                                                 </span>
                                             </div>
 
-                                            {/* Last Status Chain - Compact Width */}
+                                            {/* Last Status Chain - Responsive & Reordered */}
                                             {lastInteraction && (
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-100 min-w-0 max-w-[90%] overflow-hidden">
-                                                     <i className="fi fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"></i>
+                                                <div className="order-3 md:order-2 w-full md:w-auto flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-100 md:flex-none md:max-w-[60%] min-w-0 overflow-hidden">
+                                                     <i className="fi flex fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"></i>
                                                      <div className="flex items-center gap-1 text-[10px] font-semibold text-purple-700 truncate">
                                                         <span className="truncate">{lastInteraction.disposition || 'N/A'}</span>
                                                         {lastInteraction.sub_disposition && (
@@ -2028,7 +2028,7 @@ Campaign: ${campaign?.name || campaignId}
                                             )}
 
                                             {/* Last 3 Interactions (Right Aligned - Avatar Group Style) */}
-                                            <div className="flex items-center -space-x-2 shrink-0 ml-auto pl-2">
+                                            <div className="order-2 md:order-3 flex items-center -space-x-2 shrink-0 ml-auto pl-2">
                                                 {mobileLogs?.slice(0, 3).map((log, i) => {
                                                     const type = (log.type || '').toLowerCase();
                                                     // Mobile logs usually have 'incoming', 'outgoing', 'missed' as types
@@ -2056,22 +2056,22 @@ Campaign: ${campaign?.name || campaignId}
                                                             style={{ zIndex: 30 - (i * 10) }}
                                                             title={`${isMissed ? 'Missed Call' : isIncoming ? 'Incoming Call' : 'Outgoing Call'} • ${log.duration ? formatTime(log.duration) : '0s'}`}
                                                         >
-                                                            <i className={`fi ${iconClass} text-white text-[10px] transform ${rotateClass}`}></i>
+                                                            <i className={`fi flex ${iconClass} text-white text-[10px] transform ${rotateClass}`}></i>
                                                         </div>
                                                     );
                                                 })}
                                                 {(!mobileLogs || mobileLogs.length === 0) && (
                                                     <div className="w-8 h-8 rounded-full bg-slate-50 border-2 border-white flex items-center justify-center">
-                                                        <i className="fi fi-rr-minus text-slate-200 text-xs"></i>
+                                                        <i className="fi flex fi-rr-minus text-slate-200 text-xs"></i>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
                                         {/* Bottom Section: Info Tiles */}
-                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                        <div className="grid grid-cols-4 gap-1.5">
                                             {/* Manager Tile */}
-                                            <div className="p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-indigo-100 transition-all cursor-default group/tile">
+                                            <div className="p-1 sm:p-2 rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-indigo-100 transition-all cursor-default group/tile">
                                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
                                                      <i className="fi flex fi-rr-user flex text-[10px] sm:text-xs"></i>
                                                 </div>
@@ -2080,7 +2080,7 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
 
                                             {/* Disposition Tile */}
-                                            <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-purple-100 transition-all cursor-default group/tile">
+                                            <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-purple-100 transition-all cursor-default group/tile">
                                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-purple-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
                                                      <i className="fi flex fi-rr-comment-alt text-[10px] sm:text-xs"></i>
                                                 </div>
@@ -2089,7 +2089,7 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
 
                                              {/* Valid Until Tile */}
-                                             <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-amber-100 transition-all cursor-default group/tile">
+                                             <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-amber-100 transition-all cursor-default group/tile">
                                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-amber-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
                                                      <i className="fi flex fi-rr-calendar-clock text-[10px] sm:text-xs"></i>
                                                 </div>
@@ -2098,7 +2098,7 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
 
                                              {/* Campaign Tile */}
-                                             <div className="p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-emerald-100 transition-all cursor-default group/tile">
+                                             <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-emerald-100 transition-all cursor-default group/tile">
                                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-emerald-500 mb-0.5 group-hover/tile:scale-110 transition-transform">
                                                      <i className="fi flex fi-rr-bullhorn text-[10px] sm:text-xs"></i>
                                                 </div>
@@ -2185,7 +2185,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                  ? 'Mark outcome.' 
                                                                  : 'Line ready.'}
                                                             </p>
-                                                             <div className="flex mt-4 items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-colors hover:bg-blue-100 hover:border-blue-200 group/phone">
+                                                             <div className="flex mt-4 flex-wrap justify-center items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-colors hover:bg-blue-100 hover:border-blue-200 group/phone">
                                                             <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
                                                             <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
                                                                 {formatMaskedPhone(customer?.phone_no) || 'N/A'}
@@ -2284,7 +2284,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
                                                                         <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
                                                                         <div className="absolute right-4 opacity-70 animate-pulse">
-                                                                             <i className="fi fi-rr-angle-double-right text-white text-xs"></i>
+                                                                             <i className="fi flex fi-rr-angle-double-right text-white text-xs"></i>
                                                                         </div>
                                                                     </div>
                                                                 </div>
