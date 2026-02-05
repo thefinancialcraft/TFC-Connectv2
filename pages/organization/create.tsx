@@ -267,9 +267,7 @@ export default function CreateOrganization() {
     }
   };
 
-  const handleLogoutClick = async () => {
-    await handleLogout(router);
-  };
+
 
   return (
     <div className="flex min-h-screen w-full overflow-x-hidden bg-[#f8f9fc]">
