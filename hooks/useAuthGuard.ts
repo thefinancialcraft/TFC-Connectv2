@@ -68,7 +68,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
     try {
       // 1. Initial Auth Check (Supabase & Multi-Account Card Logic)
       const isLoginPage = router.pathname === "/login" || router.pathname === "/auth/login";
-      const isPublicLandingPage = router.pathname === "/landing" || router.pathname === "/signup" || router.pathname === "/signup-success";
+      const isPublicLandingPage = router.pathname === "/home" || router.pathname === "/signup" || router.pathname === "/signup-success";
       const isRootPath = router.pathname === "/";
       
       if (isLoginPage || isPublicLandingPage || isRootPath) {

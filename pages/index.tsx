@@ -5,7 +5,17 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push("/landing");
+    // Check for Flutter Bridge (InAppWebView)
+    const isFlutter = typeof window !== 'undefined' && 
+                      !!(window as any).flutter_inappwebview;
+
+    if (isFlutter) {
+      console.log("📱 [Index] Flutter environment detected. Redirecting to Login.");
+      router.push("/login");
+    } else {
+      console.log("💻 [Index] Web environment detected. Redirecting to Home.");
+      router.push("/home");
+    }
   }, [router]);
 
   return (
