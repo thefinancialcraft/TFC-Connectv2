@@ -40,7 +40,7 @@ export default function HeroSection() {
         </div> */}
 
         {/* Low Opacity Excel Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100%] h-[400px] z-0 opacity-50 select-none pointer-events-none overflow-hidden rotate-[-2deg] scale-100 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100%] h-[400px] z-0 opacity-50 select-none pointer-events-none overflow-hidden [transform:perspective(1000px)_rotateY(15deg)_rotateZ(-6deg)] scale-100 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]">
           <table className="w-full text-left text-xs text-gray-900 border-collapse">
             <thead>
               <tr className="border-[0.5px] border-blue-300/50">
@@ -83,9 +83,9 @@ export default function HeroSection() {
 
         {/* Main Headline */}
         <h1 className="relative z-10 mt-10 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-          SIM Based Calling CRM for <br />
+          Stop Managing Spreadsheets. <br />
           <span className="text-transparent pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
-            Sales & Field Teams
+            Start Closing Deals.
           </span>
         </h1>
 
@@ -97,7 +97,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
           <a
-            href="#contact"
+            href="tel:+918882558932"
             className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#4b33e8] text-white font-bold text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1"
           >
             Contact Sales

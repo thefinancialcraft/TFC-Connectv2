@@ -12,6 +12,7 @@ import ComparisonSection from '@/components/landing/ComparisonSection';
 import Pricing from '@/components/landing/Pricing';
 import Testimonials from '@/components/landing/Testimonials';
 import FAQSection from '@/components/landing/FAQSection';
+import IntegrationSection from '@/components/landing/IntegrationSection';
 import ContactForm from '@/components/landing/ContactForm';
 import Footer from '@/components/landing/Footer';
 
@@ -80,10 +81,11 @@ export default function LandingPage() {
         <WorkflowSteps />
         <AppShowcase />
         <ComparisonSection />
+        <IntegrationSection />
         <Pricing />
+        <FAQSection />
         <IndustrySolutions />
         <Testimonials />
-        <FAQSection />
         <ContactForm />
         <Footer />
       </main>

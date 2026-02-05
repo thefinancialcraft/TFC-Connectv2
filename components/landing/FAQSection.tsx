@@ -65,12 +65,12 @@ export default function FAQSection() {
                 Our support team is ready to help you set up your perfect calling workflow. Book a free 30-minute demo today.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center relative z-10">
-                <button className="px-6 py-2.5 bg-white text-[#4b33e8] font-bold rounded-full hover:bg-indigo-50 transition-colors shadow-xl text-sm">
+                <a href="#contact" className="px-6 py-2.5 bg-white text-[#4b33e8] font-bold rounded-full hover:bg-indigo-50 transition-colors shadow-xl text-sm inline-block">
                     Book a Live Demo
-                </button>
-                <button className="px-6 py-2.5 bg-transparent border border-white text-white font-bold rounded-full hover:bg-white/10 transition-colors text-sm">
+                </a>
+                <a href="tel:+918882558932" className="px-6 py-2.5 bg-transparent border border-white text-white font-bold rounded-full hover:bg-white/10 transition-colors text-sm">
                     Contact Sales
-                </button>
+                </a>
             </div>
         </div>
       </div>

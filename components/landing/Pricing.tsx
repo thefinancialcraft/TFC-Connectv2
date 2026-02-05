@@ -67,24 +67,48 @@ const sharedFeatures = [
 
 export default function Pricing() {
     const [activeIdx, setActiveIdx] = useState(2); // Surge (Most Popular)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        teamStrength: ''
+    });
+
+    const handleInputChange = (e: any) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        // Here you would typically send data to your backend
+        console.log("Form Submitted:", formData);
+        setIsSubmitted(true);
+        setTimeout(() => {
+            setIsSubmitted(false);
+            setIsModalOpen(false);
+            setFormData({ name: '', email: '', phone: '', teamStrength: '' });
+        }, 3000);
+    };
 
     return (
-        <div id="pricing" className="py-24 bg-gray-50/50">
+        <div id="pricing" className="py-24 bg-gray-950 relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Section Header - Styled like IndustrySolutions/Features */}
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-sm font-bold tracking-wide text-[#4b33e8] uppercase mb-3">Investment</h2>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                        Pricing <span className="text-[#4b33e8]">Plans</span>
+                    <h2 className="text-sm font-bold tracking-wide text-indigo-400 uppercase mb-3">Investment</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                        Pricing <span className="text-indigo-400">Plans</span>
                     </h2>
-                    <p className="text-base text-gray-500">
+                    <p className="text-base text-gray-400">
                         Transparent pricing for high-performance teams. Scale your sales engine without breaking the bank.
                     </p>
                 </div>
 
-                {/* Pricing Console - Integrated Design */}
-                <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+                {/* Pricing Console - Integrated Design (Desktop/Tablet) */}
+                <div className="hidden lg:block max-w-6xl mx-auto bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
                     <div className="flex flex-col lg:flex-row min-h-[500px]">
                         
                         {/* Sidebar Selector - Unified with site theme */}
@@ -173,13 +197,73 @@ export default function Pricing() {
                             </div>
 
                             <div className="mt-auto pt-12 flex flex-col sm:flex-row items-center gap-4">
-                                <button className="w-full sm:w-auto px-10 py-4 bg-[#4b33e8] text-white rounded-2xl font-black text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-100 hover:shadow-indigo-200">
+                                <button 
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="w-full sm:w-auto px-10 py-4 bg-[#4b33e8] text-white rounded-2xl font-black text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-100 hover:shadow-indigo-200"
+                                >
                                     Get Started with {plans[activeIdx].name}
                                 </button>
                                 <p className="text-[11px] text-gray-400 font-medium">No hidden fees. 24/7 dedicated support.</p>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Mobile View: Swipeable Carousel */}
+                <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 px-4 pb-12 -mx-4 scrollbar-hide">
+                    {plans.map((plan, i) => (
+                        <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-white rounded-3xl p-6 border border-gray-100 shadow-xl shadow-indigo-100/20 flex flex-col relative">
+                            {/* Header */}
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#4b33e8] flex items-center justify-center text-xl">
+                                        <i className={`fi ${plan.icon}`}></i>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-bold text-gray-900 leading-none mb-1">{plan.name}</h4>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{plan.period}</p>
+                                    </div>
+                                </div>
+                                {plan.badge && (
+                                    <span className="text-[9px] bg-[#4b33e8] text-white px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                                        {plan.badge}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Price */}
+                            <div className="mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                <div className="flex items-baseline justify-center">
+                                    <span className="text-4xl font-black text-[#4b33e8]">₹{plan.price}</span>
+                                    <span className="text-sm font-bold text-gray-400 ml-1">/mo</span>
+                                </div>
+                                {plan.minUsers && (
+                                    <p className="text-[10px] font-bold text-orange-600 mt-1 text-center uppercase tracking-wide">Min {plan.minUsers} users</p>
+                                )}
+                                <p className="text-xs text-gray-500 mt-2 text-center leading-tight">"{plan.desc}"</p>
+                            </div>
+
+                            {/* Features Compact */}
+                            <div className="flex-1 space-y-2 mb-6">
+                                {sharedFeatures.map((feature, idx) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+                                             <i className="fi fi-rr-check text-[8px] flex"></i>
+                                        </div>
+                                        <span className="text-xs text-gray-600 font-medium">{feature.title}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Button */}
+                            <button 
+                                onClick={() => setIsModalOpen(true)}
+                                className="w-full py-3 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-[#3b27b8] active:scale-95 transition-all"
+                            >
+                                Get Started
+                            </button>
+                        </div>
+                    ))}
                 </div>
 
                 {/* Volume Discounts Section - Styled like Pricing Console */}
@@ -207,13 +291,122 @@ export default function Pricing() {
                     <div className="lg:col-span-4 bg-white rounded-[2rem] p-8 border border-gray-100 flex flex-col justify-center items-center text-center">
                          <h5 className="text-lg font-bold text-gray-900 mb-2">Need a Custom Plan?</h5>
                          <p className="text-xs text-gray-500 mb-6">Tailored solutions for large enterprises and BPOs.</p>
-                         <button className="w-full py-3 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl font-bold text-sm transition-all">
+                         <a 
+                            href="tel:+918882558932"
+                            className="w-full block py-3 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl font-bold text-sm transition-all"
+                         >
                              Contact Sales
-                         </button>
+                         </a>
                     </div>
                 </div>
 
             </div>
+
+             {/* Booking Modal */}
+             {isModalOpen && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+                    {/* Backdrop */}
+                    <div 
+                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        onClick={() => setIsModalOpen(false)}
+                    ></div>
+
+                    {/* Modal Content */}
+                    <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
+                        {/* Close Button */}
+                        <button 
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 flex items-center justify-center transition-colors"
+                        >
+                            <i className="fi fi-rr-cross-small flex text-xl"></i>
+                        </button>
+
+                        {!isSubmitted ? (
+                            <>
+                                <div className="text-center mb-8">
+                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#4b33e8] flex items-center justify-center text-2xl mx-auto mb-4">
+                                        <i className="fi fi-rr-rocket-lunch flex"></i>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-gray-900">Get Started</h3>
+                                    <p className="text-gray-500 text-sm mt-2">Fill in your details to kickstart your sales engine.</p>
+                                </div>
+
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Name</label>
+                                        <input 
+                                            type="text" 
+                                            name="name"
+                                            required
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
+                                            placeholder="John Doe"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Email Address</label>
+                                        <input 
+                                            type="email" 
+                                            name="email"
+                                            required
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
+                                            placeholder="john@company.com"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Phone Number</label>
+                                        <input 
+                                            type="tel" 
+                                            name="phone"
+                                            required
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
+                                            placeholder="+91 98765 43210"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Team Strength</label>
+                                        <select 
+                                            name="teamStrength"
+                                            required
+                                            value={formData.teamStrength}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium text-gray-600"
+                                        >
+                                            <option value="">Select team size</option>
+                                            <option value="1-10">1 - 10 Agents</option>
+                                            <option value="11-50">11 - 50 Agents</option>
+                                            <option value="51-200">51 - 200 Agents</option>
+                                            <option value="200+">200+ Agents</option>
+                                        </select>
+                                    </div>
+
+                                    <button 
+                                        type="submit"
+                                        className="w-full py-3.5 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-0.5 transition-all mt-4"
+                                    >
+                                        Submit Request
+                                    </button>
+                                </form>
+                            </>
+                        ) : (
+                            <div className="text-center py-8 animate-in fade-in zoom-in duration-300">
+                                <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">
+                                    <i className="fi fi-rr-check flex"></i>
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Request Received!</h3>
+                                <p className="text-gray-500 max-w-[260px] mx-auto">
+                                    Thanks {formData.name}, our executive will connect with you shortly.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

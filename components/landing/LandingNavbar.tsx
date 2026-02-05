@@ -30,12 +30,12 @@ export default function LandingNavbar() {
             >
               Login
             </Link>
-            <Link
-              href="/contact"
+            <a
+              href="tel:+918882558932"
               className="inline-flex items-center justify-center px-5 py-2 border border-transparent text-sm font-bold rounded-full text-white bg-[#4b33e8] hover:bg-[#3b27b8] transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300"
             >
               Contact Sales
-            </Link>
+            </a>
           </div>
         </div>
       </div>

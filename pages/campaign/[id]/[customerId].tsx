@@ -22,7 +22,9 @@ export default function CallingPage() {
     const [campaign, setCampaign] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [mobileLogs, setMobileLogs] = useState<any[]>([]);
-    const [timelineView, setTimelineView] = useState<'timeline' | 'call_logs'>('timeline');
+    const [timelineView, setTimelineView] = useState<'timeline' | 'call_logs' | 'schedules'>('timeline');
+    const [scheduledCalls, setScheduledCalls] = useState<any[]>([]);
+    const [selectedScheduleDate, setSelectedScheduleDate] = useState<Date | null>(new Date());
     const [managedByInfo, setManagedByInfo] = useState<{name: string, empId: string} | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -36,8 +38,17 @@ export default function CallingPage() {
     const [serverTimeOffset, setServerTimeOffset] = useState(0);
     const [disposition, setDisposition] = useState("");
     const [subDisposition, setSubDisposition] = useState("");
-    const [callbackDate, setCallbackDate] = useState("");
-    const [callbackTime, setCallbackTime] = useState("");
+    const [callbackDate, setCallbackDate] = useState(() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    });
+    const [callbackTime, setCallbackTime] = useState(() => {
+        const now = new Date();
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    });
+    const [tempHour, setTempHour] = useState("09");
+    const [tempMinute, setTempMinute] = useState("00");
+    const [tempAmPm, setTempAmPm] = useState("AM");
     const [notes, setNotes] = useState("");
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
@@ -47,6 +58,10 @@ export default function CallingPage() {
     const [localCallingStatus, setLocalCallingStatus] = useState<string | null>(null);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     
+    // Conflict states
+    const [conflictInfo, setConflictInfo] = useState<any>(null);
+    const [checkingSlot, setCheckingSlot] = useState(false);
+
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
 
@@ -55,6 +70,51 @@ export default function CallingPage() {
     const [isDragging, setIsDragging] = useState(false);
     const startXRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Time Picker Drag State
+    const [timePickerPos, setTimePickerPos] = useState({ x: 0, y: 0 });
+    const [isTimePickerDragging, setIsTimePickerDragging] = useState(false);
+    const timePickerDragRef = useRef<{ startX: number, startY: number, initialX: number, initialY: number } | null>(null);
+
+    // Time Picker Drag Logic
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isTimePickerDragging || !timePickerDragRef.current) return;
+            const dx = e.clientX - timePickerDragRef.current.startX;
+            const dy = e.clientY - timePickerDragRef.current.startY;
+            setTimePickerPos({
+                x: timePickerDragRef.current.initialX + dx,
+                y: timePickerDragRef.current.initialY + dy
+            });
+        };
+
+        const handleMouseUp = () => {
+            setIsTimePickerDragging(false);
+            timePickerDragRef.current = null;
+        };
+
+        if (isTimePickerDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isTimePickerDragging]);
+
+    const handleTimePickerMouseDown = (e: React.MouseEvent) => {
+        // Prevent drag on interactive elements
+        if ((e.target as HTMLElement).closest('button')) return;
+        
+        setIsTimePickerDragging(true);
+        timePickerDragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            initialX: timePickerPos.x,
+            initialY: timePickerPos.y
+        };
+    };
 
 
     
@@ -136,6 +196,14 @@ export default function CallingPage() {
         setPostCall(true);
         setCallAlive(false);
         setLocalCallingStatus(null);
+
+        // Pre-fill callback date/time with current values + 5 mins for disposition
+        const now = new Date();
+        const future = new Date(now.getTime() + 5 * 60000); // Add 5 minutes
+        const localDate = `${future.getFullYear()}-${String(future.getMonth() + 1).padStart(2, '0')}-${String(future.getDate()).padStart(2, '0')}`;
+        const localTime = future.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        setCallbackDate(localDate);
+        setCallbackTime(localTime);
         console.log('🤙 [EndCall] State flags updated: isCalling=false, postCall=true, callAlive=false, localStatus=null');
 
         // Notify Flutter bridge to disconnect the call
@@ -198,6 +266,47 @@ export default function CallingPage() {
         }
         console.log('🤙 [EndCall] Process complete.');
     }, [campaignId, customerId, customer?.phone_no, user?.uid, user?.employeeId, user?.employeeId]);
+
+    const fetchSchedules = useCallback(async () => {
+        if (!user?.uid) return;
+        try {
+            // Fetch from customers table as requested
+            const { data, error } = await supabase
+                .from('customers')
+                .select('id, customer_name, next_called_at, campaign_id, disposition, sub_disposition, notes, phone_no')
+                .or(`managed_by.eq.${user.uid},assigned_to.eq.${user.uid}`)
+                .eq('disposition', 'Call Back')
+                .not('next_called_at', 'is', null)
+                .order('next_called_at', { ascending: true });
+            
+            if (error) throw error;
+            
+            // Map data to ensure it has campaign_name if possible (optional, or stick to provided data)
+            setScheduledCalls(data || []);
+        } catch (err) {
+            console.error("Error fetching schedules:", err);
+        }
+    }, [user?.uid]);
+
+    useEffect(() => {
+        fetchSchedules();
+    }, [fetchSchedules]);
+
+    // Auto-scrolling for active tabs/buttons
+    useEffect(() => {
+        // We delay slightly to ensure DOM is updated and animations are ready
+        const timer = setTimeout(() => {
+            const activeElements = document.querySelectorAll('[data-active="true"]');
+            activeElements.forEach(el => {
+                el.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center'
+                });
+            });
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [timelineView]);
 
     // Bridge Message Listener
     useEffect(() => {
@@ -384,6 +493,36 @@ export default function CallingPage() {
         }
     };
 
+    const handleSkipCall = async () => {
+        if (!user?.uid || !campaignId || !customerId) return;
+        try {
+            // Update the callback timestamp to null effectively skipping/rescheduling it later
+            // Or better, keep it but just move to next lead without calling.
+            // Requirement was: "skip follow up call" which usually means treat as done or move forward.
+            // Let's assume it means "Mark as skipped/done for now" or just find next lead.
+            // Based on context of "Skip", we probably just want to execute "End/Next" logic without placing a call.
+            
+            // Actually, handleEndCall(false) might try to update SyncMeta logs which is fine.
+            // But we didn't start a call.
+            
+            // To be safe, let's just use the router logic to go to next or dashboard 
+            // similar to handleSaveDisposition's flow but simpler.
+            // OR reuse handleEndCall logic if it handles "no call started" gracefully.
+            // Looking at handleEndCall: "if localCallingStatus !== connected ... setCallDuration(0)"
+            // It seems safe to call handleEndCall(false) to trigger the "Post Call" state 
+            // so user can disposition it as "Skipped" or "Not Contactable" etc.
+            
+            // Wait, UI text says "Skip Follow Up". If we drag, does it mean "Don't call this guy, give me next"?
+            // If so, we should probably just navigate away.
+            // Let's assume the user wants to Disposition it as "Skipped" or just return to queue.
+            
+            // For now, let's make it trigger the "Post Call" view immediately without dialing.
+            handleEndCall(false); 
+        } catch (error) {
+            console.error("Error skipping call:", error);
+        }
+    };
+
     const primaryDispositions = Object.keys(dispositionHierarchy);
 
     useEffect(() => {
@@ -515,7 +654,8 @@ export default function CallingPage() {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
         
-        console.log(`[Fetch] Fetching data for Customer: ${idToFetch} (User: ${user.uid})`);
+        // Refresh schedules and timeline when loading a lead
+        fetchSchedules();
         
         try {
             setLoading(true);
@@ -882,8 +1022,10 @@ export default function CallingPage() {
             setDisposition("");
             setSubDisposition("");
             setNotes("");
-            setCallbackDate("");
-            setCallbackTime("");
+            const cNow = new Date();
+            const futureLoad = new Date(cNow.getTime() + 5 * 60000);
+            setCallbackDate(`${futureLoad.getFullYear()}-${String(futureLoad.getMonth() + 1).padStart(2, '0')}-${String(futureLoad.getDate()).padStart(2, '0')}`);
+            setCallbackTime(futureLoad.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
             setCallDuration(0);
             setIsCalling(false);
             setPostCall(false);
@@ -1050,30 +1192,30 @@ export default function CallingPage() {
         }
     }, [user, campaignId, customerId]);
 
-    // Smart Date Rollover: If user picks a time that passed today, move to tomorrow
+    // Prevent Past Time Selection: If user picks a time that passed today, show alert
     useEffect(() => {
-        if (!callbackTime || !callbackDate) return;
+        if (!callbackTime || !callbackDate || loading) return;
 
         const now = new Date();
         const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         
-        // Only trigger if the date is currently set to Today
         if (callbackDate === todayStr) {
             const [hours, minutes] = callbackTime.split(':').map(Number);
             const selectedDateTime = new Date();
             selectedDateTime.setHours(hours, minutes, 0, 0);
 
-            // If the selected time is in the past (e.g. 00:10 AM at 11:30 PM)
-            if (selectedDateTime < now) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
-                
-                console.log('[Scheduler] Time is in the past for today, rolling over date to tomorrow.');
-                setCallbackDate(tomorrowStr);
+            // 1-minute grace period to avoid annoying alerts on just-passed seconds
+            if (selectedDateTime.getTime() < now.getTime() - 60000) {
+                alert("⚠️ Cannot schedule a callback in the past! Please select a future time.");
+                // Reset to current time
+                const correctedTime = new Date();
+                setCallbackTime(correctedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
             }
         }
-    }, [callbackTime, callbackDate]);
+        
+        // Clear conflict on change to allow new check
+        if (conflictInfo) setConflictInfo(null);
+    }, [callbackTime, callbackDate, loading]);
 
     type Data = {
         success?: boolean;
@@ -1135,8 +1277,10 @@ export default function CallingPage() {
         setDisposition("");
         setSubDisposition("");
         setNotes("");
-        setCallbackDate("");
-        setCallbackTime("");
+        const now = new Date();
+        const futureCall = new Date(now.getTime() + 5 * 60000);
+        setCallbackDate(`${futureCall.getFullYear()}-${String(futureCall.getMonth() + 1).padStart(2, '0')}-${String(futureCall.getDate()).padStart(2, '0')}`);
+        setCallbackTime(futureCall.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
 
         // Persist session to call_sessions table in real-time
         if (user?.uid) {
@@ -1183,10 +1327,7 @@ export default function CallingPage() {
 
     
 
-    const handleSkipCall = () => {
-        console.log("Skipping call -> Triggering handleEndCall");
-        handleEndCall(false);
-    };
+
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if((customer?.status || 'Active').toLowerCase() !== 'followup') return;
@@ -1283,10 +1424,50 @@ export default function CallingPage() {
                 return;
             }
             const selectedDateTime = new Date(`${callbackDate}T${callbackTime}`);
-            if (selectedDateTime < new Date()) {
+            const now = new Date();
+            if (selectedDateTime < now) {
                 alert("Cannot schedule a call for a past date/time. Please select a future time.");
+                // Reset to current time if past
+                const currentFormattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                const currentFormattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                setCallbackDate(currentFormattedDate);
+                setCallbackTime(currentFormattedTime);
                 return;
             }
+
+            // Slot conflict check before saving
+            setCheckingSlot(true);
+            try {
+                // Ensure minute-level precision by truncating seconds/ms
+                const checkDate = new Date(selectedDateTime);
+                checkDate.setSeconds(0, 0);
+                
+                // Use a 1-minute window check (00 to 59 seconds)
+                const startRange = checkDate.toISOString();
+                const endRange = new Date(checkDate.getTime() + 59999).toISOString();
+
+                // BUG FIX: Use .limit(1) instead of .maybeSingle(). 
+                // .maybeSingle() errors out if multiple conflicts already exist, 
+                // which was allowing even more duplicates to be created!
+                const { data: conflicts, error: conflictErr } = await supabase
+                    .from('customers')
+                    .select('id, customer_name, campaign_id, disposition, sub_disposition, outcome, next_called_at')
+                    .gte('next_called_at', startRange)
+                    .lte('next_called_at', endRange)
+                    .neq('id', customerId)
+                    .limit(1);
+
+                if (conflictErr) console.error("Slot check DB error:", conflictErr);
+
+                if (conflicts && conflicts.length > 0) {
+                    setConflictInfo(conflicts[0]);
+                    setCheckingSlot(false);
+                    return;
+                }
+            } catch (err) {
+                console.error("Slot check execution error:", err);
+            }
+            setCheckingSlot(false);
         }
 
         const isFollowup = disposition === 'Call Back' || subDisposition?.toLowerCase().includes('interested') || subDisposition?.toLowerCase().includes('follow up');
@@ -1302,9 +1483,11 @@ export default function CallingPage() {
         executeSaveDisposition();
     };
 
-    const executeSaveDisposition = async () => {
+    const executeSaveDisposition = async (overrideDate?: string, overrideTime?: string) => {
         try {
             setSaving(true);
+            const finalDate = overrideDate || callbackDate;
+            const finalTime = overrideTime || callbackTime;
 
             // 0. CAPTURE CAMPAIGN PERMISSION EARLY
             let isAssignedToCampaign = false;
@@ -1345,11 +1528,13 @@ export default function CallingPage() {
             else if (disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'Interested' || subDisposition === 'follow up' || subDisposition === 'Follow up') {
                 logStatus = 'followup';
                 logAssignedTo = user?.uid;
-                if (disposition === 'Call Back' && callbackDate) {
-                     const combinedDateTime = callbackTime 
-                        ? new Date(`${callbackDate}T${callbackTime}`).toISOString()
-                        : new Date(callbackDate).toISOString();
-                     logNextCalledAt = combinedDateTime;
+                if (disposition === 'Call Back' && finalDate) {
+                     const combinedDT = finalTime 
+                        ? new Date(`${finalDate}T${finalTime}`)
+                        : new Date(finalDate);
+                     // Always truncate to the start of the minute for consistency in conflict checks
+                     combinedDT.setSeconds(0, 0);
+                     logNextCalledAt = combinedDT.toISOString();
                 }
             }
 
@@ -1426,6 +1611,7 @@ export default function CallingPage() {
                     p_outcome: outcome
                 });
                 if (rejectError) throw rejectError;
+                fetchSchedules();
             } else if (isClosed) {
                 // Move to closed table and delete from customers
                 const finalDisposition = subDisposition ? `${disposition} > ${subDisposition}` : disposition;
@@ -1438,6 +1624,7 @@ export default function CallingPage() {
                     p_outcome: outcome
                 });
                 if (closeError) throw closeError;
+                fetchSchedules();
             } else if (disposition === 'Not Contactable') {
                 // Return to General Pool immediately (per new user requirement)
                 
@@ -1467,7 +1654,7 @@ export default function CallingPage() {
                     .eq('id', customerId);
 
                 if (customerUpdateError) throw customerUpdateError;
-
+                fetchSchedules();
             } else {
                 // Regular Update (Call Back, etc.)
                 const isFollowup = disposition === 'Call Back' || subDisposition === 'intrested' || subDisposition === 'Interested' || subDisposition === 'follow up' || subDisposition === 'Follow up';
@@ -1475,6 +1662,7 @@ export default function CallingPage() {
                 let updatePayload: any = { 
                     disposition: disposition,
                     sub_disposition: subDisposition,
+                    notes: notes,
                     is_connected: isConnected,
                     status: isFollowup ? 'followup' : 'active',
                     last_called_at: now,
@@ -1511,13 +1699,17 @@ export default function CallingPage() {
                 updatePayload.attempt_count = (customer?.attempt_count || 0) + 1;
                 updatePayload.last_attempt_at = now;
 
-                if (disposition === 'Call Back' && callbackDate) {
-                    const combinedDateTime = callbackTime 
-                        ? new Date(`${callbackDate}T${callbackTime}`).toISOString()
-                        : new Date(callbackDate).toISOString();
-                    updatePayload.expiry_date = combinedDateTime;
-                    updatePayload.next_called_at = combinedDateTime;
-                    logNextCalledAt = combinedDateTime;
+                if (disposition === 'Call Back' && finalDate) {
+                    const combinedDT = finalTime 
+                        ? new Date(`${finalDate}T${finalTime}`)
+                        : new Date(finalDate);
+                    // Force minute-level alignment for all callbacks
+                    combinedDT.setSeconds(0, 0);
+                    const finalISO = combinedDT.toISOString();
+                    
+                    updatePayload.expiry_date = finalISO;
+                    updatePayload.next_called_at = finalISO;
+                    logNextCalledAt = finalISO;
 
                     // --- Google Calendar Sync Logic ---
                     if (user?.googleCalendarConnected) {
@@ -1532,7 +1724,7 @@ export default function CallingPage() {
                             }
 
                             if (providerToken) {
-                                const endTime = new Date(new Date(combinedDateTime).getTime() + 30 * 60000).toISOString(); // +30 mins
+                                const endTime = new Date(new Date(finalISO).getTime() + 30 * 60000).toISOString(); // +30 mins
 
                                 fetch('/api/google/create-event', {
                                     method: 'POST',
@@ -1562,7 +1754,7 @@ ${notes || 'No notes provided'}
 
 Campaign: ${campaign?.name || campaignId}
                                         `.trim(),
-                                        startTime: combinedDateTime,
+                                        startTime: finalISO,
                                         endTime: endTime,
                                         providerToken: providerToken
                                     })
@@ -1599,6 +1791,9 @@ Campaign: ${campaign?.name || campaignId}
                     .eq('id', customerId);
 
                 if (customerUpdateError) throw customerUpdateError;
+
+                // Success: Refresh schedules to show the newly added/removed callback
+                fetchSchedules();
             }
 
             // 1. Save Call Log (Moved here to include calculated metadata)
@@ -1847,6 +2042,14 @@ Campaign: ${campaign?.name || campaignId}
 
     const handleDateSelect = (day: number, month: number, year: number) => {
         const selectedDate = new Date(year, month, day);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        if (selectedDate < now) {
+            alert("⚠️ Cannot select a past date.");
+            return;
+        }
+
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
         setCallbackDate(dateStr);
         setIsDatePickerOpen(false);
@@ -2255,39 +2458,58 @@ Campaign: ${campaign?.name || campaignId}
 
                                                             {/* Row 2: Actions Row (Slider + WhatsApp) */}
                                                             <div className="flex items-center gap-2 w-full">
-                                                                {/* Slider Button (Grow) */}
-                                                                <div 
-                                                                    ref={containerRef}
-                                                                    className="relative h-12 flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200"
-                                                                    onPointerDown={handlePointerDown}
-                                                                    onPointerMove={handlePointerMove}
-                                                                    onPointerUp={handlePointerUp}
-                                                                    onPointerLeave={handlePointerUp}
-                                                                >
-                                                                    {/* Background Layer */}
-                                                                    <div className="absolute inset-0 flex items-center justify-start pl-6 bg-orange-100/50">
-                                                                        <span className="text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
-                                                                            <i className="fi flex fi-rr-forward text-xs"></i>
-                                                                            Release to Skip
-                                                                        </span>
-                                                                    </div>
-
-                                                                    {/* Foreground Layer */}
+                                                                    {/* Slider Button (Grow) */}
                                                                     <div 
-                                                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10"
-                                                                        style={{ 
-                                                                            width: '100%', 
-                                                                            transform: `translateX(${Math.max(0, dragX)}px)`,
-                                                                            cursor: isDragging ? 'grabbing' : 'grab'
+                                                                        ref={containerRef}
+                                                                        className="relative h-12 flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200"
+                                                                        onPointerDown={(e) => {
+                                                                            setIsDragging(true);
+                                                                            startXRef.current = e.clientX;
+                                                                        }}
+                                                                        onPointerMove={(e) => {
+                                                                            if (!isDragging || !containerRef.current) return;
+                                                                            const currentX = e.clientX;
+                                                                            const diff = currentX - startXRef.current;
+                                                                            const maxDrag = containerRef.current.clientWidth - 50; // flexible limit
+                                                                            if (diff > 0 && diff <= maxDrag) {
+                                                                                setDragX(diff);
+                                                                            }
+                                                                        }}
+                                                                        onPointerUp={() => {
+                                                                            setIsDragging(false);
+                                                                            if (dragX > 80) {
+                                                                               handleSkipCall()
+                                                                            } else if (dragX < 5) {
+                                                                                handleStartCall();
+                                                                            }
+                                                                            setDragX(0);
+                                                                        }}
+                                                                        onPointerLeave={() => {
+                                                                            setIsDragging(false);
+                                                                            setDragX(0);
                                                                         }}
                                                                     >
-                                                                        <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
-                                                                        <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
-                                                                        <div className="absolute right-4 opacity-70 animate-pulse">
-                                                                             <i className="fi flex fi-rr-angle-double-right text-white text-xs"></i>
+                                                                        {/* Background Layer */}
+                                                                        <div className="absolute inset-0 flex items-center justify-end pr-6 bg-orange-100/50">
+                                                                            <span className="text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
+                                                                                 Slide to Skip <i className="fi flex fi-rr-angle-double-right text-xs"></i>
+                                                                            </span>
+                                                                        </div>
+
+                                                                        {/* Foreground Layer (Draggable) */}
+                                                                        <div 
+                                                                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10 rounded-xl"
+                                                                            style={{ 
+                                                                                width: '100%', 
+                                                                                transform: `translateX(${Math.max(0, dragX)}px)`,
+                                                                                cursor: isDragging ? 'grabbing' : 'grab'
+                                                                            }}
+                                                                        >
+                                                                            <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
+                                                                            <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
+                                                                            
                                                                         </div>
                                                                     </div>
-                                                                </div>
 
                                                                 {/* WhatsApp Button (Inside Row) */}
                                                                 <button 
@@ -2436,6 +2658,15 @@ Campaign: ${campaign?.name || campaignId}
                                                                 onClick={() => {
                                                                     setDisposition(item);
                                                                     setSubDisposition(""); 
+                                                                    // Auto-set current time + 5m when selecting Call Back
+                                                                    if (item === 'Call Back') {
+                                                                        const now = new Date();
+                                                                        const futureBtn = new Date(now.getTime() + 5 * 60000);
+                                                                        const dStr = `${futureBtn.getFullYear()}-${String(futureBtn.getMonth() + 1).padStart(2, '0')}-${String(futureBtn.getDate()).padStart(2, '0')}`;
+                                                                        const tStr = futureBtn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                                                                        setCallbackDate(dStr);
+                                                                        setCallbackTime(tStr);
+                                                                    }
                                                                 }}
                                                                 className={`px-3 py-4 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                                                     disposition === item 
@@ -2708,33 +2939,147 @@ Campaign: ${campaign?.name || campaignId}
                                                                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                                                                     <i className="fi flex fi-rr-clock-three text-slate-400 text-[12px]"></i>
                                                                 </div>
-                                                                <button 
+                                                                 <button 
                                                                     type="button"
-                                                                    onClick={() => setIsTimePickerOpen(!isTimePickerOpen)}
-                                                                    className="w-full  h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-200 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
+                                                                    onClick={() => {
+                                                                        if (!isTimePickerOpen) {
+                                                                            setTimePickerPos({ x: 0, y: 0 });
+                                                                            if (callbackTime) {
+                                                                                const [h24, m] = callbackTime.split(':').map(Number);
+                                                                                const h12 = h24 % 12 || 12;
+                                                                                setTempHour(String(h12).padStart(2, '0'));
+                                                                                setTempMinute(String(m || 0).padStart(2, '0'));
+                                                                                setTempAmPm(h24 >= 12 ? "PM" : "AM");
+                                                                            } else {
+                                                                                const now = new Date();
+                                                                                const h24 = now.getHours();
+                                                                                const h12 = h24 % 12 || 12;
+                                                                                setTempHour(String(h12).padStart(2, '0'));
+                                                                                setTempMinute(String(now.getMinutes()).padStart(2, '0'));
+                                                                                setTempAmPm(h24 >= 12 ? "PM" : "AM");
+                                                                            }
+                                                                        }
+                                                                        setIsTimePickerOpen(!isTimePickerOpen);
+                                                                    }}
+                                                                    className="w-full h-[40px] bg-white rounded-xl pl-9 pr-3 text-[10px] font-bold text-slate-700 border border-slate-200 flex items-center hover:border-indigo-200 transition-all uppercase tracking-tight"
                                                                 >
-                                                                    {callbackTime || 'Select Time'}
+                                                                    {callbackTime ? (
+                                                                        (() => {
+                                                                            const [h24, min] = callbackTime.split(':').map(Number);
+                                                                            const h12 = h24 % 12 || 12;
+                                                                            const ampm = h24 >= 12 ? 'PM' : 'AM';
+                                                                            return `${String(h12).padStart(2, '0')}:${String(min).padStart(2, '0')} ${ampm}`;
+                                                                        })()
+                                                                    ) : 'Select Time'}
                                                                 </button>
 
                                                                  {isTimePickerOpen && (
-                                                                    <div className="absolute top-full mt-2 right-0 w-[180px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 z-[100] animate-in fade-in zoom-in-95 duration-200">
-                                                                        {/* Custom Time Input */}
-                                                                        <div className="mb-4 pt-1">
-                                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 pl-1">Custom Time</p>
-                                                                            <input 
-                                                                                type="time" 
-                                                                                value={callbackTime}
-                                                                                onChange={(e) => setCallbackTime(e.target.value)}
-                                                                                onClick={(e) => e.currentTarget.showPicker?.()}
-                                                                                className="w-full h-[32px] bg-slate-50 rounded-xl px-3 text-[10px] font-bold text-slate-700 border border-slate-200 focus:border-indigo-400 outline-none transition-all uppercase tracking-tight cursor-pointer"
-                                                                                style={{ colorScheme: 'light' }}
-                                                                            />
+                                                                    <div 
+                                                                        className="absolute top-full mt-2 right-0 w-[240px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-[100] animate-in fade-in zoom-in-95 duration-200"
+                                                                        style={{ transform: `translate(${timePickerPos.x}px, ${timePickerPos.y}px)` }}
+                                                                    >
+                                                                        <div 
+                                                                            className="flex items-center justify-between mb-4 pl-1 cursor-grab active:cursor-grabbing select-none"
+                                                                            onMouseDown={handleTimePickerMouseDown}
+                                                                        >
+                                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pointer-events-none">Set Callback Time</p>
+                                                                            <div className="p-1 hover:bg-slate-50 rounded-md transition-colors">
+                                                                                 <i className="fi fi-rr-apps text-slate-300 text-xs"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <div className="flex items-center justify-between gap-2 mb-6 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                                                            {/* Hour Column */}
+                                                                            <div className="flex-1 flex flex-col items-center gap-1">
+                                                                                <span className="text-[8px] font-bold text-slate-400 uppercase mb-1">HH</span>
+                                                                                <div className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1">
+                                                                                    {Array.from({ length: 12 }).map((_, i) => {
+                                                                                        const h = String(i + 1).padStart(2, '0');
+                                                                                        const isSel = tempHour === h;
+                                                                                        return (
+                                                                                            <button 
+                                                                                                key={h} 
+                                                                                                onClick={() => setTempHour(h)}
+                                                                                                data-active={isSel}
+                                                                                                className={`w-full py-2 rounded-xl text-[11px] font-bold transition-all ${isSel ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-500 hover:bg-white hover:text-indigo-600'}`}
+                                                                                            >
+                                                                                                {h}
+                                                                                            </button>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="text-slate-300 font-bold">:</div>
+
+                                                                            {/* Minute Column */}
+                                                                            <div className="flex-1 flex flex-col items-center gap-1">
+                                                                                <span className="text-[8px] font-bold text-slate-400 uppercase mb-1">MM</span>
+                                                                                <div className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1">
+                                                                                    {Array.from({ length: 60 }).map((_, i) => {
+                                                                                        const m = String(i).padStart(2, '0');
+                                                                                        const isSel = tempMinute === m;
+                                                                                        return (
+                                                                                            <button 
+                                                                                                key={m} 
+                                                                                                onClick={() => setTempMinute(m)}
+                                                                                                data-active={isSel}
+                                                                                                className={`w-full py-2 rounded-xl text-[11px] font-bold transition-all ${isSel ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-500 hover:bg-white hover:text-indigo-600'}`}
+                                                                                            >
+                                                                                                {m}
+                                                                                            </button>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="w-px bg-slate-200 h-10 mx-1" />
+
+                                                                            {/* AM/PM Column */}
+                                                                            <div className="flex-none w-[50px] flex flex-col items-center gap-1">
+                                                                                <span className="text-[8px] font-bold text-slate-400 uppercase mb-1">Period</span>
+                                                                                <div className="flex flex-col gap-1 w-full">
+                                                                                    {["AM", "PM"].map(p => (
+                                                                                        <button 
+                                                                                            key={p}
+                                                                                            onClick={() => setTempAmPm(p)}
+                                                                                            data-active={tempAmPm === p}
+                                                                                            className={`w-full py-2 rounded-xl text-[10px] font-black transition-all ${tempAmPm === p ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:bg-white'}`}
+                                                                                        >
+                                                                                            {p}
+                                                                                        </button>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
 
-                                                                        <div className="h-px bg-slate-100 mb-3" />
+                                                                        <div className="grid grid-cols-2 gap-2 mb-4">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setIsTimePickerOpen(false)}
+                                                                                className="py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all border border-slate-100"
+                                                                            >
+                                                                                Cancel
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    let h = Number(tempHour);
+                                                                                    if (tempAmPm === "PM" && h < 12) h += 12;
+                                                                                    if (tempAmPm === "AM" && h === 12) h = 0;
+                                                                                    setCallbackTime(`${String(h).padStart(2, '0')}:${tempMinute}`);
+                                                                                    setIsTimePickerOpen(false);
+                                                                                }}
+                                                                                className="py-2.5 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95"
+                                                                            >
+                                                                                Apply
+                                                                            </button>
+                                                                        </div>
+
+                                                                        <div className="h-px bg-slate-100 mb-4" />
 
                                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 pl-1">Popular Slots</p>
-                                                                        <div className="grid grid-cols-2 gap-2 h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                                                                        <div className="grid grid-cols-2 gap-2 max-h-[100px] overflow-y-auto pr-1 custom-scrollbar">
                                                                             {timeOptions.map(t => (
                                                                                 <button
                                                                                     key={t}
@@ -2743,13 +3088,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         setCallbackTime(t);
                                                                                         setIsTimePickerOpen(false);
                                                                                     }}
-                                                                                    className={`py-2 rounded-xl text-[10px] font-bold transition-all border ${
+                                                                                    className={`py-1.5 rounded-xl text-[10px] font-bold transition-all border ${
                                                                                         callbackTime === t
                                                                                         ? 'bg-indigo-600 text-white border-indigo-600'
                                                                                         : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-indigo-200 hover:text-indigo-600'
                                                                                     }`}
                                                                                 >
-                                                                                    {t}
+                                                                                    {(() => {
+                                                                                        const [h24, min] = t.split(':').map(Number);
+                                                                                        const h12 = h24 % 12 || 12;
+                                                                                        const p = h24 >= 12 ? 'PM' : 'AM';
+                                                                                        return `${String(h12).padStart(2, '0')}:${String(min).padStart(2, '0')} ${p}`;
+                                                                                    })()}
                                                                                 </button>
                                                                             ))}
                                                                         </div>
@@ -2764,6 +3114,74 @@ Campaign: ${campaign?.name || campaignId}
                                                                 </div>
                                                             )}
                                                         </div>
+
+                                                        {/* Conflict UI */}
+                                                        {conflictInfo && (
+                                                            <div className="mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-100 animate-in fade-in slide-in-from-top-2 duration-300 relative z-10">
+                                                                <div className="flex items-start gap-3">
+                                                                    <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center shrink-0">
+                                                                        <i className="fi flex fi-rr-triangle-warning text-rose-500 text-sm"></i>
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-[11px] font-black text-rose-900 uppercase tracking-widest mb-1">Slot Conflict Detected</p>
+                                                                        <div className="space-y-1 bg-white/50 p-2 rounded-lg border border-rose-100/50 mb-3">
+                                                                            <p className="text-[12px] font-bold text-slate-800 truncate">👤 {conflictInfo.customer_name}</p>
+                                                                            <p className="text-[10px] text-slate-500 font-medium truncate">📂 Campaign ID: {conflictInfo.campaign_id}</p>
+                                                                            <p className="text-[10px] text-slate-500 font-medium">🏷️ {conflictInfo.disposition} - {conflictInfo.sub_disposition || 'N/A'}</p>
+                                                                        </div>
+                                                                        
+                                                                        <div className="flex flex-col gap-2">
+                                                                            <button 
+                                                                                onClick={async () => {
+                                                                                    const dt = new Date(`${callbackDate}T${callbackTime}`);
+                                                                                    dt.setMinutes(dt.getMinutes() + 15);
+                                                                                    const newDate = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+                                                                                    const newTime = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                                                                                    
+                                                                                    setCallbackDate(newDate);
+                                                                                    setCallbackTime(newTime);
+                                                                                    setConflictInfo(null);
+                                                                                    
+                                                                                    // Recursive check
+                                                                                    const nextDt = new Date(`${newDate}T${newTime}`);
+                                                                                    nextDt.setSeconds(0, 0);
+                                                                                    const sR = nextDt.toISOString();
+                                                                                    const eR = new Date(nextDt.getTime() + 59999).toISOString();
+                                                                                    
+                                                                                    const { data: nextConflicts, error: nextConflictErr } = await supabase
+                                                                                        .from('customers')
+                                                                                        .select('id, customer_name, campaign_id, disposition, sub_disposition, outcome')
+                                                                                        .gte('next_called_at', sR)
+                                                                                        .lte('next_called_at', eR)
+                                                                                        .neq('id', customerId)
+                                                                                        .limit(1);
+                                                                                    
+                                                                                    if (nextConflicts && nextConflicts.length > 0) {
+                                                                                        setConflictInfo(nextConflicts[0]);
+                                                                                    } else {
+                                                                                        // If slot free, proceed with save using the updated time directly
+                                                                                        executeSaveDisposition(newDate, newTime);
+                                                                                    }
+                                                                                }}
+                                                                                className="w-full py-2.5 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all flex items-center justify-center gap-2"
+                                                                            >
+                                                                                Check Next Slot (+15m)
+                                                                            </button>
+                                                                            <button 
+                                                                                onClick={() => {
+                                                                                    setConflictInfo(null);
+                                                                                    setCallbackDate("");
+                                                                                    setCallbackTime("");
+                                                                                }}
+                                                                                className="w-full py-2.5 bg-white text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-slate-200 hover:bg-slate-50 transition-all"
+                                                                            >
+                                                                                Cancel & Reset
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                                 
@@ -2790,10 +3208,11 @@ Campaign: ${campaign?.name || campaignId}
                             
                             {/* ACTIVITY SIDEBAR (Right) */}
                             <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <div className="flex bg-slate-100 p-1 rounded-xl">
+                                        <div className="flex items-center justify-between mb-6 gap-4">
+                                            <div className="flex bg-slate-100 p-1 rounded-xl overflow-x-auto whitespace-nowrap custom-scrollbar no-scrollbar scroll-smooth">
                                             <button 
                                                 onClick={() => setTimelineView('timeline')}
+                                                data-active={timelineView === 'timeline'}
                                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'timeline' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
                                                 <i className="fi fi-rr-time-past"></i>
@@ -2801,19 +3220,28 @@ Campaign: ${campaign?.name || campaignId}
                                             </button>
                                             <button 
                                                 onClick={() => setTimelineView('call_logs')}
+                                                data-active={timelineView === 'call_logs'}
                                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'call_logs' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
                                                 <i className="fi fi-rr-call-history"></i>
-                                                Call Logs
+                                                Logs
+                                            </button>
+                                            <button 
+                                                onClick={() => setTimelineView('schedules')}
+                                                data-active={timelineView === 'schedules'}
+                                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'schedules' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            >
+                                                <i className="fi fi-rr-calendar-clock"></i>
+                                                Schedules
                                             </button>
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-[10px] font-semibold text-slate-400 border border-slate-200">
-                                            {timelineView === 'timeline' ? history.length : mobileLogs.length || 0}
+                                        <div className="w-9 h-9 shrink-0 rounded-full bg-slate-50 flex items-center justify-center text-[11px] font-bold text-slate-600 border border-slate-200 shadow-sm">
+                                            {timelineView === 'timeline' ? history.length : timelineView === 'call_logs' ? mobileLogs.length : scheduledCalls.length}
                                         </div>
                                     </div>
 
                                     {timelineView === 'timeline' ? (
-                                        <div className="h-[800px] overflow-y-auto px-4 custom-scrollbar">
+                                        <div className="h-[650px] overflow-y-auto px-4 custom-scrollbar">
                                             {history.length === 0 ? (
                                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
                                                     <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
@@ -2934,9 +3362,9 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
                                         )}
                                     </div>
-                                    ) : (
-                                        // MOBILE LOGS VIEW
-                                        <div className="h-[800px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
+                                        ) : timelineView === 'call_logs' ? (
+                                             // MOBILE LOGS VIEW
+                                             <div className="h-[650px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
                                             {mobileLogs.length === 0 ? (
                                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
                                                     <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
@@ -3024,6 +3452,161 @@ Campaign: ${campaign?.name || campaignId}
                                                 ))
                                             )}
                                         </div>
+                                    ) : (
+                                        // SCHEDULES VIEW
+                                        <div className="h-[650px] overflow-y-auto pr-2 custom-scrollbar">
+                                            <div className="mb-8">
+                                                <div className="flex items-center justify-start mb-6">
+                                                    
+                                                    <div className="flex items-center">
+                                                        <div className="flex items-center bg-slate-50 p-1 rounded-xl border border-slate-100">
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const current = selectedScheduleDate || new Date();
+                                                                    const prev = new Date(current);
+                                                                    prev.setDate(prev.getDate() - 1);
+                                                                    setSelectedScheduleDate(prev);
+                                                                }}
+                                                                className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all active:scale-95 border-none"
+                                                            >
+                                                                <i className="fi fi-rr-angle-small-left text-lg"></i>
+                                                            </button>
+
+                                                            <div className="relative px-4 flex flex-col items-center min-w-[130px]">
+                                                                <div className="relative cursor-pointer group/date-input">
+                                                                    <div className="flex items-center gap-2 py-1">
+                                                                        <i className={`fi fi-rr-calendar text-[10px] ${selectedScheduleDate && new Date().toDateString() === selectedScheduleDate.toDateString() ? 'text-indigo-600' : 'text-slate-300'}`}></i>
+                                                                        <span className={`text-[11px] font-bold uppercase tracking-tight ${selectedScheduleDate && new Date().toDateString() === selectedScheduleDate.toDateString() ? 'text-indigo-600' : 'text-slate-600'}`}>
+                                                                            {selectedScheduleDate ? selectedScheduleDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Select Date'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <input 
+                                                                        type="date"
+                                                                        value={selectedScheduleDate ? `${selectedScheduleDate.getFullYear()}-${String(selectedScheduleDate.getMonth() + 1).padStart(2, '0')}-${String(selectedScheduleDate.getDate()).padStart(2, '0')}` : ''}
+                                                                        onChange={(e) => {
+                                                                            if (e.target.value) {
+                                                                                const [y, m, d] = e.target.value.split('-').map(Number);
+                                                                                setSelectedScheduleDate(new Date(y, m - 1, d));
+                                                                            } else {
+                                                                                setSelectedScheduleDate(null);
+                                                                            }
+                                                                        }}
+                                                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const current = selectedScheduleDate || new Date();
+                                                                    const next = new Date(current);
+                                                                    next.setDate(next.getDate() + 1);
+                                                                    setSelectedScheduleDate(next);
+                                                                }}
+                                                                className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all active:scale-95 border-none"
+                                                            >
+                                                                <i className="fi fi-rr-angle-small-right text-lg"></i>
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        {selectedScheduleDate && (
+                                                            <button 
+                                                                onClick={() => setSelectedScheduleDate(new Date())}
+                                                                className="ml-2 w-11 h-11 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all border-none"
+                                                                title="Reset to Today"
+                                                            >
+                                                                <i className="fi fi-rr-undo text-[14px]"></i>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {(() => {
+                                                    const now = new Date();
+                                                    const filtered = (selectedScheduleDate 
+                                                        ? scheduledCalls.filter(c => new Date(c.next_called_at).toDateString() === selectedScheduleDate.toDateString())
+                                                        : scheduledCalls).sort((a, b) => {
+                                                            const timeA = new Date(a.next_called_at).getTime();
+                                                            const timeB = new Date(b.next_called_at).getTime();
+                                                            const nowTime = now.getTime();
+                                                            
+                                                            const isAFuture = timeA >= nowTime;
+                                                            const isBFuture = timeB >= nowTime;
+                                                            
+                                                            // If one is future and other is past, future comes first
+                                                            if (isAFuture && !isBFuture) return -1;
+                                                            if (!isAFuture && isBFuture) return 1;
+                                                            
+                                                            // If both are future, closest to 'now' first (Ascending)
+                                                            if (isAFuture && isBFuture) return timeA - timeB;
+                                                            
+                                                            // If both are past, most recently missed first (Descending)
+                                                            return timeB - timeA;
+                                                        });
+                                                    
+                                                    if (filtered.length === 0) {
+                                                        return (
+                                                            <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
+                                                                <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+                                                                    <i className="fi flex fi-rr-calendar-clock text-2xl"></i>
+                                                                </div>
+                                                                <p className="text-xs font-semibold ">No Schedules Found</p>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div className="relative pl-16 space-y-1 py-4">
+                                                            {/* Vertical Timeline Line */}
+                                                            <div className="absolute left-16 top-0 bottom-0 w-px bg-slate-100" />
+                                                            
+                                                            {filtered.map((call: any) => {
+                                                                const date = new Date(call.next_called_at);
+                                                                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                                                                
+                                                                return (
+                                                                    <div key={call.id} className="relative py-3 group cursor-pointer" onClick={() => router.push(`/campaign/${call.campaign_id}/${call.id}`)}>
+                                                                        {/* Time Label on the Left */}
+                                                                        <div className="absolute -left-16 w-12 text-right">
+                                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1.5">
+                                                                                {timeStr}
+                                                                            </p>
+                                                                        </div>
+
+                                                                        {/* Tiny marker on the line */}
+                                                                        <div className="absolute left-[-4px] top-4 w-2 h-2 rounded-full border-2 border-white bg-slate-200 group-hover:bg-indigo-500 z-10 transition-colors" />
+
+                                                                        {/* Modern Calendar-like Card */}
+                                                                        <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex flex-col gap-1 hover:border-indigo-200 hover:shadow-md transition-all duration-300 ml-4 group-hover:bg-indigo-50/10">
+                                                                            <div className="flex items-center justify-between">
+                                                                                <p className="text-[13px] font-bold text-slate-800 tracking-tight">
+                                                                                    {call.customer_name || 'Customer'}
+                                                                                </p>
+                                                                                <div className="w-6 h-6 rounded-md bg-indigo-50 flex items-center justify-center shadow-sm shrink-0">
+                                                                                    <span className="text-[10px] font-black text-indigo-400">G</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="px-2 py-0.5 rounded-full bg-slate-50 text-[10px] font-bold text-slate-500 border border-slate-100">
+                                                                                    {call.disposition}{call.sub_disposition ? ` - ${call.sub_disposition}` : ''}
+                                                                                </span>
+                                                                            </div>
+
+                                                                            {call.notes && (
+                                                                                <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed bg-slate-50/50 p-2 rounded-lg border border-slate-50 italic">
+                                                                                    "{call.notes}"
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        </div>
                                     )}
                                     
                                     <div className="mt-8 p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between">
@@ -3061,6 +3644,13 @@ Campaign: ${campaign?.name || campaignId}
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #cbd5e1;
+                }
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
                 }
             `}</style>
 

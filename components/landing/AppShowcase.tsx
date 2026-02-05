@@ -43,7 +43,7 @@ export default function AppShowcase() {
             </div>
 
             {/* Mobile App Mockup (Upfront / Overlapping) */}
-            <div className="absolute -bottom-12 -right-4 md:-right-8 lg:-right-1 z-10 animate-in fade-in slide-in-from-right-8 duration-1000">
+            <div className="absolute -bottom-6 -right-4 md:-bottom-12 md:-right-8 lg:-right-1 z-10 animate-in fade-in slide-in-from-right-8 duration-1000 scale-75 md:scale-100 origin-bottom-right">
                  <div className="relative border-gray-800 dark:border-gray-800 bg-gray-800 border-[8px] rounded-[1.8rem] h-[400px] w-[200px] shadow-2xl hover:-translate-y-2 transition-transform duration-500">
                       {/* Notch */}
                       <div className="w-[100px] h-[14px] bg-gray-800 top-0 rounded-b-[0.8rem] left-1/2 -translate-x-1/2 absolute"></div>

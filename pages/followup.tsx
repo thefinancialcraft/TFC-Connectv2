@@ -29,7 +29,10 @@ export default function FollowUp() {
     formatDate
   } = useFollowUpLeads();
 
-  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'kanban' | 'calendar'>('table');
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [pipelines, setPipelines] = useState<Pipeline[]>([]);
   const [showConfig, setShowConfig] = useState(false);
   const [editingPipelineId, setEditingPipelineId] = useState<string | null>(null);
@@ -123,7 +126,7 @@ export default function FollowUp() {
         .single();
 
       if (data) {
-        if (data.view_mode) setViewMode(data.view_mode as 'table' | 'kanban');
+        if (data.view_mode) setViewMode(data.view_mode as 'table' | 'kanban' | 'calendar');
         if (data.pipelines) setPipelines(data.pipelines);
       } else if (error && error.code === 'PGRST116') {
         // No settings found, create initial
@@ -450,17 +453,24 @@ export default function FollowUp() {
                      <div className="flex bg-gray-100 rounded-lg p-1">
                         <button 
                             onClick={() => setViewMode('table')}
-                            className={`flex-1 py-2 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-2 ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
+                            className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
                         >
                             <i className="fi fi-rr-apps-sort"></i>
                             Table
                         </button>
                         <button 
                             onClick={() => setViewMode('kanban')}
-                            className={`flex-1 py-2 rounded-md text-xs font-bold transition-all flex items-center justify-center gap-2 ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
+                            className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
                         >
-                            <i className="fi fi-rr-columns"></i>
+                            <i className="fi fi-rr-layout-fluid flex"></i>
                             Kanban
+                        </button>
+                        <button 
+                            onClick={() => setViewMode('calendar')}
+                            className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
+                        >
+                            <i className="fi fi-rr-calendar"></i>
+                            Calendar
                         </button>
                      </div>
                 </div>
@@ -479,17 +489,24 @@ export default function FollowUp() {
                         <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
                             <button 
                                 onClick={() => setViewMode('table')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                             >
                                 <i className="fi fi-rr-apps-sort mr-2"></i>
                                 Table
                             </button>
                             <button 
                                 onClick={() => setViewMode('kanban')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                <i className="fi fi-rr-columns mr-2"></i>
+                                <i className="fi fi-rr-layout-fluid flex mr-2"></i>
                                 Kanban
+                            </button>
+                            <button 
+                                onClick={() => setViewMode('calendar')}
+                                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                <i className="fi fi-rr-calendar mr-2"></i>
+                                Calendar
                             </button>
                         </div>
 
@@ -780,7 +797,7 @@ export default function FollowUp() {
                             </tbody>
                         </table>
                     </div>
-                ) : (
+                ) : viewMode === 'kanban' ? (
                     <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide min-h-[500px] snap-x">
                         {pipelines.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl py-20 text-gray-400">
@@ -798,6 +815,7 @@ export default function FollowUp() {
                                 });
 
                                 return (
+
                                     <div key={pipeline.id} className="flex-shrink-0 w-[280px] sm:w-80 bg-gray-50/50 rounded-2xl p-3 border border-gray-100 flex flex-col h-full max-h-[700px] snap-center">
                                         <div className="flex items-center justify-between mb-4 px-1">
                                             <div className="flex items-center gap-2">
@@ -906,6 +924,309 @@ export default function FollowUp() {
                                     </div>
                                 );
                             })
+                        )}
+                    </div>
+                ) : (
+                    <div className="bg-white p-4 rounded-xl border border-gray-200">
+                        {!selectedDate ? (
+                            <>
+                                {/* Calendar Header */}
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-lg font-bold text-gray-800">
+                                        {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                    </h2>
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                                        >
+                                            <i className="fi fi-rr-angle-left text-sm mt-1"></i>
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentMonth(new Date())}
+                                            className="px-4 py-1.5 text-xs font-bold bg-[#EEF2FF] text-[#4F46E5] rounded-lg hover:bg-indigo-100 transition-colors"
+                                        >
+                                            Today
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                                        >
+                                            <i className="fi fi-rr-angle-right text-sm mt-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Days Header */}
+                                <div className="grid grid-cols-7 mb-2 text-center">
+                                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                        <div key={day} className="text-xs font-bold text-gray-400 uppercase py-2">
+                                            {day}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Month Grid */}
+                                <div className="grid grid-cols-7 gap-2">
+                                    {/* Empty cells for prev month days */}
+                                    {Array.from({ length: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() }).map((_, i) => (
+                                        <div key={`empty-${i}`} className="min-h-[120px] bg-gray-50/30 rounded-lg"></div>
+                                    ))}
+
+                                    {/* Days of current month */}
+                                    {Array.from({ length: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate() }).map((_, i) => {
+                                        const day = i + 1;
+                                        const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                        const isToday = new Date().toDateString() === new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).toDateString();
+                                        
+                                        const dayLeads = filteredLeads.filter((l: any) => {
+                                            if (!l.next_called_at) return false;
+                                            const leadDate = new Date(l.next_called_at);
+                                            return leadDate.getDate() === day && leadDate.getMonth() === currentMonth.getMonth() && leadDate.getFullYear() === currentMonth.getFullYear();
+                                        });
+
+                                        return (
+                                            <div 
+                                                key={day} 
+                                                onClick={() => setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day))}
+                                                className={`min-h-[120px] p-2 rounded-lg border cursor-pointer hover:shadow-md ${isToday ? 'border-indigo-500 bg-indigo-50/10' : 'border-gray-100 bg-white hover:border-indigo-200'} transition-all relative group`}
+                                            >
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className={`text-sm font-bold ${isToday ? 'bg-indigo-600 text-white w-6 h-6 flex items-center justify-center rounded-full' : 'text-gray-700'}`}>
+                                                        {day}
+                                                    </span>
+                                                    {dayLeads.length > 0 && (
+                                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 rounded-full">
+                                                            {dayLeads.length}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                
+                                                <div className="space-y-1">
+                                                    {dayLeads.slice(0, 3).map((lead: any) => (
+                                                        <div 
+                                                            key={lead.id}
+                                                            className={`px-2 py-1 rounded text-[9px] font-bold truncate ${lead.isOverdue ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`}
+                                                            title={`${lead.customer_name} - ${lead.campaign_name}`}
+                                                        >
+                                                            {lead.customer_name || 'Anonymous'}
+                                                        </div>
+                                                    ))}
+                                                    {dayLeads.length > 3 && (
+                                                        <div className="text-[9px] text-gray-400 font-medium pl-1">
+                                                            +{dayLeads.length - 3} more
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Hover Overlay hint */}
+                                                <div className="absolute inset-x-0 bottom-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center pointer-events-none">
+                                                    <span className="text-[9px] font-bold text-gray-400 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-gray-100">View Day</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="animate-fade-in">
+                                {/* Day View Header */}
+                                <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => setSelectedDate(null)}
+                                            className="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+                                        >
+                                            <i className="fi fi-rr-arrow-small-left text-xl"></i>
+                                        </button>
+                                        <div>
+                                            <h2 className="text-xl font-bold text-gray-800 leading-tight">
+                                                {selectedDate.toLocaleDateString('default', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                            </h2>
+                                            <p className="text-xs text-gray-500 font-medium">Hourly Schedule</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button className="px-3 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg shadow-sm">
+                                            Day View
+                                        </button>
+                                        <button 
+                                            onClick={() => setSelectedDate(null)}
+                                            className="px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50"
+                                        >
+                                            Month View
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {!selectedHour ? (
+                                    /* Hourly Slots Grid */
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-1">
+                                        {Array.from({ length: 16 }).map((_, i) => { // 8 AM to 11 PM (16 slots)
+                                            const hour = i + 8;
+                                            const timeLabel = new Date(0, 0, 0, hour).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                                            
+                                            // Filter leads for this hour
+                                            const slotLeads = filteredLeads.filter((l: any) => {
+                                                if (!l.next_called_at) return false;
+                                                const d = new Date(l.next_called_at);
+                                                return d.getDate() === selectedDate.getDate() && 
+                                                    d.getMonth() === selectedDate.getMonth() && 
+                                                    d.getHours() === hour;
+                                            });
+
+                                            const isCurrentHour = new Date().getHours() === hour && new Date().toDateString() === selectedDate.toDateString();
+
+                                            return (
+                                                <div 
+                                                    key={hour} 
+                                                    onClick={() => setSelectedHour(hour)}
+                                                    className={`flex flex-col h-full min-h-[140px] rounded-2xl border ${isCurrentHour ? 'border-indigo-500 ring-2 ring-indigo-100 bg-indigo-50/20' : 'border-gray-200 bg-white hover:border-indigo-300'} transition-all p-3 relative group hover:shadow-md cursor-pointer`}
+                                                >
+                                                    <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
+                                                        <span className={`text-sm font-bold ${isCurrentHour ? 'text-indigo-700' : 'text-gray-700'}`}>{timeLabel}</span>
+                                                        {slotLeads.length > 0 && (
+                                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isCurrentHour ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}`}>
+                                                                {slotLeads.length} Calls
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className={`flex-1 space-y-2 custom-scrollbar max-h-[200px] ${slotLeads.length > 0 ? 'overflow-y-auto' : 'overflow-hidden flex items-center justify-center'}`}>
+                                                        {slotLeads.length > 0 ? (
+                                                            slotLeads.map((lead: any) => (
+                                                                <div 
+                                                                    key={lead.id}
+                                                                    onClick={(e) => { e.stopPropagation(); router.push(`/campaign/${lead.campaign_id}/${lead.id}`); }}
+                                                                    className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+                                                                >
+                                                                    <div className={`w-1 h-8 rounded-full flex-shrink-0 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500'}`}></div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <h4 className="text-xs font-medium text-gray-800 truncate" title={lead.customer_name}>{lead.customer_name || 'Anonymous'}</h4>
+                                                                        <p className="text-[9px] text-gray-500 truncate">{lead.campaign_name}</p>
+                                                                    </div>
+                                                                    {lead.isOverdue && <i className="fi fi-rr-time-past text-red-500 text-[10px]"></i>}
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="h-full flex flex-col items-center justify-center opacity-30 mt-2">
+                                                                <i className="fi fi-rr-minus-circle text-2xl text-gray-300 mb-1"></i>
+                                                                <span className="text-[10px] font-medium text-gray-400">Free Slot</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    /* Timeline View for Selected Hour */
+                                    <div className="animate-fade-in">
+                                        <div className="flex items-center gap-3 mb-6">
+                                             <button 
+                                                onClick={() => setSelectedHour(null)}
+                                                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors"
+                                            >
+                                                <i className="fi fi-rr-arrow-small-left text-xl"></i>
+                                            </button>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-gray-800">
+                                                    {new Date(0, 0, 0, selectedHour).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} - {new Date(0, 0, 0, selectedHour + 1).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                                                </h3>
+                                                <p className="text-xs text-gray-500">Timeline view</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="relative pl-4 space-y-8 py-4">
+                                            {/* Timeline Vertical Line */}
+                                            <div className="absolute left-[85px] top-0 bottom-0 w-px bg-gray-200"></div>
+
+                                            {(() => {
+                                                 const hourLeads = filteredLeads.filter((l: any) => {
+                                                    if (!l.next_called_at) return false;
+                                                    const d = new Date(l.next_called_at);
+                                                    return d.getDate() === selectedDate.getDate() && 
+                                                        d.getMonth() === selectedDate.getMonth() && 
+                                                        d.getHours() === selectedHour;
+                                                });
+
+                                                // Group by minute
+                                                const groupedByMinute: { [key: string]: any[] } = {};
+                                                hourLeads.forEach((l: any) => {
+                                                    const d = new Date(l.next_called_at);
+                                                    const timeKey = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: false }); // Use 24h for sorting ease or just minute str
+                                                    // Let's use formatted 12h string for Key 
+                                                    const displayTime = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                                                    if (!groupedByMinute[displayTime]) groupedByMinute[displayTime] = [];
+                                                    groupedByMinute[displayTime].push(l);
+                                                });
+
+                                                // If no leads
+                                                if (Object.keys(groupedByMinute).length === 0) {
+                                                    return (
+                                                        <div className="flex flex-col items-center justify-center py-20 opacity-50">
+                                                            <i className="fi fi-rr-time-forward text-4xl text-indigo-200 mb-3"></i>
+                                                            <p className="text-gray-400 font-medium">No calls scheduled for this hour</p>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                // Sort keys by time (simple since we are within same hour)
+                                                const sortedTimes = Object.keys(groupedByMinute).sort();
+
+                                                return sortedTimes.map((time) => (
+                                                    <div key={time} className="flex group relative">
+                                                        {/* Time Label */}
+                                                        <div className="w-[70px] flex-shrink-0 text-right pr-6 pt-2">
+                                                            <span className="text-sm font-bold text-gray-600 font-mono">{time}</span>
+                                                        </div>
+
+                                                        {/* Timeline Dot */}
+                                                        <div className="absolute left-[80.5px] top-3 w-2.5 h-2.5 rounded-full bg-white border-2 border-indigo-500 z-10"></div>
+
+                                                        {/* Cards Horizontal List */}
+                                                        <div className="flex-1 pl-6 pt-2 min-w-0">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+                                                                    {groupedByMinute[time].length} Contact{groupedByMinute[time].length > 1 ? 's' : ''}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                                                                {groupedByMinute[time].map((lead: any) => (
+                                                                    <div 
+                                                                        key={lead.id}
+                                                                        onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}
+                                                                        className="min-w-[250px] bg-white p-3 rounded-xl border border-gray-200 hover:border-indigo-400 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-2"
+                                                                    >
+                                                                        <div className="flex items-center gap-2 border-b border-gray-50 pb-2">
+                                                                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${lead.isOverdue ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`}>
+                                                                                {lead.customer_name?.charAt(0)}
+                                                                             </div>
+                                                                             <div className="flex-1 min-w-0">
+                                                                                 <h4 className="text-sm font-bold text-gray-800 truncate">{lead.customer_name || 'Anonymous'}</h4>
+                                                                                 <span className="text-[10px] text-gray-500">{lead.campaign_name}</span>
+                                                                             </div>
+                                                                        </div>
+                                                                        <div className="flex items-center justify-between">
+                                                                            <span className="text-[10px] font-medium text-gray-500 flex items-center gap-1">
+                                                                                <i className="fi fi-rr-smartphone"></i>
+                                                                                {formatMaskedPhone(lead.phone_no)}
+                                                                            </span>
+                                                                            <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                                                                                <i className="fi fi-rr-arrow-right text-[10px]"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ));
+                                            })()}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
