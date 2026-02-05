@@ -76,6 +76,9 @@ export default function CallingPage() {
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
+
+    // Get Last Interaction for Follow Ups
+    const lastInteraction = history?.length > 0 ? history[0] : null;
     
     const handleWhatsAppClick = useCallback(() => {
         if (!customer?.phone_no) {
@@ -1992,6 +1995,79 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
                                         </div>
 
+                                        {/* Interaction & Status Summary (New Addition) */}
+                                        <div className="flex items-center gap-2 mb-2 px-1 w-full">
+                                            {/* Total Interactions Badge */}
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+                                                <i className="fi fi-rr-clock-three text-slate-400 text-[10px]"></i>
+                                                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+                                                    {history?.length || 0} Attempts
+                                                </span>
+                                            </div>
+
+                                            {/* Last Status Chain - Compact Width */}
+                                            {lastInteraction && (
+                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-100 min-w-0 max-w-[90%] overflow-hidden">
+                                                     <i className="fi fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"></i>
+                                                     <div className="flex items-center gap-1 text-[10px] font-semibold text-purple-700 truncate">
+                                                        <span className="truncate">{lastInteraction.disposition || 'N/A'}</span>
+                                                        {lastInteraction.sub_disposition && (
+                                                            <>
+                                                                <span className="text-purple-300">/</span>
+                                                                <span className="truncate">{lastInteraction.sub_disposition}</span>
+                                                            </>
+                                                        )}
+                                                        {lastInteraction.outcome && (
+                                                            <>
+                                                                <span className="text-purple-300">/</span>
+                                                                <span className="truncate text-purple-900 font-bold">{lastInteraction.outcome}</span>
+                                                            </>
+                                                        )}
+                                                     </div>
+                                                </div>
+                                            )}
+
+                                            {/* Last 3 Interactions (Right Aligned - Avatar Group Style) */}
+                                            <div className="flex items-center -space-x-2 shrink-0 ml-auto pl-2">
+                                                {mobileLogs?.slice(0, 3).map((log, i) => {
+                                                    const type = (log.type || '').toLowerCase();
+                                                    // Mobile logs usually have 'incoming', 'outgoing', 'missed' as types
+                                                    const isMissed = type === 'missed' || type === 'rejected';
+                                                    const isIncoming = type === 'incoming';
+                                                    
+                                                    let bgClass = 'bg-blue-500';
+                                                    let iconClass = 'fi-rr-arrow-up-right';
+                                                    let rotateClass = 'rotate-12';
+
+                                                    if (isMissed) {
+                                                        bgClass = 'bg-red-500';
+                                                        iconClass = 'fi-rr-arrow-up-right'; // Or different icon for missed
+                                                        rotateClass = 'rotate-45';
+                                                    } else if (isIncoming) {
+                                                        bgClass = 'bg-emerald-500';
+                                                        iconClass = 'fi-rr-arrow-down-left';
+                                                        rotateClass = '-rotate-12';
+                                                    }
+
+                                                    return (
+                                                        <div 
+                                                            key={i} 
+                                                            className={`relative flex items-center justify-center w-8 h-8 rounded-full ${bgClass} border-2 border-white ring-1 ring-slate-100 shadow-sm transition-transform hover:scale-110 hover:z-50`}
+                                                            style={{ zIndex: 30 - (i * 10) }}
+                                                            title={`${isMissed ? 'Missed Call' : isIncoming ? 'Incoming Call' : 'Outgoing Call'} • ${log.duration ? formatTime(log.duration) : '0s'}`}
+                                                        >
+                                                            <i className={`fi ${iconClass} text-white text-[10px] transform ${rotateClass}`}></i>
+                                                        </div>
+                                                    );
+                                                })}
+                                                {(!mobileLogs || mobileLogs.length === 0) && (
+                                                    <div className="w-8 h-8 rounded-full bg-slate-50 border-2 border-white flex items-center justify-center">
+                                                        <i className="fi fi-rr-minus text-slate-200 text-xs"></i>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
                                         {/* Bottom Section: Info Tiles */}
                                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                                             {/* Manager Tile */}
@@ -2162,43 +2238,69 @@ Campaign: ${campaign?.name || campaignId}
                                                        
                                                     </div>
                                                 ) : !postCall ? (
-                                                    <div className="grid grid-cols-[1fr_auto] gap-2">
-                                                        {(customer?.status || 'Active').toLowerCase() === 'followup' ? (
-                                                            // SLIDE TO SKIP BUTTON (For Followups)
-                                                            <div 
-                                                                ref={containerRef}
-                                                                className="relative h-12 w-full rounded-xl bg-gray-100 overflow-hidden select-none touch-none shadow-inner border border-gray-200"
-                                                                onPointerDown={handlePointerDown}
-                                                                onPointerMove={handlePointerMove}
-                                                                onPointerUp={handlePointerUp}
-                                                                onPointerLeave={handlePointerUp}
-                                                            >
-                                                                {/* Background Layer (Skip) */}
-                                                                <div className="absolute inset-0 flex items-center justify-start pl-6 bg-gray-100">
-                                                                    <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
-                                                                        <i className="fi fi-rr-forward text-xs"></i>
-                                                                        Release to Skip
-                                                                    </span>
-                                                                </div>
+                                                    // CONDITIONAL LAYOUT: Follow-up vs Standard
+                                                    (customer?.status || 'Active').toLowerCase() === 'followup' ? (
+                                                        // FOLLOW-UP LAYOUT (Unified Container)
+                                                        <div className="w-full flex flex-col gap-2 p-2 rounded-2xl bg-orange-50/80 border border-orange-100">
+                                                            {/* Row 1: Last Interaction Context (Column Wise) */}
+                                                            <div className="px-1 flex flex-col gap-0.5">
+                                                                 <div className="flex justify-between items-end">
+                                                                    <span className="text-[9px] font-bold text-orange-400 uppercase tracking-wider">Last Interaction</span>
+                                                                    <span className="text-[9px] font-medium text-orange-800/60">{lastInteraction ? formatDate(lastInteraction.created_at) : 'No history'}</span>
+                                                                 </div>
+                                                                 <p className="text-[10px] font-semibold text-orange-900 border-l-2 border-orange-300 pl-2 line-clamp-2 italic leading-tight">
+                                                                    "{lastInteraction?.notes || 'No notes available'}"
+                                                                 </p>
+                                                            </div>
 
-                                                                {/* Foreground Layer (Call Now) */}
+                                                            {/* Row 2: Actions Row (Slider + WhatsApp) */}
+                                                            <div className="flex items-center gap-2 w-full">
+                                                                {/* Slider Button (Grow) */}
                                                                 <div 
-                                                                    className="absolute inset-y-0 left-0 bg-indigo-600 flex items-center justify-center gap-2 shadow-xl transition-transform duration-75 ease-out will-change-transform z-10"
-                                                                    style={{ 
-                                                                        width: '100%', 
-                                                                        transform: `translateX(${Math.max(0, dragX)}px)`,
-                                                                        cursor: isDragging ? 'grabbing' : 'grab'
-                                                                    }}
+                                                                    ref={containerRef}
+                                                                    className="relative h-12 flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200"
+                                                                    onPointerDown={handlePointerDown}
+                                                                    onPointerMove={handlePointerMove}
+                                                                    onPointerUp={handlePointerUp}
+                                                                    onPointerLeave={handlePointerUp}
                                                                 >
-                                                                    <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
-                                                                    <span className="text-white font-black text-[11px] uppercase tracking-widest">Call Now</span>
-                                                                    <div className="absolute right-4 opacity-70 animate-pulse">
-                                                                         <i className="fi fi-rr-angle-double-right text-white text-xs"></i>
+                                                                    {/* Background Layer */}
+                                                                    <div className="absolute inset-0 flex items-center justify-start pl-6 bg-orange-100/50">
+                                                                        <span className="text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
+                                                                            <i className="fi flex fi-rr-forward text-xs"></i>
+                                                                            Release to Skip
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {/* Foreground Layer */}
+                                                                    <div 
+                                                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10"
+                                                                        style={{ 
+                                                                            width: '100%', 
+                                                                            transform: `translateX(${Math.max(0, dragX)}px)`,
+                                                                            cursor: isDragging ? 'grabbing' : 'grab'
+                                                                        }}
+                                                                    >
+                                                                        <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
+                                                                        <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
+                                                                        <div className="absolute right-4 opacity-70 animate-pulse">
+                                                                             <i className="fi fi-rr-angle-double-right text-white text-xs"></i>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
+
+                                                                {/* WhatsApp Button (Inside Row) */}
+                                                                <button 
+                                                                    onClick={handleWhatsAppClick}
+                                                                    className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0"
+                                                                >
+                                                                    <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                                </button>
                                                             </div>
-                                                        ) : (
-                                                            // STANDARD BUTTON (Other Statuses)
+                                                        </div>
+                                                    ) : (
+                                                        // STANDARD LAYOUT (Grid)
+                                                        <div className="grid grid-cols-[1fr_auto] gap-2">
                                                             <button 
                                                                 onClick={handleStartCall}
                                                                 className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
@@ -2208,14 +2310,15 @@ Campaign: ${campaign?.name || campaignId}
                                                                 </div>
                                                                 <span className="relative z-10">Call Now</span>
                                                             </button>
-                                                        )}
-                                                        <button 
-                                                            onClick={handleWhatsAppClick}
-                                                            className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
-                                                        >
-                                                            <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
-                                                        </button>
-                                                    </div>
+                                                            
+                                                            <button 
+                                                                onClick={handleWhatsAppClick}
+                                                                className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
+                                                            >
+                                                                <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                            </button>
+                                                        </div>
+                                                    )
                                                 ) : (
                                                     <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                                         <button 
