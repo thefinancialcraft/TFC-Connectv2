@@ -83,13 +83,9 @@ export default function HeroSection() {
 
         {/* Main Headline */}
         <h1 className="relative z-10 mt-10 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-          Stop Managing Spreadsheets. <br />
-        
-        </h1>
-          <h1 className="relative z-10 mt-1 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-         
-          <span className="text-transparent pb-2  bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
-            Start Closing Deals.
+          SIM Based Calling CRM for <br />
+          <span className="text-transparent pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
+            Sales & Field Teams
           </span>
         </h1>
 

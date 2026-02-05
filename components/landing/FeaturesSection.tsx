@@ -42,10 +42,10 @@ export default function FeaturesSection() {
     <div id="features" className="py-20 bg-gray-50/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-sm font-bold tracking-wide mt-10  text-[#4b33e8] uppercase mb-3">Power Features</h2>
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-            Everything you need to <span className="text-[#4b33e8]">scale your sales team</span>
-          </h3>
+          <h2 className="text-sm font-bold tracking-wide mt-10  text-[#4b33e8] uppercase mb-3">Rynxly CRM Features</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+             Key Features of <span className="text-[#4b33e8]">Rynxly CRM</span>
+          </h2>
           <p className="text-base text-gray-500">
             Rynxly isn't just a dialer. It's a complete ecosystem designed to eliminate spreadsheets and maximize agent efficiency.
           </p>

@@ -74,10 +74,10 @@ export default function Pricing() {
                 
                 {/* Section Header - Styled like IndustrySolutions/Features */}
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-sm font-bold tracking-wide text-[#4b33e8] uppercase mb-3">Pricing</h2>
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                        Choose the right <span className="text-[#4b33e8]">Growth Plan</span>
-                    </h3>
+                    <h2 className="text-sm font-bold tracking-wide text-[#4b33e8] uppercase mb-3">Investment</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                        Pricing <span className="text-[#4b33e8]">Plans</span>
+                    </h2>
                     <p className="text-base text-gray-500">
                         Transparent pricing for high-performance teams. Scale your sales engine without breaking the bank.
                     </p>

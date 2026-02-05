@@ -45,10 +45,10 @@ export default function IndustrySolutions() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-20">
-          <h2 className="text-sm font-bold tracking-wide text-[#4b33e8] uppercase mb-3 text-center">Industries</h2>
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 text-center">
-            Built for High-Volume <span className="text-[#4b33e8]">Calling Teams</span>
-          </h3>
+          <h2 className="text-sm font-bold tracking-wide text-[#4b33e8] uppercase mb-3 text-center">Use Cases</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 text-center">
+            Industries That <span className="text-[#4b33e8]">Benefit</span>
+          </h2>
           <p className="text-base text-gray-500 text-center">
             Whether you are selling policies, booking flats, or hiring talent—if your team interacts with customers via phone, Rynxly is your engine.
           </p>

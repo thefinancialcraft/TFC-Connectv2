@@ -44,11 +44,11 @@ export default function WorkflowSteps() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="px-4 py-2 rounded-full bg-indigo-100/50 text-[#4b33e8] text-xs font-bold tracking-widest uppercase border border-indigo-100 inline-block mb-4">
-             Seamless Workflow
+             Process
           </span>
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
-            From <span className="text-[#4b33e8]">Lead to Deal</span> <br/>in 4 Automated Steps
-          </h3>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+            How <span className="text-[#4b33e8]">Rynxly Works</span>
+          </h2>
           <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
              Complex routing logic happens in the background. Your team just sees a simple, streamlined path to success.
           </p>

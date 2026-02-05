@@ -19,18 +19,18 @@ export default function LandingPage() {
   return (
     <>
       <Head>
-        <title>Rynxly • The Advanced SIM-Based Calling CRM</title>
-        <meta name="description" content="Transform your mobile workforce with Rynxly. The only CRM that syncs SIM-based calls with real-time web analytics, automated call routing, and performance tracking." />
-        <meta name="keywords" content="SIM based CRM, mobile CRM, call tracking software, sales tracking, telecalling CRM, Rynxly, lead management" />
+        <title>SIM Based Calling CRM for Sales Teams | Rynxly</title>
+        <meta name="description" content="Rynxly is an advanced SIM based calling CRM that syncs mobile calls to your web dashboard, improves follow-ups, and boosts sales team performance." />
+        <meta name="keywords" content="SIM based calling CRM, Calling CRM software, Sales calling CRM, CRM with call tracking, Best CRM for outbound calling teams, SIM CRM for telesales India, CRM for sales call follow up, mobile CRM, Rynxly" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#4b33e8" />
-        <link rel="canonical" href="https://rynxly.in" />
+        <link rel="canonical" href="https://www.rynxly.in" />
 
         {/* Open Graph / Facebook / WhatsApp */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://rynxly.in" />
-        <meta property="og:title" content="Rynxly • Sync Mobile Calls with Web Power" />
-        <meta property="og:description" content="Stop losing lead data. Automatically track every SIM call, record conversations, and visualize team performance in real-time." />
+        <meta property="og:url" content="https://www.rynxly.in" />
+        <meta property="og:title" content="SIM Based Calling CRM for Sales Teams | Rynxly" />
+        <meta property="og:description" content="Rynxly is an advanced SIM based calling CRM that syncs mobile calls to your web dashboard, improves follow-ups, and boosts sales team performance." />
         <meta property="og:image" content="https://rynxly.in/home-page.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -38,9 +38,9 @@ export default function LandingPage() {
 
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://rynxly.in" />
-        <meta property="twitter:title" content="Rynxly • Advanced Calling CRM" />
-        <meta property="twitter:description" content="The ultimate tool for high-performance sales teams. Sync mobile calls, automate routing, and close more deals." />
+        <meta property="twitter:url" content="https://www.rynxly.in" />
+        <meta property="twitter:title" content="SIM Based Calling CRM for Sales Teams | Rynxly" />
+        <meta property="twitter:description" content="Rynxly is an advanced SIM based calling CRM that syncs mobile calls to your web dashboard, improves follow-ups, and boosts sales team performance." />
         <meta property="twitter:image" content="https://rynxly.in/home-page.png" />
 
         {/* JSON-LD Structured Data for Rich Results */}
@@ -50,15 +50,17 @@ export default function LandingPage() {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "Rynxly CRM",
+              "name": "Rynxly",
+              "description": "SIM based calling CRM for sales and calling teams.",
               "applicationCategory": "BusinessApplication",
-              "operatingSystem": "Android, Web",
+              "operatingSystem": "Web, Android",
+              "url": "https://www.rynxly.in",
               "offers": {
                 "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "Rupee"
+                "price": "450",
+                "priceCurrency": "INR",
+                "url": "https://www.rynxly.in/home"
               },
-              "description": "A SIM-based calling CRM that synchronizes mobile call data with a central web dashboard for real-time analytics and team management.",
               "aggregateRating": {
                 "@type": "AggregateRating",
                 "ratingValue": "4.8",
