@@ -98,7 +98,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         if (currentSupabaseSession && accounts.length > 0) {
             // Check if this Supabase session matches one of our stored accounts
             const sessionActive = accounts.some(a => a.user_id === currentSupabaseSession.user.id);
-            if (sessionActive) {
+            if (sessionActive && router.pathname !== "/home") {
                 console.log("✅ [AuthGuard] Active session detected, auto-bypassing login/home");
                 router.push("/dashboard");
                 return;
@@ -135,14 +135,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
                   body: JSON.stringify({ token_id: activeAccount.token_id }),
                 });
 
-                if (activateRes.ok) {
-                    console.log("✅ [AuthGuard] Server confirmed active. Moving to Dashboard.");
-                    router.push("/dashboard");
-                    return;
-                } else {
-                    console.error("⚠️ [AuthGuard] Activation call failed, but proceeding anyway to avoid stuck UI.");
-                    router.push("/dashboard");
-                    return;
+                if (router.pathname !== "/home") {
+                    if (activateRes.ok) {
+                        console.log("✅ [AuthGuard] Server confirmed active. Moving to Dashboard.");
+                        router.push("/dashboard");
+                        return;
+                    } else {
+                        console.error("⚠️ [AuthGuard] Activation call failed, but proceeding anyway to avoid stuck UI.");
+                        router.push("/dashboard");
+                        return;
+                    }
                 }
 
               }
@@ -166,7 +168,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
 
       if (result.user) {
         // --- ADDITION: If we landed on Login/Home but result says we ARE authenticated, push to dashboard ---
-        if (isLoginPage || isRootPath) {
+        // Only redirect if explicitly on Login or Root, BUT NOT if on a public landing page (like Home)
+        if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
           router.push("/dashboard");
           return;
         }
