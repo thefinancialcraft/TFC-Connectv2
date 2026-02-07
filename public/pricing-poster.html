@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TFC-Connect Pricing</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e1b4b 50%,
+          #312e81 100%
+        );
+        min-height: 100vh;
+        padding: 60px 40px;
+        color: white;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      .logo {
+        font-size: 42px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+      }
+
+      .tagline {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 18px;
+        color: #cbd5e1;
+        font-weight: 400;
+      }
+
+      .pricing-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+        animation: fadeInUp 0.8s ease-out 0.3s backwards;
+      }
+
+      .pricing-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pricing-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(139, 92, 246, 0.1) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .pricing-card:hover::before {
+        opacity: 1;
+      }
+
+      .pricing-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(139, 92, 246, 0.5);
+        box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+      }
+
+      .pricing-card.popular {
+        border: 2px solid #8b5cf6;
+        box-shadow: 0 20px 60px rgba(139, 92, 246, 0.4);
+      }
+
+      .popular-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .plan-name {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #06b6d4;
+        margin-bottom: 15px;
+      }
+
+      .plan-price {
+        font-size: 56px;
+        font-weight: 900;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .plan-period {
+        font-size: 16px;
+        color: #94a3b8;
+        margin-bottom: 30px;
+      }
+
+      .features {
+        list-style: none;
+        margin-bottom: 30px;
+      }
+
+      .features li {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        color: #e2e8f0;
+      }
+
+      .features li:last-child {
+        border-bottom: none;
+      }
+
+      .features li::before {
+        content: "✓";
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        border-radius: 50%;
+        margin-right: 12px;
+        text-align: center;
+        line-height: 24px;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+
+      .cta-button {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .cta-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+      }
+
+      .screenshots-section {
+        margin-top: 80px;
+        animation: fadeInUp 0.8s ease-out 0.6s backwards;
+      }
+
+      .screenshots-title {
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 40px;
+        background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .screenshots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 30px;
+      }
+
+      .screenshot-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.4s ease;
+      }
+
+      .screenshot-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .screenshot-placeholder {
+        width: 100%;
+        height: 280px;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .screenshot-placeholder::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(
+          90deg,
+          #1e293b 0%,
+          #334155 50%,
+          #1e293b 100%
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+      }
+
+      .mock-interface {
+        width: 100%;
+        height: 100%;
+        padding-top: 50px;
+      }
+
+      .mock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .mock-metric {
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.2) 0%,
+          rgba(139, 92, 246, 0.2) 100%
+        );
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 3px solid #06b6d4;
+      }
+
+      .mock-metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #06b6d4;
+      }
+
+      .mock-metric-label {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 5px;
+      }
+
+      .screenshot-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #f1f5f9;
+      }
+
+      .screenshot-description {
+        font-size: 14px;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 80px;
+        padding-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeInUp 0.8s ease-out 0.9s backwards;
+      }
+
+      .trust-text {
+        font-size: 16px;
+        color: #cbd5e1;
+        margin-bottom: 15px;
+      }
+
+      .stars {
+        color: #fbbf24;
+        font-size: 24px;
+        letter-spacing: 4px;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Call Interface Mock */
+      .call-interface {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .customer-info {
+        background: rgba(139, 92, 246, 0.2);
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #8b5cf6;
+      }
+
+      .customer-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #e9d5ff;
+      }
+
+      .customer-detail {
+        font-size: 12px;
+        color: #c4b5fd;
+        margin-top: 5px;
+      }
+
+      .call-status {
+        display: flex;
+        justify-content: space-around;
+        padding: 15px;
+        background: rgba(6, 182, 212, 0.1);
+        border-radius: 8px;
+      }
+
+      .status-item {
+        text-align: center;
+      }
+
+      .status-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #06b6d4;
+      }
+
+      .status-label {
+        font-size: 11px;
+        color: #94a3b8;
+      }
+
+      /* Campaign Mock */
+      .campaign-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-box {
+        background: rgba(249, 115, 22, 0.1);
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #f97316;
+      }
+
+      .stat-number {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fb923c;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">TFC-Connect</div>
+        <h1 class="tagline">
+          Transform Your Customer Relationships, Amplify Your Success
+        </h1>
+        <p class="subtitle">
+          Powerful CRM & Call Management Platform for Growing Businesses
+        </p>
+      </div>
+
+      <div class="pricing-section">
+        <!-- Starter Plan -->
+        <div class="pricing-card">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">$29</div>
+          <div class="plan-period">per month</div>
+          <ul class="features">
+            <li>5 Users</li>
+            <li>1,000 Contacts</li>
+            <li>Basic Call Management</li>
+            <li>Email Support</li>
+            <li>Campaign Tools</li>
+            <li>Mobile App Access</li>
+          </ul>
+          <button class="cta-button">Get Started</button>
+        </div>
+
+        <!-- Professional Plan -->
+        <div class="pricing-card popular">
+          <span class="popular-badge">Most Popular</span>
+          <div class="plan-name">Professional</div>
+          <div class="plan-price">$79</div>
+          <div class="plan-period">per month</div>
+          <ul class="features">
+            <li>20 Users</li>
+            <li>10,000 Contacts</li>
+            <li>Advanced Call Engine</li>
+            <li>Priority Support</li>
+            <li>Campaign Analytics</li>
+            <li>Custom Dispositions</li>
+            <li>Call Recording</li>
+            <li>Timeline & Activity Logs</li>
+          </ul>
+          <button class="cta-button">Get Started</button>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="pricing-card">
+          <div class="plan-name">Enterprise</div>
+          <div class="plan-price">$199</div>
+          <div class="plan-period">per month</div>
+          <ul class="features">
+            <li>Unlimited Users</li>
+            <li>Unlimited Contacts</li>
+            <li>AI-Powered Insights</li>
+            <li>24/7 Dedicated Support</li>
+            <li>Advanced Analytics</li>
+            <li>Custom Integrations</li>
+            <li>White Label Option</li>
+            <li>API Access</li>
+            <li>Custom Workflows</li>
+          </ul>
+          <button class="cta-button">Contact Sales</button>
+        </div>
+      </div>
+
+      <div class="screenshots-section">
+        <h2 class="screenshots-title">See TFC-Connect in Action</h2>
+        <div class="screenshots-grid">
+          <!-- Dashboard Screenshot -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder">
+              <div class="mock-interface">
+                <div class="mock-header">
+                  <span
+                    style="font-size: 14px; font-weight: 700; color: #06b6d4"
+                    >Dashboard Overview</span
+                  >
+                  <span style="font-size: 12px; color: #94a3b8"
+                    >Last 30 Days</span
+                  >
+                </div>
+                <div class="mock-metric">
+                  <div class="mock-metric-value">2,847</div>
+                  <div class="mock-metric-label">Total Calls Made</div>
+                </div>
+                <div class="mock-metric">
+                  <div class="mock-metric-value">68%</div>
+                  <div class="mock-metric-label">Connection Rate</div>
+                </div>
+                <div class="mock-metric">
+                  <div class="mock-metric-value">156</div>
+                  <div class="mock-metric-label">Active Campaigns</div>
+                </div>
+              </div>
+            </div>
+            <h3 class="screenshot-title">📊 Real-Time Dashboard</h3>
+            <p class="screenshot-description">
+              Monitor your team's performance with comprehensive analytics, call
+              metrics, and campaign insights at a glance.
+            </p>
+          </div>
+
+          <!-- Call Management Screenshot -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder">
+              <div class="mock-interface">
+                <div class="call-interface">
+                  <div class="customer-info">
+                    <div class="customer-name">Rajesh Kumar</div>
+                    <div class="customer-detail">📞 +91 98765 43210</div>
+                    <div class="customer-detail">💼 Premium Policy Holder</div>
+                  </div>
+                  <div class="call-status">
+                    <div class="status-item">
+                      <div class="status-value">00:02:34</div>
+                      <div class="status-label">Duration</div>
+                    </div>
+                    <div class="status-item">
+                      <div class="status-value">Connected</div>
+                      <div class="status-label">Status</div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      background: rgba(34, 197, 94, 0.2);
+                      padding: 10px;
+                      border-radius: 8px;
+                      text-align: center;
+                      margin-top: 10px;
+                      border-left: 3px solid #22c55e;
+                    "
+                  >
+                    <div
+                      style="font-size: 12px; color: #86efac; font-weight: 600"
+                    >
+                      Call Notes & Disposition Ready
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="screenshot-title">📞 Advanced Call Engine</h3>
+            <p class="screenshot-description">
+              Seamlessly manage customer calls with integrated profile view,
+              real-time call status, and quick disposition options.
+            </p>
+          </div>
+
+          <!-- Campaign Analytics Screenshot -->
+          <div class="screenshot-card">
+            <div class="screenshot-placeholder">
+              <div class="mock-interface">
+                <div class="mock-header">
+                  <span
+                    style="font-size: 14px; font-weight: 700; color: #f97316"
+                    >Campaign: Q1 Renewals</span
+                  >
+                  <span style="font-size: 12px; color: #94a3b8">Active</span>
+                </div>
+                <div class="campaign-stats">
+                  <div class="stat-box">
+                    <div class="stat-number">1,245</div>
+                    <div class="stat-label">Total Leads</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="stat-number">892</div>
+                    <div class="stat-label">Contacted</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="stat-number">327</div>
+                    <div class="stat-label">Interested</div>
+                  </div>
+                  <div class="stat-box">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Converted</div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    background: rgba(139, 92, 246, 0.2);
+                    padding: 10px;
+                    border-radius: 8px;
+                    margin-top: 10px;
+                    border-left: 3px solid #8b5cf6;
+                  "
+                >
+                  <div style="font-size: 11px; color: #c4b5fd">
+                    Conversion Rate: 17.5% ⬆
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3 class="screenshot-title">📈 Campaign Analytics</h3>
+            <p class="screenshot-description">
+              Track campaign performance with detailed metrics, conversion
+              rates, and actionable insights to optimize your strategy.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p class="trust-text">Trusted by 10,000+ businesses worldwide</p>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+  </body>
+</html>

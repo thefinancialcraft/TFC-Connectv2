@@ -4,7 +4,26 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" type="image/svg+xml" href="/tty-answer.svg" />
+        {/* Favicon - Multiple formats for better compatibility */}
+        <link rel="icon" href="/tty-answer.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/tty-answer.svg" />
+        <link rel="manifest" href="/site.webmanifest" />
+        
+        {/* Essential meta tags */}
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#4b33e8" />
+        <meta name="description" content="Rynxly - The Advanced SIM-Based Calling CRM for seamless communication and customer relationship management" />
+        
+        {/* Open Graph / Social Media */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Rynxly - The Advanced SIM-Based Calling CRM" />
+        <meta property="og:description" content="Advanced SIM-Based Calling CRM for seamless communication" />
+        <meta property="og:image" content="https://www.rynxly.in/tty-answer.svg" />
+        <meta property="og:url" content="https://www.rynxly.in" />
+        
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

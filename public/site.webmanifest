@@ -1,0 +1,23 @@
+{
+  "name": "Rynxly - The Advanced SIM-Based Calling CRM",
+  "short_name": "Rynxly",
+  "description": "Advanced SIM-Based Calling CRM for seamless communication",
+  "icons": [
+    {
+      "src": "/tty-answer.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#4b33e8",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

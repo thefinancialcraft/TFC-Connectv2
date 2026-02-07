@@ -1216,6 +1216,23 @@ export default function CallingPage() {
         // Clear conflict on change to allow new check
         if (conflictInfo) setConflictInfo(null);
     }, [callbackTime, callbackDate, loading]);
+    
+    // 🔥 SYNC GLOBAL CALL STATUS FLAG
+    // This ensures that the CallReminderOverlay (and other components) know the user is busy
+    // whenever they are either on an active call OR pending a disposition.
+    useEffect(() => {
+        const isBusy = isCalling || postCall;
+        if (typeof window !== "undefined") {
+            const currentVal = localStorage.getItem('app_is_calling_active');
+            const targetVal = isBusy ? 'true' : 'false';
+            
+            if (currentVal !== targetVal) {
+                console.log(`[Busyness-Sync] Setting app_is_calling_active = ${targetVal} (isCalling: ${isCalling}, postCall: ${postCall})`);
+                localStorage.setItem('app_is_calling_active', targetVal);
+                window.dispatchEvent(new Event('app_call_state_change'));
+            }
+        }
+    }, [isCalling, postCall]);
 
     type Data = {
         success?: boolean;
@@ -1233,6 +1250,9 @@ export default function CallingPage() {
             console.error('[Session] Missing campaignId or customerId in router query');
             return;
         }
+
+        // Flag is now handled automatically by the centralized useEffect watcher above
+
 
         // --- Optimistic UI Update ---
         // Set state immediately using local time so the timer starts without waiting for API
@@ -1412,6 +1432,9 @@ export default function CallingPage() {
             alert("Please select a primary status");
             return;
         }
+
+        // Flag will be cleared automatically by the watcher when postCall becomes false
+
 
         if (dispositionHierarchy[disposition]?.length > 0 && !subDisposition) {
             alert("Please select a specific sub-disposition");
