@@ -117,6 +117,31 @@ export default function Settings() {
 
 
 
+  // Check for OAuth errors in URL
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Check both query params and hash for errors
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+    
+    const error = params.get('error') || hashParams.get('error');
+    const errorCode = params.get('error_code') || hashParams.get('error_code');
+    const errorDescription = params.get('error_description') || hashParams.get('error_description');
+
+    if (error) {
+      if (errorCode === 'identity_already_exists') {
+        showError("This Google account is already linked to another user. Please use a different account or sign in with that account first.", "Account already linked");
+      } else {
+        showError(errorDescription?.replace(/\+/g, ' ') || "An error occurred during connection.", "Connection Failed");
+      }
+      
+      // Clean URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
@@ -759,7 +784,14 @@ export default function Settings() {
                                   skipBrowserRedirect: isMobile
                                 }
                               });
-                              if (error) { showError(error.message, "Connection Error"); return; }
+                              if (error) { 
+                                if (error.message.includes("Manual linking is disabled")) {
+                                  showError("Please go to Supabase > Authentication > Providers > Google and enable 'Manual Linking' (or in Settings > Security).", "Configuration Required");
+                                } else {
+                                  showError(error.message, "Connection Error"); 
+                                }
+                                return; 
+                              }
                               if (isMobile && data?.url) {
                                 const { notifyFlutter } = await import("../lib/flutterBridge");
                                 notifyFlutter('open_external_url', data.url);
