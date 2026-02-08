@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from "next/router";
 import { useUser } from "../context/UserContext";
+import { supabase } from "../lib/supabase";
 
-type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi';
+type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi' | 'alarm';
 
 // Google Calendar API Helper (Server-side handled)
 const fetchGoogleHolidays = async (year: number, month: number): Promise<Record<string, any[]>> => {
@@ -216,10 +217,106 @@ const CustomDatePicker = ({ date, setDate, label, placeholder = "DD/MM/YYYY" }: 
     );
 };
 
+interface TimePickerProps {
+    time: string;
+    setTime: (t: string) => void;
+    label?: string;
+}
+
+const CustomTimePicker = ({ time, setTime, label }: TimePickerProps) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const [coords, setCoords] = useState({ top: 0, left: 0 });
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
+
+    const togglePicker = () => {
+        if (!isOpen && triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setCoords({ top: rect.bottom + 8, left: rect.left });
+        }
+        setIsOpen(!isOpen);
+    };
+
+    const currentH = time ? time.split(':')[0] : '12';
+    const currentM = time ? time.split(':')[1] : '00';
+
+    const updateH = (h: string) => setTime(`${h}:${currentM}`);
+    const updateM = (m: string) => setTime(`${currentH}:${m}`);
+
+    return (
+        <div className="space-y-1.5 relative w-full">
+            {label && <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{label}</label>}
+            <div 
+                ref={triggerRef}
+                onClick={togglePicker}
+                className={`w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-[#263238] cursor-pointer flex items-center justify-between transition-all hover:bg-white hover:border-indigo-100 ${isOpen ? 'ring-2 ring-indigo-100 bg-white' : ''}`}
+            >
+                <span>{time || <span className="text-gray-400">Select Time</span>}</span>
+                <i className="fi flex fi-rr-clock text-gray-400"></i>
+            </div>
+
+            {isOpen && mounted && createPortal(
+                <>
+                    <div className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)}></div>
+                    <div 
+                        style={{ top: coords.top, left: coords.left }}
+                        className="fixed bg-white rounded-xl shadow-2xl border border-gray-100 z-[9999] p-4 animate-in fade-in zoom-in-95 duration-200 w-[200px]"
+                    >
+                        <div className="flex gap-4">
+                            {/* Hours */}
+                            <div className="flex-1">
+                                <p className="text-[8px] font-black text-gray-300 uppercase mb-2 text-center">Hrs</p>
+                                <div className="h-40 overflow-y-auto custom-scrollbar space-y-1">
+                                    {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')).map(h => (
+                                        <div 
+                                            key={h} 
+                                            onClick={() => updateH(h)}
+                                            className={`text-center py-1.5 rounded-lg cursor-pointer text-xs font-bold transition-all ${currentH === h ? 'bg-[#4b33e8] text-white shadow-md' : 'hover:bg-gray-50 text-gray-500'}`}
+                                        >
+                                            {h}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Minutes */}
+                            <div className="flex-1">
+                                <p className="text-[8px] font-black text-gray-300 uppercase mb-2 text-center">Min</p>
+                                <div className="h-40 overflow-y-auto custom-scrollbar space-y-1">
+                                    {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')).map(m => (
+                                        <div 
+                                            key={m} 
+                                            onClick={() => updateM(m)}
+                                            className={`text-center py-1.5 rounded-lg cursor-pointer text-xs font-bold transition-all ${currentM === m ? 'bg-[#4b33e8] text-white shadow-md' : 'hover:bg-gray-50 text-gray-500'}`}
+                                        >
+                                            {m}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => setIsOpen(false)}
+                            className="w-full mt-4 bg-gray-900 text-white py-2 rounded-lg text-[10px] font-black uppercase tracking-widest"
+                        >
+                            Done
+                        </button>
+                    </div>
+                </>,
+                document.body
+            )}
+        </div>
+    );
+};
+
 export default function UtilitySidebar() {
     const router = useRouter();
     const { user } = useUser();
+    const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
     const [activeApp, setActiveApp] = useState<UtilityApp>('notes');
     
     // --- APP STATES ---
@@ -248,6 +345,14 @@ export default function UtilitySidebar() {
     const [isSyncing, setIsSyncing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [googleHolidays, setGoogleHolidays] = useState<Record<string, any[]>>({});
+
+    // --- ALARM STATES ---
+    const [alarms, setAlarms] = useState<{id: number, time: string, message: string, enabled: boolean}[]>([]);
+    const [alarmTime, setAlarmTime] = useState('');
+    const [alarmMessage, setAlarmMessage] = useState('');
+    const [activeToast, setActiveToast] = useState<{message: string, type: 'alarm' | 'info'} | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     // --- DRAG STATE ---
     const [posY, setPosY] = useState(50); // percentage from top
@@ -324,6 +429,67 @@ export default function UtilitySidebar() {
         if (savedAgeTab) setActiveAgeTab(savedAgeTab as 'single' | 'family');
     }, []);
 
+    // --- SUPABASE SYNC LOGIC ---
+    useEffect(() => {
+        const fetchRemoteData = async () => {
+            const currentId = user?.uid || (user as any)?.id;
+            if (!currentId) {
+                setIsInitialLoad(false);
+                return;
+            }
+            
+            try {
+                const { data, error } = await supabase
+                    .from('utility_data')
+                    .select('*')
+                    .eq('user_id', currentId)
+                    .single();
+                
+                if (data) {
+                    if (data.notes) setNotesList(data.notes);
+                    if (data.todos) setTodoProjects(data.todos);
+                    if (data.calendar) setCalEvents(data.calendar);
+                    if (data.family) setFamilyCards(data.family);
+                    if (data.alarms) setAlarms(data.alarms);
+                }
+            } catch (e) {
+                console.error("Supabase load error", e);
+            } finally {
+                setIsInitialLoad(false);
+            }
+        };
+
+        if (mounted && user) {
+            fetchRemoteData();
+        } else if (mounted && !user) {
+            setIsInitialLoad(false);
+        }
+    }, [user, mounted]);
+
+    useEffect(() => {
+        const syncToRemote = async () => {
+            const currentId = user?.uid || (user as any)?.id;
+            if (isInitialLoad || !currentId) return;
+
+            try {
+                await supabase.from('utility_data').upsert({
+                    user_id: currentId,
+                    notes: notesList,
+                    todos: todoProjects,
+                    calendar: calEvents,
+                    family: familyCards,
+                    alarms: alarms,
+                    updated_at: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Supabase sync error", e);
+            }
+        };
+
+        const timer = setTimeout(syncToRemote, 2000); // 2s debounce to avoid over-calling
+        return () => clearTimeout(timer);
+    }, [notesList, todoProjects, calEvents, familyCards, alarms, user, isInitialLoad]);
+
     // Save states
     useEffect(() => {
         if (notesList.length > 0) localStorage.setItem('tfc_util_notes_v2', JSON.stringify(notesList));
@@ -348,6 +514,69 @@ export default function UtilitySidebar() {
     useEffect(() => {
         localStorage.setItem('tfc_util_family_cards', JSON.stringify(familyCards));
     }, [familyCards]);
+
+    // --- ALARM PERSISTENCE ---
+    useEffect(() => {
+        const savedAlarms = localStorage.getItem('tfc_util_alarms');
+        if (savedAlarms) setAlarms(JSON.parse(savedAlarms));
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('tfc_util_alarms', JSON.stringify(alarms));
+    }, [alarms]);
+
+    // --- ALARM TRIGGER LOGIC ---
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            alarms.forEach(alarm => {
+                if (alarm.enabled && alarm.time === currentTime) {
+                    // Trigger
+                    setActiveToast({ message: alarm.message || 'Alarm Ringing!', type: 'alarm' });
+                    if (audioRef.current) {
+                        audioRef.current.play().catch(e => console.log("Audio play failed", e));
+                    }
+                    // Disable it so it doesn't trigger again in the same minute
+                    setAlarms(prev => prev.map(a => a.id === alarm.id ? { ...a, enabled: false } : a));
+                }
+            });
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [alarms]);
+
+    const addAlarm = () => {
+        if (!alarmTime) {
+            alert("Please select a time first!");
+            return;
+        }
+        const newAlarm = {
+            id: Date.now(),
+            time: alarmTime,
+            message: alarmMessage,
+            enabled: true
+        };
+        setAlarms(prev => [...prev, newAlarm]);
+        setAlarmTime('');
+        setAlarmMessage('');
+    };
+
+    const deleteAlarm = (id: number) => {
+        setAlarms(alarms.filter(a => a.id !== id));
+    };
+
+    const toggleAlarm = (id: number) => {
+        setAlarms(alarms.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a));
+    };
+
+    const stopAlarm = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        setActiveToast(null);
+    };
 
     useEffect(() => {
         // Cleaning up active Age Tab storage as it's no longer used
@@ -604,7 +833,8 @@ export default function UtilitySidebar() {
         { id: 'calendar', icon: 'flex fi-rr-calendar', label: 'Calendar' },
         { id: 'calculator', icon: 'flex fi-rr-calculator', label: 'Calc' },
         { id: 'age', icon: 'flex fi-rr-user-time', label: 'Age' },
-        { id: 'bmi', icon: 'flex fi-rr-ruler-combined', label: 'BMI' }
+        { id: 'bmi', icon: 'flex fi-rr-ruler-combined', label: 'BMI' },
+        { id: 'alarm', icon: 'flex fi-rr-bell', label: 'Alarm' }
     ];
 
     // --- DRAGGING LOGIC ---
@@ -1449,7 +1679,116 @@ export default function UtilitySidebar() {
                                 </div>
                             )}
 
+                             {/* ALARM APP */}
+                             {activeApp === 'alarm' && (
+                                <div className="flex flex-col h-full">
+                                    <div className="space-y-4 mb-6">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">New Reminder</h3>
+                                        </div>
+                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+                                            <div className="space-y-1">
+                                                <CustomTimePicker 
+                                                    time={alarmTime}
+                                                    setTime={setAlarmTime}
+                                                    label="Time"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Message (Optional)</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={alarmMessage}
+                                                    onChange={(e) => setAlarmMessage(e.target.value)}
+                                                    placeholder="Wake up, meeting..."
+                                                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold text-[#263238] placeholder:text-gray-300 focus:ring-indigo-100 focus:border-indigo-300"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={addAlarm}
+                                                className="w-full bg-[#4b33e8] text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-sm active:scale-95"
+                                            >
+                                                Set Alarm
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 min-h-0 flex flex-col">
+                                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Active Alarms</h3>
+                                        <div className="space-y-2 overflow-y-auto custom-scrollbar pr-1">
+                                            {alarms.length === 0 && (
+                                                <div className="py-8 text-center border-2 border-dashed border-gray-50 rounded-xl bg-gray-50/50">
+                                                    <i className="flex fi fi-rr-bell-slash text-2xl text-gray-200 mb-2 justify-center"></i>
+                                                    <p className="text-[9px] font-bold text-gray-300 uppercase">No alarms set</p>
+                                                </div>
+                                            )}
+                                            {alarms.sort((a,b) => a.time.localeCompare(b.time)).map(alarm => (
+                                                <div key={alarm.id} className="group bg-white border border-gray-100 p-3 rounded-xl flex items-center justify-between hover:border-indigo-100 transition-all shadow-sm">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${alarm.enabled ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-50 text-gray-300'}`}>
+                                                            <i className={`flex fi fi-rr-bell ${alarm.enabled ? 'animate-bounce' : ''}`}></i>
+                                                        </div>
+                                                        <div>
+                                                            <p className={`text-sm font-black ${alarm.enabled ? 'text-[#263238]' : 'text-gray-400'}`}>{alarm.time}</p>
+                                                            <p className="text-[9px] text-gray-400 font-bold uppercase truncate max-w-[100px]">{alarm.message || 'Reminder'}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <button 
+                                                            onClick={() => toggleAlarm(alarm.id)}
+                                                            className={`w-8 h-5 rounded-full transition-all relative ${alarm.enabled ? 'bg-green-500' : 'bg-gray-200'}`}
+                                                        >
+                                                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${alarm.enabled ? 'left-4' : 'left-1'}`}></div>
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => deleteAlarm(alarm.id)}
+                                                            className="w-7 h-7 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all"
+                                                        >
+                                                            <i className="flex fi fi-rr-trash text-xs"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                             )}
+
                         </div>
+
+                        {/* ALARM TOAST / OVERLAY */}
+                        {activeToast && typeof document !== 'undefined' && createPortal(
+                             <div className="fixed top-8 right-8 z-[99999] animate-in fade-in slide-in-from-top-8 duration-500 pointer-events-auto">
+                                 <div className="bg-[#001a3d] rounded-full pl-3 pr-4 py-2.5 shadow-[0_15px_40px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[300px] border border-white/5 backdrop-blur-md">
+                                     {/* Left Icon Circle */}
+                                     <div className="w-10 h-10 rounded-full bg-[#1e40af] flex items-center justify-center text-white shrink-0 shadow-inner">
+                                         <i className="flex fi fi-rr-bell text-lg animate-pulse"></i>
+                                     </div>
+                                     
+                                     {/* Middle Content */}
+                                     <div className="flex-1 min-w-0 pr-2">
+                                         <h4 className="text-white text-[11px] font-black leading-tight tracking-wide">Rynxly Alarm Active</h4>
+                                         <p className="text-white/70 text-[10px] font-medium truncate">{activeToast.message || 'Time to wake up!'}</p>
+                                     </div>
+
+                                     {/* Right Dismiss Button */}
+                                     <button 
+                                        onClick={stopAlarm}
+                                        className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all active:scale-90 shrink-0"
+                                     >
+                                         <i className="flex fi fi-rr-cross text-[10px]"></i>
+                                     </button>
+                                 </div>
+                             </div>,
+                             document.body
+                         )}
+
+                         {/* HIDDEN AUDIO ELEMENT */}
+                         <audio 
+                            ref={audioRef}
+                            src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
+                            loop
+                         />
 
                         {/* Minimal Footer */}
                         <div className="px-5 py-3 border-t border-gray-50 flex items-center justify-between text-[8px] font-bold text-gray-300 uppercase tracking-widest">
