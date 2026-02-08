@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useRouter } from "next/router";
+import { useUser } from "../context/UserContext";
 
 type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age';
 
@@ -51,6 +53,8 @@ const fetchGoogleHolidays = async (year: number, month: number): Promise<Record<
 };
 
 export default function UtilitySidebar() {
+    const router = useRouter();
+    const { user } = useUser();
     const [isOpen, setIsOpen] = useState(false);
     const [activeApp, setActiveApp] = useState<UtilityApp>('notes');
     
@@ -649,6 +653,22 @@ export default function UtilitySidebar() {
                                         </div>
 
                                         <div className="space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-1">
+                                            {/* Connect Prompt if Not Connected */}
+                                            {(!user?.googleCalendarConnected) && (
+                                                <div 
+                                                    onClick={() => router.push('/settings')}
+                                                    className="bg-indigo-50 rounded-lg p-2 flex items-center justify-between cursor-pointer hover:bg-indigo-100 transition-all group border border-indigo-100 mb-2"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-indigo-600 shadow-sm">
+                                                            <i className="fi fi-brands-google text-[10px] flex"></i>
+                                                        </div>
+                                                        <span className="text-[9px] font-bold text-indigo-700">Connect Google Calendar</span>
+                                                    </div>
+                                                    <i className="fi fi-rr-angle-small-right text-indigo-400 group-hover:text-indigo-600 flex"></i>
+                                                </div>
+                                            )}
+
                                             <div className="flex items-center justify-between mt-2">
                                                 <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Google Calendar Holidays</h3>
                                                 <button 
