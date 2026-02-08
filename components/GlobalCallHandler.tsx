@@ -129,11 +129,15 @@ export default function GlobalCallHandler() {
                 const cleanPhone = String(phoneNo).replace(/\D/g, '');
                 if (!cleanPhone) return;
 
-                console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${cleanPhone}`);
+                // Normalize: If number is 10 digits or more (like 919876543210), 
+                // we take the last 10 digits to ensure matching across different dial formats.
+                const normalizedPhone = cleanPhone.length >= 10 ? cleanPhone.slice(-10) : cleanPhone;
+
+                console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${normalizedPhone} (Raw: ${cleanPhone})`);
 
                 // 2. Search for the lead
                 try {
-                    const response = await fetch(`/api/customer/find-by-phone?phone=${cleanPhone}`);
+                    const response = await fetch(`/api/customer/find-by-phone?phone=${normalizedPhone}`);
                     const result = await response.json();
 
                     if (result.success && result.lead) {
