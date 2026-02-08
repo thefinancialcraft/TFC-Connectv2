@@ -113,6 +113,7 @@ export default function Settings() {
     if (typeof window === 'undefined') return null;
     return getStoredUserData()?.token_id;
   }, []);
+  const [showIdentityErrorPopup, setShowIdentityErrorPopup] = useState(false);
 
 
 
@@ -131,7 +132,7 @@ export default function Settings() {
 
     if (error) {
       if (errorCode === 'identity_already_exists') {
-        showError("This Google account is already linked to another user. Please use a different account or sign in with that account first.", "Account already linked");
+        setShowIdentityErrorPopup(true);
       } else {
         showError(errorDescription?.replace(/\+/g, ' ') || "An error occurred during connection.", "Connection Failed");
       }
@@ -752,15 +753,39 @@ export default function Settings() {
                           onClick={async () => {
                             if (user?.googleCalendarConnected) {
                               if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
+                              
                               try {
+                                setLoading(true); // Optional: show loading state if you have one available here
+                                
+                                // 1. Unlink from Supabase Auth
+                                const { data: { user: currentUser } } = await supabase.auth.getUser();
+                                if (currentUser?.identities) {
+                                  const googleIdentity = currentUser.identities.find(id => id.provider === 'google');
+                                  if (googleIdentity) {
+                                    // Supabase v2: unlinkIdentity takes the identity object
+                                    const { error: unlinkError } = await supabase.auth.unlinkIdentity(googleIdentity);
+                                    if (unlinkError) throw unlinkError;
+                                    console.log("✅ [Settings] Google Identity unlinked.");
+                                  }
+                                }
+
+                                // 2. Update DB Profile
                                 await supabase.from('user_profiles').update({ 
                                   google_calendar_connected: false,
                                   google_calendar_skipped: false 
                                 }).eq('user_id', user.uid);
+                                
+                                // 3. Clear Local State
                                 localStorage.removeItem("google_provider_token");
+                                
                                 showSuccess("Google Calendar disconnected.");
                                 setTimeout(() => window.location.reload(), 1000);
-                              } catch (err) { showError("Failed to disconnect."); }
+                              } catch (err: any) { 
+                                console.error("Disconnect failed:", err);
+                                showError(err.message || "Failed to disconnect.", "Disconnection Error"); 
+                              } finally {
+                                setLoading(false);
+                              }
                             } else {
                               // Connect Logic
                               const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -833,6 +858,33 @@ export default function Settings() {
           )}
         </div>
       </div>
+      {/* Identity Error Modal */}
+      {showIdentityErrorPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fi fi-rr-cross-circle text-3xl text-red-500 flex"></i>
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Account Already Linked</h3>
+              
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                This Google account is already connected to another TFC user. 
+                <br/><br/>
+                Please use a different Google account or log in with the existing account associated with this email.
+              </p>
+
+              <button 
+                onClick={() => setShowIdentityErrorPopup(false)}
+                className="w-full py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95"
+              >
+                Okay, I understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
