@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabase";
 
-type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi' | 'alarm';
+type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi' | 'alarm' | 'ai';
 
 // Google Calendar API Helper (Server-side handled)
 const fetchGoogleHolidays = async (year: number, month: number): Promise<Record<string, any[]>> => {
@@ -76,6 +76,11 @@ const calculateBMI = (h: string, w: string) => {
     return bmi.toFixed(1);
 };
 function isNegative(num: number) { return num < 0; }
+const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
 interface DatePickerProps {
     date: string;
@@ -320,8 +325,21 @@ export default function UtilitySidebar() {
     const [activeApp, setActiveApp] = useState<UtilityApp>('notes');
     
     // --- APP STATES ---
-    const [notesList, setNotesList] = useState<{id: number, title: string, content: string}[]>([]);
+    const [notesList, setNotesList] = useState<{id: number, title: string, content: string, type: 'text' | 'audio', audioUrl?: string}[]>([]);
     const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
+    const [noteCreationType, setNoteCreationType] = useState<'text' | 'audio'>('text');
+    
+    // --- AUDIO RECORDING & PLAYBACK ---
+    const [isRecording, setIsRecording] = useState(false);
+    const [recordDuration, setRecordDuration] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [audioProgress, setAudioProgress] = useState(0);
+    const [audioDuration, setAudioDuration] = useState(0);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const audioNodeRef = useRef<HTMLAudioElement | null>(null);
     const [todoProjects, setTodoProjects] = useState<{id: number, title: string, tasks: {id: number, text: string, completed: boolean}[]}[]>([]);
     const [activeProjectId, setActiveProjectId] = useState<number | null>(null);
     const [newTask, setNewTask] = useState('');
@@ -354,6 +372,25 @@ export default function UtilitySidebar() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+    // --- AI CHAT & COPILOT STATES ---
+    const [chatMessages, setChatMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
+    const [userInput, setUserInput] = useState('');
+    const [isAiLoading, setIsAiLoading] = useState(false);
+    const [aiConfig, setAiConfig] = useState<{instructions: string, knowledgeBase: string}>({
+        instructions: '',
+        knowledgeBase: ''
+    });
+    const [showAiSettings, setShowAiSettings] = useState(false);
+    const chatEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatMessages]);
+
     // --- DRAG STATE ---
     const [posY, setPosY] = useState(50); // percentage from top
     const [isDragging, setIsDragging] = useState(false);
@@ -368,11 +405,15 @@ export default function UtilitySidebar() {
         const lastActiveNoteId = localStorage.getItem('tfc_util_active_note');
         if (savedNotes) {
             const parsed = JSON.parse(savedNotes);
-            setNotesList(parsed);
+            const migrated = parsed.map((n: any) => ({
+                ...n,
+                type: n.type || 'text'
+            }));
+            setNotesList(migrated);
             if (lastActiveNoteId) setActiveNoteId(Number(lastActiveNoteId));
             else if (parsed.length > 0) setActiveNoteId(parsed[0].id);
         } else {
-            const firstNote = { id: Date.now(), title: 'Draft Note', content: '' };
+            const firstNote: {id: number, title: string, content: string, type: 'text' | 'audio'} = { id: Date.now(), title: 'Draft Note', content: '', type: 'text' };
             setNotesList([firstNote]);
             setActiveNoteId(firstNote.id);
         }
@@ -451,6 +492,8 @@ export default function UtilitySidebar() {
                     if (data.calendar) setCalEvents(data.calendar);
                     if (data.family) setFamilyCards(data.family);
                     if (data.alarms) setAlarms(data.alarms);
+                    if (data.ai_config) setAiConfig(data.ai_config);
+                    if (data.ai_chat_history) setChatMessages(data.ai_chat_history);
                 }
             } catch (e) {
                 console.error("Supabase load error", e);
@@ -479,6 +522,8 @@ export default function UtilitySidebar() {
                     calendar: calEvents,
                     family: familyCards,
                     alarms: alarms,
+                    ai_config: aiConfig,
+                    ai_chat_history: chatMessages,
                     updated_at: new Date().toISOString()
                 });
             } catch (e) {
@@ -578,6 +623,88 @@ export default function UtilitySidebar() {
         setActiveToast(null);
     };
 
+    // --- AI HANDLERS ---
+    const getAiContext = async () => {
+        const currentId = user?.uid || (user as any)?.id;
+        if (!currentId) return "No user logged in.";
+
+        try {
+            // Fetch Recent Call Logs
+            const { data: callLogs } = await supabase
+                .from('call_logs')
+                .select('*')
+                .eq('user_id', currentId)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            // Fetch Customer Context
+            const { data: customers } = await supabase
+                .from('customers')
+                .select('*')
+                .limit(5);
+
+            // Fetch Followups / Outcomes
+            const { data: outcomes } = await supabase
+                .from('user_outcomes')
+                .select('*')
+                .eq('user_id', currentId)
+                .limit(5);
+
+            return JSON.stringify({
+                currentUser: { name: user?.displayName, role: user?.designation, level: user?.user_level },
+                recentCallLogs: callLogs,
+                sampleCustomers: customers,
+                userFollowups: outcomes,
+                currentDrafts: notesList.slice(0, 3).map(n => ({ title: n.title, content: n.content })),
+                activeTasks: todoProjects.map(p => ({ project: p.title, tasks: p.tasks.filter(t => !t.completed).map(t => t.text) })),
+                customInstructions: aiConfig.instructions,
+                knowledgeBase: aiConfig.knowledgeBase,
+                current_time: new Date().toLocaleString()
+            });
+        } catch (e) {
+            console.error("Context fetch error", e);
+            return "Error fetching context.";
+        }
+    };
+
+    const handleSendMessage = async () => {
+        if (!userInput.trim() || isAiLoading) return;
+        
+        const userMsg = { role: 'user' as const, content: userInput };
+        setChatMessages(prev => [...prev, userMsg]);
+        setUserInput('');
+        setIsAiLoading(true);
+
+        try {
+            const contextContent = await getAiContext();
+            
+            const response = await fetch('/api/ai/copilot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    messages: [...chatMessages, userMsg],
+                    context: contextContent 
+                })
+            });
+            
+            const data = await response.json();
+            if (data.reply) {
+                setChatMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+            } else {
+                setChatMessages(prev => [...prev, { role: 'assistant', content: "I'm sorry, I couldn't process that. Please try again." }]);
+            }
+        } catch (e) {
+            console.error("AI Chat error", e);
+            setChatMessages(prev => [...prev, { role: 'assistant', content: "Connection error. Please check if the AI service is active." }]);
+        } finally {
+            setIsAiLoading(false);
+        }
+    };
+
+    const clearChat = () => {
+        if(confirm("Clear chat history?")) setChatMessages([]);
+    };
+
     useEffect(() => {
         // Cleaning up active Age Tab storage as it's no longer used
         localStorage.removeItem('tfc_util_age_tab');
@@ -585,7 +712,12 @@ export default function UtilitySidebar() {
 
     // --- NOTES HANDLERS ---
     const addNote = () => {
-        const newNote = { id: Date.now(), title: `Note ${notesList.length + 1}`, content: '' };
+        const newNote = { 
+            id: Date.now(), 
+            title: `${noteCreationType === 'audio' ? 'Voice memo' : 'Draft Note'} ${notesList.length + 1}`, 
+            content: '',
+            type: noteCreationType
+        };
         setNotesList([...notesList, newNote]);
         setActiveNoteId(newNote.id);
     };
@@ -605,6 +737,99 @@ export default function UtilitySidebar() {
 
     const updateNoteTitle = (title: string) => {
         setNotesList(notesList.map(n => n.id === activeNoteId ? { ...n, title } : n));
+    };
+
+    // --- AUDIO HANDLING ---
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+            audioChunksRef.current = [];
+
+            mediaRecorderRef.current.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunksRef.current.push(e.data);
+            };
+
+            mediaRecorderRef.current.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await uploadAudioToSupabase(audioBlob);
+            };
+
+            mediaRecorderRef.current.start();
+            setIsRecording(true);
+            setRecordDuration(0);
+            recordingIntervalRef.current = setInterval(() => {
+                setRecordDuration(prev => prev + 1);
+            }, 1000);
+        } catch (err) {
+            console.error("Microphone access error:", err);
+            alert("Could not access microphone.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            setIsRecording(false);
+            if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+        }
+    };
+
+    const uploadAudioToSupabase = async (blob: Blob) => {
+        if (!user || !activeNoteId) return;
+        try {
+            const fileName = `memos/${user.uid}/${activeNoteId}_${Date.now()}.webm`;
+            const { data, error } = await supabase.storage
+                .from('voice-memos')
+                .upload(fileName, blob);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('voice-memos')
+                .getPublicUrl(fileName);
+
+            setNotesList(prev => prev.map(n => n.id === activeNoteId ? { ...n, audioUrl: publicUrl } : n));
+        } catch (err) {
+            console.error("Upload failed", err);
+        }
+    };
+
+    const togglePlayback = (url: string) => {
+        if (!audioNodeRef.current || audioNodeRef.current.src !== url) {
+            if (audioNodeRef.current) audioNodeRef.current.pause();
+            audioNodeRef.current = new Audio(url);
+            audioNodeRef.current.onloadedmetadata = () => {
+                setAudioDuration(audioNodeRef.current?.duration || 0);
+            };
+            audioNodeRef.current.onended = () => {
+                setIsPlaying(false);
+                setAudioProgress(0);
+                if (playbackIntervalRef.current) clearInterval(playbackIntervalRef.current);
+            };
+        }
+
+        if (isPlaying) {
+            audioNodeRef.current.pause();
+            setIsPlaying(false);
+            if (playbackIntervalRef.current) clearInterval(playbackIntervalRef.current);
+        } else {
+            audioNodeRef.current.play();
+            setIsPlaying(true);
+            playbackIntervalRef.current = setInterval(() => {
+                if (audioNodeRef.current) {
+                    setAudioProgress(audioNodeRef.current.currentTime);
+                }
+            }, 100);
+        }
+    };
+
+    const seekAudio = (time: number) => {
+        if (audioNodeRef.current) {
+            audioNodeRef.current.currentTime = time;
+            setAudioProgress(time);
+        }
     };
 
     // --- TODO/PROJECT HANDLERS ---
@@ -834,8 +1059,9 @@ export default function UtilitySidebar() {
         { id: 'calculator', icon: 'flex fi-rr-calculator', label: 'Calc' },
         { id: 'age', icon: 'flex fi-rr-user-time', label: 'Age' },
         { id: 'bmi', icon: 'flex fi-rr-ruler-combined', label: 'BMI' },
-        { id: 'alarm', icon: 'flex fi-rr-bell', label: 'Alarm' }
-    ];
+        { id: 'alarm', icon: 'flex fi-rr-bell', label: 'Alarm' },
+        { id: 'ai', icon: 'flex fi-rr-brain', label: 'AI Bot' }
+    ].filter(app => app.id !== 'ai');
 
     // --- DRAGGING LOGIC ---
     useEffect(() => {
@@ -943,7 +1169,7 @@ export default function UtilitySidebar() {
                     <div className="flex-1 flex flex-col h-full bg-white relative">
                         {/* Elegant Header */}
                         <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
-                            <h2 className="text-sm font-bold text-[#263238] tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            <h2 className="text-sm font-bold text-slate-700 tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                 {activeApp === 'age' ? 'Age Calc' : activeApp === 'todo' ? 'Tasks' : activeApp}
                             </h2>
                             <span className="text-[10px] font-bold text-[#4b33e8] bg-indigo-50 px-2 py-0.5 rounded-full uppercase">Utility</span>
@@ -958,10 +1184,23 @@ export default function UtilitySidebar() {
                                     {!activeNoteId ? (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-[10px] font-blod text-gray-400 uppercase tracking-widest">My Drafts</h3>
+                                                <div className="flex bg-slate-100 p-0.5 rounded-lg">
+                                                    <button 
+                                                        onClick={() => setNoteCreationType('text')}
+                                                        className={`px-3 py-1 rounded-md text-[9px] font-bold uppercase transition-all ${noteCreationType === 'text' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}
+                                                    >
+                                                        Text
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setNoteCreationType('audio')}
+                                                        className={`px-3 py-1 rounded-md text-[9px] font-bold uppercase transition-all ${noteCreationType === 'audio' ? 'bg-white text-rose-500 shadow-sm' : 'text-slate-400'}`}
+                                                    >
+                                                        Audio
+                                                    </button>
+                                                </div>
                                                 <button 
                                                     onClick={addNote}
-                                                    className="w-7 h-7 rounded-lg bg-indigo-50 text-[#4b33e8] flex items-center justify-center hover:bg-[#4b33e8] hover:text-white transition-all  "
+                                                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:shadow-md active:scale-95 ${noteCreationType === 'audio' ? 'bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white'}`}
                                                 >
                                                     <i className="fi flex fi-rr-plus text-[10px]"></i>
                                                 </button>
@@ -976,11 +1215,16 @@ export default function UtilitySidebar() {
                                                     <div 
                                                         key={note.id}
                                                         onClick={() => setActiveNoteId(note.id)}
-                                                        className="group flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/30 cursor-pointer transition-all   bg-white"
+                                                        className="group flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-indigo-100 hover:bg-indigo-50/30 cursor-pointer transition-all bg-white"
                                                     >
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-xs font-bold text-[#263238] truncate">{note.title}</p>
-                                                            <p className="text-[9px] text-gray-400 truncate mt-0.5">{note.content || 'No content yet...'}</p>
+                                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${note.type === 'audio' ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-400'}`}>
+                                                                <i className={`fi flex ${note.type === 'audio' ? 'fi-rr-microphone' : 'fi-rr-document'} text-xs`}></i>
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-xs font-bold text-[#263238] truncate">{note.title}</p>
+                                                                <p className="text-[9px] text-gray-400 truncate mt-0.5">{note.content || (note.type === 'audio' ? 'Voice recording...' : 'No content yet...')}</p>
+                                                            </div>
                                                         </div>
                                                         <button 
                                                             onClick={(e) => deleteNote(note.id, e)}
@@ -999,7 +1243,7 @@ export default function UtilitySidebar() {
                                                     onClick={() => setActiveNoteId(null)}
                                                     className="w-7 h-7 rounded-lg border border-gray-100 flex items-center justify-center text-gray-400 hover:text-[#4b33e8] hover:bg-indigo-50 transition-all"
                                                 >
-                                                    <i className="fi flex  fi-rr-angle-small-left"></i>
+                                                    <i className="fi flex fi-rr-angle-small-left"></i>
                                                 </button>
                                                 <input 
                                                     type="text" 
@@ -1009,14 +1253,73 @@ export default function UtilitySidebar() {
                                                     placeholder="Untitled Note"
                                                 />
                                             </div>
-                                            <textarea 
-                                                autoFocus
-                                                value={notesList.find(n => n.id === activeNoteId)?.content || ''}
-                                                onChange={(e) => updateNoteContent(e.target.value)}
-                                                className="flex-1 w-full border-none focus:ring-0 outline-none text-sm text-[#263238] p-0 rounded-none leading-relaxed resize-none bg-transparent"
-                                                style={{ fontFamily: "'Roboto', sans-serif" }}
-                                                placeholder="Write your note here..."
-                                            ></textarea>
+                                            {notesList.find(n => n.id === activeNoteId)?.type === 'audio' ? (
+                                                <div className="flex-1 flex flex-col items-center justify-center bg-rose-50/30 rounded-2xl border border-rose-100/50 p-6 space-y-5">
+                                                    {notesList.find(n => n.id === activeNoteId)?.audioUrl ? (
+                                                        <div className="w-full space-y-4">
+                                                            <div className="flex items-center justify-center">
+                                                                <button 
+                                                                    onClick={() => togglePlayback(notesList.find(n => n.id === activeNoteId)!.audioUrl!)}
+                                                                    className="w-14 h-14 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg hover:bg-rose-600 transition-all active:scale-95"
+                                                                >
+                                                                    <i className={`fi flex ${isPlaying ? 'fi-rr-pause' : 'fi-rr-play'} text-xl ${!isPlaying ? 'ml-1' : ''}`}></i>
+                                                                </button>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <input 
+                                                                    type="range"
+                                                                    min="0"
+                                                                    max={audioDuration || 0}
+                                                                    step="0.1"
+                                                                    value={audioProgress || 0}
+                                                                    onChange={(e) => seekAudio(Number(e.target.value))}
+                                                                    className="w-full h-1 bg-rose-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                                                />
+                                                                <div className="flex justify-between text-[8px] font-bold text-rose-400 uppercase tracking-widest">
+                                                                    <span>{formatTime(audioProgress)}</span>
+                                                                    <span>{formatTime(audioDuration)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col items-center space-y-4">
+                                                            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-rose-500 animate-pulse text-white' : 'bg-rose-100 text-rose-500'}`}>
+                                                                <i className="fi flex fi-rr-microphone text-2xl"></i>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className="text-xs font-bold text-rose-600">
+                                                                    {isRecording ? 'Recording...' : 'Ready to Record'}
+                                                                </p>
+                                                                <p className="text-[10px] text-rose-400 uppercase tracking-widest mt-1">
+                                                                    {isRecording ? formatTime(recordDuration) : 'Tap to start voice memo'}
+                                                                </p>
+                                                            </div>
+                                                            <button 
+                                                                onClick={isRecording ? stopRecording : startRecording}
+                                                                className={`px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${isRecording ? 'bg-slate-900 text-white' : 'bg-rose-500 text-white shadow-lg  hover:bg-rose-600'}`}
+                                                            >
+                                                                {isRecording ? 'Stop & Save' : 'Start Recording'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <textarea 
+                                                        value={notesList.find(n => n.id === activeNoteId)?.content || ''}
+                                                        onChange={(e) => updateNoteContent(e.target.value)}
+                                                        className="w-full bg-white/50 border border-rose-100 rounded-xl p-3 text-xs font-medium text-rose-700 focus:ring-rose-200 outline-none resize-none h-32"
+                                                        placeholder="Add transcript or notes here..."
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <textarea 
+                                                    autoFocus
+                                                    value={notesList.find(n => n.id === activeNoteId)?.content || ''}
+                                                    onChange={(e) => updateNoteContent(e.target.value)}
+                                                    className="flex-1 w-full border-none focus:ring-0 outline-none text-sm text-[#263238] p-0 rounded-none leading-relaxed resize-none bg-transparent"
+                                                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                                                    placeholder="Write your note here..."
+                                                ></textarea>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -1754,6 +2057,166 @@ export default function UtilitySidebar() {
                                 </div>
                              )}
 
+                              {/* AI SALES BOT */}
+                              {activeApp === 'ai' && (
+                                <div className="flex flex-col h-full relative slide-in-right">
+                                    {/* AI Header - Simplified & Integrated */}
+                                    <div className="flex items-center justify-between mb-5 px-1">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                                                <i className="fi flex fi-rr-brain text-[14px] animate-pulse"></i>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">Sales Co-Pilot</h3>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Live Co-Pilot</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <button 
+                                                onClick={clearChat}
+                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-rose-400 hover:bg-rose-50/50 transition-all active:scale-95"
+                                                title="Clear History"
+                                            >
+                                                <i className="fi flex fi-rr-trash text-[13px]"></i>
+                                            </button>
+                                            <button 
+                                                onClick={() => setShowAiSettings(true)}
+                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all active:scale-95"
+                                                title="AI Settings"
+                                            >
+                                                <i className="fi flex fi-rr-settings text-[14px]"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Chat Display - Minimalistic Bubbles */}
+                                    <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-0.5 space-y-4 pb-3 overflow-x-hidden">
+                                        {chatMessages.length === 0 && (
+                                            <div className="py-10 text-center space-y-4">
+                                                <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300 mx-auto border border-slate-100/50">
+                                                    <i className="fi flex fi-rr-comment-active text-2xl"></i>
+                                                </div>
+                                                <div className="px-6">
+                                                    <p className="text-[12px] font-bold text-slate-600 mb-1.5">Ready to assist your sales journey</p>
+                                                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter leading-relaxed">Ask about call history, scripts, or plan details.</p>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2 justify-center px-4">
+                                                    {["Closing Tips", "Follow-up Script", "Talktime Analysis", "Pitch Ideas"].map(tip => (
+                                                        <button 
+                                                            key={tip}
+                                                            onClick={() => { setUserInput(tip); handleSendMessage(); }}
+                                                            className="text-[10px] font-bold text-slate-500 bg-slate-50 hover:bg-white hover:border-slate-200 px-3 py-2 rounded-lg border border-transparent transition-all active:scale-95"
+                                                        >
+                                                            {tip}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {chatMessages.map((msg, idx) => (
+                                            <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in`}>
+                                                <div className={`max-w-[88%] rounded-xl px-4 py-2.5 text-[12px] leading-relaxed transition-all break-words whitespace-pre-wrap ${
+                                                    msg.role === 'user' 
+                                                    ? 'bg-indigo-500 text-white rounded-tr-none shadow-sm font-medium' 
+                                                    : 'bg-slate-50 border border-slate-100 text-slate-600 rounded-tl-none font-medium'
+                                                }`}>
+                                                    {msg.content}
+                                                </div>
+                                            </div>
+                                        ))}
+                                        
+                                        {isAiLoading && (
+                                            <div className="flex justify-start">
+                                                <div className="bg-slate-50 border border-slate-100 rounded-xl rounded-tl-none px-3.5 py-2.5 flex gap-1.5 items-center">
+                                                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce delay-75"></div>
+                                                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce delay-150"></div>
+                                                    <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce delay-300"></div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div ref={chatEndRef} />
+                                    </div>
+
+                                    {/* Input Footer - Elegant & Slim */}
+                                    <div className="pt-4 border-t border-slate-100 mt-auto bg-white/60 backdrop-blur-sm px-0.5">
+                                        <div className="relative flex items-end gap-2 bg-slate-50/80 rounded-xl border border-slate-100 transition-all p-1.5">
+                                            <textarea 
+                                                value={userInput}
+                                                onChange={(e) => setUserInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        handleSendMessage();
+                                                    }
+                                                }}
+                                                placeholder="Type a message..."
+                                                className="flex-1 bg-transparent border-none rounded-lg px-2.5 py-2 text-[12px] font-medium text-slate-600 focus:ring-0 focus:outline-none outline-none resize-none min-h-[42px] max-h-[120px] placeholder:text-slate-300"
+                                            />
+                                            <button 
+                                                onClick={handleSendMessage}
+                                                disabled={isAiLoading || !userInput.trim()}
+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0 mb-1 mr-1 ${
+                                                    userInput.trim() ? 'bg-indigo-500 text-white shadow-md shadow-indigo-100' : 'bg-slate-100 text-slate-300'
+                                                }`}
+                                            >
+                                                <i className="fi flex fi-rr-paper-plane text-[12px]"></i>
+                                            </button>
+                                        </div>
+                                        <p className="text-[9px] text-center text-slate-300 font-bold uppercase tracking-[0.2em] py-3">Intelligent Sales Shield</p>
+                                    </div>
+
+                                    {/* SETTINGS OVERLAY - Sophisticated Side-Panel */}
+                                    {showAiSettings && (
+                                        <div className="absolute inset-0 bg-white/98 z-[100] flex flex-col p-5 animate-in fade-in duration-300">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                                                        <i className="fi flex fi-rr-shield-check text-indigo-400 text-sm"></i>
+                                                    </div>
+                                                    <h3 className="text-[12px] font-bold text-slate-700 uppercase tracking-widest">Core Configuration</h3>
+                                                </div>
+                                                <button onClick={() => setShowAiSettings(false)} className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition-all">
+                                                    <i className="fi flex fi-rr-cross-small text-slate-400 text-lg"></i>
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Behavior Instructions</label>
+                                                    <textarea 
+                                                        value={aiConfig.instructions}
+                                                        onChange={(e) => setAiConfig({...aiConfig, instructions: e.target.value})}
+                                                        placeholder="Ex: Act as a high-ticket sales coach..."
+                                                        className="w-full bg-slate-50/50 border border-slate-100 rounded-lg p-3.5 text-[12px] font-medium text-slate-600 min-h-[120px] focus:bg-white focus:border-indigo-100 transition-all placeholder:text-slate-200"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Contextual Knowledge</label>
+                                                    <textarea 
+                                                        value={aiConfig.knowledgeBase}
+                                                        onChange={(e) => setAiConfig({...aiConfig, knowledgeBase: e.target.value})}
+                                                        placeholder="Paste your PDF text or plan manuals here..."
+                                                        className="w-full bg-slate-50/50 border border-slate-100 rounded-lg p-3.5 text-[12px] font-medium text-slate-600 min-h-[120px] focus:bg-white focus:border-indigo-100 transition-all placeholder:text-slate-200"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <button 
+                                                onClick={() => setShowAiSettings(false)}
+                                                className="w-full bg-slate-800 text-white py-3 rounded-xl text-[12px] font-bold uppercase tracking-widest mt-6 hover:bg-slate-900 transition-all active:scale-95"
+                                            >
+                                                Apply Intelligence
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                              )}
+
                         </div>
 
                         {/* ALARM TOAST / OVERLAY */}
@@ -1813,6 +2276,10 @@ export default function UtilitySidebar() {
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #cbd5e1;
                 }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes slideRight { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                .animate-in { animation: fadeIn 0.3s ease-out; }
+                .slide-in-right { animation: slideRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
             `}</style>
         </>
     );

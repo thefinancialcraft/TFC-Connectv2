@@ -87,6 +87,7 @@ export interface UserProfile {
   designation?: string | null;
   department?: string | null;
   organization_id?: string | null;
+  user_level?: number | string | null;
 }
 
 export interface AuthResult {
