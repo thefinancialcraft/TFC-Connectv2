@@ -28,12 +28,20 @@ export default function SecondaryStats({
       bg: "#fdf2f8",
     },
     {
+      label: "Total Records",
+      value: secondaryStats.newProspects,
+      icon: "fi-rr-user-add",
+      color: "#8b5cf6",
+      bg: "#f5f3ff",
+    },
+    {
       label: "Fresh Prospects",
       value: secondaryStats.freshProspects,
       icon: "fi-rr-address-card",
       color: "#10b981",
       bg: "#ecfdf5",
     },
+    
     {
       label: "Total Followups",
       value: secondaryStats.followupCalls,
@@ -41,13 +49,7 @@ export default function SecondaryStats({
       color: "#f59e0b",
       bg: "#fffbeb",
     },
-    {
-      label: "New Today",
-      value: secondaryStats.newProspects,
-      icon: "fi-rr-user-add",
-      color: "#8b5cf6",
-      bg: "#f5f3ff",
-    },
+    
     {
       label: "Overdue",
       value: secondaryStats.overdueFollowups,

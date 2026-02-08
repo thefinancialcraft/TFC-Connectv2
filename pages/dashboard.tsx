@@ -184,7 +184,7 @@ export default function Dashboard() {
   }, [selectedOrgId, isUserLocked, dashboardLevel, mounted, user?.uid]);
 
   // Date filter state
-  const [dateFilter, setDateFilter] = useState("today");
+  const [dateFilter, setDateFilter] = useState("all_time");
 
   // Fetch all dashboard data when filters change
   useEffect(() => {

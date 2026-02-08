@@ -7,6 +7,7 @@ export interface DashboardStats {
   totalConverted: number;
   conversionRate: number;
   totalDials: number;
+  totalTalktime: number;
   activeCampaigns: number;
   teamSize: number;
   efficiencyScore: number;
@@ -54,6 +55,7 @@ export function useDashboardStats(): UseDashboardStatsReturn {
     totalConverted: 0,
     conversionRate: 0,
     totalDials: 0,
+    totalTalktime: 0,
     activeCampaigns: 0,
     teamSize: 0,
     efficiencyScore: 75,

@@ -7,6 +7,7 @@ import { useUser } from "../context/UserContext";
 export { useUser };
 import { handleLogout } from "../lib/authService";
 import { getStoredUserData } from "../lib/localStorageUtils";
+import UtilitySidebar from "./UtilitySidebar";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -187,6 +188,9 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           designation={stableUser?.designation}
         />
       )}
+
+      {/* Global Utility Sidebar */}
+      <UtilitySidebar />
     </div>
   );
 }

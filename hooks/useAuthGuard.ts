@@ -210,10 +210,64 @@ export function useAuthGuard(): UseAuthGuardReturn {
         let latestUserData = result.user;
 
         if (session) {
-           try {
+          // --- IMMEDIATE DB SYNC: Google Calendar Connection ---
+          // If we detected a fresh provider token (from OAuth callback), sync it with the DB immediately
+          // before we even fetch the profile, so that the status is updated at the source.
+          if (session.provider_token) {
+            const restoreUserId = typeof window !== 'undefined' ? sessionStorage.getItem('oauth_restore_user_id') : null;
+            const targetUserId = restoreUserId || session.user.id;
+
+            console.log(`📡 [AuthGuard] Provider token detected. Syncing Google connection for: ${targetUserId}`);
+            localStorage.setItem("google_provider_token", session.provider_token);
+            
+            try {
+               await supabase.from('user_profiles').update({
+                  google_calendar_connected: true,
+                  google_calendar_skipped: false
+               }).eq('user_id', targetUserId);
+               console.log("✅ [AuthGuard] Google connection synced to DB.");
+
+               // --- RESTORATION LOGIC ---
+               // If the OAuth flow switched our active session to a different account (Google Email B),
+               // but we were trying to connect it to Account A, manually switch back now.
+               if (restoreUserId && restoreUserId !== session.user.id) {
+                 const oldAt = sessionStorage.getItem('oauth_restore_access_token');
+                 const oldRt = sessionStorage.getItem('oauth_restore_refresh_token');
+
+                 if (oldAt && oldRt) {
+                   console.log("🔄 [AuthGuard] Account switch detected during integration. Restoring original session...");
+                   await supabase.auth.setSession({
+                     access_token: oldAt,
+                     refresh_token: oldRt
+                   });
+                   
+                   // Clear restoration state
+                   sessionStorage.removeItem('oauth_restore_user_id');
+                   sessionStorage.removeItem('oauth_restore_access_token');
+                   sessionStorage.removeItem('oauth_restore_refresh_token');
+                   
+                   console.log("✅ [AuthGuard] Original session restored. Reloading...");
+                   window.location.reload();
+                   return;
+                 }
+               }
+
+               // Cleanup if handled successfully
+               if (typeof window !== 'undefined') {
+                 sessionStorage.removeItem('oauth_restore_user_id');
+                 sessionStorage.removeItem('oauth_restore_access_token');
+                 sessionStorage.removeItem('oauth_restore_refresh_token');
+               }
+            } catch (err) {
+               console.error("❌ [AuthGuard] Failed to sync Google status:", err);
+            }
+          }
+
+          try {
             const profileResponse = await fetch("/api/auth/user-profile", {
               headers: { Authorization: `Bearer ${session.access_token}` },
             });
+            
             const profileData = await profileResponse.json();
 
             if (profileData.success && profileData.user) {
@@ -249,7 +303,11 @@ export function useAuthGuard(): UseAuthGuardReturn {
           hold: "/hold"
         };
         const redirectPath = statusPaths[latestUserData.approvalStatus as string] || statusPaths[latestUserData.accountStatus as string];
-        if (redirectPath && router.pathname !== redirectPath) {
+
+        // --- BYPASS: Don't redirect during Google connection flow on settings page ---
+        const isConnectingGoogle = router.pathname === '/settings' && !!session?.provider_token;
+
+        if (redirectPath && router.pathname !== redirectPath && !isConnectingGoogle) {
           router.push(redirectPath);
         }
       }

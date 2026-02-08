@@ -28,6 +28,7 @@ interface DashboardOverviewResponse {
       conversionRate: number;
       activeCampaigns: number;
       totalDials: number;
+      totalTalktime: number;
       efficiencyScore: number;
     };
     secondaryStats: {
@@ -316,8 +317,19 @@ export default async function handler(
     console.log(`Overview API: Fetching for org ${targetOrgId || 'All'}, range: ${range.start} to ${range.end}`);
 
     // Fetch ALL data using pagination (no 1000 row limit)
-    const [customers, callLogs, todayCallsCount, campaignsCount, teamCount] = await Promise.all([
-      // All customers in date range
+    const [
+      customers,           // Filtered by Date (Primary Tiles)
+      callLogs,            // Filtered by Date (Primary Tiles)
+      todayCallsCount,     // Active for Today
+      campaignsCount,      // Active Campaigns
+      teamCount,           // Approved Members
+      freshGlobalCount,    // All-time 0 Attempts
+      allTimeRecords,      // All-time Total Records
+      allTimeFollowups,    // All-time Call Backs
+      allTimeOverdue,      // All-time Overdue
+      allTimeConnections   // All-time Dynamic Connected Calls
+    ] = await Promise.all([
+      // 1. Primary Customers (Filtered by Date Range)
       fetchAllRows(dbClient, "customers", "*", {
         orgId: targetOrgId,
         startDate: range.start,
@@ -327,7 +339,7 @@ export default async function handler(
           : restrictedUserIds
       }),
 
-      // All call logs from call_history in date range
+      // 2. Primary Call Logs (Filtered by Date Range)
       fetchAllRows(dbClient, "call_history", "*", {
         orgId: targetOrgId,
         startDate: range.start,
@@ -336,48 +348,96 @@ export default async function handler(
         employeeId: filterEmployeeId || restrictedEmployeeIds
       }),
 
-      // Today's calls count from call_history
+      // 3. Today's calls count
       (async () => {
         let query = dbClient.from("call_history").select("*", { count: "exact", head: true });
-        
-        if (filterEmployeeId) {
-          query = query.eq('employee_id', filterEmployeeId);
-        } else if (restrictedEmployeeIds) {
-          query = query.in('employee_id', restrictedEmployeeIds);
-        }
-
-        const { count } = await query
-          .gte("timestamp", todayStart)
-          .lte("timestamp", todayEnd);
-          
+        if (filterEmployeeId) { query = query.eq('employee_id', filterEmployeeId); } 
+        else if (restrictedEmployeeIds) { query = query.in('employee_id', restrictedEmployeeIds); }
+        const { count } = await query.gte("timestamp", todayStart).lte("timestamp", todayEnd);
         return count || 0;
       })(),
 
-      // Active campaigns count
+      // 4. Active campaigns count
       (async () => {
-        const { count } = await dbClient
-          .from("campaigns")
-          .select("*", { count: "exact", head: true })
-          .eq("status", "active");
+        const { count } = await dbClient.from("campaigns").select("*", { count: "exact", head: true }).eq("status", "active");
         return count || 0;
       })(),
 
-      // Team members count
+      // 5. Team members count
       (async () => {
-        let query = dbClient
-          .from("user_profiles")
-          .select("*", { count: "exact", head: true })
-          .eq("approval_status", "active"); 
-        
+        let query = dbClient.from("user_profiles").select("*", { count: "exact", head: true }).eq("approval_status", "approved"); 
         if (targetOrgId) query = query.eq("organization_id", targetOrgId);
         if (restrictedUserIds) query = query.in("user_id", restrictedUserIds);
-        
         const { count } = await query;
         return count || 0;
       })(),
-    ]) as [any[], any[], number, number, number];
 
-    console.log(`Overview API Stats: Customers: ${customers.length}, CallHistory: ${callLogs.length}, TodayCalls: ${todayCallsCount as number}`);
+      // 6. TOTAL Fresh Prospects (All-time)
+      (async () => {
+        let query = dbClient.from("customers").select("*", { count: "exact", head: true }).eq('attempt_count', 0);
+        if (targetOrgId) query = query.eq("organization_id", targetOrgId);
+        if (filterUserId && filterUserId !== 'all') { query = query.eq('assigned_to', filterUserId); } 
+        else if (restrictedUserIds) { query = query.in('assigned_to', restrictedUserIds); }
+        const { count } = await query;
+        return count || 0;
+      })(),
+
+      // 7. TOTAL Records (All-time Customers)
+      (async () => {
+        let query = dbClient.from("customers").select("*", { count: "exact", head: true });
+        if (targetOrgId) query = query.eq("organization_id", targetOrgId);
+        if (filterUserId && filterUserId !== 'all') { query = query.eq('assigned_to', filterUserId); } 
+        else if (restrictedUserIds) { query = query.in('assigned_to', restrictedUserIds); }
+        const { count } = await query;
+        return count || 0;
+      })(),
+
+      // 8. TOTAL Followups (All-time callbacks - Consistent with UI)
+      (async () => {
+        const dispositions = ['Callback', 'Call Back', 'Follow Up', 'FollowUp'];
+        let query = dbClient.from("customers").select("*", { count: "exact", head: true })
+          .in('disposition', dispositions);
+        
+        if (targetOrgId) query = query.eq("organization_id", targetOrgId);
+        if (filterUserId && filterUserId !== 'all') { query = query.eq('assigned_to', filterUserId); } 
+        else if (restrictedUserIds) { query = query.in('assigned_to', restrictedUserIds); }
+        const { count } = await query;
+        return count || 0;
+      })(),
+
+      // 9. TOTAL Overdue (Perfect parity with Follow-up page logic)
+      (async () => {
+        const now = new Date();
+        const dispositions = ['Callback', 'Call Back', 'Follow Up', 'FollowUp'];
+        
+        // Fetch only necessary columns to calculate count in-memory (bypass SQL string issues)
+        let query = dbClient.from("customers").select("next_called_at")
+          .in('disposition', dispositions);
+        
+        if (targetOrgId) query = query.eq("organization_id", targetOrgId);
+        if (filterUserId && filterUserId !== 'all') { query = query.eq('assigned_to', filterUserId); } 
+        else if (restrictedUserIds) { query = query.in('assigned_to', restrictedUserIds); }
+        
+        const { data } = await query;
+        if (!data) return 0;
+
+        return data.filter((lead: any) => {
+          if (!lead.next_called_at || lead.next_called_at.trim() === "") return true;
+          return new Date(lead.next_called_at) < now;
+        }).length;
+      })(),
+
+      // 10. TOTAL Connections (All-time Duration > 0)
+      (async () => {
+        let query = dbClient.from("call_history").select("*", { count: "exact", head: true }).gt('duration', 0);
+        if (filterEmployeeId) { query = query.eq('employee_id', filterEmployeeId); } 
+        else if (restrictedEmployeeIds) { query = query.in('employee_id', restrictedEmployeeIds); }
+        const { count } = await query;
+        return count || 0;
+      })(),
+    ]) as any[];
+
+    console.log(`Overview API Stats: Filtered Customers: ${customers.length}, Filtered CallHistory: ${callLogs.length}, TotalRecords: ${allTimeRecords}`);
 
     // Calculate primary stats
     const totalCustomers = customers.length;
@@ -391,10 +451,8 @@ export default async function handler(
     const conversionRate = totalCustomers ? (totalConverted / totalCustomers) * 100 : 0;
 
     // Calculate secondary stats
-    // Fresh Prospects - customers with no disposition or "fresh"
-    const freshProspects = customers.filter(
-      (c: any) => !c.disposition || c.disposition.toLowerCase().includes("fresh")
-    ).length;
+    // Fresh Prospects - use the Global count we just fetched correctly
+    const freshProspects = freshGlobalCount;
 
     // Filter customers with "callback" disposition and valid next_called_at
     const callbackCustomers = customers.filter(
@@ -413,28 +471,20 @@ export default async function handler(
       (c: any) => new Date(c.next_called_at) < now
     ).length;
 
-    // New Today - customers created today
-    const newProspects = customers.filter(
-      (c: any) => c.created_at >= todayStart && c.created_at <= todayEnd
+    // Total Connections (All-time connected calls)
+    const totalConnections = callLogs.filter(
+      (l: any) => (Number(l.duration) || 0) > 0
     ).length;
 
-    // Calculate performance metrics using call_history data
-    // call_history structure: { timestamp, duration, call_type, ... }
-    const connectedCalls = callLogs.filter(
-      (l: any) => {
-          const type = (l.call_type || '').toLowerCase();
-          const duration = Number(l.duration) || 0;
-          return (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
-      }
-    );
     const connectedRate = callLogs.length
-      ? (connectedCalls.length / callLogs.length) * 100
+      ? (totalConnections / callLogs.length) * 100
       : 0;
 
     const totalTalkSeconds = callLogs.reduce(
       (acc: number, l: any) => acc + (Number(l.duration) || 0),
       0
     );
+
     const avgSecs = callLogs.length ? totalTalkSeconds / callLogs.length : 0;
     const mins = Math.floor(avgSecs / 60);
     const secs = Math.floor(avgSecs % 60);
@@ -457,15 +507,16 @@ export default async function handler(
           conversionRate: Math.round(conversionRate * 10) / 10,
           activeCampaigns: campaignsCount,
           totalDials: callLogs.length,
+          totalTalktime: totalTalkSeconds,
           efficiencyScore,
         },
         secondaryStats: {
-          todayCalls: todayCallsCount,
+          todayCalls: allTimeConnections,
           assignedMembers: teamCount,
           freshProspects,
-          followupCalls,
-          newProspects,
-          overdueFollowups,
+          followupCalls: allTimeFollowups,
+          newProspects: allTimeRecords,
+          overdueFollowups: allTimeOverdue,
         },
         performanceMetrics: {
           avgDuration: `${mins}m ${secs}s`,

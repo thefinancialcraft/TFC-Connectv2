@@ -82,6 +82,14 @@ export default function GlobalCallHandler() {
             });
         };
 
+        const updateCallState = (isActive: boolean) => {
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('app_is_calling_active', isActive ? 'true' : 'false');
+                window.dispatchEvent(new CustomEvent('app_call_state_change', { detail: { active: isActive } }));
+                console.log(`[Global-Call] 📱 Call state updated: ${isActive ? 'ACTIVE' : 'IDLE'}`);
+            }
+        };
+
         const handleBridgeMessage = async (e: any) => {
             const data = e.detail;
             const eventType = data?.type;
@@ -105,6 +113,13 @@ export default function GlobalCallHandler() {
                              eventType === 'call_disconected' ||
                              eventType === 'call_disconnect';
 
+            // Update global calling flag for Reminder Overlay and others
+            if (isDialEvent) {
+                updateCallState(true);
+            } else if (isEndEvent) {
+                updateCallState(false);
+            }
+
             // STRICT CRM FLOW TOGGLE
             if (eventType === 'call_to') {
                 console.log(`[Global-Call] 🛡️ CRM Call Initiated (call_to). Locking global handler.`);
@@ -113,7 +128,7 @@ export default function GlobalCallHandler() {
             }
 
             if (eventType === 'call_disconnect' || eventType === 'call_disconnected') {
-                console.log(`[Global-Call] � CRM Call Ended. Re-activating global handler.`);
+                console.log(`[Global-Call] 🛡️ CRM Call Ended. Re-activating global handler.`);
                 if (typeof window !== 'undefined') (window as any).isCrmCallActive = false;
                 return; // Strictly Skip this end event for manual logic
             }
@@ -199,7 +214,14 @@ export default function GlobalCallHandler() {
         };
 
         window.addEventListener('tfc-bridge-message' as any, handleBridgeMessage);
-        return () => window.removeEventListener('tfc-bridge-message' as any, handleBridgeMessage);
+
+        // CLEANUP: Reset activity flag on unmount just in case
+        return () => {
+            window.removeEventListener('tfc-bridge-message' as any, handleBridgeMessage);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('app_is_calling_active', 'false');
+            }
+        };
     }, [router, user]);
 
     return null;

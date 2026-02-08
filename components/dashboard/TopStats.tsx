@@ -33,11 +33,16 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
   const cards = [
     // ... same cards
     {
-      label: "Active Leads",
-      value: (stats.totalCustomers || 0).toLocaleString(),
+      label: "Total Talktime",
+      value: (() => {
+        const totalSecs = stats.totalTalktime || 0;
+        const h = Math.floor(totalSecs / 3600);
+        const m = Math.floor((totalSecs % 3600) / 60);
+        return h > 0 ? `${h}h ${m}m` : `${m}m ${totalSecs % 60}s`;
+      })(),
       sub: "+12%",
       color: "#4b33e8",
-      icon: "fi-rr-users",
+      icon: "fi-rr-headset",
       chartType: "bar" as const,
     },
     {
