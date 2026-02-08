@@ -885,7 +885,7 @@ export default function Settings() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Account Already Linked</h3>
               
               <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-                This Google account is already connected to another TFC user. 
+                This Google account is already connected to another user. 
                 <br/><br/>
                 Please use a different Google account or log in with the existing account associated with this email.
               </p>
