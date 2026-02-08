@@ -694,7 +694,7 @@ export default function Settings() {
             </div>
           )}
 
-          { activeTab === "integrations" && (
+          {activeTab === "integrations" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6 sm:p-8" style={{ borderColor: "#E0E0E0" }}>
                 <h3 className="text-lg font-bold mb-8 text-[#263238] flex items-center gap-2">
@@ -703,97 +703,91 @@ export default function Settings() {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Google Calendar Card */}
-                  <div className="p-6 rounded-[2rem] border border-slate-100 bg-slate-50/50 flex flex-col items-center text-center group transition-all hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -rotate-6 mb-6 group-hover:rotate-0 transition-transform">
-                      <i className="fi fi-brands-google text-3xl text-indigo-600"></i>
-                    </div>
-                    
-                    <h4 className="text-lg font-bold text-slate-800 mb-2">Google Calendar</h4>
-                    <p className="text-sm text-slate-500 mb-8 max-w-[200px]">
-                      Sync follow-up appointments directly to your calendar for real-time reminders.
-                    </p>
-
-                    {user?.googleCalendarConnected ? (
-                      <div className="flex flex-col items-center gap-3 w-full">
-                        <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-bold flex items-center gap-2 border border-emerald-100">
-                          <i className="fi fi-rr-check-circle"></i>
-                          Connected
+                  {/* Google Calendar Redesigned Card */}
+                  <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 group transition-all hover:shadow-xl hover:shadow-indigo-500/5">
+                    <div className="space-y-4">
+                      {/* Connection Header Card */}
+                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-100 shadow-sm transform group-hover:-rotate-6 transition-transform">
+                            <i className="fi fi-brands-google text-lg flex text-indigo-600"></i>
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">Google Calendar</p>
+                            <p className="text-[10px] text-gray-500 font-medium">
+                              {user?.googleCalendarConnected 
+                                ? `Connected as ${user.email || 'team@rynxly.in'}` 
+                                : 'Sync reminders & schedules'}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-medium">Synced with your Google Account</p>
                         
-                        <button
+                        {/* Dynamic Toggle Switch */}
+                        <div 
                           onClick={async () => {
-                            if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
-
-                            try {
-                              // 1. Update DB to disconnect
-                              await supabase.from('user_profiles').update({ 
-                                google_calendar_connected: false,
-                                google_calendar_skipped: false 
-                              }).eq('user_id', user.uid);
-
-                              // 2. Clear Local Storage Token
-                              localStorage.removeItem("google_provider_token");
-
-                              // 3. User Feedback
-                              showSuccess("Google Calendar disconnected.");
+                            if (user?.googleCalendarConnected) {
+                              if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
+                              try {
+                                await supabase.from('user_profiles').update({ 
+                                  google_calendar_connected: false,
+                                  google_calendar_skipped: false 
+                                }).eq('user_id', user.uid);
+                                localStorage.removeItem("google_provider_token");
+                                showSuccess("Google Calendar disconnected.");
+                                setTimeout(() => window.location.reload(), 1000);
+                              } catch (err) { showError("Failed to disconnect."); }
+                            } else {
+                              // Connect Logic
+                              const { data: { session: currentSession } } = await supabase.auth.getSession();
+                              if (currentSession) {
+                                sessionStorage.setItem('oauth_restore_user_id', currentSession.user.id);
+                                sessionStorage.setItem('oauth_restore_access_token', currentSession.access_token);
+                                sessionStorage.setItem('oauth_restore_refresh_token', currentSession.refresh_token);
+                              }
+                              const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
                               
-                              // 4. Force Reload to refresh auth state
-                              setTimeout(() => window.location.reload(), 1000);
-                            } catch (err) {
-                              showError("Failed to disconnect.");
+                              // Use linkIdentity to attach Google to CURRENT user instead of logging in as new user
+                              const { data, error } = await supabase.auth.linkIdentity({
+                                provider: 'google',
+                                options: {
+                                  queryParams: { 
+                                    access_type: 'offline', 
+                                    prompt: 'consent' 
+                                  },
+                                  scopes: 'https://www.googleapis.com/auth/calendar.events',
+                                  redirectTo: `${window.location.origin}/settings`,
+                                  skipBrowserRedirect: isMobile
+                                }
+                              });
+                              if (error) { showError(error.message, "Connection Error"); return; }
+                              if (isMobile && data?.url) {
+                                const { notifyFlutter } = await import("../lib/flutterBridge");
+                                notifyFlutter('open_external_url', data.url);
+                              }
                             }
                           }}
-                          className="mt-2 text-xs text-red-500 hover:text-red-700 font-semibold underline decoration-red-200 hover:decoration-red-500 transition-all"
+                          className={`w-10 h-6 rounded-full relative cursor-pointer transition-all duration-300 ${user?.googleCalendarConnected ? 'bg-green-500' : 'bg-gray-200'}`}
                         >
-                          Disconnect
-                        </button>
+                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${user?.googleCalendarConnected ? 'right-1' : 'left-1'}`}></div>
+                        </div>
                       </div>
-                    ) : (
-                      <button
-                        onClick={async () => {
-                          // --- SESSION PRESERVATION ---
-                          // Save current session so we can restore it if Google login switches accounts
-                          const { data: { session: currentSession } } = await supabase.auth.getSession();
-                          if (currentSession) {
-                            sessionStorage.setItem('oauth_restore_user_id', currentSession.user.id);
-                            sessionStorage.setItem('oauth_restore_access_token', currentSession.access_token);
-                            sessionStorage.setItem('oauth_restore_refresh_token', currentSession.refresh_token);
-                            console.log("💾 [Settings] Session state saved for restoration.");
-                          }
 
-                          const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
-                          
-                          const { data, error } = await supabase.auth.signInWithOAuth({
-                            provider: 'google',
-                            options: {
-                              queryParams: {
-                                access_type: 'offline',
-                                prompt: 'consent',
-                              },
-                              scopes: 'https://www.googleapis.com/auth/calendar.events',
-                              redirectTo: `${window.location.origin}/settings`,
-                              skipBrowserRedirect: isMobile
-                            }
-                          });
-
-                          if (error) {
-                            showError(error.message, "Connection Error");
-                            return;
-                          }
-
-                          if (isMobile && data?.url) {
-                            const { notifyFlutter } = await import("../lib/flutterBridge");
-                            notifyFlutter('open_external_url', data.url);
-                          }
-                        }}
-                        className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-100 active:scale-95"
-                      >
-                        <i className="fi fi-brands-google"></i>
-                        Connect Now
-                      </button>
-                    )}
+                      {/* Feature Lists */}
+                      <div className="space-y-3 pl-2">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] transition-all ${user?.googleCalendarConnected ? 'bg-[#4b33e8]' : 'bg-gray-200'}`}>
+                            <i className="fi fi-rr-check flex"></i>
+                          </div>
+                          <span className={`text-sm font-medium ${user?.googleCalendarConnected ? 'text-gray-600' : 'text-gray-400'}`}>Sync Call Schedules</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] transition-all ${user?.googleCalendarConnected ? 'bg-[#4b33e8]' : 'bg-gray-200'}`}>
+                            <i className="fi fi-rr-check flex"></i>
+                          </div>
+                          <span className={`text-sm font-medium ${user?.googleCalendarConnected ? 'text-gray-600' : 'text-gray-400'}`}>Sync Reminders</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
