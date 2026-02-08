@@ -757,16 +757,27 @@ export default function Settings() {
                               try {
                                 setLoading(true); // Optional: show loading state if you have one available here
                                 
-                                // 1. Unlink from Supabase Auth
-                                const { data: { user: currentUser } } = await supabase.auth.getUser();
-                                if (currentUser?.identities) {
-                                  const googleIdentity = currentUser.identities.find(id => id.provider === 'google');
-                                  if (googleIdentity) {
-                                    // Supabase v2: unlinkIdentity takes the identity object
-                                    const { error: unlinkError } = await supabase.auth.unlinkIdentity(googleIdentity);
-                                    if (unlinkError) throw unlinkError;
-                                    console.log("✅ [Settings] Google Identity unlinked.");
+                                // 1. Check if unlinking is possible/needed
+                                const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+                                if (userError) throw userError;
+
+                                let googleIdentity = currentUser?.identities?.find(id => id.provider === 'google');
+                                
+                                if (googleIdentity) {
+                                  // Check if this is the only identity (prevent lockout)
+                                  if ((currentUser?.identities?.length || 0) <= 1) {
+                                    throw new Error("You cannot disconnect Google as it is your only login method. Please set a password first in Security settings.");
                                   }
+
+                                  // Attempt Unlink
+                                  const { error: unlinkError } = await supabase.auth.unlinkIdentity(googleIdentity);
+                                  if (unlinkError) throw unlinkError;
+                                  console.log("✅ [Settings] Google Identity unlinked.");
+                                  
+                                  // CRITICAL: Refresh session to remove the identity from the JWT/Session state
+                                  await supabase.auth.refreshSession();
+                                } else {
+                                  console.warn("⚠️ [Settings] No Google identity found to unlink. Proceeding to DB update.");
                                 }
 
                                 // 2. Update DB Profile
@@ -778,11 +789,15 @@ export default function Settings() {
                                 // 3. Clear Local State
                                 localStorage.removeItem("google_provider_token");
                                 
-                                showSuccess("Google Calendar disconnected.");
+                                showSuccess("Google Calendar disconnected successfully.");
                                 setTimeout(() => window.location.reload(), 1000);
                               } catch (err: any) { 
                                 console.error("Disconnect failed:", err);
-                                showError(err.message || "Failed to disconnect.", "Disconnection Error"); 
+                                if (err.message?.includes("password") || err.message?.includes("only identity")) {
+                                    showError("You must set a password or link another account before disconnecting Google.", "Cannot Disconnect");
+                                } else {
+                                    showError(err.message || "Failed to disconnect.", "Disconnection Error"); 
+                                }
                               } finally {
                                 setLoading(false);
                               }
