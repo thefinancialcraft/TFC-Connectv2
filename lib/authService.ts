@@ -225,7 +225,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         activeSessionStart: userMetadata.active_session_start || null,
         googleCalendarConnected: (isSameUser && typeof storedLocal.google_calendar_connected !== 'undefined') 
            ? storedLocal.google_calendar_connected 
-           : (userMetadata.google_calendar_connected || false),
+           : (userMetadata.google_calendar_connected || cachedUser.identities?.some(id => id.provider === 'google') || false),
         googleCalendarSkipped: (isSameUser && typeof storedLocal.google_calendar_skipped !== 'undefined')
            ? storedLocal.google_calendar_skipped
            : (userMetadata.google_calendar_skipped || false),
@@ -336,7 +336,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
           activeCustomerId: userMetadata.active_customer_id || null,
           activeSessionState: userMetadata.active_session_state || null,
           activeSessionStart: userMetadata.active_session_start || null,
-          googleCalendarConnected: userMetadata.google_calendar_connected || false,
+          googleCalendarConnected: userMetadata.google_calendar_connected || authUser.identities?.some(id => id.provider === 'google') || false,
           googleCalendarSkipped: userMetadata.google_calendar_skipped || false,
         };
       }
