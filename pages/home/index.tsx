@@ -13,6 +13,7 @@ import Pricing from '@/components/landing/Pricing';
 import Testimonials from '@/components/landing/Testimonials';
 import FAQSection from '@/components/landing/FAQSection';
 import IntegrationSection from '@/components/landing/IntegrationSection';
+import UtilityShowcase from '@/components/landing/UtilityShowcase';
 import ContactForm from '@/components/landing/ContactForm';
 import Footer from '@/components/landing/Footer';
 
@@ -79,6 +80,7 @@ export default function LandingPage() {
         <ProblemSolution />
         <FeaturesSection />
         <WorkflowSteps />
+        <UtilityShowcase />
         <AppShowcase />
         <ComparisonSection />
         <IntegrationSection />
