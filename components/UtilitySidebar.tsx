@@ -398,6 +398,12 @@ export default function UtilitySidebar() {
     const startY = useRef(0);
     const startPosY = useRef(50);
 
+    // --- DRAWER RESIZE STATE ---
+    const [drawerWidth, setDrawerWidth] = useState(320);
+    const [isResizing, setIsResizing] = useState(false);
+    const resizeStartX = useRef(0);
+    const resizeStartWidth = useRef(320);
+
     // Load states from localStorage
     useEffect(() => {
         // ... Notes loading logic ...
@@ -1104,6 +1110,55 @@ export default function UtilitySidebar() {
         };
     }, []);
 
+    // --- RESIZE LOGIC ---
+    useEffect(() => {
+        const handleResizeMove = (e: MouseEvent) => {
+            if (!isResizing) return;
+            const deltaX = resizeStartX.current - e.clientX;
+            let newWidth = resizeStartWidth.current + deltaX;
+            // Min 250px, Max 80% of window width
+            newWidth = Math.max(250, Math.min(window.innerWidth * 0.8, newWidth));
+            setDrawerWidth(newWidth);
+        };
+
+        const handleResizeUp = () => {
+            setIsResizing(false);
+            document.body.style.cursor = '';
+        };
+
+        if (isResizing) {
+            window.addEventListener('mousemove', handleResizeMove);
+            window.addEventListener('mouseup', handleResizeUp);
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleResizeMove);
+            window.removeEventListener('mouseup', handleResizeUp);
+        };
+    }, [isResizing]);
+
+    const onResizeStart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+        resizeStartX.current = e.clientX;
+        resizeStartWidth.current = drawerWidth;
+    };
+
+    // Lock body scroll and selection during drag
+    useEffect(() => {
+        if (isDragging) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.userSelect = 'none';
+            document.body.style.touchAction = 'none';
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.userSelect = '';
+            document.body.style.touchAction = '';
+        }
+    }, [isDragging]);
+
     const onDragStart = (e: React.MouseEvent | React.TouchEvent) => {
         // Only left click or touch
         if ('button' in e && e.button !== 0) return;
@@ -1127,10 +1182,10 @@ export default function UtilitySidebar() {
                     }
                     setIsOpen(true);
                 }}
-                className={`fixed right-0 z-[100] bg-white border border-gray-200 text-[#4b33e8] w-6 h-12 rounded-l-xl   transition-all duration-300 flex flex-col items-center justify-center hover:bg-indigo-50 active:scale-95 ${isOpen ? 'translate-x-full' : ''}`}
+                className={`fixed right-0 z-[100] bg-[#4b33e8] border border-indigo-700 text-white w-6 h-12 rounded-l-xl transition-all duration-300 flex flex-col items-center justify-center hover:opacity-90 active:scale-95 ${isOpen ? 'translate-x-full' : ''}`}
                 style={{ top: `${posY}%`, transform: posY !== 50 || isOpen ? 'translateY(-50%)' : 'translateY(-50%)', transition: isDragging ? 'none' : 'all 0.3s' }}
             >
-                <i className="fi flex fi-rr-angle-small-left text-xs"></i>
+                <i className="fi flex fi-rr-angle-small-left text-xs font-bold"></i>
             </button>
 
             {/* Sidebar Drawer */}
@@ -1138,26 +1193,36 @@ export default function UtilitySidebar() {
                 {/* Minimal Backdrop */}
                 <div 
                     onClick={() => setIsOpen(false)}
-                    className={`absolute inset-0 bg-bold /10 transition-opacity duration-500 pointer-events-auto ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+                    className={`absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-500 pointer-events-auto ${isOpen ? 'opacity-100' : 'opacity-0'}`}
                 ></div>
 
                 {/* Compact Content Panel */}
-                <div className={`absolute right-0 top-0 h-full w-[320px] bg-white shadow-xl transition-transform duration-400 pointer-events-auto border-l border-gray-100 flex ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div 
+                    style={{ width: `${drawerWidth}px` }}
+                    className={`absolute right-0 top-0 h-full bg-white shadow-xl transition-transform duration-400 pointer-events-auto border-l border-gray-100 flex ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isResizing ? 'transition-none' : ''}`}
+                >
+                    {/* Resize Handle */}
+                    <div 
+                        onMouseDown={onResizeStart}
+                        className="absolute left-0 top-0 w-1.5 h-full cursor-ew-resize hover:bg-indigo-400/30 transition-colors z-[1010]"
+                    />
                     
                     {/* Thin App Bar */}
-                    <div className="w-[60px] bg-gray-50 border-r border-gray-100 flex flex-col items-center py-4 gap-4">
-                        <button 
-                            onClick={() => setIsOpen(false)}
-                            className="w-8 h-8 rounded-lg text-gray-400 hover:text-red-500 transition-colors mb-2"
-                        >
-                            <i className="fi flex fi-rr-cross-small text-lg"></i>
-                        </button>
+                    <div className="w-[60px] shrink-0 bg-[#4b33e8] border-r border-indigo-700 flex flex-col items-center py-4 gap-4">
+                        <div className="mb-2">
+                            <button 
+                                onClick={() => setIsOpen(false)}
+                                className="w-8 p-2 h-8 rounded-lg text-white/60 hover:text-white transition-colors"
+                            >
+                                <i className="fi flex fi-rr-cross-small text-lg"></i>
+                            </button>
+                        </div>
                         
                         {apps.map(app => (
                             <button 
                                 key={app.id}
                                 onClick={() => setActiveApp(app.id as UtilityApp)}
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeApp === app.id ? 'bg-[#4b33e8] text-white shadow-md shadow-indigo-100' : 'text-gray-400 hover:text-[#4b33e8] hover:bg-white'}`}
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeApp === app.id ? 'bg-white text-[#4b33e8] shadow-lg' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
                                 title={app.label}
                             >
                                 <i className={`fi flex ${app.icon} text-base flex`}></i>
