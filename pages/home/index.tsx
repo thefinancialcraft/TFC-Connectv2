@@ -14,6 +14,8 @@ import Testimonials from '@/components/landing/Testimonials';
 import FAQSection from '@/components/landing/FAQSection';
 import IntegrationSection from '@/components/landing/IntegrationSection';
 import UtilityShowcase from '@/components/landing/UtilityShowcase';
+import ReminderShowcase from '@/components/landing/ReminderShowcase';
+import CallEngineShowcase from '@/components/landing/CallEngineShowcase';
 import ContactForm from '@/components/landing/ContactForm';
 import Footer from '@/components/landing/Footer';
 
@@ -81,6 +83,8 @@ export default function LandingPage() {
         <FeaturesSection />
         <WorkflowSteps />
         <UtilityShowcase />
+        <ReminderShowcase />
+        <CallEngineShowcase />
         <AppShowcase />
         <ComparisonSection />
         <IntegrationSection />
