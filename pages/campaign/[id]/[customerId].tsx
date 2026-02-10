@@ -57,6 +57,15 @@ export default function CallingPage() {
     const [callAlive, setCallAlive] = useState(false);
     const [localCallingStatus, setLocalCallingStatus] = useState<string | null>(null);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
+    const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+    const [attachments, setAttachments] = useState<any[]>([]);
+    const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+    const [showEnlargedNotes, setShowEnlargedNotes] = useState(false);
+    const [liveNotes, setLiveNotes] = useState("");
+    const [isSavingLiveNotes, setIsSavingLiveNotes] = useState(false);
+    const [attachmentSearch, setAttachmentSearch] = useState("");
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [customFileName, setCustomFileName] = useState("");
     
     // Conflict states
     const [conflictInfo, setConflictInfo] = useState<any>(null);
@@ -136,6 +145,15 @@ export default function CallingPage() {
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const lineNumbersRef = useRef<HTMLDivElement>(null);
+
+    const syncScroll = () => {
+        if (textareaRef.current && lineNumbersRef.current) {
+            lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+        }
+    };
 
     // Get Last Interaction for Follow Ups
     const lastInteraction = history?.length > 0 ? history[0] : null;
@@ -182,6 +200,7 @@ export default function CallingPage() {
         const waUrl = `https://wa.me/${cleanNumber}`;
         window.open(waUrl, '_blank');
     }, [customer?.phone_no]);
+
 
     const handleEndCall = useCallback(async (isFromBridge = false) => {
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
@@ -571,6 +590,14 @@ export default function CallingPage() {
         }
     };
 
+    const formatFileSize = (bytes: number) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    };
+
     const renderCleanedDetails = (details: any) => {
         if (!details) return <p className="text-gray-400 italic">No information available</p>;
         
@@ -775,6 +802,10 @@ export default function CallingPage() {
             
             if (foundCustomer) {
                 setCustomer(foundCustomer);
+                setLiveNotes(foundCustomer.live_notes || "");
+                if (typeof customerId === 'string') {
+                    fetchAttachments(customerId);
+                }
                 
                 // Resolve Manager Info
                 if (foundCustomer.managed_by) {
@@ -1345,8 +1376,119 @@ export default function CallingPage() {
     };
 
 
-    
+    const handleSaveLiveNotes = async (content?: string) => {
+        const finalContent = content !== undefined ? content : liveNotes;
+        if (!customerId || !user?.uid) return;
+        
+        setIsSavingLiveNotes(true);
+        try {
+            const { error } = await supabase
+                .from('customers')
+                .update({ 
+                    live_notes: finalContent,
+                    last_updated_by: user.uid,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', customerId);
+            
+            if (error) throw error;
+        } catch (err) {
+            console.error("Error saving live notes:", err);
+        } finally {
+            setIsSavingLiveNotes(false);
+        }
+    };
 
+    const fetchAttachments = async (cid: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('customer_attachments')
+                .select('*')
+                .eq('customer_id', cid)
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            setAttachments(data || []);
+        } catch (err) {
+            console.error("Error fetching attachments:", err);
+        }
+    };
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        setPendingFile(file);
+        setCustomFileName(file.name.split('.').slice(0, -1).join('.'));
+    };
+
+    const confirmUpload = async () => {
+        if (!pendingFile || !customerId || !user?.uid) return;
+        
+        setSaving(true);
+        try {
+            const fileExt = pendingFile.name.split('.').pop();
+            const fileName = customFileName ? `${customFileName}.${fileExt}` : pendingFile.name;
+            const filePath = `${customerId}/${Date.now()}_${fileName}`;
+            
+            // 1. Upload to Storage
+            const { error: uploadError } = await supabase.storage
+                .from('customer_attachments')
+                .upload(filePath, pendingFile);
+            
+            if (uploadError) throw uploadError;
+            
+            // 2. Save Meta to DB
+            const { error: dbError } = await supabase
+                .from('customer_attachments')
+                .insert({
+                    customer_id: customerId,
+                    file_path: filePath,
+                    file_name: fileName,
+                    file_type: pendingFile.type,
+                    file_size: pendingFile.size,
+                    uploaded_by: user.uid
+                });
+            
+            if (dbError) throw dbError;
+            
+            // Success
+            setPendingFile(null);
+            setCustomFileName("");
+            fetchAttachments(customerId as string);
+        } catch (err) {
+            console.error("Upload error:", err);
+            alert("Failed to upload file. Please check storage permissions.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const deleteAttachment = async (id: string, path: string) => {
+        if (!confirm("Remove this attachment forever?")) return;
+        
+        try {
+            // 1. Delete from Storage
+            const { error: storageError } = await supabase.storage
+                .from('customer_attachments')
+                .remove([path]);
+                
+            if (storageError) throw storageError;
+            
+            // 2. Delete from DB
+            const { error: dbError } = await supabase
+                .from('customer_attachments')
+                .delete()
+                .eq('id', id);
+                
+            if (dbError) throw dbError;
+            
+            fetchAttachments(customerId as string);
+        } catch (err) {
+            console.error("Delete error:", err);
+            alert("Failed to delete attachment.");
+        }
+    };
 
 
     const handlePointerDown = (e: React.PointerEvent) => {
@@ -2135,7 +2277,7 @@ Campaign: ${campaign?.name || campaignId}
                             <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                                        <i className="fi flex fi-rr-bolt text-lg"></i>
+                                        <i className="fi flex  fi-rr-bolt text-lg"></i>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Assignment Success</span>
@@ -2146,7 +2288,7 @@ Campaign: ${campaign?.name || campaignId}
                                     onClick={() => setShowNewLeadAlert(false)}
                                     className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition-colors"
                                 >
-                                    <i className="fi flex fi-rr-cross-small"></i>
+                                    <i className="fi flex  fi-rr-cross-small"></i>
                                 </button>
                             </div>
                         </div>
@@ -2158,10 +2300,10 @@ Campaign: ${campaign?.name || campaignId}
 
                         {/* 2. Primary Customer Profile Card */}
                         {/* REDESIGNED LAYOUT: Profile Side-by-Side with Call Engine */}
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3">
+                        <div className="grid grid-cols-1 md:grid-cols-24 gap-2 mb-3">
                             
-                            {/* LEFT: Profile Card (Takes 7 columns) */}
-                            <div className="md:col-span-8">
+                            {/* LEFT: Profile Card (Takes 11 columns) */}
+                            <div className="md:col-span-11">
                                 <div className="h-full relative rounded-[1rem] bg-white border border-slate-200 overflow-hidden group       transition-shadow duration-500">
                                     {/* Modern Background */}
                                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-50/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -2188,9 +2330,9 @@ Campaign: ${campaign?.name || campaignId}
                                                          customer?.status === 'followup' ? 'bg-amber-400' : 'bg-emerald-500'
                                                     }`}>
                                                          {customer?.status === 'followup' ? (
-                                                            <i className="fi fi-rr-clock text-[10px] text-white mt-0.5"></i>
+                                                            <i className="fi flex fi-rr-clock text-[10px] text-white mt-0.5"></i>
                                                          ) : (
-                                                            <i className="fi fi-rr-check text-[10px] text-white mt-0.5"></i>
+                                                            <i className="fi flex fi-rr-check text-[10px] text-white mt-0.5"></i>
                                                          )}
                                                     </div>
                                                 </div>
@@ -2198,13 +2340,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 {/* Name & ID */}
                                                 <div className="text-center sm:text-left">
                                                     <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                                                        <h2 className="text-4xl  sm:text-3xl font-bold text-slate-800 tracking-tight">
+                                                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
                                                             {customer?.customer_name || 'Anonymous User'}
                                                         </h2>
                                                     </div>
                                                     <div className="flex   items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
-                                                            <i className="fi flex fi-rr-id-badge text-xs opacity-50"></i>
+                                                            <i className="fi flex  fi-rr-id-badge text-xs opacity-50"></i>
                                                             <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
                                                         </div>
                                                     </div>
@@ -2222,10 +2364,10 @@ Campaign: ${campaign?.name || campaignId}
                                         </div>
 
                                         {/* Interaction & Status Summary (New Addition) */}
-                                        <div className="flex flex-wrap md:flex-nowrap items-center gap-2 mb-2 px-1 w-full">
+                                        <div className="flex  flex-wrap md:flex-nowrap items-center gap-2 px-1 w-full">
                                             {/* Total Interactions Badge */}
                                             <div className="order-1 flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
-                                                <i className="fi flex fi-rr-clock-three text-slate-400 text-[10px]"></i>
+                                                <i className="fi flex  fi-rr-clock-three text-slate-400 text-[10px]"></i>
                                                 <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
                                                     {history?.length || 0} Attempts
                                                 </span>
@@ -2234,7 +2376,7 @@ Campaign: ${campaign?.name || campaignId}
                                             {/* Last Status Chain - Responsive & Reordered */}
                                             {lastInteraction && (
                                                 <div className="order-3 md:order-2 w-full md:w-auto flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-100 md:flex-none md:max-w-[60%] min-w-0 overflow-hidden">
-                                                     <i className="fi flex fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"></i>
+                                                     <i className="fi flex  fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"></i>
                                                      <div className="flex items-center gap-1 text-[10px] font-semibold text-purple-700 truncate">
                                                         <span className="truncate">{lastInteraction.disposition || 'N/A'}</span>
                                                         {lastInteraction.sub_disposition && (
@@ -2288,7 +2430,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 })}
                                                 {(!mobileLogs || mobileLogs.length === 0) && (
                                                     <div className="w-8 h-8 rounded-full bg-slate-50 border-2 border-white flex items-center justify-center">
-                                                        <i className="fi flex fi-rr-minus text-slate-200 text-xs"></i>
+                                                        <i className="fi flex  fi-rr-minus text-slate-200 text-xs"></i>
                                                     </div>
                                                 )}
                                             </div>
@@ -2297,36 +2439,36 @@ Campaign: ${campaign?.name || campaignId}
                                         {/* Bottom Section: Info Tiles */}
                                         <div className="grid grid-cols-4 gap-1.5">
                                             {/* Manager Tile */}
-                                            <div className="p-1 sm:p-2 rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-indigo-100 transition-all cursor-default group/tile">
-                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-user flex text-[10px] sm:text-xs"></i>
+                                            <div className="p-1 sm:p-2 rounded-2xl bg-transparent flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex  fi-rr-user flex text-xs sm:text-sm"></i>
                                                 </div>
                                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Manager</p>
                                                 <p className="text-[10px] sm:text-xs font-bold text-slate-800 truncate w-full px-1 sm:px-2">{managedByInfo?.name || 'Self'}</p>
                                             </div>
 
                                             {/* Disposition Tile */}
-                                            <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-purple-100 transition-all cursor-default group/tile">
-                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-purple-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-comment-alt text-[10px] sm:text-xs"></i>
+                                            <div className="p-1 sm:p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center text-purple-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex  fi-rr-comment-alt text-xs sm:text-sm"></i>
                                                 </div>
                                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Status</p>
                                                 <p className="text-[10px] sm:text-xs font-bold text-purple-600 truncate w-full px-1 sm:px-2">{customer?.disposition || 'Fresh'}</p>
                                             </div>
 
                                              {/* Valid Until Tile */}
-                                             <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-amber-100 transition-all cursor-default group/tile">
-                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-amber-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-calendar-clock text-[10px] sm:text-xs"></i>
+                                             <div className="p-1 sm:p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center text-amber-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex  fi-rr-calendar-clock text-xs sm:text-sm"></i>
                                                 </div>
                                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry</p>
                                                 <p className="text-[10px] sm:text-xs font-bold text-slate-700 truncate w-full px-1 sm:px-2">{formatDate(customer?.expiry_date)}</p>
                                             </div>
 
                                              {/* Campaign Tile */}
-                                             <div className="p-1 sm:p-3 rounded-2xl sm:rounded-2xl bg-transparent sm:bg-slate-50 border border-transparent sm:border-slate-200 flex flex-col items-center justify-center text-center gap-0.5 hover:bg-white hover:border-emerald-100 transition-all cursor-default group/tile">
-                                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-emerald-500 mb-0.5 group-hover/tile:scale-110 transition-transform">
-                                                     <i className="fi flex fi-rr-bullhorn text-[10px] sm:text-xs"></i>
+                                             <div className="p-1 sm:p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile">
+                                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center text-emerald-500 mb-0.5 group-hover/tile:scale-110 transition-transform">
+                                                     <i className="fi flex  fi-rr-bullhorn text-xs sm:text-sm"></i>
                                                 </div>
                                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Campaign</p>
                                                 <p className="text-[10px] sm:text-xs font-bold text-emerald-600 truncate w-full px-1 sm:px-2">{campaign?.name || 'Global'}</p>
@@ -2336,10 +2478,121 @@ Campaign: ${campaign?.name || campaignId}
                                 </div>
                             </div>
  
-                            {/* RIGHT: Call Engine (Takes 5 columns) */}
-                            <div className="md:col-span-4 flex flex-col">
+                            {/* MIDDLE: Live Notes (Takes 6 columns) */}
+                            <div className="md:col-span-6 flex flex-col">
+                                <div className="h-full relative rounded-2xl bg-white border border-slate-200 overflow-hidden group transition-all duration-500 flex flex-col pt-4">
+                                    {/* Abstract Background matching Call Engine */}
+                                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                        <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-indigo-50/50 blur-[80px]" />
+                                        <div className="absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-violet-50/50 blur-[80px]" />
+                                    </div>
+
+                                    <div className="relative z-10 flex flex-col h-full gap-2 px-4 pb-4">
+                                        <div 
+                                            className="flex items-center justify-between mb-1 cursor-pointer md:cursor-default"
+                                            onClick={() => {
+                                                if (window.innerWidth < 768) {
+                                                    setIsNotesExpanded(!isNotesExpanded);
+                                                }
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="text-[12px] font-bold text-slate-800 uppercase tracking-widest" style={{ fontFamily: "'Poppins', sans-serif" }}>Persistent Notes</h3>
+                                                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${liveNotes.trim().length > 0 ? (isSavingLiveNotes ? 'bg-amber-400' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]') : 'bg-slate-200'}`} />
+                                                    {isSavingLiveNotes && <span className="text-[8px] font-bold text-amber-500 tracking-tighter animate-pulse">Saving...</span>}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowEnlargedNotes(true);
+                                                    }}
+                                                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-100 transition-all"
+                                                    title="Expand Notes"
+                                                >
+                                                    <i className="fi flex  fi-rr-expand text-[10px]"></i>
+                                                </button>
+                                                {/* Expand/Collapse Arrow (Mobile Only) */}
+                                               
+                                                <button 
+                                                    className={`md:hidden w-7 h-7 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-400 transition-transform duration-300 ${isNotesExpanded ? 'rotate-180' : ''}`}
+                                                >
+                                                    <i className="fi flex  fi-rr-angle-small-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className={`transition-all duration-500 ease-in-out overflow-hidden flex-1 flex flex-col ${isNotesExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 md:max-h-none opacity-0 md:opacity-100'}`}>
+                                            <div className="h-[180px] relative flex bg-slate-50/30 rounded-xl border border-slate-200 overflow-hidden focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-50/50 transition-all">
+                                                {/* Line Numbers Column */}
+                                                <div 
+                                                    ref={lineNumbersRef}
+                                                    className="w-8 py-3 bg-slate-100/30 border-r border-slate-200 flex flex-col items-center text-[8px] font-bold text-slate-300 select-none overflow-hidden"
+                                                >
+                                                    {(liveNotes.split('\n').length > 0 ? liveNotes.split('\n') : ['']).map((_, i) => (
+                                                        <div key={i} className="leading-6 h-6">{i + 1}</div>
+                                                    ))}
+                                                </div>
+                                                <textarea 
+                                                    ref={textareaRef}
+                                                    onScroll={syncScroll}
+                                                    value={liveNotes}
+                                                    onChange={(e) => {
+                                                        setLiveNotes(e.target.value);
+                                                    }}
+                                                    onBlur={() => handleSaveLiveNotes()}
+                                                    placeholder="Write Something Here..."
+                                                    className="flex-1 h-full bg-transparent text-slate-700 p-3 pt-[13px] text-[12px] font-medium outline-none transition-all resize-none leading-6 placeholder:text-slate-300 overflow-y-auto custom-scrollbar"
+                                                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between mt-2">
+                                                <div className="flex items-center gap-1.5">
+                                                    <input 
+                                                        type="file" 
+                                                        ref={fileInputRef} 
+                                                        className="hidden" 
+                                                        multiple
+                                                        onChange={handleFileSelect} 
+                                                    />
+                                                    <button 
+                                                        onClick={() => setShowAttachmentModal(true)}
+                                                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-100 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-100 transition-all duration-300 group/attach"
+                                                        title="Manage Attachments"
+                                                    >
+                                                        <i className="fi flex  fi-rr-clip text-[10px] group-hover/attach:rotate-12 transition-transform"></i>
+                                                        <span className="text-[9px] font-black uppercase tracking-widest">Attachment</span>
+                                                        {attachments.length > 0 && (
+                                                            <span className="ml-0.5 w-3.5 h-3.5 rounded-full bg-indigo-600 text-white text-[8px] flex items-center justify-center font-bold">
+                                                                {attachments.length}
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                                <button 
+                                                    onClick={() => {
+                                                        if (confirm("Clear all persistent notes?")) {
+                                                            setLiveNotes("");
+                                                            handleSaveLiveNotes("");
+                                                        }
+                                                    }}
+                                                    className={`p-1 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300 ${liveNotes.length > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                                                    title="Clear All"
+                                                >
+                                                    <i className="fi flex  fi-rr-trash-undo text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div className="md:col-span-7 flex flex-col">
                                 {/* The Call Engine */}
-                                <div className={`flex-1 relative overflow-hidden rounded-3xl transition-all duration-1000 flex flex-col ${
+                                <div className={`flex-1 relative overflow-hidden rounded-[1rem] transition-all duration-1000 flex flex-col ${
                                     isCalling 
                                     ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-800' 
                                     : 'bg-white border border-slate-200   '
@@ -2412,7 +2665,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                  : 'Line ready.'}
                                                             </p>
                                                              <div className="flex mt-4 flex-wrap justify-center items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-colors hover:bg-blue-100 hover:border-blue-200 group/phone">
-                                                            <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
+                                                            <i className="fi flex  fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
                                                             <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
                                                                 {formatMaskedPhone(customer?.phone_no) || 'N/A'}
                                                             </span>
@@ -2450,7 +2703,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             className="w-full h-12 rounded-xl bg-red-500 hover:bg-red-600 active:bg-red-700 text-white shadow-lg shadow-red-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 group overflow-hidden relative"
                                                         >
                                                             <div className="w-6 h-6 mr-3 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
-                                                                <i className="fi flex fi-rr-phone-slash text-sm"></i>
+                                                                <i className="fi flex  fi-rr-phone-slash text-sm"></i>
                                                             </div>
                                                             <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">End</span>
                                                         </button>
@@ -2458,7 +2711,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             onClick={handleWhatsAppClick}
                                                             className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
                                                         >
-                                                            <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                            <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                         </button>
                                                         
                                                        
@@ -2515,7 +2768,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         {/* Background Layer */}
                                                                         <div className="absolute inset-0 flex items-center justify-end pr-6 bg-orange-100/50">
                                                                             <span className="text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
-                                                                                 Slide to Skip <i className="fi flex fi-rr-angle-double-right text-xs"></i>
+                                                                                 Slide to Skip <i className="fi flex  fi-rr-angle-double-right text-xs"></i>
                                                                             </span>
                                                                         </div>
 
@@ -2528,7 +2781,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 cursor: isDragging ? 'grabbing' : 'grab'
                                                                             }}
                                                                         >
-                                                                            <i className="fi flex fi-rr-phone-call text-white text-sm"></i>
+                                                                            <i className="fi flex  fi-rr-phone-call text-white text-sm"></i>
                                                                             <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
                                                                             
                                                                         </div>
@@ -2539,7 +2792,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                     onClick={handleWhatsAppClick}
                                                                     className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0"
                                                                 >
-                                                                    <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                                    <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -2551,7 +2804,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
                                                             >
                                                                 <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
-                                                                    <i className="fi flex fi-rr-phone-call text-sm"></i>
+                                                                    <i className="fi flex  fi-rr-phone-call text-sm"></i>
                                                                 </div>
                                                                 <span className="relative z-10">Call Now</span>
                                                             </button>
@@ -2560,7 +2813,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 onClick={handleWhatsAppClick}
                                                                 className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
                                                             >
-                                                                <i className="fi flex fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                                <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                             </button>
                                                         </div>
                                                     )
@@ -2570,13 +2823,13 @@ Campaign: ${campaign?.name || campaignId}
                                                             onClick={handleStartCall}
                                                             className="h-10 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:  "
                                                         >
-                                                            <i className="fi flex fi-rr-refresh text-xs"></i> Redial
+                                                            <i className="fi flex  fi-rr-refresh text-xs"></i> Redial
                                                         </button>
                                                         <button 
                                                             onClick={handleWhatsAppClick}
                                                             className="h-10 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-600 font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:  "
                                                         >
-                                                            <i className="fi flex fi-brands-whatsapp text-xs"></i> Chat
+                                                            <i className="fi flex  fi-brands-whatsapp text-xs"></i> Chat
                                                         </button>
                                                     </div>
                                                 )}
@@ -2596,7 +2849,7 @@ Campaign: ${campaign?.name || campaignId}
                                         <div className="relative z-10 flex flex-col h-full">
                                             <div className="flex items-center gap-3 mb-8">
                                                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-100 flex items-center justify-center text-white">
-                                                    <i className="fi flex  fi-rr-document text-sm"></i>
+                                                    <i className="fi flex   fi-rr-document text-sm"></i>
                                                 </div>
                                                 <div>
                                                     <h3 className="font-semibold text-slate-800"> Details</h3>
@@ -2615,7 +2868,7 @@ Campaign: ${campaign?.name || campaignId}
                                          <div className="relative z-10 space-y-6 flex-1 pb-24">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-2xl bg-purple-600 shadow-lg shadow-purple-100 flex items-center justify-center text-white">
-                                                    <i className="fi flex  fi-rr-check-circle text-sm"></i>
+                                                    <i className="fi flex   fi-rr-check-circle text-sm"></i>
                                                 </div>
                                                 <div>
                                                     <h3 className="text-lg font-bold text-slate-900 tracking-tight">Set Outcome</h3>
@@ -2634,7 +2887,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 onClick={() => setIsAssignPickerOpen(!isAssignPickerOpen)}
                                                                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100/50 hover:bg-slate-900 hover:text-white transition-all group"
                                                             >
-                                                                <i className="fi fi-rr-user-gear flex text-[10px] text-indigo-500 group-hover:text-indigo-300"></i>
+                                                                <i className="fi flex fi-rr-user-gear flex text-[10px] text-indigo-500 group-hover:text-indigo-300"></i>
                                                                 <span className="text-[9px] font-bold uppercase tracking-tight text-indigo-600 group-hover:text-white">Assigned To</span>
                                                                 <i className={`fi fi-rr-angle-small-down flex text-[10px] transition-transform ${isAssignPickerOpen ? 'rotate-180' : ''}`}></i>
                                                             </button>
@@ -2737,7 +2990,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 onClick={() => setIsAddingOutcome(true)}
                                                                 className="text-[10px] text-indigo-600 font-bold hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 transition-all hover:bg-indigo-100"
                                                             >
-                                                                <i className="fi flex fi-rr-plus-small"></i> Add New
+                                                                <i className="fi flex  fi-rr-plus-small"></i> Add New
                                                             </button>
                                                         </div>
                                                         
@@ -2785,7 +3038,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         }}
                                                                         className={`absolute -top-2 -right-2 w-5 h-5 bg-white text-red-500 border border-red-100 rounded-full items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex    hover:bg-red-50`}
                                                                     >
-                                                                         <i className="fi fi-rr-cross-small text-[10px]"></i>
+                                                                         <i className="fi flex fi-rr-cross-small text-[10px]"></i>
                                                                     </button>
                                                                 </div>
                                                             ))}
@@ -2798,6 +3051,8 @@ Campaign: ${campaign?.name || campaignId}
                                                     </div>
                                                 )}
 
+                                              
+
                                                 {/* Call Back Scheduling (Modern Version) */}
                                                 {disposition === 'Call Back' && (
                                                     <div className="space-y-3 p-6 rounded-2xl bg-indigo-50/40 border border-indigo-100/50 backdrop-blur-sm animate-in zoom-in-95 duration-500 relative">
@@ -2809,7 +3064,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         <div className="flex items-center justify-between relative z-10">
                                                             <div className="flex items-center gap-2.5">
                                                                 <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
-                                                                    <i className="fi flex fi-rr-calendar-clock text-xs"></i>
+                                                                    <i className="fi flex  fi-rr-calendar-clock text-xs"></i>
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-[10px] font-bold text-slate-800 uppercase tracking-widest leading-none mb-1">Schedule Call</p>
@@ -2886,7 +3141,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             {/* Custom Date Picker Trigger */}
                                                             <div className="relative group/date" ref={datePickerRef}>
                                                                 <div className="absolute  inset-y-0 left-3 flex items-center pointer-events-none z-10">
-                                                                    <i className="fi flex fi-rr-calendar text-slate-400 text-[12px]"></i>
+                                                                    <i className="fi flex  fi-rr-calendar text-slate-400 text-[12px]"></i>
                                                                 </div>
                                                                 <button 
                                                                     type="button"
@@ -2905,7 +3160,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1))}
                                                                                 className="w-8 h-8 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-400"
                                                                             >
-                                                                                <i className="fi fi-rr-angle-left text-[10px]"></i>
+                                                                                <i className="fi flex fi-rr-angle-left text-[10px]"></i>
                                                                             </button>
                                                                             <p className="text-[12px] font-bold text-slate-800">
                                                                                 {months[calendarViewDate.getMonth()]} {calendarViewDate.getFullYear()}
@@ -2915,7 +3170,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 onClick={() => setCalendarViewDate(new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1))}
                                                                                 className="w-8 h-8 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-400"
                                                                             >
-                                                                                <i className="fi fi-rr-angle-right text-[10px]"></i>
+                                                                                <i className="fi flex fi-rr-angle-right text-[10px]"></i>
                                                                             </button>
                                                                         </div>
 
@@ -2960,7 +3215,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             {/* Custom Time Picker Trigger */}
                                                             <div className="relative" ref={timePickerRef}>
                                                                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                                                                    <i className="fi flex fi-rr-clock-three text-slate-400 text-[12px]"></i>
+                                                                    <i className="fi flex  fi-rr-clock-three text-slate-400 text-[12px]"></i>
                                                                 </div>
                                                                  <button 
                                                                     type="button"
@@ -3007,7 +3262,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         >
                                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pointer-events-none">Set Callback Time</p>
                                                                             <div className="p-1 hover:bg-slate-50 rounded-md transition-colors">
-                                                                                 <i className="fi fi-rr-apps text-slate-300 text-xs"></i>
+                                                                                 <i className="fi flex fi-rr-apps text-slate-300 text-xs"></i>
                                                                             </div>
                                                                         </div>
                                                                         
@@ -3132,7 +3387,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                                             {callbackDate && callbackTime && new Date(`${callbackDate}T${callbackTime}`) < new Date() && (
                                                                 <div className="flex items-center gap-2 mt-2 px-1 animate-pulse">
-                                                                    <i className="fi fi-rr-info text-red-500 text-[12px]"></i>
+                                                                    <i className="fi flex fi-rr-info text-red-500 text-[12px]"></i>
                                                                     <p className="text-red-500 text-[10px] font-bold uppercase tracking-tight">Cannot schedule for a past time!</p>
                                                                 </div>
                                                             )}
@@ -3143,7 +3398,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             <div className="mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-100 animate-in fade-in slide-in-from-top-2 duration-300 relative z-10">
                                                                 <div className="flex items-start gap-3">
                                                                     <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center shrink-0">
-                                                                        <i className="fi flex fi-rr-triangle-warning text-rose-500 text-sm"></i>
+                                                                        <i className="fi flex  fi-rr-triangle-warning text-rose-500 text-sm"></i>
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <p className="text-[11px] font-black text-rose-900 uppercase tracking-widest mb-1">Slot Conflict Detected</p>
@@ -3238,7 +3493,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 data-active={timelineView === 'timeline'}
                                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'timeline' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
-                                                <i className="fi fi-rr-time-past"></i>
+                                                <i className="fi flex fi-rr-time-past"></i>
                                                 Timeline
                                             </button>
                                             <button 
@@ -3246,7 +3501,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 data-active={timelineView === 'call_logs'}
                                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'call_logs' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
-                                                <i className="fi fi-rr-call-history"></i>
+                                                <i className="fi flex fi-rr-call-history"></i>
                                                 Logs
                                             </button>
                                             <button 
@@ -3254,7 +3509,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 data-active={timelineView === 'schedules'}
                                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'schedules' ? 'bg-white    text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
                                             >
-                                                <i className="fi fi-rr-calendar-clock"></i>
+                                                <i className="fi flex fi-rr-calendar-clock"></i>
                                                 Schedules
                                             </button>
                                         </div>
@@ -3268,7 +3523,7 @@ Campaign: ${campaign?.name || campaignId}
                                             {history.length === 0 ? (
                                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
                                                     <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                                                        <i className="fi flex  fi-rr-box-open text-2xl"></i>
+                                                        <i className="fi flex   fi-rr-box-open text-2xl"></i>
                                                     </div>
                                                     <p className="text-xs font-semibold ">No Activity Yet</p>
                                                 </div>
@@ -3322,7 +3577,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         <div className="flex items-center gap-1.5 col-span-2">
                                                                             
                                                                             <div className="flex grid">
-                                                                                <span className="text-[12px] flex font-semibold text-slate-400"> <i className="fi flex mr-2 fi-rr-calendar-clock text-[12px] text-amber-400"></i> Follow Up: </span>
+                                                                                <span className="text-[12px] flex font-semibold text-slate-400"> <i className="fi flex  mr-2 fi-rr-calendar-clock text-[12px] text-amber-400"></i> Follow Up: </span>
                                                                                 <span className="text-[12px] font-bold text-amber-600">
                                                                                     {new Date(log.next_called_at).toLocaleString('en-IN', {
                                                                                         day: '2-digit',
@@ -3340,7 +3595,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 {/* Duration + Time */}
                                                                 <div className="flex items-center gap-3 pt-2">
                                                                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 text-[12px] font-semibold uppercase">
-                                                                        <i className="fi flex fi-rr-clock-three"></i>
+                                                                        <i className="fi flex  fi-rr-clock-three"></i>
                                                                         {formatTime(log.duration || 0)}
                                                                     </div>
                                                                     <span className="text-[12px] font-semibold text-slate-300">
@@ -3350,7 +3605,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             </div>
                                                              {/* Agent */}
                                                                     <div className="flex items-center gap-1.5">
-                                                                        <i className="fi flex fi-rr-user mt-1 text-[12px] text-indigo-400"></i>
+                                                                        <i className="fi flex  fi-rr-user mt-1 text-[12px] text-indigo-400"></i>
                                                                         <div className="truncate">
                                                                             <span className="text-[12px] font-semibold text-slate-400">Agent: </span>
                                                                             <span className="text-[12px] font-bold text-slate-600">
@@ -3364,7 +3619,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                                                     {/* Last Updated By */}
                                                                     <div className="flex items-center gap-1.5">
-                                                                        <i className="fi flex fi-rr-pencil mt-1 text-[12px] text-purple-400"></i>
+                                                                        <i className="fi flex  fi-rr-pencil mt-1 text-[12px] text-purple-400"></i>
                                                                         <div className="truncate">
                                                                             <span className="text-[12px] font-semibold text-slate-400">Updated: </span>
                                                                             <span className="text-[12px] font-bold text-slate-600">
@@ -3391,7 +3646,7 @@ Campaign: ${campaign?.name || campaignId}
                                             {mobileLogs.length === 0 ? (
                                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
                                                     <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                                                        <i className="fi flex fi-rr-smartphone text-2xl"></i>
+                                                        <i className="fi flex  fi-rr-smartphone text-2xl"></i>
                                                     </div>
                                                     <p className="text-xs font-semibold ">No Mobile Logs Found</p>
                                                 </div>
@@ -3431,7 +3686,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         }`}>{log.type}</span>
                                                                     </div>
                                                                     <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
-                                                                        <i className="fi fi-rr-calendar-clock text-[10px] opacity-60"></i>
+                                                                        <i className="fi flex fi-rr-calendar-clock text-[10px] opacity-60"></i>
                                                                         {new Date(log.timestamp).toLocaleDateString([], { day: '2-digit', month: 'short' })}
                                                                     </span>
                                                                 </div>
@@ -3439,7 +3694,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 {/* Secondary Info Row */}
                                                                  <div className="flex items-center gap-4 text-[11px] text-slate-500 font-medium mt-1.5">
                                                                     <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-200">
-                                                                         <i className="fi fi-rr-clock-three text-[10px] text-slate-400"></i>
+                                                                         <i className="fi flex fi-rr-clock-three text-[10px] text-slate-400"></i>
                                                                          <span className="text-slate-600 font-bold">{formatTime(log.duration || 0)}</span>
                                                                     </div>
                                                                     <div className="h-4 w-px bg-slate-200"></div>
@@ -3452,7 +3707,7 @@ Campaign: ${campaign?.name || campaignId}
                                                          <div className="relative z-10 flex items-center justify-between mt-4 pt-4 border-t border-dashed border-slate-200">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0 border border-indigo-100">
-                                                                     <i className="fi fi-rr-circle-user text-[14px]"></i>
+                                                                     <i className="fi flex fi-rr-circle-user text-[14px]"></i>
                                                                 </div>
                                                                 <div className="flex flex-col">
                                                                     <span className="text-[11px] font-bold text-slate-700 leading-none mb-0.5">
@@ -3465,7 +3720,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200" title={`Device: ${log.device_id || 'Unknown'}`}>
-                                                                <i className="fi fi-rr-smartphone text-[12px] text-slate-400"></i>
+                                                                <i className="fi flex fi-rr-smartphone text-[12px] text-slate-400"></i>
                                                                 <span className="text-[10px] font-semibold text-slate-500 font-mono tracking-tight">
                                                                     {log.device_model || (log.device_id ? log.device_id.substring(0, 8) + '...' : 'Unknown')}
                                                                 </span>
@@ -3492,7 +3747,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 }}
                                                                 className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all active:scale-95 border-none"
                                                             >
-                                                                <i className="fi fi-rr-angle-small-left text-lg"></i>
+                                                                <i className="fi flex fi-rr-angle-small-left text-lg"></i>
                                                             </button>
 
                                                             <div className="relative px-4 flex flex-col items-center min-w-[130px]">
@@ -3528,7 +3783,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 }}
                                                                 className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all active:scale-95 border-none"
                                                             >
-                                                                <i className="fi fi-rr-angle-small-right text-lg"></i>
+                                                                <i className="fi flex fi-rr-angle-small-right text-lg"></i>
                                                             </button>
                                                         </div>
                                                         
@@ -3538,7 +3793,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className="ml-2 w-11 h-11 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all border-none"
                                                                 title="Reset to Today"
                                                             >
-                                                                <i className="fi fi-rr-undo text-[14px]"></i>
+                                                                <i className="fi flex fi-rr-undo text-[14px]"></i>
                                                             </button>
                                                         )}
                                                     </div>
@@ -3571,7 +3826,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         return (
                                                             <div className="h-full flex flex-col items-center justify-center text-center opacity-30 grayscale py-20">
                                                                 <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                                                                    <i className="fi flex fi-rr-calendar-clock text-2xl"></i>
+                                                                    <i className="fi flex  fi-rr-calendar-clock text-2xl"></i>
                                                                 </div>
                                                                 <p className="text-xs font-semibold ">No Schedules Found</p>
                                                             </div>
@@ -3635,7 +3890,7 @@ Campaign: ${campaign?.name || campaignId}
                                     <div className="mt-8 p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-                                                <i className="fi flex  fi-rr-phone-call text-xs"></i>
+                                                <i className="fi flex   fi-rr-phone-call text-xs"></i>
                                             </div>
                                             <span className="text-[10px] font-semibold ">Total Connects</span>
                                         </div>
@@ -3685,10 +3940,10 @@ Campaign: ${campaign?.name || campaignId}
                         <div className="h-32 bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center relative">
                             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }}></div>
                             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -rotate-6">
-                                <i className="fi fi-brands-google text-3xl text-indigo-600"></i>
+                                <i className="fi flex fi-brands-google text-3xl text-indigo-600"></i>
                             </div>
                             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg absolute transform translate-x-8 translate-y-4 rotate-12">
-                                <i className="fi fi-rr-calendar-clock text-3xl text-blue-500"></i>
+                                <i className="fi flex fi-rr-calendar-clock text-3xl text-blue-500"></i>
                             </div>
                         </div>
 
@@ -3703,7 +3958,7 @@ Campaign: ${campaign?.name || campaignId}
                                     onClick={handleConnectCalendar}
                                     className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-100 active:scale-95"
                                 >
-                                    <i className="fi fi-brands-google"></i>
+                                    <i className="fi flex fi-brands-google"></i>
                                     Connect & Sync Now
                                 </button>
                                 
@@ -3718,6 +3973,238 @@ Campaign: ${campaign?.name || campaignId}
                             <p className="mt-6 text-[11px] text-slate-400 font-medium">
                                 You can also connect this later from your Profile Settings.
                             </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Attachment Manager Modal - Redesigned to be Compact & Card-like */}
+            {showAttachmentModal && (
+                <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md h-[520px] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 border border-slate-100">
+                        {/* Compact Header */}
+                        <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between bg-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                                    <i className="fi flex fi-rr-clip text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-800 tracking-tight">Lead Attachments</h3>
+                                    <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{attachments.length} Files</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setShowAttachmentModal(false)}
+                                className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-colors"
+                            >
+                                <i className="fi flex fi-rr-cross-small text-lg"></i>
+                            </button>
+                        </div>
+
+                        {/* Search & Add bar - Stacked or tighter */}
+                        <div className="px-5 py-4 flex flex-col gap-3 bg-slate-50/30">
+                            <div className="relative">
+                                <i className="fi flex fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                <input 
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={attachmentSearch}
+                                    onChange={(e) => setAttachmentSearch(e.target.value)}
+                                    className="w-full h-10 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-50 focus:border-indigo-200 transition-all outline-none"
+                                />
+                            </div>
+                            <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full h-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-100 active:scale-95"
+                            >
+                                <i className="fi flex fi-rr-plus-small text-lg"></i>
+                                <span>Upload Attachment</span>
+                            </button>
+                        </div>
+
+                        {/* Files List - More Compact / Or Naming View */}
+                        <div className="flex-1 overflow-y-auto px-5 pb-5 custom-scrollbar">
+                            {pendingFile ? (
+                                <div className="py-6 animate-in slide-in-from-bottom-4 duration-300">
+                                    <div className="p-4 rounded-2xl bg-indigo-50/30 border border-indigo-100 mb-4 text-center">
+                                        <div className="w-12 h-12 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-2 shadow-sm">
+                                            <i className={`fi ${
+                                                pendingFile.type.includes('image') ? 'fi-rr-picture' : 
+                                                pendingFile.type.includes('pdf') ? 'fi-rr-document' : 'fi-rr-file'
+                                            } text-xl`}></i>
+                                        </div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Selected File</p>
+                                        <p className="text-[11px] font-bold text-slate-600 truncate px-4">{pendingFile.name}</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-[10px]  font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Document Name</label>
+                                            <input 
+                                                type="text"
+                                                autoFocus
+                                                placeholder="Enter a friendly name..."
+                                                value={customFileName}
+                                                onChange={(e) => setCustomFileName(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && confirmUpload()}
+                                                className="w-full h-11 text-gray-400 px-4 bg-white border border-slate-200 rounded-xl text-xs font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-300 transition-all outline-none"
+                                            />
+                                        </div>
+
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => {
+                                                    setPendingFile(null);
+                                                    if (fileInputRef.current) fileInputRef.current.value = '';
+                                                }}
+                                                className="flex-1 h-11 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button 
+                                                onClick={confirmUpload}
+                                                className="flex-[2] h-11 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                                            >
+                                                Finalize Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-1.5 pt-2">
+                                    {attachments
+                                         .filter(a => a.file_name.toLowerCase().includes(attachmentSearch.toLowerCase()))
+                                         .map((file) => (
+                                         <div 
+                                             key={file.id} 
+                                             className="p-3 rounded-2xl bg-white border border-slate-100 hover:border-indigo-50 hover:bg-indigo-50/10 transition-all group flex items-center justify-between"
+                                         >
+                                             <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                 <div className="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-indigo-600 shadow-sm transition-colors border border-transparent group-hover:border-indigo-50">
+                                                     <i className={`fi ${
+                                                         file.file_type?.includes('image') ? 'fi-rr-picture' : 
+                                                         file.file_type?.includes('pdf') ? 'fi-rr-document' : 'fi-rr-file'
+                                                     } text-sm`}></i>
+                                                 </div>
+                                                 <div className="truncate">
+                                                     <h4 className="text-[11px] font-bold text-slate-700 truncate leading-tight">{file.file_name}</h4>
+                                                     <div className="flex items-center gap-2 mt-0.5">
+                                                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{formatFileSize(file.file_size)}</span>
+                                                         <span className="w-1 h-1 rounded-full bg-slate-200"></span>
+                                                         <span className="text-[9px] font-bold text-slate-300 uppercase tracking-tight">{formatDate(file.created_at)}</span>
+                                                     </div>
+                                                 </div>
+                                             </div>
+
+                                             <div className="flex items-center gap-1.5 ml-3">
+                                                 <button 
+                                                     className="w-8 h-8 rounded-lg bg-white border border-slate-100 hover:border-indigo-600 hover:text-white hover:bg-indigo-600 text-slate-400 shadow-sm transition-all flex items-center justify-center"
+                                                     title="View"
+                                                     onClick={async () => {
+                                                        const { data, error } = await supabase.storage
+                                                            .from('customer_attachments')
+                                                            .createSignedUrl(file.file_path, 3600);
+                                                        if (error) {
+                                                            alert("Failed to create viewing link.");
+                                                        } else if (data?.signedUrl) {
+                                                            window.open(data.signedUrl, '_blank');
+                                                        }
+                                                     }}
+                                                 >
+                                                     <i className="fi flex fi-rr-eye text-xs"></i>
+                                                 </button>
+                                                 <button 
+                                                     className="w-8 h-8 rounded-lg bg-white border border-slate-100 hover:border-rose-500 hover:text-white hover:bg-rose-500 text-slate-400 shadow-sm transition-all flex items-center justify-center"
+                                                     title="Delete"
+                                                     onClick={() => deleteAttachment(file.id, file.file_path)}
+                                                 >
+                                                     <i className="fi flex fi-rr-trash text-xs"></i>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     ))}
+
+                                    {attachments.length === 0 && (
+                                        <div className="py-12 text-center">
+                                            <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-slate-100">
+                                                <i className="fi flex fi-rr-folder-open text-2xl text-slate-200"></i>
+                                            </div>
+                                            <h4 className="text-slate-600 text-sm font-bold mb-1">Empty Vault</h4>
+                                            <p className="text-slate-400 text-[10px] font-medium uppercase tracking-widest">No attachments found</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Enlarged Notes Modal - Compact Version */}
+            {showEnlargedNotes && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[70vh] overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 flex flex-col relative">
+                        <div className="relative z-10 flex flex-col h-full">
+                            {/* Modal Header - Compact */}
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-sm">
+                                        <i className="fi flex fi-rr-edit text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-800 tracking-tight">Focus Notes</h3>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mt-0.5">Editing Mode • {notes.split('\n').length} Lines</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => setShowEnlargedNotes(false)}
+                                    className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all flex items-center justify-center group"
+                                >
+                                    <i className="fi flex fi-rr-cross-small text-lg group-hover:rotate-90 transition-transform"></i>
+                                </button>
+                            </div>
+
+                            {/* Modal Body: Compact Textarea */}
+                            <div className="flex-1 p-3 overflow-hidden">
+                                <div className="h-full relative flex bg-slate-50/20 rounded-xl border border-slate-200 overflow-hidden focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-50/30 transition-all">
+                                    {/* Line Numbers - Thinner */}
+                                    <div 
+                                        className="w-8 py-3 bg-slate-100/30 border-r border-slate-100 flex flex-col items-center text-[8px] font-bold text-slate-300 select-none overflow-hidden"
+                                    >
+                                        {liveNotes.split('\n').map((_, i) => (
+                                            <div key={i} className="leading-6 h-6">{i + 1}</div>
+                                        ))}
+                                    </div>
+                                    <textarea 
+                                        autoFocus
+                                        value={liveNotes}
+                                        onChange={(e) => setLiveNotes(e.target.value)}
+                                        onBlur={() => handleSaveLiveNotes()}
+                                        placeholder="Start typing..."
+                                        className="flex-1 h-full bg-transparent text-slate-700 p-3 pt-[13px] text-[13px] font-medium outline-none transition-all resize-none leading-6 placeholder:text-slate-300 custom-scrollbar"
+                                        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Modal Footer - Compact */}
+                            <div className="px-4 py-2 flex items-center justify-between bg-slate-50/50 border-t border-slate-100">
+                                <div className="flex items-center gap-1.5">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${notes.length > 0 ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.3)]' : 'bg-slate-300'}`}></span>
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                        {notes.length} Characters
+                                    </span>
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        handleSaveLiveNotes();
+                                        setShowEnlargedNotes(false);
+                                    }}
+                                    className="px-4 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold hover:bg-indigo-600 transition-all shadow-sm"
+                                >
+                                    Save & Done
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

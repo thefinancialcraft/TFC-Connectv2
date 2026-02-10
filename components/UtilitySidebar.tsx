@@ -1182,10 +1182,10 @@ export default function UtilitySidebar() {
                     }
                     setIsOpen(true);
                 }}
-                className={`fixed right-0 z-[100] bg-[#4b33e8] border border-indigo-700 text-white w-6 h-12 rounded-l-xl transition-all duration-300 flex flex-col items-center justify-center hover:opacity-90 active:scale-95 ${isOpen ? 'translate-x-full' : ''}`}
-                style={{ top: `${posY}%`, transform: posY !== 50 || isOpen ? 'translateY(-50%)' : 'translateY(-50%)', transition: isDragging ? 'none' : 'all 0.3s' }}
+                className={`fixed right-0 z-[100] bg-[#4b33e8] text-xs hover:text-lg  border border-indigo-700 text-white w-4 h-12 hover:w-6 hover:h-14 rounded-l-xl transition-all duration-300 flex flex-col items-center justify-center hover:opacity-90 active:scale-95 ${isOpen ? 'translate-x-full' : ''}`}
+                style={{ top: `${posY}%`, transform: isOpen ? 'translateY(-50%) translateX(100%)' : 'translateY(-50%)', transition: isDragging ? 'none' : 'all 0.3s' }}
             >
-                <i className="fi flex fi-rr-angle-small-left text-xs font-bold"></i>
+                <i className="fi flex fi-rr-angle-small-left  font-bold"></i>
             </button>
 
             {/* Sidebar Drawer */}
