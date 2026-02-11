@@ -41,7 +41,7 @@ export default function SessionRedirect() {
         } else {
             // EXIT LOGIC: If session is no longer active/pending, and we are ON that campaign's lead profile, leave.
             const currentPath = router.asPath;
-            const pathParts = currentPath.split('/').filter(Boolean);
+            const pathParts = currentPath.split('/').filter(p => Boolean(p) && p !== 'portal');
             if (pathParts[0] === 'campaign' && pathParts.length >= 3) {
                 const campaignIdInPath = pathParts[1];
                 if (campaignIdInPath === session.campaign_id) {
@@ -60,7 +60,7 @@ export default function SessionRedirect() {
                 setUserId(session.user.id);
             }
             
-            if (router.isReady && router.pathname !== "/login") {
+            if (router.isReady && !router.pathname.includes("/login")) {
                 const result = await checkAuthAndFetchProfile();
                 if (result.user?.currentCallSession) {
                     applyRedirect(result.user.currentCallSession);
@@ -116,7 +116,7 @@ export default function SessionRedirect() {
                     console.log('[Realtime-Redirect] Session deleted:', payload.old);
                     // Handle EXIT on deletion
                     const currentPath = router.asPath;
-                    const pathParts = currentPath.split('/').filter(Boolean);
+                    const pathParts = currentPath.split('/').filter(p => Boolean(p) && p !== 'portal');
                     if (pathParts[0] === 'campaign' && pathParts.length >= 3) {
                          const campaignIdInPath = pathParts[1];
                          const deletedCampaignId = payload.old?.campaign_id;
@@ -132,7 +132,7 @@ export default function SessionRedirect() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [userId, applyRedirect]);
+    }, [userId, applyRedirect, router]);
 
     return null;
 }

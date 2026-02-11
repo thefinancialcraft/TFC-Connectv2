@@ -201,7 +201,7 @@ const BottomNav = memo(function BottomNav({
               >
                 <i
                   className={`fi flex ${item.icon} text-xl transition-colors ${
-                    activeNav === item.id || router.pathname === item.path
+                    activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path
                       ? "text-[#4b33e8]"
                       : "text-gray-600"
                   }`}

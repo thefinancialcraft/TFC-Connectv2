@@ -214,8 +214,8 @@ const Sidebar = memo(function Sidebar({
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto" suppressHydrationWarning>
         {navItems.length > 0 ? (
           navItems.map((item) => {
-            const isOnPath = router.pathname.startsWith(item.path);
-            const isExactDashboard = item.path === '/dashboard' && router.pathname === '/dashboard';
+            const isOnPath = router.pathname.startsWith(item.path) || router.pathname.startsWith('/portal' + item.path);
+            const isExactDashboard = (item.path === '/dashboard') && (router.pathname === '/dashboard' || router.pathname === '/portal/dashboard');
             const isActive = item.path === '/dashboard' ? isExactDashboard : (isOnPath || activeNav === item.path);
 
             return (

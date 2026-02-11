@@ -1,18 +1,12 @@
 import type { AppProps } from "next/app";
-import "../styles/globals.css";
+import "../styles/globals.css"; // HMR Global Trigger
 import { DialogProvider } from "../lib/dialogService";
-import SessionRedirect from "../components/SessionRedirect";
-
-import { UserProvider } from "../components/UserProvider";
 
 import { globalLogger } from "../lib/logger";
 import { initNetworkInterceptors } from "../lib/networkInterceptors";
-import LogPip from "../components/LogPip";
 import "../lib/flutterBridge"; // Initialize bridge listeners
 
 import OfflineOverlay from "../components/OfflineOverlay";
-import GlobalCallHandler from "../components/GlobalCallHandler";
-import CallReminderOverlay from "../components/CallReminderOverlay";
 
 if (typeof window !== 'undefined') {
   globalLogger.init();
@@ -21,18 +15,27 @@ if (typeof window !== 'undefined') {
 }
 
 
+import { useRouter } from "next/router";
+import PortalContainer from "../components/PortalContainer";
+
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  
+  // Decide if this is a portal page or a marketing page
+  // Since we moved app files to /portal directory, their actual pathname will start with /portal
+  const isPortalPage = router.pathname.startsWith('/portal');
+
   return (
-    <UserProvider>
-      <DialogProvider>
-        <OfflineOverlay />
-        <SessionRedirect />
-        <GlobalCallHandler />
-        <CallReminderOverlay />
-        <LogPip />
+    <DialogProvider>
+      <OfflineOverlay />
+      {isPortalPage ? (
+        <PortalContainer>
+          <Component {...pageProps} />
+        </PortalContainer>
+      ) : (
         <Component {...pageProps} />
-      </DialogProvider>
-    </UserProvider>
+      )}
+    </DialogProvider>
   );
 }
 
