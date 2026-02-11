@@ -6,7 +6,7 @@ export default function FAQSection() {
   const faqs = [
     {
       q: "What is a SIM based calling CRM, and how is it different from VOIP?",
-      a: "A SIM based calling CRM like Rynxly uses your existing mobile network (GSM) to make calls, rather than relying on internet data. This ensures 100% call quality and local number visibility, while automatically syncing call logs and recordings to a web dashboard for sales tracking."
+      a: "A SIM based calling CRM like Rynxly uses your existing mobile network (GSM) to make calls, rather than relying on internet data. This ensures 100% call quality and local number visibility, while automatically syncing call logs and recordings to a web dashboard for sales tracking. [Learn more about SIM vs VOIP differences](#sim-vs-voip)"
     },
     {
       q: "How does the sales calling CRM sync my mobile calls?",
@@ -22,7 +22,7 @@ export default function FAQSection() {
     },
     {
       q: "What are the key benefits of using calling CRM software for sales teams?",
-      a: "The primary benefits include 100% automated call logging (no manual entry), improved agent accountability, higher lead conversion rates through timely follow-ups, and detailed call analytics that help in coaching and strategy refinement."
+      a: "The primary benefits include 100% automated call logging (no manual entry), improved agent accountability, higher lead conversion rates through timely follow-ups, and detailed call analytics that help in coaching and strategy refinement. [Explore advanced analytics features](#call-analytics)"
     },
     {
       q: "Is my data secure within this SIM calling solution for business?",

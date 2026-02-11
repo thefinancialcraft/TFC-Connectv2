@@ -40,7 +40,7 @@ export default function LandingPage() {
     <>
       <Head>
         <title>SIM Based Calling CRM & Sales Calling Software | Rynxly</title>
-        <meta name="description" content="Boost conversions with Rynxly, the leading SIM based calling CRM. Track sales calls, manage leads & sync mobile data to your dashboard effortlessly." />
+        <meta name="description" content="Scale your sales with the #1 SIM based calling CRM. Automate call logging, track lead performance, and sync mobile data in real-time. Start closing deals today!" />
         <meta name="keywords" content="SIM based calling CRM, Calling CRM software, Sales calling CRM, Call tracking software, CRM for sales teams, Lead management CRM, Call analytics software, SIM calling solution for business, mobile CRM, Rynxly" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#4b33e8" />

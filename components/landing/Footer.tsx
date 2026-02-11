@@ -12,8 +12,8 @@ export default function Footer() {
             <div className="text-xl font-bold text-[#4b33e8] mb-2 tracking-tight">
               rynxly.
             </div>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6">
-              The ultimate SIM-based calling CRM for high-performance sales teams.
+            <p className="text-gray-500 text-xs leading-relaxed mb-6">
+              Rynxly is the #1 **SIM based calling CRM** designed for high-performance sales teams. Track calls, manage leads, and sync mobile data effortlessly with our advanced **sales calling software**.
             </p>
             <div className="flex gap-4">
               {/* Social Placeholders */}

@@ -33,11 +33,11 @@ export default function HeroSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
-        {/* Badge */}
-        {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* Keyword-Focused Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50/50 border border-indigo-100/50 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <span className="w-2 h-2 rounded-full bg-[#4b33e8] animate-pulse"></span>
-          <span className="text-xs font-semibold text-[#4b33e8] tracking-wide uppercase">track • call • close</span>
-        </div> */}
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#4b33e8]">The #1 SIM Based Calling CRM Software</span>
+        </div>
 
         {/* Low Opacity Excel Background */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100%] h-[400px] z-0 opacity-50 select-none pointer-events-none overflow-hidden [transform:perspective(1000px)_rotateY(15deg)_rotateZ(-6deg)] scale-100 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]">
@@ -88,7 +88,7 @@ export default function HeroSection() {
         <h2 className="relative z-10 mt-10 text-3xl md:text-5xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
           Stop Managing Spreadsheets. <br />
           <span className="text-transparent pt-3 pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
-            Start Closing Deals.
+            Start Closing Deal                                                                                                                                                                                                                                                                                                                                                                                                            s.
           </span>
         </h2>
 
@@ -156,7 +156,7 @@ export default function HeroSection() {
           <div className="w-full bg-white rounded-b-xl relative overflow-hidden">
             <img 
               src="/call-interface-desktop.png" 
-              alt="Rynxly Call Interface" 
+              alt="Rynxly SIM Based Calling CRM - Sales Calling Software Dashboard" 
               className="w-full h-auto block"
             />
             {/* Background pattern overlay */}

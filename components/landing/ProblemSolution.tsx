@@ -7,8 +7,8 @@ export default function ProblemSolution() {
                 {/* Left: The Problems */}
                 <div>
                     <h2 className="text-2xl md:text-3xl font-bold mb-6 leading-tight">
-                        Break Free from the <br/>
-                        <span className="text-red-400">Chaos of Manual Calling</span>
+                        The Leading <br/>
+                        <span className="text-red-400">SIM Calling Solution</span> for Lead Management
                     </h2>
                     
                     <div className="space-y-8">

@@ -123,7 +123,7 @@ export default function Pricing() {
                         Investment & Scalability
                     </span>
                     <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">
-                        Choose The <span >Perfect Plan</span>
+                        Flexible <span >Calling CRM Software</span> Plans
                     </h2>
                     <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed mb-8">
                         Flexible pricing plans tailored to your sales scale. Deploy the most advanced SIM-based CRM and start closing more deals today.
