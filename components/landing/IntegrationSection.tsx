@@ -43,7 +43,7 @@ export default function IntegrationSection() {
  
                   {/* Code Snippet Card */}
                   {/* Settings Widget Card */}
-                  <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 relative overflow-hidden">
+                  <div className="bg-white rounded-2xl p-6 border border-gray-100 relative overflow-hidden">
                       <div className="flex items-center justify-between mb-6">
                           <h3 className="font-bold text-gray-900">Integration Settings</h3>
                           <span className="px-2 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full uppercase tracking-wide border border-green-100">Active</span>
@@ -53,7 +53,7 @@ export default function IntegrationSection() {
                           {/* Account Connection */}
                           <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
                               <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-100 shadow-sm">
+                                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-100">
                                       <i className="fi fi-brands-google text-lg flex"></i>
                                   </div>
                                   <div>
@@ -62,7 +62,7 @@ export default function IntegrationSection() {
                                   </div>
                               </div>
                               <div className="w-10 h-6 bg-green-500 rounded-full relative cursor-pointer">
-                                  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
                               </div>
                           </div>
 
@@ -88,7 +88,7 @@ export default function IntegrationSection() {
               {/* Right: Visual Mockup */}
               <div className="relative">
                  <div className="absolute inset-0 bg-blue-100 rounded-3xl rotate-3 scale-95 opacity-50 -z-10"></div>
-                 <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden relative">
+                 <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden relative">
                      {/* Fake Browser Headers */}
                      <div className="h-12 bg-white border-b border-gray-100 flex items-center justify-between px-6">
                          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Calendar View</span>
@@ -120,7 +120,7 @@ export default function IntegrationSection() {
                                              </div>
                                          )}
                                          {slot.active && (
-                                              <div className="absolute -right-2 -top-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] shadow-sm transform scale-0 group-hover:scale-110 transition-transform duration-200">
+                                              <div className="absolute -right-2 -top-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] transform scale-0 group-hover:scale-110 transition-transform duration-200">
                                                   <i className="fi fi-rr-check flex"></i>
                                               </div>
                                          )}
@@ -131,7 +131,7 @@ export default function IntegrationSection() {
                      </div>
  
                      {/* Integration Status Badge */}
-                     <div className="absolute bottom-6 right-6 px-4 py-2 bg-white/90 backdrop-blur border border-green-100 rounded-lg shadow-lg flex items-center gap-3 animate-bounce">
+                     <div className="absolute bottom-6 right-6 px-4 py-2 bg-white/90 backdrop-blur border border-green-100 rounded-lg flex items-center gap-3 animate-bounce">
                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                          <span className="text-xs font-bold text-green-700">Sync Active</span>
                      </div>

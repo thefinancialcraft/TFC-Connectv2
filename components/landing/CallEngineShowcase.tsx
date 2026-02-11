@@ -40,7 +40,7 @@ export default function CallEngineShowcase() {
             <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-orange-50/50 rounded-full blur-[80px] -z-10" />
 
             {/* 1. Normal Lead Card (Back Layer) */}
-            <div className="absolute top-10 right-0 md:right-4 w-[280px] sm:w-[320px] bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-700 z-10 group">
+            <div className="absolute top-10 right-0 md:right-4 w-[280px] sm:w-[320px] bg-white rounded-[2.5rem] border border-slate-200 p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-700 z-10 group">
               <div className="flex items-center gap-2 mb-4 px-2">
                  <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-[10px]">
                     <i className="fi fi-rr-bolt"></i>
@@ -70,13 +70,13 @@ export default function CallEngineShowcase() {
                   </div>
                   <div className="w-full mt-4">
                     <div className="grid grid-cols-[1fr_auto] gap-2">
-                      <div className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[9px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 group relative overflow-hidden">
+                      <div className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[9px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 group relative overflow-hidden">
                         <div className="w-4 h-4 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
                           <i className="fi flex fi-rr-phone-call"></i>
                         </div>
                         <span className="relative z-10">Call Now</span>
                       </div>
-                      <div className="h-10 w-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center group">
+                      <div className="h-10 w-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-all flex items-center justify-center group">
                         <i className="fi flex fi-brands-whatsapp text-sm group-hover:rotate-12 transition-transform"></i>
                       </div>
                     </div>
@@ -86,7 +86,7 @@ export default function CallEngineShowcase() {
             </div>
 
             {/* 2. Follow-Up Card (Front Layer) */}
-            <div className="absolute bottom-10 left-0 md:left-4 w-[280px] sm:w-[320px] bg-white rounded-[2.5rem] border border-orange-100 shadow-[0_50px_100px_-20px_rgba(249,115,22,0.15)] p-4 transform rotate-2 hover:rotate-0 transition-transform duration-700 z-20 group">
+            <div className="absolute bottom-10 left-0 md:left-4 w-[280px] sm:w-[320px] bg-white rounded-[2.5rem] border border-orange-100 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-700 z-20 group">
               <div className="flex items-center gap-2 mb-4 px-2">
                  <div className="w-6 h-6 rounded-lg bg-orange-500 flex items-center justify-center text-white text-[10px]">
                     <i className="fi fi-rr-clock"></i>
@@ -136,20 +136,20 @@ export default function CallEngineShowcase() {
                               if (diff > 0 && diff <= containerRef.current.clientWidth - 45) setDragX(diff);
                            }}
                            onPointerUp={() => { setIsDragging(false); setDragX(0); }}
-                           className="relative h-full flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200"
+                           className="relative h-full flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none border border-orange-200"
                         >
                           <div className="absolute inset-0 flex items-center justify-end pr-4 opacity-40">
                              <i className="fi fi-rr-angle-double-right text-[10px] text-orange-400"></i>
                           </div>
                           <div 
-                            className={`absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10 rounded-xl w-full cursor-grab active:cursor-grabbing`}
+                            className={`absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 transition-transform duration-75 ease-out will-change-transform z-10 rounded-xl w-full cursor-grab active:cursor-grabbing`}
                             style={{ transform: `translateX(${dragX}px)` }}
                           >
                             <i className="fi fi-rr-phone-call text-white text-[10px]"></i>
                             <span className="text-white font-black text-[9px] uppercase tracking-widest">Follow Up Call</span>
                           </div>
                         </div>
-                        <div className="h-full w-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0">
+                        <div className="h-full w-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0">
                           <i className="fi fi-brands-whatsapp text-sm group-hover:rotate-12 transition-transform"></i>
                         </div>
                       </div>

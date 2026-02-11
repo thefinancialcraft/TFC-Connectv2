@@ -81,32 +81,35 @@ export default function HeroSection() {
           </table>
         </div>
 
-        {/* Main Headline */}
-        <h1 className="relative z-10 mt-10 text-4xl md:text-6xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+        {/* Main SEO Heading (Hidden for crawlers) */}
+        <h1 className="sr-only">The Most Advanced SIM Based Calling CRM for High-Performance Sales Teams</h1>
+
+        {/* Visual Hook Line */}
+        <h2 className="relative z-10 mt-10 text-3xl md:text-5xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
           Stop Managing Spreadsheets. <br />
-          <span className="text-transparent pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
+          <span className="text-transparent pt-3 pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
             Start Closing Deals.
           </span>
-        </h1>
+        </h2>
 
-        {/* Subheadline */}
-        <p className="mt-3 max-w-2xl mx-auto text-base md:text-lg text-gray-500 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-          The comprehensive SIM-based calling CRM that syncs your mobile workforce with real-time web analytics. Eliminate data chaos and boost agent performance instantly.
+        {/* Subheadline / Supporting Paragraph */}
+        <p className="mt-3 max-w-2xl mx-auto text-sm md:text-base text-gray-500 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+          The powerful <strong>SIM-based calling CRM</strong> for mobile teams. Automate call logs, sync real-time analytics, and scale your sales without the manual chaos.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
           <a
-            href="tel:+918882558932"
+            href="/login"
             className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#4b33e8] text-white font-bold text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-1"
           >
-            Contact Sales
+            Get Started for Free
           </a>
           <a 
-            href="#features"
+            href="#contact"
             className="w-full sm:w-auto px-6 py-3 rounded-full bg-white text-[#263238] border border-gray-200 font-bold text-base hover:bg-gray-50 transition-all hover:-translate-y-1"
           >
-            See How It Works
+            Book a Live Demo
           </a>
         </div>
 

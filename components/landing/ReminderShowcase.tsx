@@ -129,7 +129,7 @@ export default function ReminderShowcase() {
           <div className={`relative h-[550px] md:h-[650px] transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             
             {/* Desktop Dashboard Mockup */}
-            <div className="absolute top-0 right-0 w-[85%] md:w-[90%] aspect-[16/10] rounded-2xl border border-gray-200 bg-slate-50 shadow-2xl overflow-hidden z-10 group transition-all duration-500">
+            <div className="absolute top-0 right-0 w-[85%] md:w-[90%] aspect-[16/10] rounded-2xl border border-gray-200 bg-slate-50 overflow-hidden z-10 group transition-all duration-500">
                {/* Browser Header */}
                <div className="h-6 bg-white border-b border-gray-100 flex items-center gap-1.5 px-3">
                  <div className="w-1.5 h-1.5 rounded-full bg-red-400 opacity-60"></div>
@@ -155,7 +155,7 @@ export default function ReminderShowcase() {
                  </div>
 
                  {/* 🖥️ DESKTOP FLOATING REMINDER (AS PER IMAGE) */}
-                 <div className="absolute top-4 right-4 w-56 bg-[#1a1f24] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] p-3 border border-white/10 z-30 transform hover:-translate-y-1 transition-transform">
+                 <div className="absolute top-4 right-4 w-56 bg-[#1a1f24] rounded-xl p-3 border border-white/10 z-30 transform hover:-translate-y-1 transition-transform">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center">
@@ -184,7 +184,7 @@ export default function ReminderShowcase() {
                        <span className="italic">"call back me later"</span>
                     </div>
 
-                    <button className="w-full h-8 bg-emerald-500 rounded-lg flex items-center justify-center gap-2 text-white text-[9px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-colors mb-2 shadow-lg shadow-emerald-500/20">
+                    <button className="w-full h-8 bg-emerald-500 rounded-lg flex items-center justify-center gap-2 text-white text-[9px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-colors mb-2">
                        <i className="fi fi-rr-phone-call mt-0.5"></i>
                        CALL NOW
                     </button>
@@ -199,7 +199,7 @@ export default function ReminderShowcase() {
             </div>
 
             {/* 📱 MOBILE REMINDER MOCKUP (AS PER IMAGE) - INCREASED WIDTH */}
-            <div className="absolute bottom-4 left-0 w-[58%] md:w-[48%] aspect-[9/18] rounded-[2rem] border-[8px] border-slate-900 bg-[#121826] shadow-[0_40px_80px_rgba(0,0,0,0.7)] overflow-hidden z-40 transform hover:scale-105 transition-transform duration-500">
+            <div className="absolute bottom-4 left-0 w-[58%] md:w-[48%] aspect-[9/18] rounded-[2rem] border-[8px] border-slate-900 bg-[#121826] overflow-hidden z-40 transform hover:scale-105 transition-transform duration-500">
                {/* Internal Content */}
                <div className="h-full flex flex-col items-center pt-8 px-3 pb-14 relative">
                  {/* Top Badge */}
@@ -250,7 +250,7 @@ export default function ReminderShowcase() {
                  </div>
 
                   {/* The Slider (Main Action - FULLY INTERACTIVE) */}
-                  <div className="w-full h-10 rounded-full bg-slate-800/90 border border-slate-700/50 shadow-2xl flex items-center justify-between px-7 relative mt-auto touch-none select-none">
+                  <div className="w-full h-10 rounded-full bg-slate-800/90 border border-slate-700/50 flex items-center justify-center px-7 relative mt-auto touch-none select-none">
                     
                     {/* Inner Clipped Area for Labels & Color Hints */}
                     <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
@@ -278,10 +278,10 @@ export default function ReminderShowcase() {
                         onMouseDown={onStart}
                         onTouchStart={onStart}
                         style={{ transform: `translateX(${swipeX}px)` }}
-                        className={`absolute top-1/2 -mt-6.5 w-13 h-13 left-1/2 -ml-6.5 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.3)] flex items-center justify-center z-30 border-4 cursor-grab active:cursor-grabbing will-change-transform
+                        className={`absolute top-1/2 -mt-6.5 w-13 h-13 left-1/2 -ml-6.5 rounded-full flex items-center justify-center z-30 border-4 cursor-grab active:cursor-grabbing will-change-transform
                             ${!isDragging ? 'transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]' : 'transition-none'}
-                            ${swipeX > 80 ? 'bg-emerald-500 border-emerald-400 shadow-emerald-500/40' : 
-                              swipeX < -80 ? 'bg-red-500 border-red-400 shadow-red-500/40' : 
+                            ${swipeX > 80 ? 'bg-emerald-500 border-emerald-400' : 
+                              swipeX < -80 ? 'bg-red-500 border-red-400' : 
                               'bg-white border-slate-900/10'}
                         `}
                     >

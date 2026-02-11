@@ -5,24 +5,28 @@ export default function FAQSection() {
 
   const faqs = [
     {
-      q: "Does Rynxly replace my current phone system?",
-      a: "No, Rynxly works WITH your existing Android phones. It installs on your agents' mobile devices and bridges the call data to the cloud. You don't need expensive VoIP hardware."
+      q: "What is a SIM based calling CRM, and how is it different from VOIP?",
+      a: "A SIM based calling CRM like Rynxly uses your existing mobile network (GSM) to make calls, rather than relying on internet data. This ensures 100% call quality and local number visibility, while automatically syncing call logs and recordings to a web dashboard for sales tracking."
     },
     {
-      q: "Is my customer data secure?",
-      a: "Absolutely. We use enterprise-grade encryption. Plus, you can mask customer numbers so agents never see the actual 10-digit phone number, preventing data theft."
+      q: "How does the sales calling CRM sync my mobile calls?",
+      a: "Rynxly installs a lightweight application on your agents' mobile devices. This app captures call data—such as duration, timestamp, and disposition—and securely uploads it to your central CRM software in real-time, even if the agent is working remotely."
     },
     {
-      q: "Can I customize the 'Lead Status' options?",
-      a: "Yes! You can create custom dispositions like 'Interested', 'Call Back Later', 'Site Visit Scheduled', etc., to match your specific sales workflow."
+      q: "Is Rynxly suitable for lead management CRM tasks?",
+      a: "Yes! Rynxly is a comprehensive lead management CRM. You can assign leads to agents, set follow-up reminders, and track the entire lifecycle of a customer from the first call to the final conversion using our dynamic pipeline view."
     },
     {
-      q: "Does it record calls?",
-      a: "Yes, Rynxly syncs call recordings from the mobile device to the dashboard (permissions required), allowing managers to review quality and coach agents."
+      q: "Can I use Rynxly as a call tracking software for field agents?",
+      a: "Absolutely. Rynxly is the perfect call tracking software for distributed teams. Managers can monitor live call stats, review performance analytics, and ensure that field agents are following up with leads promptly through our centralized dashboard."
     },
     {
-      q: "How many agents can I add?",
-      a: "There is no limit. Rynxly scales from teams of 5 to call centers with 500+ agents easily."
+      q: "What are the key benefits of using calling CRM software for sales teams?",
+      a: "The primary benefits include 100% automated call logging (no manual entry), improved agent accountability, higher lead conversion rates through timely follow-ups, and detailed call analytics that help in coaching and strategy refinement."
+    },
+    {
+      q: "Is my data secure within this SIM calling solution for business?",
+      a: "Data security is our top priority. We use enterprise-level encryption for all data transfers and storage. Additionally, our 'Number Masking' feature ensures that agents can call leads without ever seeing their private phone numbers, protecting your business intelligence."
     }
   ];
 

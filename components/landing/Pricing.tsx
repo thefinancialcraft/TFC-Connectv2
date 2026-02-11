@@ -2,72 +2,72 @@ import { useState } from 'react';
 
 const plans = [
     {
-        name: "Spark",
-        icon: "fi-rr-bolt flex",
-        period: "Monthly",
-        price: 700,
-        minUsers: 10,
-        desc: "Perfect for starting teams",
-        badge: "STARTER"
-    },
-    {
-        name: "Boost",
-        icon: "fi-rr-rocket-lunch flex",
-        period: "Monthly",
-        price: 500,
-        minUsers: 20,
-        desc: "Faster calling, better tracking",
-        badge: "GROWTH"
-    },
-    {
-        name: "Surge",
-        icon: "fi-rr-flame flex",
-        period: "Quarterly",
-        price: 450,
-        minUsers: 20,
-        desc: "Scale performance with savings",
-        badge: "MOST POPULAR",
-        highlight: true
-    },
-    {
-        name: "Prime",
-        icon: "fi-rr-star flex",
-        period: "Half-Yearly",
-        price: 400,
-        minUsers: 20,
-        desc: "Strong value for growing teams",
-        badge: "RECOMMENDED"
-    },
-    {
         name: "Elite",
-        icon: "fi-rr-crown flex",
         period: "Yearly",
         price: 350,
         minUsers: 20,
-        desc: "Maximum savings. Maximum control.",
-        badge: "BEST VALUE",
-        highlight: true
+        desc: "The ultimate power package. Half the price, all the enterprise features.",
+        badge: "Best Value",
+        color: "bg-[#0a0c12]/80",
+        border: "border-white/10"
+    },
+    {
+        name: "Prime",
+        period: "Half-Yearly",
+        price: 400,
+        minUsers: 20,
+        desc: "Long-term stability with full insights for established sales engines.",
+        badge: "",
+        color: "bg-[#0a0c12]/80",
+        border: "border-white/10"
+    },
+    {
+        name: "Surge",
+        period: "Quarterly",
+        price: 450,
+        minUsers: 20,
+        desc: "High-performance features for scale. Includes priority support and analytics.",
+        badge: "Most popular",
+        highlight: true,
+        color: "bg-gradient-to-b from-[#b8c6db] to-[#f5f7fa]",
+        border: "border-black/5"
+    },
+    {
+        name: "Boost",
+        period: "Monthly",
+        price: 500,
+        minUsers: 20,
+        desc: "Ideal for growing teams needing advanced lead tracking and voice memos.",
+        badge: "",
+        color: "bg-[#0a0c12]/80",
+        border: "border-white/10"
+    },
+    {
+        name: "Spark",
+        period: "Monthly",
+        price: 700,
+        minUsers: 10,
+        desc: "Perfect for small teams testing the waters with essential CRM tools.",
+        badge: "",
+        color: "bg-[#0a0c12]/80",
+        border: "border-white/10"
     }
 ];
 
 const sharedFeatures = [
-    { title: "Call Tracking", icon: "fi-rr-target flex" },
-    { title: "Talk Time", icon: "fi-rr-clock flex" },
-    { title: "Daily Dials", icon: "fi-rr-chart-histogram flex" },
-    { title: "Sim Based Calls", icon: "fi-rr-sim-card flex" },
-    { title: "Smart Followup", icon: "fi-rr-redo flex" },
-    { title: "100% Leads Consumption", icon: "fi-rr-stats flex" },
-    { title: "Team Management", icon: "fi-rr-users flex" },
-    { title: "Masked Contacts", icon: "fi-rr-eye-crossed flex" },
-    { title: "Lead Protection", icon: "fi-rr-shield-check flex" },
-    { title: "Lead Assignment", icon: "fi-rr-user-add flex" },
-    { title: "Customer Support", icon: "fi-rr-headset flex" },
-    { title: "Easy to Use UI", icon: "fi-rr-magic-wand flex" }
+    "100% Mobile Dashboard Sync",
+    "Zero Follow-up Protocol",
+    "Customer Lead Masking",
+    "GSM SIM Card Integration",
+    "Live Analytics Performance",
+    "24/7 Dedicated Support",
+    "Automated Call Log Reports"
 ];
 
 export default function Pricing() {
-    const [activeIdx, setActiveIdx] = useState(2); // Surge (Most Popular)
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState<any>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -76,337 +76,258 @@ export default function Pricing() {
         teamStrength: ''
     });
 
+    const handleOpenModal = (plan: any) => {
+        setSelectedPlan(plan);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsSubmitted(false);
+    };
+
     const handleInputChange = (e: any) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        // Here you would typically send data to your backend
-        console.log("Form Submitted:", formData);
         setIsSubmitted(true);
         setTimeout(() => {
-            setIsSubmitted(false);
-            setIsModalOpen(false);
+            handleCloseModal();
             setFormData({ name: '', email: '', phone: '', teamStrength: '' });
         }, 3000);
     };
 
     return (
-        <div id="pricing" className="py-24 bg-gray-950 relative">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="pricing" className="relative py-16 bg-[#01040a] overflow-hidden">
+            {/* Advanced Atmospheric Glowing Background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                {/* Main Central Glow */}
+                <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500/30 blur-[130px] rounded-full"></div>
                 
-                {/* Section Header - Styled like IndustrySolutions/Features */}
-                <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-sm font-bold tracking-wide text-indigo-400 uppercase mb-3">Investment</h2>
-                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                        Pricing <span className="text-indigo-400">Plans</span>
-                    </h2>
-                    <p className="text-base text-gray-400">
-                        Transparent pricing for high-performance teams. Scale your sales engine without breaking the bank.
-                    </p>
-                </div>
+                {/* Accent Violet Glow Left */}
+                <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-600/25 blur-[120px] rounded-full animate-pulse-slow"></div>
+                
+                {/* Accent Purple Glow Right */}
+                <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-purple-600/20 blur-[120px] rounded-full"></div>
 
-                {/* Pricing Console - Integrated Design (Desktop/Tablet) */}
-                <div className="hidden lg:block max-w-6xl mx-auto bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row min-h-[500px]">
-                        
-                        {/* Sidebar Selector - Unified with site theme */}
-                        <div className="w-full lg:w-1/3 bg-gray-50/80 p-6 lg:p-8 border-r border-gray-100">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">Subscription Period</p>
-                            <div className="space-y-3">
-                                {plans.map((plan, idx) => (
-                                    <button 
-                                        key={idx}
-                                        onClick={() => setActiveIdx(idx)}
-                                        className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${
-                                            activeIdx === idx 
-                                            ? 'bg-white shadow-md border-l-4 border-[#4b33e8] ring-1 ring-gray-100' 
-                                            : 'hover:bg-gray-100 bg-transparent'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeIdx === idx ? 'bg-[#4b33e8] text-white shadow-lg shadow-indigo-100' : 'bg-white text-gray-400 border border-gray-100'}`}>
-                                                <i className={`fi ${plan.icon} text-sm`}></i>
-                                            </div>
-                                            <div className="text-left">
-                                                <p className={`font-bold text-sm ${activeIdx === idx ? 'text-gray-900' : 'text-gray-500'}`}>{plan.name}</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">{plan.period}</p>
-                                            </div>
-                                        </div>
-                                        {plan.badge && idx === activeIdx && (
-                                            <span className="text-[9px] bg-[#4b33e8]/10 text-[#4b33e8] px-2 py-0.5 rounded-full font-bold">
-                                                {plan.badge}
-                                            </span>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Info Box */}
-                            <div className="mt-8 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
-                                <div className="flex gap-3">
-                                    <i className="fi fi-rr-info flex text-[#4b33e8] mt-0.5"></i>
-                                    <p className="text-[11px] text-[#4b33e8] font-medium leading-relaxed">
-                                        All plans include full CRM features. Lower prices are secured via longer billing commitments.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Plan Details Display - Unified with Hero/Showcase */}
-                        <div className="flex-1 p-8 lg:p-12 flex flex-col">
-                            <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-gray-50 pb-10 mb-10">
-                                <div>
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-[#4b33e8] text-[10px] font-black uppercase tracking-widest mb-4">
-                                        Active Selection
-                                    </div>
-                                    <h4 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-[#4b33e8] flex items-center justify-center text-2xl shadow-sm border border-indigo-100/50">
-                                            <i className={`fi ${plans[activeIdx].icon}`}></i>
-                                        </div>
-                                        {plans[activeIdx].name}
-                                    </h4>
-                                    <p className="text-gray-500 text-sm font-medium">{plans[activeIdx].desc}</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="flex items-baseline justify-end">
-                                        <span className="text-5xl font-black text-[#4b33e8]">₹{plans[activeIdx].price}</span>
-                                        <span className="text-sm font-bold text-gray-400 ml-1">/mo</span>
-                                    </div>
-                                    <p className="text-xs text-gray-400 mt-1">Billed {plans[activeIdx].period.toLowerCase()}</p>
-                                    
-                                    {/* Simple Min Users Label */}
-                                    {plans[activeIdx].minUsers && (
-                                        <p className="mt-3 text-sm font-black text-orange-600 uppercase tracking-wide">
-                                            Min {plans[activeIdx].minUsers} users
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6">
-                                {sharedFeatures.map((feature, i) => (
-                                    <div key={i} className="flex items-center gap-3 group">
-                                        <div className="w-7 h-7 rounded-lg bg-gray-50 text-gray-400 flex items-center justify-center text-xs group-hover:bg-[#4b33e8] group-hover:text-white transition-all">
-                                            <i className={`fi ${feature.icon}`}></i>
-                                        </div>
-                                        <span className="text-xs font-bold text-gray-600 uppercase tracking-tight">{feature.title}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-auto pt-12 flex flex-col sm:flex-row items-center gap-4">
-                                <button 
-                                    onClick={() => setIsModalOpen(true)}
-                                    className="w-full sm:w-auto px-10 py-4 bg-[#4b33e8] text-white rounded-2xl font-black text-base hover:bg-[#3b27b8] transition-all shadow-xl shadow-indigo-100 hover:shadow-indigo-200"
-                                >
-                                    Get Started with {plans[activeIdx].name}
-                                </button>
-                                <p className="text-[11px] text-gray-400 font-medium">No hidden fees. 24/7 dedicated support.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile View: Swipeable Carousel */}
-                <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory gap-4 px-4 pb-12 -mx-4 scrollbar-hide">
-                    {plans.map((plan, i) => (
-                        <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-white rounded-3xl p-6 border border-gray-100 shadow-xl shadow-indigo-100/20 flex flex-col relative">
-                            {/* Header */}
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#4b33e8] flex items-center justify-center text-xl">
-                                        <i className={`fi ${plan.icon}`}></i>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xl font-bold text-gray-900 leading-none mb-1">{plan.name}</h4>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{plan.period}</p>
-                                    </div>
-                                </div>
-                                {plan.badge && (
-                                    <span className="text-[9px] bg-[#4b33e8] text-white px-2 py-1 rounded-full font-bold uppercase tracking-wide">
-                                        {plan.badge}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Price */}
-                            <div className="mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                <div className="flex items-baseline justify-center">
-                                    <span className="text-4xl font-black text-[#4b33e8]">₹{plan.price}</span>
-                                    <span className="text-sm font-bold text-gray-400 ml-1">/mo</span>
-                                </div>
-                                {plan.minUsers && (
-                                    <p className="text-[10px] font-bold text-orange-600 mt-1 text-center uppercase tracking-wide">Min {plan.minUsers} users</p>
-                                )}
-                                <p className="text-xs text-gray-500 mt-2 text-center leading-tight">"{plan.desc}"</p>
-                            </div>
-
-                            {/* Features Compact */}
-                            <div className="flex-1 space-y-2 mb-6">
-                                {sharedFeatures.map((feature, idx) => (
-                                    <div key={idx} className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
-                                             <i className="fi fi-rr-check text-[8px] flex"></i>
-                                        </div>
-                                        <span className="text-xs text-gray-600 font-medium">{feature.title}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Button */}
-                            <button 
-                                onClick={() => setIsModalOpen(true)}
-                                className="w-full py-3 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-[#3b27b8] active:scale-95 transition-all"
-                            >
-                                Get Started
-                            </button>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Volume Discounts Section - Styled like Pricing Console */}
-                <div className="mt-10 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div className="lg:col-span-8 bg-[#0F172A] rounded-[2rem] p-8 md:p-10 text-white relative overflow-hidden">
-                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px]"></div>
-                         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div>
-                                <p className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-3">Enterprise Grade</p>
-                                <h4 className="text-3xl font-bold mb-3 italic">Volume Discounts 💸</h4>
-                                <p className="text-gray-400 text-sm max-w-sm">Scaling fast? We offer additional savings for teams exceeding 50 agents.</p>
-                            </div>
-                            <div className="flex gap-3">
-                                <div className="px-6 py-4 bg-white/5 rounded-2xl border border-white/10 text-center backdrop-blur-sm">
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">50+ Users</p>
-                                    <p className="text-xl font-black text-amber-400">10% OFF</p>
-                                </div>
-                                <div className="px-6 py-4 bg-white/5 rounded-2xl border border-white/10 text-center backdrop-blur-sm">
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase mb-1">100+ Users</p>
-                                    <p className="text-xl font-black text-emerald-400">20% OFF</p>
-                                </div>
-                            </div>
-                         </div>
-                    </div>
-                    <div className="lg:col-span-4 bg-white rounded-[2rem] p-8 border border-gray-100 flex flex-col justify-center items-center text-center">
-                         <h5 className="text-lg font-bold text-gray-900 mb-2">Need a Custom Plan?</h5>
-                         <p className="text-xs text-gray-500 mb-6">Tailored solutions for large enterprises and BPOs.</p>
-                         <a 
-                            href="tel:+918882558932"
-                            className="w-full block py-3 bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl font-bold text-sm transition-all"
-                         >
-                             Contact Sales
-                         </a>
-                    </div>
-                </div>
-
+                {/* Subtle Grid for Depth */}
+                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.2) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
             </div>
 
-             {/* Booking Modal */}
-             {isModalOpen && (
-                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
-                    {/* Backdrop */}
-                    <div 
-                        className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
-                        onClick={() => setIsModalOpen(false)}
-                    ></div>
+            <div className="relative  z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
+                <div className="text-center pb-2 max-w-3xl mx-auto mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <span className="px-3 py-1 rounded-full bg-indigo-50/10 border border-[#4b33e8]/20 text-[#4b33e8] text-[10px] font-black uppercase tracking-widest mb-4 inline-block">
+                        Investment & Scalability
+                    </span>
+                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+                        Choose The <span >Perfect Plan</span>
+                    </h2>
+                    <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed mb-8">
+                        Flexible pricing plans tailored to your sales scale. Deploy the most advanced SIM-based CRM and start closing more deals today.
+                    </p>
 
-                    {/* Modal Content */}
-                    <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
-                        {/* Close Button */}
-                        <button 
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 flex items-center justify-center transition-colors"
-                        >
-                            <i className="fi fi-rr-cross-small flex text-xl"></i>
+                   
+                </div>
+
+                {/* Plan Carousel / Grid */}
+                <div className="relative group/carousel">
+                    {/* Navigation Buttons (Visible on Hover/Desktop) */}
+                    <button 
+                        onClick={() => {
+                            const el = document.getElementById('pricing-scroll');
+                            if (el) el.scrollBy({ left: -el.offsetWidth / 2, behavior: 'smooth' });
+                        }}
+                        className="absolute left-[-40px] top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-white/10 transition-all opacity-0 group-hover/carousel:opacity-100 hidden lg:flex"
+                    >
+                        <i className="fi fi-rr-angle-left flex"></i>
+                    </button>
+                    <button 
+                        onClick={() => {
+                            const el = document.getElementById('pricing-scroll');
+                            if (el) el.scrollBy({ left: el.offsetWidth / 2, behavior: 'smooth' });
+                        }}
+                        className="absolute right-[-40px] top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-white/10 transition-all opacity-0 group-hover/carousel:opacity-100 hidden lg:flex"
+                    >
+                        <i className="fi fi-rr-angle-right flex"></i>
+                    </button>
+
+                    <div 
+                        id="pricing-scroll"
+                        className="flex overflow-x-auto snap-x snap-mandatory gap-5 pt-10 pb-8 scrollbar-hide px-2 items-stretch max-w-6xl mx-auto -mt-10"
+                    >
+                        {plans.map((plan, idx) => (
+                            <div 
+                                key={idx} 
+                                className={`relative group shrink-0 w-[80vw] lg:w-[calc(33.33%-1rem)] snap-center flex flex-col p-[2px] rounded-[1.8rem] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-400 transition-all duration-300 hover:-translate-y-3`}
+                                style={{ transitionDelay: `${idx * 100}ms` }}
+                            >
+                                {/* Rotating Border Highlight (Hover only) */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_20%,#4b33e8_40%,#9333ea_50%,#4b33e8_60%,transparent_80%)] animate-[spin_2.5s_linear_infinite]"></div>
+                                </div>
+
+                                <div className={`relative z-10 flex flex-col h-full p-6 rounded-[1.8rem] border ${plan.border} ${plan.color} transition-all duration-300 hover:border-transparent hover:shadow-[0_20px_50px_rgba(75,51,232,0.15)]`}>
+                                    {plan.badge && (
+                                        <div className="absolute top-0 right-0">
+                                            <span className={`text-[9px] font-bold tracking-tight px-3 py-1 rounded-full uppercase ${plan.highlight ? 'bg-[#4b33e8] text-white shadow-lg' : 'bg-white/10 text-white/80'}`}>
+                                                {plan.badge}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <div className="mb-6">
+                                        <h4 className={`text-2xl font-bold mb-2 ${plan.highlight ? 'text-slate-900' : 'text-white'}`}>{plan.name}</h4>
+                                        <p className={`text-xs leading-relaxed mb-4 h-10 line-clamp-2 ${plan.highlight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                            {plan.desc}
+                                        </p>
+                                        
+                                        <div className="flex flex-col">
+                                            <p className={`text-[9px] font-bold uppercase tracking-wider ${plan.highlight ? 'text-slate-500' : 'text-gray-500'}`}>
+                                                Starting from
+                                            </p>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className={`text-4xl font-black ${plan.highlight ? 'text-slate-900' : 'text-white'}`}>
+                                                    ₹{plan.price}
+                                                </span>
+                                                <span className={`text-xs font-bold ${plan.highlight ? 'text-slate-500' : 'text-gray-500'}`}>
+                                                    /user/mo
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Feature Divider */}
+                                    <div className="relative flex items-center justify-center mb-5">
+                                        <div className={`flex-grow h-[1px] ${plan.highlight ? 'bg-slate-900/10' : 'bg-white/10'}`}></div>
+                                        <span className={`mx-3 text-[9px] font-black uppercase tracking-[0.15em] whitespace-nowrap ${plan.highlight ? 'text-slate-900/40' : 'text-white/20'}`}>
+                                            Included Features
+                                        </span>
+                                        <div className={`flex-grow h-[1px] ${plan.highlight ? 'bg-slate-900/10' : 'bg-white/10'}`}></div>
+                                    </div>
+
+                                    {/* Features */}
+                                    <div className="flex-1 space-y-3 mb-8">
+                                        {sharedFeatures.map((f, i) => (
+                                            <div key={i} className="flex items-center gap-2.5">
+                                                <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${plan.highlight ? 'bg-[#4b33e8] text-white' : 'bg-white/10 text-white'}`}>
+                                                    <i className="fi fi-rr-check flex"></i>
+                                                </div>
+                                                <span className={`text-xs font-medium tracking-tight ${plan.highlight ? 'text-slate-700' : 'text-gray-300'}`}>
+                                                    {f}
+                                                </span>
+                                            </div>
+                                        ))}
+                                        {plan.minUsers && (
+                                            <div className="pt-2">
+                                                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${plan.highlight ? 'bg-slate-900/5 text-slate-900' : 'bg-white/5 text-gray-400 border border-white/5'}`}>
+                                                    <i className="fi fi-rr-users flex"></i>
+                                                    Min {plan.minUsers} Users
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p className={`text-center text-[10px] font-black uppercase mb-3 tracking-wider ${plan.highlight ? 'text-slate-500' : 'text-gray-400'}`}>
+                                        Billed {plan.period}
+                                    </p>
+                                    <button 
+                                        onClick={() => handleOpenModal(plan)}
+                                        className={`w-full py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.1em] transition-all border ${
+                                            plan.highlight 
+                                            ? 'bg-[#4b33e8] text-white border-transparent shadow-xl hover:bg-[#3b27b8]' 
+                                            : 'bg-white/5 text-white border-white/10 hover:bg-white/10'
+                                        }`}
+                                    >
+                                        Get a consultation
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-[#000]/80 backdrop-blur-2xl" onClick={handleCloseModal}></div>
+                    <div className="relative w-full max-w-lg bg-[#0a0c12] rounded-[2.5rem] border border-white/10 shadow-3xl p-10 animate-in zoom-in-95 duration-300">
+                        <button onClick={handleCloseModal} className="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i className="fi fi-rr-cross-small flex"></i>
                         </button>
 
                         {!isSubmitted ? (
                             <>
-                                <div className="text-center mb-8">
-                                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-[#4b33e8] flex items-center justify-center text-2xl mx-auto mb-4">
-                                        <i className="fi fi-rr-rocket-lunch flex"></i>
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-gray-900">Get Started</h3>
-                                    <p className="text-gray-500 text-sm mt-2">Fill in your details to kickstart your sales engine.</p>
+                                <div className="text-center mb-10">
+                                    <h3 className="text-3xl font-black text-white">Unlock {selectedPlan?.name}</h3>
+                                    <p className="text-gray-500 mt-3 text-sm">Scale your sales team with Rynxly's professional SIM-based CRM.</p>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Name</label>
+                                    <input 
+                                        name="name" required placeholder="Full Name" 
+                                        onChange={handleInputChange} value={formData.name}
+                                        className="w-full px-6 py-4 bg-[#01040a] border border-white/10 rounded-2xl focus:border-[#4b33e8] transition-all outline-none text-white text-sm"
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
                                         <input 
-                                            type="text" 
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
-                                            placeholder="John Doe"
+                                            name="email" type="email" required placeholder="Email Address" 
+                                            onChange={handleInputChange} value={formData.email}
+                                            className="w-full px-6 py-4 bg-[#01040a] border border-white/10 rounded-2xl focus:border-[#4b33e8] transition-all outline-none text-white text-sm"
+                                        />
+                                        <input 
+                                            name="phone" required placeholder="Mobile Number" 
+                                            onChange={handleInputChange} value={formData.phone}
+                                            className="w-full px-6 py-4 bg-[#01040a] border border-white/10 rounded-2xl focus:border-[#4b33e8] transition-all outline-none text-white text-sm"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Email Address</label>
-                                        <input 
-                                            type="email" 
-                                            name="email"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
-                                            placeholder="john@company.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Phone Number</label>
-                                        <input 
-                                            type="tel" 
-                                            name="phone"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium"
-                                            placeholder="+91 98765 43210"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-1.5">Team Strength</label>
-                                        <select 
-                                            name="teamStrength"
-                                            required
-                                            value={formData.teamStrength}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-gray-200 focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none text-sm font-medium text-gray-600"
-                                        >
-                                            <option value="">Select team size</option>
-                                            <option value="1-10">1 - 10 Agents</option>
-                                            <option value="11-50">11 - 50 Agents</option>
-                                            <option value="51-200">51 - 200 Agents</option>
-                                            <option value="200+">200+ Agents</option>
-                                        </select>
-                                    </div>
-
-                                    <button 
-                                        type="submit"
-                                        className="w-full py-3.5 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-xl shadow-indigo-200 hover:shadow-indigo-300 hover:-translate-y-0.5 transition-all mt-4"
+                                    <select 
+                                        name="teamStrength" required 
+                                        onChange={handleInputChange} value={formData.teamStrength}
+                                        className="w-full px-6 py-4 bg-[#01040a] border border-white/10 rounded-2xl focus:border-[#4b33e8] transition-all outline-none text-gray-400 text-sm"
                                     >
-                                        Submit Request
+                                        <option value="">Agent Strength</option>
+                                        <option value="1-10">1-10 Agents</option>
+                                        <option value="11-50">11-50 Agents</option>
+                                        <option value="50+">50+ Agents</option>
+                                    </select>
+                                    <button className="w-full py-5 mt-4 bg-[#4b33e8] text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-2xl shadow-indigo-500/20 hover:bg-[#3b27b8] transition-all">
+                                        Activate Plan
                                     </button>
                                 </form>
                             </>
                         ) : (
-                            <div className="text-center py-8 animate-in fade-in zoom-in duration-300">
-                                <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">
+                            <div className="text-center py-10 animate-in fade-in zoom-in-95">
+                                <div className="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-4xl mx-auto mb-8 border border-emerald-500/20">
                                     <i className="fi fi-rr-check flex"></i>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Request Received!</h3>
-                                <p className="text-gray-500 max-w-[260px] mx-auto">
-                                    Thanks {formData.name}, our executive will connect with you shortly.
-                                </p>
+                                <h3 className="text-3xl font-black text-white mb-2">Success!</h3>
+                                <p className="text-gray-400 text-sm">Our expert will call you shortly on <strong>{formData.phone}</strong>.</p>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-        </div>
+
+            <style jsx>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                @keyframes pulse-slow {
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50% { opacity: 0.6; transform: scale(1.1); }
+                }
+                .animate-pulse-slow {
+                    animation: pulse-slow 10s ease-in-out infinite;
+                }
+            `}</style>
+        </section>
     );
 }

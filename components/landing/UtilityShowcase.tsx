@@ -97,8 +97,8 @@ export default function UtilityShowcase() {
                         <span className="w-1.5 h-1.5 rounded-full bg-[#4b33e8] animate-pulse"></span>
                         Power User Experience
                     </div>
-                    <h2 className="text-2xl md:text-4xl font-bold text-slate-900 mb-3">
-                        The Only CRM That <span className="text-[#4b33e8]">Works Your Way.</span>
+                    <h2 className="text-xl md:text-3xl font-bold text-slate-900 mb-3">
+                        Built-in <span className="text-[#4b33e8]">Sales Utility Bar.</span>
                     </h2>
                     <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
                         Say goodbye to switching apps. Explore our interactive Sidebar and see how Rynxly puts every tool you need right at your fingertips.
@@ -111,7 +111,7 @@ export default function UtilityShowcase() {
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[105%] h-[105%] bg-indigo-500/5 blur-[100px] rounded-full -z-10"></div>
                     
                     {/* Monitor Body */}
-                    <div className="relative bg-[#1a1c1e] rounded-[1.8rem] p-3 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] border border-white/5 overflow-hidden min-h-[400px] lg:min-h-[480px] flex flex-col group/monitor">
+                    <div className="relative bg-[#1a1c1e] rounded-[1.8rem] p-3 border border-white/5 overflow-hidden min-h-[400px] lg:min-h-[480px] flex flex-col group/monitor">
                         
                         {/* Monitor Bezel Top & Camera */}
                         <div className="absolute top-0 left-0 right-0 h-3 flex items-center justify-center">
@@ -119,7 +119,7 @@ export default function UtilityShowcase() {
                         </div>
 
                         {/* Browser Container */}
-                        <div className="flex-1 bg-white rounded-[1.4rem] overflow-hidden flex items-stretch relative shadow-inner">
+                        <div className="flex-1 bg-white rounded-[1.4rem] overflow-hidden flex items-stretch relative">
                             
                             {/* Left Side: Browser Window (Header + Content) */}
                             <div className="flex-1 flex flex-col overflow-hidden border-r border-slate-50 min-h-0">
@@ -139,7 +139,7 @@ export default function UtilityShowcase() {
                                 <div className="flex-1 p-6 lg:p-10 overflow-y-auto custom-scrollbar animate-in fade-in duration-500 relative min-h-0">
                                     {isSidebarOpen ? (
                                         <div key={activeApp.id} className="animate-in slide-in-from-bottom-2 duration-500">
-                                            <div className={`w-10 h-10 rounded-xl ${activeApp.color} text-white flex items-center justify-center mb-5 shadow-lg rotate-3 hover:rotate-0 transition-transform duration-500`}>
+                                            <div className={`w-10 h-10 rounded-xl ${activeApp.color} text-white flex items-center justify-center mb-5 rotate-3 hover:rotate-0 transition-transform duration-500`}>
                                                 <i className={`fi flex ${activeApp.icon} text-xl`}></i>
                                             </div>
                                             <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-1.5 tracking-tight">{activeApp.title}</h3>
@@ -157,7 +157,7 @@ export default function UtilityShowcase() {
                                             </div>
 
                                             <div className="mt-8 p-3 bg-slate-50 rounded-xl border border-slate-100 inline-flex items-center gap-3">
-                                                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center shadow-sm text-[#4b33e8]">
+                                                <div className="h-6 w-6 rounded-full bg-white flex items-center justify-center text-[#4b33e8]">
                                                     <i className="fi fi-rr-info text-[10px]"></i>
                                                 </div>
                                                 <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Tap sidebar icons to switch tools</p>
@@ -175,7 +175,7 @@ export default function UtilityShowcase() {
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-1">
                                                 <div className="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#4b33e8]">
+                                                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-[#4b33e8]">
                                                         <i className="fi fi-rr-bolt text-sm"></i>
                                                     </div>
                                                     <div>
@@ -184,7 +184,7 @@ export default function UtilityShowcase() {
                                                     </div>
                                                 </div>
                                                 <div className="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100/50 flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-emerald-500">
+                                                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-emerald-500">
                                                         <i className="fi fi-rr-cloud-share text-sm"></i>
                                                     </div>
                                                     <div>
@@ -193,7 +193,7 @@ export default function UtilityShowcase() {
                                                     </div>
                                                 </div>
                                                 <div className="p-3.5 bg-amber-50/50 rounded-2xl border border-amber-100/50 flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-amber-500">
+                                                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-amber-500">
                                                         <i className="fi fi-rr-brain text-sm"></i>
                                                     </div>
                                                     <div>
@@ -201,7 +201,7 @@ export default function UtilityShowcase() {
                                                         <p className="text-[9px] text-slate-500 font-medium">Live scripts & summaries.</p>
                                                     </div>
                                                 </div>
-                                                <div className="p-3.5 bg-indigo-500 rounded-2xl shadow-lg shadow-indigo-100 flex items-center gap-3">
+                                                <div className="p-3.5 bg-indigo-500 rounded-2xl flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white">
                                                         <i className="fi fi-rr-resize text-sm"></i>
                                                     </div>
@@ -224,7 +224,7 @@ export default function UtilityShowcase() {
                                         <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center z-30">
                                             {/* POINTER ARROW & LABEL */}
                                             <div className="absolute right-full mr-4 flex flex-col items-end animate-bounce-horizontal">
-                                                <div className="bg-[#ff9900] text-white py-1.5 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl flex items-center gap-2">
+                                                <div className="bg-[#ff9900] text-white py-1.5 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest whitespace-nowrap flex items-center gap-2">
                                                     Open for Live Demo
                                                     <i className="fi fi-rr-arrow-right mt-0.5"></i>
                                                 </div>
@@ -232,7 +232,7 @@ export default function UtilityShowcase() {
 
                                             <button 
                                                 onClick={() => setIsSidebarOpen(true)}
-                                                className="w-4 h-10 bg-[#4b33e8] text-white rounded-l-lg flex items-center justify-center shadow-lg hover:w-5 transition-all outline outline-4 outline-indigo-100"
+                                                className="w-4 h-10 bg-[#4b33e8] text-white rounded-l-lg flex items-center justify-center hover:w-5 transition-all outline outline-4 outline-indigo-100"
                                             >
                                                 <i className="fi flex fi-rr-angle-small-left text-[10px] font-bold"></i>
                                             </button>
@@ -242,7 +242,7 @@ export default function UtilityShowcase() {
                             </div>
 
                             {/* THE ACTUAL INTERACTIVE SIDEBAR SIMULATION */}
-                            <div className={`transition-all duration-500 flex items-stretch shadow-[-10px_0_20px_rgba(0,0,0,0.02)] z-20 overflow-hidden ${isSidebarOpen ? 'w-[240px]' : 'w-0'}`}>
+                            <div className={`transition-all duration-500 flex items-stretch z-20 overflow-hidden ${isSidebarOpen ? 'w-[240px]' : 'w-0'}`}>
                                 
                                 {/* Sidebar Menu (Indigo) */}
                                 <div className="w-[45px] bg-[#4b33e8] flex flex-col items-center py-4 gap-3.5 h-full self-stretch shrink-0">
@@ -259,7 +259,7 @@ export default function UtilityShowcase() {
                                         <button 
                                             key={app.id}
                                             onClick={() => setActiveTab(app.id)}
-                                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeTab === app.id ? 'bg-white text-[#4b33e8] shadow-md scale-105' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
+                                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${activeTab === app.id ? 'bg-white text-[#4b33e8] scale-105' : 'text-white/40 hover:text-white hover:bg-white/10'}`}
                                         >
                                             <i className={`fi flex ${app.icon} text-xs`}></i>
                                         </button>
@@ -302,7 +302,7 @@ export default function UtilityShowcase() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button className="w-full py-2 bg-[#4b33e8] text-white rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-lg shadow-indigo-100">
+                                                <button className="w-full py-2 bg-[#4b33e8] text-white rounded-lg text-[9px] font-bold uppercase tracking-widest">
                                                     + New Note
                                                 </button>
                                             </div>
@@ -410,7 +410,7 @@ export default function UtilityShowcase() {
                                                        <div className="h-8 bg-slate-50 border border-slate-100 rounded-lg"></div>
                                                     </div>
                                                 </div>
-                                                <button className="w-full py-2.5 bg-emerald-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-100">
+                                                <button className="w-full py-2.5 bg-emerald-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest">
                                                     Calculate 
                                                 </button>
                                                 <div className="pt-4 border-t border-slate-50 space-y-3">
@@ -437,11 +437,11 @@ export default function UtilityShowcase() {
                     </div>
 
                     {/* Monitor Stand */}
-                    <div className="relative h-12 w-24 bg-[#2a2d31] mx-auto overflow-hidden shadow-lg -mt-1">
+                    <div className="relative h-12 w-24 bg-[#2a2d31] mx-auto overflow-hidden -mt-1">
                         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
                     </div>
                     {/* Monitor Base */}
-                    <div className="w-40 h-2 bg-[#1a1c1e] mx-auto rounded-t-lg shadow-xl"></div>
+                    <div className="w-40 h-2 bg-[#1a1c1e] mx-auto rounded-t-lg"></div>
                     
                     {/* Interaction Hint */}
                     <div className="mt-8 text-center mb-20">
@@ -465,12 +465,12 @@ export default function UtilityShowcase() {
                                 setIsSidebarOpen(true);
                                 document.getElementById('productivity-tools')?.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            className="group p-8 rounded-[2rem] bg-white border border-slate-100 shadow-[0_15px_40px_-20px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-30px_rgba(75,51,232,0.12)] hover:-translate-y-2 transition-all duration-500 cursor-pointer relative overflow-hidden"
+                            className="group p-8 rounded-[2rem] bg-white border border-slate-100 transition-all duration-500 cursor-pointer relative overflow-hidden"
                         >
                             {/* Decorative Background */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-40 h-40 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50"></div>
                             
-                            <div className={`w-12 h-12 rounded-2xl ${app.color} text-white flex items-center justify-center mb-6 shadow-xl relative z-10 group-hover:rotate-6 transition-transform`}>
+                            <div className={`w-12 h-12 rounded-2xl ${app.color} text-white flex items-center justify-center mb-6 relative z-10 group-hover:rotate-6 transition-transform`}>
                                 <i className={`fi flex ${app.icon} text-xl`}></i>
                             </div>
 
