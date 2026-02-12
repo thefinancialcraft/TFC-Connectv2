@@ -17,8 +17,9 @@ export default function LandingNavbar() {
           <div className="hidden md:flex items-center gap-8">
             <Link href="/" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Home</Link>
             <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Features</Link>
-            <a href="/#how-it-works" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">How it Works</a>
+            <Link href="/how-it-works" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">How it Works</Link>
             <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Pricing</Link>
+            <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Blog</Link>
             <Link href="/faq" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">FAQ</Link>
           </div>
 

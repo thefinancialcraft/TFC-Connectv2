@@ -100,8 +100,11 @@ export default function Pricing() {
     };
 
     return (
-        <section id="pricing" className="relative py-16 bg-[#01040a] overflow-hidden">
-            {/* Advanced Atmospheric Glowing Background */}
+        <section id="pricing" className="relative py-24 bg-[#01040a] overflow-hidden rounded-[4rem] mx-2 my-12 shadow-2xl shadow-indigo-500/20 group/pricing">
+            {/* Texture & Grain Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+
+            {/* texture grid background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                 {/* Main Central Glow */}
                 <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500/30 blur-[130px] rounded-full"></div>
@@ -112,24 +115,22 @@ export default function Pricing() {
                 {/* Accent Purple Glow Right */}
                 <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-purple-600/20 blur-[120px] rounded-full"></div>
 
-                {/* Subtle Grid for Depth */}
-                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.2) 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
+                {/* Sophisticated Grid Pattern */}
+                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }}></div>
             </div>
 
-            <div className="relative  z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center pb-2 max-w-3xl mx-auto mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <span className="px-3 py-1 rounded-full bg-indigo-50/10 border border-[#4b33e8]/20 text-[#4b33e8] text-[10px] font-black uppercase tracking-widest mb-4 inline-block">
-                        Investment & Scalability
+                <div className="text-center pb-2 max-w-2xl mx-auto mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <span className="px-3 py-1 rounded-full bg-indigo-50/10 border border-[#4b33e8]/20 text-[#4b33e8] text-[9px] font-black uppercase tracking-widest mb-3 inline-block">
+                        Investment & ROI
                     </span>
-                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+                    <h2 className="text-xl md:text-3xl font-bold text-white mb-2 tracking-tight">
                         Flexible <span >Calling CRM Software</span> Plans
                     </h2>
-                    <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed mb-8">
-                        Flexible pricing plans tailored to your sales scale. Deploy the most advanced SIM-based CRM and start closing more deals today.
+                    <p className="text-xs text-gray-400 max-w-lg mx-auto leading-relaxed mb-4">
+                        Scaling your sales engine for as low as ₹350/mo.
                     </p>
-
-                   
                 </div>
 
                 {/* Plan Carousel / Grid */}
@@ -161,7 +162,7 @@ export default function Pricing() {
                         {plans.map((plan, idx) => (
                             <div 
                                 key={idx} 
-                                className={`relative group shrink-0 w-[80vw] lg:w-[calc(33.33%-1rem)] snap-center flex flex-col p-[2px] rounded-[1.8rem] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-400 transition-all duration-300 hover:-translate-y-3`}
+                                className={`relative group shrink-0 w-[80vw] lg:w-[calc(33.33%-1rem)] snap-center flex flex-col p-[2px] rounded-[3rem] overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-400 transition-all duration-300 hover:-translate-y-3`}
                                 style={{ transitionDelay: `${idx * 100}ms` }}
                             >
                                 {/* Rotating Border Highlight (Hover only) */}
@@ -169,7 +170,7 @@ export default function Pricing() {
                                     <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_20%,#4b33e8_40%,#9333ea_50%,#4b33e8_60%,transparent_80%)] animate-[spin_2.5s_linear_infinite]"></div>
                                 </div>
 
-                                <div className={`relative z-10 flex flex-col h-full p-6 rounded-[1.8rem] border ${plan.border} ${plan.color} transition-all duration-300 hover:border-transparent hover:shadow-[0_20px_50px_rgba(75,51,232,0.15)]`}>
+                                <div className={`relative z-10 flex flex-col h-full p-6 p-8 rounded-[3rem] border ${plan.border} ${plan.color} transition-all duration-300 hover:border-transparent hover:shadow-[0_20px_50px_rgba(75,51,232,0.15)]`}>
                                     {plan.badge && (
                                         <div className="absolute top-0 right-0">
                                             <span className={`text-[9px] font-bold tracking-tight px-3 py-1 rounded-full uppercase ${plan.highlight ? 'bg-[#4b33e8] text-white shadow-lg' : 'bg-white/10 text-white/80'}`}>
@@ -326,6 +327,19 @@ export default function Pricing() {
                 }
                 .animate-pulse-slow {
                     animation: pulse-slow 10s ease-in-out infinite;
+                }
+                @keyframes float {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-20px); }
+                }
+                .animate-float-slow {
+                    animation: float 8s ease-in-out infinite;
+                }
+                .animate-float-medium {
+                    animation: float 6s ease-in-out infinite;
+                }
+                .animate-float-fast {
+                    animation: float 4s ease-in-out infinite;
                 }
             `}</style>
         </section>
