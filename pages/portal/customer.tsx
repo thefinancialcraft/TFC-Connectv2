@@ -120,6 +120,7 @@ export default function Customer() {
   const [loadingCustomers, setLoadingCustomers] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [tempSearchQuery, setTempSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [freshCustomersCount, setFreshCustomersCount] = useState(0);
@@ -1377,16 +1378,24 @@ export default function Customer() {
                   {/* Mobile: Search Bar (Full Width) */}
                   {!selectedCustomers.size && (
                     <div className="mb-4 sm:hidden">
-                      <div className="relative w-full">
-                        <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input
-                          type="text"
-                          placeholder="Search customers..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          style={{ fontFamily: "'Roboto', sans-serif" }}
-                        />
+                      <div className="flex gap-2 w-full">
+                        <div className="relative flex-1">
+                          <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                          <input
+                            type="text"
+                            placeholder="Search..."
+                            value={tempSearchQuery}
+                            onChange={(e) => setTempSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
+                            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
+                          />
+                        </div>
+                        <button 
+                          onClick={() => setSearchQuery(tempSearchQuery)}
+                          className="px-4 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                        >
+                          Search
+                        </button>
                       </div>
                     </div>
                   )}
@@ -1697,16 +1706,25 @@ export default function Customer() {
                       )}
                       {/* Search / Bulk Actions */}
                       {!selectedCustomers.size ? (
-                        <div className="relative w-64">
-                          <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                          <input
-                            type="text"
-                            placeholder="Search customers..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          />
+                        <div className="flex gap-2">
+                          <div className="relative w-64 text-gray-800">
+                            <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input
+                              type="text"
+                              placeholder="Search customers..."
+                              value={tempSearchQuery}
+                              onChange={(e) => setTempSearchQuery(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
+                              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
+                            />
+                          </div>
+                          <button 
+                            onClick={() => setSearchQuery(tempSearchQuery)}
+                            className="px-4 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold hover:bg-[#3d29c2] transition-colors shadow-sm active:scale-95 flex items-center gap-2"
+                          >
+                            <i className="fi flex fi-rr-search text-xs"></i>
+                            Search
+                          </button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">

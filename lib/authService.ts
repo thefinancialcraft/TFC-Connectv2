@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 import { NextRouter } from "next/router";
-import { clearStoredUserData } from "./localStorageUtils";
+import { clearStoredUserData, getStoredUserData } from "./localStorageUtils";
 
 // Store for user data
 let usersStore: UserProfileData[] = [];
@@ -109,7 +109,6 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
     // "All time active" feature: If no active session, try to restore from localStorage tokens
     if (!session || sessionError) {
       console.log("🔍 [Auth] No active session found, checking for stored tokens...");
-      const { getStoredUserData, storeUserData } = await import("./localStorageUtils");
       const storedData = getStoredUserData();
       
       if (storedData?.refresh_token) {
@@ -167,7 +166,39 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
 
     }
 
+    const isOnline = typeof window !== 'undefined' ? window.navigator.onLine : true;
+
     if (!session) {
+      if (!isOnline) {
+         // Offline: Return minimal user from localStorage if available
+         const storedLocal = getStoredUserData();
+         if (storedLocal && storedLocal.user_id) {
+            return {
+              user: {
+                uid: storedLocal.user_id,
+                displayName: storedLocal.user_name || null,
+                email: storedLocal.email,
+                phone: null,
+                providers: [],
+                providerType: null,
+                createdAt: "",
+                lastSignInAt: null,
+                employeeId: storedLocal.employee_id || null,
+                role: storedLocal.role || null,
+                approvalStatus: storedLocal.approval_status || null,
+                accountStatus: storedLocal.status || null,
+                updatedAt: null,
+                googleCalendarConnected: storedLocal.google_calendar_connected || false,
+                googleCalendarSkipped: storedLocal.google_calendar_skipped || false,
+                isClient: storedLocal.is_client || false,
+                isCaller: storedLocal.is_caller || false,
+              },
+              error: "Offline Mode",
+              shouldRedirect: false,
+            };
+         }
+      }
+
       return {
         user: null,
         error: "No session found",
@@ -342,18 +373,17 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         };
       }
     } catch (fetchError: any) {
-      console.error("Profile fetch error:", fetchError);
-
-      // If the token is invalid/expired (server returned 401), we MUST NOT use cached data.
-      // We should return a redirect signal instead of throwing to prevent app crash.
+      // --- NETWORK RESILIENCE: Check if error is truly Auth related or just a network blip ---
+      const isOnline = typeof window !== 'undefined' ? window.navigator.onLine : true;
       const isAuthError = fetchError.message && (
         fetchError.message.includes("Invalid or expired token") || 
         fetchError.message.includes("invalid claim") ||
-        fetchError.message.includes("JWT")
+        fetchError.message.includes("JWT") ||
+        fetchError.status === 401 || fetchError.status === 403
       );
 
-      if (isAuthError) {
-        console.warn("🔐 [Auth] Session expired during offline/reconnect. Redirecting to login.");
+      if (isAuthError && isOnline) {
+        console.warn("🔐 [Auth] Session expired confirmed by server. Redirecting to login.");
         clearStoredUserData();
         return {
           user: null,
@@ -362,16 +392,18 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         };
       }
 
-      // Return cached user data if available for non-auth errors (like transient network issues)
+      // If it's just a network error or we are offline, DO NOT LOGOUT the user.
+      // Return the best possible data we have.
       if (userData) {
+        console.log("🌐 [Auth] Transient network error, serving cached profile.");
         return {
           user: userData,
-          error: null,
+          error: "Transient Network Error",
           shouldRedirect: false,
           serverNow: serverNow,
         };
       }
-      
+
       // Fallback for unknown errors
       return {
         user: null,

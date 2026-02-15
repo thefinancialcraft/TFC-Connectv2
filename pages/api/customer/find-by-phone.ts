@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseAdmin } from '../../../lib/supabase';
+import { computePhoneHash } from '../../../lib/phoneUtils';
 
 type Data = {
   success?: boolean;
@@ -22,9 +23,10 @@ export default async function handler(
     return res.status(400).json({ error: 'Phone number is required' });
   }
 
-  // Normalize phone number (removed .slice(-10) to support dummy numbers)
+  // Normalize phone number
   const searchPhone = String(phone).replace(/\D/g, '');
-  console.log(`[API-Search] Search Phone: ${searchPhone}`);
+  const phoneHash = computePhoneHash(searchPhone);
+  console.log(`[API-Search] Search Phone: ${searchPhone}, Hash: ${phoneHash}`);
 
   try {
     const client = supabaseAdmin;
@@ -36,7 +38,7 @@ export default async function handler(
     const { data: customer } = await client
       .from('customers')
       .select('id, campaign_id, customer_name, phone_no, assigned_to')
-      .ilike('phone_no', `%${searchPhone}`)
+      .eq('phone_search_hash', phoneHash)
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -50,7 +52,7 @@ export default async function handler(
     const { data: rejected } = await client
       .from('rejected_leads')
       .select('id, campaign_id, customer_name, phone_no, agent_id')
-      .ilike('phone_no', `%${searchPhone}`)
+      .eq('phone_search_hash', phoneHash)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -64,7 +66,7 @@ export default async function handler(
     const { data: closed } = await client
       .from('closed_deals')
       .select('id, customer_id, campaign_id, customer_name, phone_no, agent_id')
-      .ilike('phone_no', `%${searchPhone}`)
+      .eq('phone_search_hash', phoneHash)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
