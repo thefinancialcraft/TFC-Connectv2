@@ -107,13 +107,36 @@ export default function EnhancedFAQPage() {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
       <Head>
-        <title>The Ultimate Sales CRM Guide & FAQ | Rynxly</title>
+        <title>FAQ | Rynxly</title>
         <meta name="description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
         <meta name="keywords" content="CRM FAQ, sales calling guide, lead management FAQ, SIM calling support" />
         <link rel="canonical" href="https://www.rynxly.in/faq" />
-        <meta property="og:title" content="The Ultimate Sales CRM Guide & FAQ | Rynxly" />
+        <meta property="og:title" content="FAQ | Rynxly" />
         <meta property="og:description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
         <meta property="og:url" content="https://www.rynxly.in/faq" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.rynxly.in"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "FAQ",
+                  "item": "https://www.rynxly.in/faq"
+                }
+              ]
+            })
+          }}
+        />
       </Head>
 
       <LandingNavbar />
