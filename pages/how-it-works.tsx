@@ -11,10 +11,33 @@ export default function HowItWorks() {
     return (
         <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
             <Head>
-                <title>How it Works | Rynxly SIM Based Calling CRM</title>
+                <title>How it Works | Rynxly</title>
                 <meta name="description" content="Discover the Rynxly workflow: Automated SIM calls, real-time web dashboard, and intelligent lead management." />
                 <meta name="keywords" content="CRM workflow, call automation, sales process, lead management guide, how Rynxly works" />
                 <link rel="canonical" href="https://www.rynxly.in/how-it-works" />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {
+                                    "@type": "ListItem",
+                                    "position": 1,
+                                    "name": "Home",
+                                    "item": "https://www.rynxly.in"
+                                },
+                                {
+                                    "@type": "ListItem",
+                                    "position": 2,
+                                    "name": "How it Works",
+                                    "item": "https://www.rynxly.in/how-it-works"
+                                }
+                            ]
+                        })
+                    }}
+                />
             </Head>
 
             <LandingNavbar />

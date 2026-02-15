@@ -19,6 +19,7 @@ export default function CallingPage() {
     
     const [user, setUser] = useState<UserProfile | null>(null);
     const [customer, setCustomer] = useState<any>(null);
+    const [viewingDetailsKey, setViewingDetailsKey] = useState<string | null>(null);
     const [campaign, setCampaign] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [mobileLogs, setMobileLogs] = useState<any[]>([]);
@@ -598,33 +599,99 @@ export default function CallingPage() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     };
 
+    useEffect(() => {
+        if (customer?.customer_details) {
+            try {
+                const data = typeof customer.customer_details === 'string' ? JSON.parse(customer.customer_details) : customer.customer_details;
+                if (data?.active_details) {
+                    setViewingDetailsKey(data.active_details);
+                }
+            } catch (e) {}
+        }
+    }, [customer]);
+
     const renderCleanedDetails = (details: any) => {
         if (!details) return <p className="text-gray-400 italic">No information available</p>;
         
-        let data = details;
+        let rawData = details;
         if (typeof details === 'string') {
             try {
-                data = JSON.parse(details);
+                rawData = JSON.parse(details);
             } catch (e) {
                 return <p className="italic">"{details}"</p>;
             }
         }
 
-        if (typeof data !== 'object' || data === null) {
-            return <p className="italic">"{String(data)}"</p>;
+        if (typeof rawData !== 'object' || rawData === null) {
+            return <p className="italic">"{String(rawData)}"</p>;
         }
 
+        let data = rawData;
+        let isStructured = false;
+        let keys: string[] = [];
+        
+        if (rawData.active_details && rawData.history) {
+            isStructured = true;
+            keys = Object.keys(rawData.history).sort((a, b) => {
+                const numA = parseInt(a.split('-')[1]);
+                const numB = parseInt(b.split('-')[1]);
+                return numA - numB;
+            });
+            const currentKey = viewingDetailsKey || rawData.active_details;
+            data = rawData.history[currentKey] || {};
+        }
+
+        const handleNext = () => {
+            const currentKey = viewingDetailsKey || rawData.active_details;
+            const currentIndex = keys.indexOf(currentKey);
+            const nextIndex = (currentIndex + 1) % keys.length;
+            setViewingDetailsKey(keys[nextIndex]);
+        };
+
+        const handlePrev = () => {
+            const currentKey = viewingDetailsKey || rawData.active_details;
+            const currentIndex = keys.indexOf(currentKey);
+            const prevIndex = (currentIndex - 1 + keys.length) % keys.length;
+            setViewingDetailsKey(keys[prevIndex]);
+        };
+
         return (
-            <div className="grid grid-cols-1 gap-3">
-                {Object.entries(data).map(([key, value]) => {
-                    const cleanKey = key.replace(/_(un)?checked/gi, '').replace(/_/g, ' ');
-                    return (
-                        <div key={key} className="flex flex-col border-b border-gray-50 pb-2 last:border-0 last:pb-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>{cleanKey}</span>
-                            <span className="text-[13px] font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>{String(value)}</span>
+            <div className="flex flex-col h-full">
+                {isStructured && keys.length > 1 && (
+                    <div className="flex items-center justify-between mb-5 bg-indigo-50 p-1.5 rounded-2xl border border-indigo-100 shadow-sm">
+                        <button 
+                            onClick={handlePrev}
+                            className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                        >
+                            <i className="fi flex fi-rr-angle-left mt-0.5"></i>
+                        </button>
+                        
+                        <div className="flex flex-col items-center">
+                            <span className="text-[8px] font-black text-indigo-300 uppercase tracking-tighter">DATA HISTORY</span>
+                            <span className="text-xs font-black text-indigo-900">
+                                {String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')}
+                            </span>
                         </div>
-                    );
-                })}
+
+                        <button 
+                            onClick={handleNext}
+                            className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                        >
+                            <i className="fi flex fi-rr-angle-right mt-0.5"></i>
+                        </button>
+                    </div>
+                )}
+                <div className="grid grid-cols-1 gap-3">
+                    {Object.entries(data).map(([key, value]) => {
+                        const cleanKey = key.replace(/_(un)?checked/gi, '').replace(/_/g, ' ');
+                        return (
+                            <div key={key} className="flex flex-col border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+                                <span className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>{cleanKey}</span>
+                                <span className="text-[13px] font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>{String(value)}</span>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         );
     };
@@ -2849,7 +2916,7 @@ Campaign: ${campaign?.name || campaignId}
                                         <div className="relative z-10 flex flex-col h-full">
                                             <div className="flex items-center gap-3 mb-8">
                                                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-100 flex items-center justify-center text-white">
-                                                    <i className="fi flex   fi-rr-document text-sm"></i>
+                                                    <i className="fi flex   fi-rr-info text-sm"></i>
                                                 </div>
                                                 <div>
                                                     <h3 className="font-semibold text-slate-800"> Details</h3>

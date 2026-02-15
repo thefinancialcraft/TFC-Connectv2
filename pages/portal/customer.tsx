@@ -133,13 +133,25 @@ export default function Customer() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCustomerDetailsModal, setShowCustomerDetailsModal] =
     useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
-  );
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [viewingDetailsKey, setViewingDetailsKey] = useState<string | null>(null);
   const [selectedCustomers, setSelectedCustomers] = useState<Set<string>>(
     new Set()
   );
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (selectedCustomer?.customer_details) {
+      try {
+        const data = typeof selectedCustomer.customer_details === 'string' 
+          ? JSON.parse(selectedCustomer.customer_details) 
+          : selectedCustomer.customer_details;
+        if (data?.active_details) {
+          setViewingDetailsKey(data.active_details);
+        }
+      } catch (e) {}
+    }
+  }, [selectedCustomer]);
 
   // Filter Modal States
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -2303,9 +2315,12 @@ export default function Customer() {
                             {customer.customer_details &&
                               (() => {
                                 try {
-                                  const details = JSON.parse(
-                                    customer.customer_details
-                                  );
+                                  const rawData = JSON.parse(customer.customer_details);
+                                  let details = rawData;
+                                  if (rawData.active_details && rawData.history) {
+                                      details = rawData.history[rawData.active_details] || {};
+                                  }
+
                                   const checkedFields = Object.entries(details)
                                     .filter(([key]) => key.endsWith("_checked"))
                                     .map(([key, value]) => ({
@@ -2486,6 +2501,7 @@ export default function Customer() {
                 onClick={() => {
                   setShowCustomerDetailsModal(false);
                   setSelectedCustomer(null);
+                  setViewingDetailsKey(null);
                 }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
@@ -2507,6 +2523,61 @@ export default function Customer() {
                   Basic Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* History Navigation */}
+                  {selectedCustomer.customer_details && (() => {
+                      try {
+                          const rawData = JSON.parse(selectedCustomer.customer_details);
+                          if (rawData.active_details && rawData.history) {
+                              const keys = Object.keys(rawData.history).sort((a, b) => {
+                                  const numA = parseInt(a.split('-')[1]);
+                                  const numB = parseInt(b.split('-')[1]);
+                                  return numA - numB;
+                              });
+                              if (keys.length > 1) {
+                                  const handleNext = () => {
+                                      const currentKey = viewingDetailsKey || rawData.active_details;
+                                      const currentIndex = keys.indexOf(currentKey);
+                                      const nextIndex = (currentIndex + 1) % keys.length;
+                                      setViewingDetailsKey(keys[nextIndex]);
+                                  };
+                                  const handlePrev = () => {
+                                      const currentKey = viewingDetailsKey || rawData.active_details;
+                                      const currentIndex = keys.indexOf(currentKey);
+                                      const prevIndex = (currentIndex - 1 + keys.length) % keys.length;
+                                      setViewingDetailsKey(keys[prevIndex]);
+                                  };
+
+                                  return (
+                                      <div className="md:col-span-2 mt-4">
+                                          <div className="flex items-center justify-between bg-indigo-50 p-1.5 rounded-2xl border border-indigo-100 shadow-sm mb-4">
+                                              <button 
+                                                  onClick={handlePrev}
+                                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                                              >
+                                                  <i className="fi flex fi-rr-angle-left mt-0.5"></i>
+                                              </button>
+                                              
+                                              <div className="flex flex-col items-center">
+                                                  <span className="text-[8px] font-black text-indigo-300 uppercase tracking-tighter">DATA HISTORY</span>
+                                                  <span className="text-xs font-black text-indigo-900">
+                                                      {String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')}
+                                                  </span>
+                                              </div>
+
+                                              <button 
+                                                  onClick={handleNext}
+                                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                                              >
+                                                  <i className="fi flex fi-rr-angle-right mt-0.5"></i>
+                                              </button>
+                                          </div>
+                                      </div>
+                                  );
+                              }
+                          }
+                      } catch (e) {}
+                      return null;
+                  })()}
                   <div>
                     <label
                       className="text-xs font-medium text-gray-500 block mb-1"
@@ -2682,9 +2753,11 @@ export default function Customer() {
                   {selectedCustomer.customer_details &&
                     (() => {
                       try {
-                        const details = JSON.parse(
-                          selectedCustomer.customer_details
-                        );
+                        const rawData = JSON.parse(selectedCustomer.customer_details);
+                        let details = rawData;
+                        if (rawData.active_details && rawData.history) {
+                            details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
+                        }
                         const checkedFields = Object.entries(details)
                           .filter(([key]) => key.endsWith("_checked"))
                           .map(([key, value]) => ({
@@ -2719,9 +2792,11 @@ export default function Customer() {
               {selectedCustomer.customer_details &&
                 (() => {
                   try {
-                    const details = JSON.parse(
-                      selectedCustomer.customer_details
-                    );
+                    const rawData = JSON.parse(selectedCustomer.customer_details);
+                    let details = rawData;
+                    if (rawData.active_details && rawData.history) {
+                        details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
+                    }
                     const uncheckedFields = Object.entries(details).filter(
                       ([key]) => key.endsWith("_unchecked")
                     );
@@ -2816,6 +2891,7 @@ export default function Customer() {
                   onClick={() => {
                     setShowCustomerDetailsModal(false);
                     setSelectedCustomer(null);
+                    setViewingDetailsKey(null);
                   }}
                   className="px-6 py-2 bg-[#4b33e8] hover:bg-[#3d28b8] text-white rounded-lg text-sm font-medium transition-colors"
                   style={{ fontFamily: "'Roboto', sans-serif" }}

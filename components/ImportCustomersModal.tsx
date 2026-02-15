@@ -34,9 +34,6 @@ export default function ImportCustomersModal({
   const [selectedFields, setSelectedFields] = useState<Record<string, boolean>>({
     name: true,
     phone: true,
-    sum_insured: false,
-    premium: false,
-    company: false,
     expiry_date: true,
   });
 
@@ -45,6 +42,8 @@ export default function ImportCustomersModal({
   const [selectedOrgId, setSelectedOrgId] = useState(preselectedOrgId);
   const [selectedCampaignId, setSelectedCampaignId] = useState(preselectedCampaignId);
   const [customExpiryDate, setCustomExpiryDate] = useState("");
+  const [duplicates, setDuplicates] = useState<any[]>([]);
+  const [showConflictModal, setShowConflictModal] = useState(false);
 
   useEffect(() => {
     setShowImportModal(show);
@@ -166,6 +165,9 @@ export default function ImportCustomersModal({
     setImportError("");
     setImportSuccess("");
 
+    let finalNewCustomers: any[] = [];
+    let foundConflicts: any[] = [];
+
     try {
       const text = await importFile.text();
       const lines = text.split("\n").filter((line) => line.trim());
@@ -204,19 +206,6 @@ export default function ImportCustomersModal({
           }
 
           const customerDetails: Record<string, string> = {};
-          const predefinedFields = [
-            { key: "sum_insured", label: "Sum Insured" },
-            { key: "premium", label: "Premium" },
-            { key: "company", label: "Company" },
-          ];
-
-          predefinedFields.forEach((field) => {
-            const value = getFieldValue(row, field.key, fieldMapping, mergedFields);
-            if (value) {
-              const suffix = selectedFields[field.key] ? "_checked" : "_unchecked";
-              customerDetails[`${field.label}${suffix}`] = value;
-            }
-          });
 
           customFields.forEach((cf) => {
              // For custom fields, we construct the value manually including merged fields
@@ -309,7 +298,12 @@ export default function ImportCustomersModal({
             expiry_date: parsedExpiryDate,
             campaign_id: selectedCampaignId || null,
             organization_id: selectedOrgId || null,
-            customer_details: Object.keys(customerDetails).length > 0 ? JSON.stringify(customerDetails) : null,
+            customer_details: Object.keys(customerDetails).length > 0 ? JSON.stringify({
+                active_details: "details-1",
+                history: {
+                    "details-1": customerDetails
+                }
+            }) : null,
             status: "active",
           });
         } catch (err) {
@@ -319,21 +313,64 @@ export default function ImportCustomersModal({
 
       const batchSize = 100;
       let success = 0;
-      for (let i = 0; i < customers.length; i += batchSize) {
-        const { error } = await supabase.from("customers").insert(customers.slice(i, i + batchSize));
-        if (!error) success += customers.slice(i, i + batchSize).length;
+
+      // 1. Check for duplicates using phone_search_hash
+      const allHashes = customers.map(c => c.phone_search_hash).filter(Boolean);
+      const { data: existingRecords } = await supabase
+        .from("customers")
+        .select("id, phone_search_hash, customer_name, customer_details")
+        .in("phone_search_hash", allHashes);
+
+      const existingMap = new Map();
+      existingRecords?.forEach(r => existingMap.set(r.phone_search_hash, r));
+
+      finalNewCustomers = [];
+      foundConflicts = [];
+
+      customers.forEach(cust => {
+        const existing = existingMap.get(cust.phone_search_hash);
+        if (existing) {
+          foundConflicts.push({ new: cust, existing });
+        } else {
+          finalNewCustomers.push(cust);
+        }
+      });
+
+      // 2. Insert unique customers
+      for (let i = 0; i < finalNewCustomers.length; i += batchSize) {
+        const { error } = await supabase.from("customers").insert(finalNewCustomers.slice(i, i + batchSize));
+        if (!error) success += finalNewCustomers.slice(i, i + batchSize).length;
+      }
+
+      // 3. Handle duplicates
+      if (foundConflicts.length > 0) {
+        setDuplicates(foundConflicts);
+        setShowConflictModal(true);
+        if (success > 0) {
+          setImportSuccess(`Imported ${success} unique customers! ${foundConflicts.length} duplicates found.`);
+        } else {
+          setImportError(`Found ${foundConflicts.length} duplicates. No new unique customers to import.`);
+        }
+        setImporting(false);
+        // We stay in the modal state to resolve conflicts
+        return;
       }
 
       if (success > 0) {
         setImportSuccess(`Successfully imported ${success} customers!`);
         if (onSuccess) onSuccess();
         setTimeout(handleClose, 2000);
-      } else setImportError("Failed to import customers.");
+      } else {
+        setImportError("No customers were imported.");
+      }
 
     } catch (err) {
       setImportError(`Error: ${err}`);
     } finally {
-      setImporting(false);
+      // Only stop importing if we aren't showing conflicts
+      if (foundConflicts.length === 0) {
+        setImporting(false);
+      }
     }
   };
 
@@ -347,12 +384,30 @@ export default function ImportCustomersModal({
       const cols = parseCSVLine(firstLine);
       setCsvColumns(cols);
       const initialMapping: Record<string, string> = {};
-      const fields = ["name", "phone", "sum_insured", "premium", "company", "expiry_date"];
-      fields.forEach(f => {
+      const coreFields = ["name", "phone", "expiry_date"];
+      
+      const mappedCols = new Set<string>();
+
+      coreFields.forEach(f => {
         const match = cols.find(c => c.toLowerCase().includes(f.toLowerCase()));
-        if (match) initialMapping[f] = match;
+        if (match) {
+            initialMapping[f] = match;
+            mappedCols.add(match);
+        }
       });
+
+      // Auto-generate custom fields for all other columns
+      const autoCustomFields = cols
+        .filter(col => !mappedCols.has(col) && col.trim() !== "")
+        .map(col => ({
+             id: `auto_${Date.now()}_${Math.random()}`,
+             name: col,
+             mappedTo: col,
+             isEdited: false
+        }));
+
       setFieldMapping(initialMapping);
+      setCustomFields(autoCustomFields);
       setShowMappingModal(true);
     }
   };
@@ -434,9 +489,170 @@ export default function ImportCustomersModal({
     return used;
   };
 
+  const handleMergeDuplicate = async (duplicate: any) => {
+    try {
+      const existingDetails = typeof duplicate.existing.customer_details === 'string'
+        ? JSON.parse(duplicate.existing.customer_details)
+        : duplicate.existing.customer_details || {};
+        
+      const newDetails = typeof duplicate.new.customer_details === 'string'
+        ? JSON.parse(duplicate.new.customer_details)
+        : duplicate.new.customer_details || {};
+      
+      // If newDetails is already structured, extract flat data
+      const flatIncoming = (newDetails.history && newDetails.active_details) 
+        ? newDetails.history[newDetails.active_details] 
+        : newDetails;
+
+      let finalStructured;
+      if (existingDetails.history && existingDetails.active_details) {
+          const nextIndex = Object.keys(existingDetails.history).length + 1;
+          const nextId = `details-${nextIndex}`;
+          finalStructured = {
+              ...existingDetails,
+              active_details: nextId,
+              history: {
+                  ...existingDetails.history,
+                  [nextId]: flatIncoming
+              }
+          };
+      } else {
+          // Migrate flat to structured
+          finalStructured = {
+              active_details: "details-2",
+              history: {
+                  "details-1": existingDetails,
+                  "details-2": flatIncoming
+              }
+          };
+      }
+      
+      const { error } = await supabase
+        .from("customers")
+        .update({ customer_details: JSON.stringify(finalStructured) })
+        .eq("id", duplicate.existing.id);
+        
+      if (error) throw error;
+      
+      // Remove from duplicates list
+      setDuplicates(prev => {
+        const remaining = prev.filter(d => d.existing.id !== duplicate.existing.id);
+        if (remaining.length === 0) {
+           setImportSuccess("All duplicates resolved!");
+           if (onSuccess) onSuccess();
+           setTimeout(handleClose, 1500);
+        }
+        return remaining;
+      });
+    } catch (err) {
+      console.error("Merge error:", err);
+    }
+  };
+
+  const handleRejectDuplicate = (id: string) => {
+    setDuplicates(prev => {
+        const remaining = prev.filter(d => d.existing.id !== id);
+        if (remaining.length === 0) {
+            setImportSuccess("All duplicates handled.");
+            if (onSuccess) onSuccess();
+            setTimeout(handleClose, 1500);
+        }
+        return remaining;
+    });
+  };
+
+  const handleMergeAll = async () => {
+    if (!confirm(`Are you sure you want to merge all ${duplicates.length} duplicates? This will update existing records with new information.`)) return;
+    
+    setImporting(true);
+    let mergedCount = 0;
+    
+    try {
+        for (const duplicate of duplicates) {
+            const existingDetails = typeof duplicate.existing.customer_details === 'string'
+                ? JSON.parse(duplicate.existing.customer_details)
+                : duplicate.existing.customer_details || {};
+                
+            const newDetails = typeof duplicate.new.customer_details === 'string'
+                ? JSON.parse(duplicate.new.customer_details)
+                : duplicate.new.customer_details || {};
+            
+            const flatIncoming = (newDetails.history && newDetails.active_details) 
+              ? newDetails.history[newDetails.active_details] 
+              : newDetails;
+
+            let finalStructured;
+            if (existingDetails.history && existingDetails.active_details) {
+                const nextIndex = Object.keys(existingDetails.history).length + 1;
+                const nextId = `details-${nextIndex}`;
+                finalStructured = {
+                    ...existingDetails,
+                    active_details: nextId,
+                    history: {
+                        ...existingDetails.history,
+                        [nextId]: flatIncoming
+                    }
+                };
+            } else {
+                finalStructured = {
+                    active_details: "details-2",
+                    history: {
+                        "details-1": existingDetails,
+                        "details-2": flatIncoming
+                    }
+                };
+            }
+            
+            await supabase
+                .from("customers")
+                .update({ customer_details: JSON.stringify(finalStructured) })
+                .eq("id", duplicate.existing.id);
+            
+            mergedCount++;
+        }
+        
+        setDuplicates([]);
+        setShowConflictModal(false);
+        setImportSuccess(`Successfully merged ${mergedCount} duplicates!`);
+        if (onSuccess) onSuccess();
+        setTimeout(handleClose, 2000);
+    } catch (err) {
+        console.error("Merge all error:", err);
+        setImportError("Error during bulk merge. Some records may not have been updated.");
+    } finally {
+        setImporting(false);
+    }
+  };
+
   const usedColumns = getUsedColumns(); // Calculate for render
 
-  if (!showImportModal && !showMappingModal) return null;
+  const renderDetailsPreview = (details: any) => {
+    if (!details) return null;
+    let data = details;
+    if (typeof details === 'string') {
+      try {
+        data = JSON.parse(details);
+      } catch (e) {
+        return <p className="text-[10px] text-gray-400 italic">{details}</p>;
+      }
+    }
+    if (typeof data !== 'object' || data === null) return null;
+
+    // Support structured JSON in preview
+    let displayData = data;
+    if (data.active_details && data.history) {
+        displayData = data.history[data.active_details] || {};
+    }
+
+    return Object.entries(displayData).slice(0, 4).map(([k, v]) => (
+      <div key={k} className="flex justify-between text-[11px] gap-2">
+        <span className="text-gray-400 truncate">{k.split('_')[0]}:</span>
+        <span className="font-semibold text-gray-600 truncate">{String(v)}</span>
+      </div>
+    ));
+  };
+
+  if (!showImportModal && !showMappingModal && !showConflictModal) return null;
 
   return (
     <>
@@ -516,11 +732,11 @@ export default function ImportCustomersModal({
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {["name", "phone", "expiry_date", "sum_insured", "premium", "company"].map(field => (
+                {["name", "phone", "expiry_date"].map(field => (
                   <div key={field} className="space-y-1">
                     <div className="flex items-center justify-between">
                        <label className="text-xs font-bold text-gray-500 uppercase">{field.replace("_", " ")}</label>
-                       {['sum_insured', 'premium', 'company', 'expiry_date'].includes(field) && (
+                       {field === 'expiry_date' && (
                           <div className="flex items-center gap-2">
                              <input 
                                 type="checkbox" 
@@ -592,7 +808,7 @@ export default function ImportCustomersModal({
               {/* Custom Fields Section */}
               <div className="mb-6 border-t border-gray-100 pt-4">
                 <div className="flex items-center justify-between mb-3">
-                   <label className="text-xs font-bold text-gray-500 uppercase">Custom Fields</label>
+                   <label className="text-xs font-bold text-gray-500 uppercase">Additional Columns (Auto-Detected)</label>
                    <button 
                      onClick={addCustomField} 
                      className="text-xs text-[#4b33e8] font-bold hover:underline flex items-center gap-1"
@@ -693,6 +909,127 @@ export default function ImportCustomersModal({
                   className="px-6 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center gap-2"
                 >
                   {importing ? <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...</> : "Start Import"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Conflict Resolution Modal */}
+      {showConflictModal && duplicates.length > 0 && (
+        <div className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-[80] p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-100">
+            <div className="flex items-center justify-between p-6 border-b border-amber-100 bg-amber-50/50">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-inner">
+                   <i className="fi flex fi-rr-triangle-warning text-xl"></i>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-amber-900" style={{ fontFamily: "'Poppins', sans-serif" }}>Duplicate Conflicts Detected</h2>
+                  <p className="text-xs font-medium text-amber-600 uppercase tracking-widest">{duplicates.length} overlapping records found</p>
+                </div>
+              </div>
+              <button onClick={() => setShowConflictModal(false)} className="w-10 h-10 rounded-xl hover:bg-white flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all">
+                <i className="fi flex fi-rr-cross text-lg"></i>
+              </button>
+            </div>
+            
+            <div className="p-8 overflow-y-auto flex-1 custom-scrollbar space-y-6 bg-slate-50/30">
+              <div className="p-4 bg-white border border-amber-100 rounded-xl text-sm text-amber-800 flex items-start gap-3">
+                 <i className="fi fi-rr-info mt-0.5"></i>
+                 <p>The following customers are already in your database. You can choose to <strong>Merge</strong> the new information (update existing record) or <strong>Reject</strong> the new entry (keep existing data).</p>
+              </div>
+
+              {duplicates.slice(0, 10).map((dup, idx) => (
+                <div key={idx} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-slate-50 px-5 py-3 border-b border-gray-100 flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                       <span className="text-xs font-bold text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">#{idx + 1}</span>
+                       <span className="text-sm font-bold text-slate-700">Phone Conflict</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400 bg-white px-2 py-1 rounded border border-gray-100">HASH: {dup.existing.phone_search_hash?.substring(0, 8)}...</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-px bg-gray-100">
+                    {/* Existing Record */}
+                    <div className="bg-white p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 border border-slate-200">DB</div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Existing Record</span>
+                      </div>
+                      <p className="text-lg font-bold text-slate-900 mb-4">{dup.existing.customer_name || "Unnamed Customer"}</p>
+                      <div className="space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-100 min-h-[100px]">
+                        {renderDetailsPreview(dup.existing.customer_details)}
+                        {!dup.existing.customer_details && <p className="text-[11px] text-slate-400 italic">No details available</p>}
+                      </div>
+                    </div>
+                    {/* New CSV Row */}
+                    <div className="bg-white p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-lg shadow-indigo-100">CSV</div>
+                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Incoming Row</span>
+                      </div>
+                      <p className="text-lg font-bold text-slate-900 mb-4">{dup.new.customer_name || "Unnamed Customer"}</p>
+                      <div className="space-y-2 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50 min-h-[100px]">
+                        {renderDetailsPreview(dup.new.customer_details)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-slate-50 border-t border-gray-100 flex justify-end gap-3">
+                    <button 
+                      onClick={() => handleRejectDuplicate(dup.existing.id)}
+                      className="px-5 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-white hover:text-slate-700 transition-all border border-transparent hover:border-slate-200"
+                    >
+                      Reject Entry
+                    </button>
+                    <button 
+                      onClick={() => handleMergeDuplicate(dup)}
+                      className="px-6 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-slate-900 transition-all shadow-lg shadow-indigo-200 active:scale-95"
+                    >
+                      Merge & Update
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {duplicates.length > 10 && (
+                 <div className="py-8 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">+{duplicates.length - 10} more conflicts remaining</p>
+                    <p className="text-xs text-slate-300 mt-1">Please resolve the visible items to see more.</p>
+                 </div>
+              )}
+            </div>
+            
+            <div className="p-6 border-t border-gray-200 bg-white flex justify-between items-center">
+              <button 
+                onClick={() => {
+                   if (confirm("Are you sure you want to reject all remaining duplicates?")) {
+                      setDuplicates([]);
+                      setShowConflictModal(false);
+                      setImportSuccess("Import complete. All duplicates were rejected.");
+                      if (onSuccess) onSuccess();
+                      setTimeout(handleClose, 2000);
+                   }
+                }}
+                className="text-xs font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest px-4"
+              >
+                Reject All Remaining
+              </button>
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-bold text-slate-400">{duplicates.length} items left</span>
+                
+                <button 
+                  onClick={handleMergeAll}
+                  disabled={importing}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-xl hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {importing ? "Merging..." : `Merge All (${duplicates.length})`}
+                </button>
+
+                <button 
+                  onClick={() => setShowConflictModal(false)}
+                  className="px-8 py-3 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-300 transition-all active:scale-95"
+                >
+                  Close
                 </button>
               </div>
             </div>

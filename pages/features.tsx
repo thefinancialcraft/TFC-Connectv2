@@ -14,13 +14,36 @@ export default function FeaturesPage() {
     return (
         <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
             <Head>
-                <title>Features | Rynxly Enterprise Calling CRM</title>
+                <title>Features | Rynxly</title>
                 <meta name="description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, intelligent utility tools, and seamless integrations." />
                 <meta name="keywords" content="CRM features, call tracking, lead management tools, Rynxly capabilities" />
                 <link rel="canonical" href="https://www.rynxly.in/features" />
-                <meta property="og:title" content="Features | Rynxly Enterprise Calling CRM" />
+                <meta property="og:title" content="Features | Rynxly" />
                 <meta property="og:description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, and seamless integrations." />
                 <meta property="og:url" content="https://www.rynxly.in/features" />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {
+                                    "@type": "ListItem",
+                                    "position": 1,
+                                    "name": "Home",
+                                    "item": "https://www.rynxly.in"
+                                },
+                                {
+                                    "@type": "ListItem",
+                                    "position": 2,
+                                    "name": "Features",
+                                    "item": "https://www.rynxly.in/features"
+                                }
+                            ]
+                        })
+                    }}
+                />
             </Head>
 
             <LandingNavbar />

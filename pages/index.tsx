@@ -119,6 +119,48 @@ export default function LandingPage() {
                   "https://www.linkedin.com/company/rynxly",
                   "https://twitter.com/rynxly"
                 ]
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Rynxly",
+                "alternateName": ["Rynxly CRM", "Rynxly SIM CRM"],
+                "url": "https://www.rynxly.in",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": "https://www.rynxly.in/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string"
+                }
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Features",
+                    "item": "https://www.rynxly.in/features"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Pricing",
+                    "item": "https://www.rynxly.in/pricing"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "How it Works",
+                    "item": "https://www.rynxly.in/how-it-works"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 4,
+                    "name": "Blog",
+                    "item": "https://www.rynxly.in/blog"
+                  }
+                ]
               }
             ])
           }}
