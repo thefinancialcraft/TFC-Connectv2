@@ -88,7 +88,7 @@ export default function HeroSection() {
         <h2 className="relative z-10 mt-10 text-3xl md:text-5xl font-bold tracking-tight text-[#263238] mb-6 leading-[1.1] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
           Stop Managing Spreadsheets. <br />
           <span className="text-transparent pt-3 pb-2 bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9] inline-block mt-2">
-            Start Closing Deal                                                                                                                                                                                                                                                                                                                                                                                                            s.
+            Start Closing Deals.
           </span>
         </h2>
 
