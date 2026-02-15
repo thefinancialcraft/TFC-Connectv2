@@ -21,8 +21,8 @@ export default function Document() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Rynxly - The Advanced SIM-Based Calling CRM" />
         <meta property="og:description" content="Advanced SIM-Based Calling CRM for seamless communication" />
-        <meta property="og:image" content="https://www.rynxly.in/tty-answer.svg" />
-        <meta property="og:url" content="https://www.rynxly.in" />
+        <meta property="og:image" content="https://rynxly.in/tty-answer.svg" />
+        <meta property="og:url" content="https://rynxly.in" />
         
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

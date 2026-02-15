@@ -16,11 +16,10 @@ export default function Footer() {
               Rynxly is the #1 **SIM based calling CRM** designed for high-performance sales teams. Track calls, manage leads, and sync mobile data effortlessly with our advanced **sales calling software**.
             </p>
             <div className="flex gap-4">
-              {/* Social Placeholders */}
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#4b33e8] hover:text-white transition-all">
-                <i className="fi fi-brands-twitter flex text-sm"></i>
+              <a href="https://www.instagram.com/_rynxly" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#E1306C] hover:text-white transition-all">
+                <i className="fi fi-brands-instagram flex text-sm"></i>
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#4b33e8] hover:text-white transition-all">
+              <a href="https://www.linkedin.com/company/rynxly" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#0077b5] hover:text-white transition-all">
                 <i className="fi fi-brands-linkedin flex text-sm"></i>
               </a>
             </div>

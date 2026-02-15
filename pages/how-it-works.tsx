@@ -14,7 +14,7 @@ export default function HowItWorks() {
                 <title>How it Works | Rynxly</title>
                 <meta name="description" content="Discover the Rynxly workflow: Automated SIM calls, real-time web dashboard, and intelligent lead management." />
                 <meta name="keywords" content="CRM workflow, call automation, sales process, lead management guide, how Rynxly works" />
-                <link rel="canonical" href="https://www.rynxly.in/how-it-works" />
+                <link rel="canonical" href="https://rynxly.in/how-it-works" />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
@@ -26,13 +26,13 @@ export default function HowItWorks() {
                                     "@type": "ListItem",
                                     "position": 1,
                                     "name": "Home",
-                                    "item": "https://www.rynxly.in"
+                                    "item": "https://rynxly.in"
                                 },
                                 {
                                     "@type": "ListItem",
                                     "position": 2,
                                     "name": "How it Works",
-                                    "item": "https://www.rynxly.in/how-it-works"
+                                    "item": "https://rynxly.in/how-it-works"
                                 }
                             ]
                         })

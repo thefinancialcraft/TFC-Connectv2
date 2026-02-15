@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.rynxly.in/sitemap.xml
+Sitemap: https://rynxly.in/sitemap.xml

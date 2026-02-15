@@ -61,10 +61,10 @@ export default function PricingPage() {
                 <title>Pricing | Rynxly</title>
                 <meta name="description" content="Start growing your sales for just ₹350/month. Discover how Rynxly's SIM-based CRM boosts answer rates by 300%." />
                 <meta name="keywords" content="CRM pricing, sales calling software cost, affordable CRM, SIM based calling price" />
-                <link rel="canonical" href="https://www.rynxly.in/pricing" />
+                <link rel="canonical" href="https://rynxly.in/pricing" />
                 <meta property="og:title" content="Pricing | Rynxly" />
                 <meta property="og:description" content="Start growing your sales for just ₹350/month. Discover how Rynxly's SIM-based CRM boosts answer rates by 300%." />
-                <meta property="og:url" content="https://www.rynxly.in/pricing" />
+                <meta property="og:url" content="https://rynxly.in/pricing" />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
@@ -76,13 +76,13 @@ export default function PricingPage() {
                                     "@type": "ListItem",
                                     "position": 1,
                                     "name": "Home",
-                                    "item": "https://www.rynxly.in"
+                                    "item": "https://rynxly.in"
                                 },
                                 {
                                     "@type": "ListItem",
                                     "position": 2,
                                     "name": "Pricing",
-                                    "item": "https://www.rynxly.in/pricing"
+                                    "item": "https://rynxly.in/pricing"
                                 }
                             ]
                         })

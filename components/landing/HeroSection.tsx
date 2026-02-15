@@ -147,7 +147,7 @@ export default function HeroSection() {
             <div className="w-3 h-3 rounded-full bg-amber-400"></div>
             <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
             <div className="ml-4 flex-1 h-5 bg-gray-100/50 rounded-md text-[10px] text-gray-400 flex items-center px-3">
-              www.rynxly.in/dashboard
+              rynxly.in/dashboard
             </div>
           </div>
           

@@ -110,10 +110,10 @@ export default function EnhancedFAQPage() {
         <title>FAQ | Rynxly</title>
         <meta name="description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
         <meta name="keywords" content="CRM FAQ, sales calling guide, lead management FAQ, SIM calling support" />
-        <link rel="canonical" href="https://www.rynxly.in/faq" />
+        <link rel="canonical" href="https://rynxly.in/faq" />
         <meta property="og:title" content="FAQ | Rynxly" />
         <meta property="og:description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
-        <meta property="og:url" content="https://www.rynxly.in/faq" />
+        <meta property="og:url" content="https://rynxly.in/faq" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -125,13 +125,13 @@ export default function EnhancedFAQPage() {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://www.rynxly.in"
+                  "item": "https://rynxly.in"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "FAQ",
-                  "item": "https://www.rynxly.in/faq"
+                  "item": "https://rynxly.in/faq"
                 }
               ]
             })

@@ -44,11 +44,11 @@ export default function LandingPage() {
         <meta name="keywords" content="SIM based calling CRM, Calling CRM software, Sales calling CRM, Call tracking software, CRM for sales teams, Lead management CRM, Call analytics software, SIM calling solution for business, mobile CRM, Rynxly" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#4b33e8" />
-        <link rel="canonical" href="https://www.rynxly.in" />
+        <link rel="canonical" href="https://rynxly.in" />
 
         {/* Open Graph / Facebook / WhatsApp */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.rynxly.in" />
+        <meta property="og:url" content="https://rynxly.in" />
         <meta property="og:title" content="SIM Based Calling CRM & Sales Calling Software | Rynxly" />
         <meta property="og:description" content="Boost conversions with Rynxly, the leading SIM based calling CRM. Track sales calls, manage leads & sync mobile data to your dashboard effortlessly." />
         <meta property="og:image" content="https://rynxly.in/home-page.png" />
@@ -113,11 +113,11 @@ export default function LandingPage() {
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 "name": "Rynxly",
-                "url": "https://www.rynxly.in",
+                "url": "https://rynxly.in",
                 "logo": "https://rynxly.in/logo.png",
                 "sameAs": [
                   "https://www.linkedin.com/company/rynxly",
-                  "https://twitter.com/rynxly"
+                  "https://www.instagram.com/_rynxly"
                 ]
               },
               {
@@ -125,10 +125,10 @@ export default function LandingPage() {
                 "@type": "WebSite",
                 "name": "Rynxly",
                 "alternateName": ["Rynxly CRM", "Rynxly SIM CRM"],
-                "url": "https://www.rynxly.in",
+                "url": "https://rynxly.in",
                 "potentialAction": {
                   "@type": "SearchAction",
-                  "target": "https://www.rynxly.in/search?q={search_term_string}",
+                  "target": "https://rynxly.in/search?q={search_term_string}",
                   "query-input": "required name=search_term_string"
                 }
               },

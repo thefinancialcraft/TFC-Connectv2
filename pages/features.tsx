@@ -17,10 +17,10 @@ export default function FeaturesPage() {
                 <title>Features | Rynxly</title>
                 <meta name="description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, intelligent utility tools, and seamless integrations." />
                 <meta name="keywords" content="CRM features, call tracking, lead management tools, Rynxly capabilities" />
-                <link rel="canonical" href="https://www.rynxly.in/features" />
+                <link rel="canonical" href="https://rynxly.in/features" />
                 <meta property="og:title" content="Features | Rynxly" />
                 <meta property="og:description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, and seamless integrations." />
-                <meta property="og:url" content="https://www.rynxly.in/features" />
+                <meta property="og:url" content="https://rynxly.in/features" />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
@@ -32,13 +32,13 @@ export default function FeaturesPage() {
                                     "@type": "ListItem",
                                     "position": 1,
                                     "name": "Home",
-                                    "item": "https://www.rynxly.in"
+                                    "item": "https://rynxly.in"
                                 },
                                 {
                                     "@type": "ListItem",
                                     "position": 2,
                                     "name": "Features",
-                                    "item": "https://www.rynxly.in/features"
+                                    "item": "https://rynxly.in/features"
                                 }
                             ]
                         })

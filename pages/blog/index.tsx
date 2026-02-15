@@ -68,10 +68,10 @@ export default function BlogListing() {
                 <title>Blog | Rynxly</title>
                 <meta name="description" content="Expert insights on SIM based calling CRM, sales automation, and lead management. Scale your sales with data-driven strategies from Rynxly." />
                 <meta name="keywords" content="sales blog, calling CRM insights, sales automation tips, lead management blog" />
-                <link rel="canonical" href="https://www.rynxly.in/blog" />
+                <link rel="canonical" href="https://rynxly.in/blog" />
                 <meta property="og:title" content="Blog | Rynxly" />
                 <meta property="og:description" content="Expert insights on SIM based calling CRM, sales automation, and lead management." />
-                <meta property="og:url" content="https://www.rynxly.in/blog" />
+                <meta property="og:url" content="https://rynxly.in/blog" />
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
@@ -83,13 +83,13 @@ export default function BlogListing() {
                                     "@type": "ListItem",
                                     "position": 1,
                                     "name": "Home",
-                                    "item": "https://www.rynxly.in"
+                                    "item": "https://rynxly.in"
                                 },
                                 {
                                     "@type": "ListItem",
                                     "position": 2,
                                     "name": "Blog",
-                                    "item": "https://www.rynxly.in/blog"
+                                    "item": "https://rynxly.in/blog"
                                 }
                             ]
                         })

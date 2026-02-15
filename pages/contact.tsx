@@ -10,10 +10,10 @@ export default function ContactPage() {
         <title>Contact | Rynxly</title>
         <meta name="description" content="Get in touch with the Rynxly team. Schedule a demo, ask about enterprise plans, or get support for your account." />
         <meta name="keywords" content="contact Rynxly, CRM support, sales inquiry, book demo" />
-        <link rel="canonical" href="https://www.rynxly.in/contact" />
+        <link rel="canonical" href="https://rynxly.in/contact" />
         <meta property="og:title" content="Contact | Rynxly" />
         <meta property="og:description" content="Get in touch with the Rynxly team for support or demos." />
-        <meta property="og:url" content="https://www.rynxly.in/contact" />
+        <meta property="og:url" content="https://rynxly.in/contact" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -25,13 +25,13 @@ export default function ContactPage() {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://www.rynxly.in"
+                  "item": "https://rynxly.in"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Contact",
-                  "item": "https://www.rynxly.in/contact"
+                  "item": "https://rynxly.in/contact"
                 }
               ]
             })
