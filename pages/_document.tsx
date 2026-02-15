@@ -42,6 +42,20 @@ export default function Document() {
           rel="stylesheet"
           href="https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css"
         />
+        {/* Apollo.io Website Tracker */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              function initApollo(){
+                var n=Math.random().toString(36).substring(7),o=document.createElement("script");
+                o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
+                o.onload=function(){window.trackingFunctions.onLoad({appId:"69918f831f332b0021a93049"})},
+                document.head.appendChild(o)
+              }
+              initApollo();
+            `,
+          }}
+        />
       </Head>
       <body>
         <Main />

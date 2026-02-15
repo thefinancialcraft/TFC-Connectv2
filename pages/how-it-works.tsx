@@ -13,6 +13,8 @@ export default function HowItWorks() {
             <Head>
                 <title>How it Works | Rynxly SIM Based Calling CRM</title>
                 <meta name="description" content="Discover the Rynxly workflow: Automated SIM calls, real-time web dashboard, and intelligent lead management." />
+                <meta name="keywords" content="CRM workflow, call automation, sales process, lead management guide, how Rynxly works" />
+                <link rel="canonical" href="https://www.rynxly.in/how-it-works" />
             </Head>
 
             <LandingNavbar />

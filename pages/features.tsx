@@ -18,6 +18,9 @@ export default function FeaturesPage() {
                 <meta name="description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, intelligent utility tools, and seamless integrations." />
                 <meta name="keywords" content="CRM features, call tracking, lead management tools, Rynxly capabilities" />
                 <link rel="canonical" href="https://www.rynxly.in/features" />
+                <meta property="og:title" content="Features | Rynxly Enterprise Calling CRM" />
+                <meta property="og:description" content="Explore Rynxly's powerful feature set: GSM call tracking, automated reminders, and seamless integrations." />
+                <meta property="og:url" content="https://www.rynxly.in/features" />
             </Head>
 
             <LandingNavbar />

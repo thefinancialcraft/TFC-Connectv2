@@ -60,6 +60,11 @@ export default function PricingPage() {
             <Head>
                 <title>Pricing | At ₹350/mo, Increase Your Sales with Rynxly</title>
                 <meta name="description" content="Start growing your sales for just ₹350/month. Discover how Rynxly's SIM-based CRM boosts answer rates by 300%." />
+                <meta name="keywords" content="CRM pricing, sales calling software cost, affordable CRM, SIM based calling price" />
+                <link rel="canonical" href="https://www.rynxly.in/pricing" />
+                <meta property="og:title" content="Pricing | At ₹350/mo, Increase Your Sales with Rynxly" />
+                <meta property="og:description" content="Start growing your sales for just ₹350/month. Discover how Rynxly's SIM-based CRM boosts answer rates by 300%." />
+                <meta property="og:url" content="https://www.rynxly.in/pricing" />
             </Head>
 
             <LandingNavbar />

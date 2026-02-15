@@ -1,5 +1,4 @@
 import type { AppProps } from "next/app";
-import Script from "next/script";
 import "../styles/globals.css"; // HMR Global Trigger
 import { DialogProvider } from "../lib/dialogService";
 
@@ -27,24 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const isPortalPage = router.pathname.startsWith('/portal');
 
   return (
-    <>
-      {/* Apollo.io Website Tracker */}
-      <Script
-        id="apollo-tracker"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            function initApollo(){
-              var n=Math.random().toString(36).substring(7),o=document.createElement("script");
-              o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
-              o.onload=function(){window.trackingFunctions.onLoad({appId:"69918f831f332b0021a93049"})},
-              document.head.appendChild(o)
-            }
-            initApollo();
-          `,
-        }}
-      />
-      <DialogProvider>
+    <DialogProvider>
       <OfflineOverlay />
       {isPortalPage ? (
         <PortalContainer>
@@ -53,7 +35,8 @@ export default function App({ Component, pageProps }: AppProps) {
       ) : (
         <Component {...pageProps} />
       )}
-      </DialogProvider>
-    </>
+    </DialogProvider>
   );
 }
+
+

@@ -109,6 +109,11 @@ export default function EnhancedFAQPage() {
       <Head>
         <title>The Ultimate Sales CRM Guide & FAQ | Rynxly</title>
         <meta name="description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
+        <meta name="keywords" content="CRM FAQ, sales calling guide, lead management FAQ, SIM calling support" />
+        <link rel="canonical" href="https://www.rynxly.in/faq" />
+        <meta property="og:title" content="The Ultimate Sales CRM Guide & FAQ | Rynxly" />
+        <meta property="og:description" content="Discover how SIM-based calling CRMs can transform your sales operations. Comprehensive guide on lead management, call tracking, and data security." />
+        <meta property="og:url" content="https://www.rynxly.in/faq" />
       </Head>
 
       <LandingNavbar />
