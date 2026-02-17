@@ -1,5 +1,20 @@
 import { supabase } from "./supabase";
 
+export interface StoredUser {
+  token_id: string;
+  user_id: string;
+  email: string;
+  user_name: string;
+  role: string;
+  profile_pic_url: string | null;
+  employee_id: string;
+  access_token: string;
+  refresh_token: string;
+  expiry_date: string;
+  last_login_at: string;
+  device_info?: any;
+}
+
 /**
  * Detect environment and get device info
  */
