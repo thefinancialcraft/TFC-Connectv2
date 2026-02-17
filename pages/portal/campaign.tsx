@@ -126,10 +126,11 @@
 				else {
 					// 1. Mandatory Organization Filter
 					if (user.organization_id) {
+						console.log("🏢 [Campaign] Filtering by Organization:", user.organization_id);
 						query = query.eq('organization_id', user.organization_id);
 					} else {
 						// Fail-secure: No organization, no campaigns
-						console.warn("⚠️ [Campaign] No organization_id found for user.");
+						console.warn("⚠️ [Campaign] CRITICAL: No organization_id found for user. Access blocked.");
 						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
 					}
 
@@ -156,9 +157,13 @@
 
 						if (teamMemberIds.length > 0) {
 							// Use .or with properly escaped and quoted JSON strings to handle special characters in Postgrest
-							// The double backslash is for JS template literal to result in a single backslash in the final query string
 							const orFilter = teamMemberIds.map(id => `users.cs."[{\\"user_id\\":\\"${id}\\"}]"`).join(',');
+							console.log("👥 [Campaign] Level 2: TL Filter Applied. Searching for members:", teamMemberIds);
+							console.log("🔗 [Campaign] Generated OR Filter:", orFilter);
 							query = query.or(orFilter);
+						} else {
+							console.warn("👥 [Campaign] TL has no active team members. Searching only for self.");
+							query = query.filter('users', 'cs', `"[{\\"user_id\\":\\"${user.uid}\\"}]"`);
 						}
 					} 
 					else if (['ceo', 'developer', 'manager'].includes(normalizedDesignation)) {
@@ -166,20 +171,29 @@
 					} 
 					else {
 						// Level 1: Client Agent (Strictest)
-						console.log("👤 [Campaign] Level 1: Client Agent Filter Applied");
+						console.log("👤 [Campaign] Level 1: Agent Filter. Status: active, UserID:", user.uid);
 						query = query.eq('status', 'active');
 						if (user.uid) { 
 							// Use filter with quoted JSON string to avoid syntax errors in Postgrest
-							query = query.filter('users', 'cs', `"[{\\"user_id\\":\\"${user.uid}\\"}]"`);
+							const agentFilter = `"[{\\"user_id\\":\\"${user.uid}\\"}]"`;
+							console.log("🔍 [Campaign] Agent JSON Filter Value:", agentFilter);
+							query = query.filter('users', 'cs', agentFilter);
 						}
 					}
 				}
 
 				const { data: campaignData, error: campaignError } = await query;
 				
-				if (campaignError) throw campaignError;
+				if (campaignError) {
+					console.error("❌ [Campaign] Supabase Query Error:", campaignError);
+					throw campaignError;
+				}
 				
 				const baseCampaigns = (campaignData || []) as Campaign[];
+				console.log(`✅ [Campaign] Successfully fetched ${baseCampaigns.length} campaigns.`);
+				if (baseCampaigns.length === 0) {
+					console.info("ℹ️ [Campaign] No campaigns matched the criteria for this user.");
+				}
 				
 				// 2. Fetch all campaign stats via high-performance RPC
 				const { data: statsData, error: statsError } = await supabase.rpc('get_campaign_stats');
