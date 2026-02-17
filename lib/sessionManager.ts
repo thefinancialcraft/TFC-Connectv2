@@ -62,6 +62,6 @@ export const ensureValidSession = async () => {
 
 // Obsolete functions kept as empty to prevent bridge breakage if called
 export const getStoredAccounts = (): StoredUser[] => [];
-export const saveAccount = (user: any) => {};
-export const removeAccount = (tokenId: string) => {};
-export const generateTokenId = () => `token_${Math.random().toString(36).substring(2, 12)}`;
+export const saveAccount = (user: any): void => {};
+export const removeAccount = (tokenId: string): void => {};
+export const generateTokenId = (): string => `token_${Math.random().toString(36).substring(2, 12)}`;
