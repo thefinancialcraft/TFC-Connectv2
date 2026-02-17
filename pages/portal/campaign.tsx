@@ -108,7 +108,15 @@
 					.select("*, organizations(id, company_name, org_code)")
 					.order("created_at", { ascending: false });
 
-				const normalizedDesignation = (user.designation || "").toLowerCase();
+				const normalizedDesignation = (user.designation || "").toLowerCase().trim();
+				console.log("🔍 [Campaign] Fetching for user:", {
+					uid: user.uid,
+					email: user.email,
+					isClient: user.isClient,
+					designation: user.designation,
+					normalizedDesignation,
+					organization_id: user.organization_id
+				});
 
 				// Level 4: Internal Staff (Global Admin) - No filters
 				if (!user.isClient) {
@@ -121,6 +129,7 @@
 						query = query.eq('organization_id', user.organization_id);
 					} else {
 						// Fail-secure: No organization, no campaigns
+						console.warn("⚠️ [Campaign] No organization_id found for user.");
 						query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
 					}
 
@@ -155,9 +164,11 @@
 					} 
 					else {
 						// Level 1: Client Agent (Strictest)
+						console.log("👤 [Campaign] Level 1: Client Agent Filter Applied");
 						query = query.eq('status', 'active');
 						if (user.uid) { 
-							query = query.contains('users', JSON.stringify([{ user_id: user.uid }]));
+							// Fix: Pass object directly to contains, don't stringify
+							query = query.contains('users', [{ user_id: user.uid }]);
 						}
 					}
 				}
