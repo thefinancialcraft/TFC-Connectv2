@@ -72,8 +72,12 @@ export function useAuthGuard(): UseAuthGuardReturn {
     fetchAuth();
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (event === 'SIGNED_IN') {
         fetchAuth(true);
+      } else if (event === 'TOKEN_REFRESHED') {
+        // Just update local state if needed, but don't force a heavy profile fetch
+        // Supabase client handles the token swap internally.
+        console.log("🔑 [Auth] Token refreshed successfully");
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         router.push("/login");

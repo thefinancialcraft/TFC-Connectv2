@@ -69,7 +69,7 @@ export function UserProvider({ children }: UserProviderProps) {
       clearTimeout(timer);
       if (syncInterval) clearInterval(syncInterval);
     };
-  }, [user, mounted]);
+  }, [user?.uid, mounted]);
 
   // Global Bridge Message Listener for Device Info
   useEffect(() => {
