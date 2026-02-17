@@ -155,7 +155,9 @@
 						teamMemberIds = [...new Set(teamMemberIds)];
 
 						if (teamMemberIds.length > 0) {
-							const orFilter = teamMemberIds.map(id => `users.cs.[{"user_id":"${id}"}]`).join(',');
+							// Use .or with properly escaped and quoted JSON strings to handle special characters in Postgrest
+							// The double backslash is for JS template literal to result in a single backslash in the final query string
+							const orFilter = teamMemberIds.map(id => `users.cs."[{\\"user_id\\":\\"${id}\\"}]"`).join(',');
 							query = query.or(orFilter);
 						}
 					} 
@@ -167,8 +169,8 @@
 						console.log("👤 [Campaign] Level 1: Client Agent Filter Applied");
 						query = query.eq('status', 'active');
 						if (user.uid) { 
-							// Fix: Pass object directly to contains, don't stringify
-							query = query.contains('users', [{ user_id: user.uid }]);
+							// Use filter with quoted JSON string to avoid syntax errors in Postgrest
+							query = query.filter('users', 'cs', `"[{\\"user_id\\":\\"${user.uid}\\"}]"`);
 						}
 					}
 				}
