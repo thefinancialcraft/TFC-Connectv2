@@ -191,8 +191,31 @@
 				
 				const baseCampaigns = (campaignData || []) as Campaign[];
 				console.log(`✅ [Campaign] Successfully fetched ${baseCampaigns.length} campaigns.`);
-				if (baseCampaigns.length === 0) {
-					console.info("ℹ️ [Campaign] No campaigns matched the criteria for this user.");
+				
+				if (baseCampaigns.length === 0 && user.organization_id) {
+					console.info("🔍 [Campaign] Starting Diagnostics: Why are 0 campaigns showing?");
+					
+					// Diagnostic Fetch: See ALL campaigns in org without user filter
+					const { data: allOrgCamps } = await supabase
+						.from('campaigns')
+						.select('id, name, status, users')
+						.eq('organization_id', user.organization_id);
+						
+					if (!allOrgCamps || allOrgCamps.length === 0) {
+						console.error("🕵️ Diagnostic: No campaigns exist AT ALL for this Organization.");
+					} else {
+						console.log(`🕵️ Diagnostic: Found ${allOrgCamps.length} total campaigns in Org. Checking assignments...`);
+						allOrgCamps.forEach(camp => {
+							const userList = Array.isArray(camp.users) ? camp.users : [];
+							const isAssigned = userList.some((u: any) => (u.user_id || u.id) === user.uid);
+							
+							console.log(`   - Campaign: "${camp.name}" (ID: ${camp.id}) | Status: ${camp.status}`);
+							console.log(`     Assignment: ${isAssigned ? "✅ ASSIGNED" : "❌ NOT ASSIGNED"}`);
+							if (!isAssigned) {
+								console.log(`     Expected UID: ${user.uid} | Found UIDs:`, userList.map((u: any) => u.user_id || u.id));
+							}
+						});
+					}
 				}
 				
 				// 2. Fetch all campaign stats via high-performance RPC
@@ -232,27 +255,33 @@
 			}
 		};
 
+
 		const fetchUsers = async () => {
 			try {
 				setLoadingUsers(true);
-				// Use user_profiles table as in the users page to get consistent fields
+				console.log("👥 [Campaign] Fetching all user profiles...");
 				const { data, error } = await supabase
 					.from("user_profiles")
 					.select("id, user_id, email, user_name, profile_pic_url, employee_id, organization_id")
 					.order("created_at", { ascending: false });
-				if (!error && data) {
-					// map fields to expected shape
-					const mapped = (data || []).map((u: any) => ({
+					
+				if (error) {
+					console.error("❌ [Campaign] Error fetching users:", error);
+					setUsers([]);
+					return;
+				}
+
+				if (data) {
+					console.log(`✅ [Campaign] Fetched ${data.length} user profiles.`);
+					const mapped = data.map((u: any) => ({
 						...u,
 						user_name: u.user_name || u.name || null,
 						profile_pic_url: u.profile_pic_url || u.profile_image || null,
 					}));
 					setUsers(mapped);
-				} else {
-					setUsers([]);
 				}
 			} catch (e) {
-				console.error("Error fetching users:", e);
+				console.error("❌ [Campaign] Exception in fetchUsers:", e);
 				setUsers([]);
 			} finally {
 				setLoadingUsers(false);

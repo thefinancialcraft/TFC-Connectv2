@@ -17,11 +17,13 @@ export function UserProvider({ children }: UserProviderProps) {
     let syncInterval: NodeJS.Timeout;
 
     const executeSync = async () => {
+      console.log("🔄 [UserProvider] Attempting Flutter Bridge sync...");
       // --- ADDITION: Only sync if online ---
       if (typeof window !== 'undefined' && !window.navigator.onLine) {
+        console.warn("🌐 [UserProvider] Device is offline. Skipping sync.");
         return false; 
       }
-
+      
       const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
       
       const success = (user) ? syncUserInfoToFlutter(user) : true;

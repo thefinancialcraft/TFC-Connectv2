@@ -149,16 +149,23 @@ export default function Settings() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         try {
+          console.log("📥 [Settings] Fetching user profile from API...");
           const profileResponse = await fetch("/api/auth/user-profile", {
             headers: { Authorization: `Bearer ${session.access_token}` },
           });
           const profileData = await profileResponse.json();
+          console.log("📥 [Settings] API Profile Data received:", profileData.success ? "Success" : "Failed");
+          
           if (profileData.success && profileData.user) {
-            const { data: fullProfile } = await supabase
+            console.log("📥 [Settings] Fetching full profile from DB for ID:", user.uid);
+            const { data: fullProfile, error: dbError } = await supabase
               .from('user_profiles')
               .select('*')
               .eq('user_id', user.uid)
               .maybeSingle();
+            
+            if (dbError) console.error("❌ [Settings] DB Profile Error:", dbError);
+            else console.log("✅ [Settings] DB Profile fetched successfully.");
             
             // Capture provider token if available (persist for calendar usage)
             if (session.provider_token) {
@@ -243,6 +250,7 @@ export default function Settings() {
         showError("Authentication required", "Error");
         return;
       }
+      console.log("📤 [Settings] Saving changes to profile...", formData);
       const res = await fetch("/api/auth/update-profile", {
         method: "PUT",
         headers: {
@@ -251,9 +259,19 @@ export default function Settings() {
         },
         body: JSON.stringify(formData),
       });
-      if (res.ok) showSuccess("Profile saved", "Success");
-      else showError("Failed to save", "Error");
-    } catch (error) { showError("An error occurred", "Error"); }
+      
+      const result = await res.json();
+      if (res.ok) {
+        console.log("✅ [Settings] Profile update successful:", result);
+        showSuccess("Profile saved", "Success");
+      } else {
+        console.error("❌ [Settings] Profile update failed:", result);
+        showError("Failed to save", "Error");
+      }
+    } catch (error) { 
+      console.error("❌ [Settings] Connection error while saving:", error);
+      showError("An error occurred", "Error"); 
+    }
     finally { setIsSaving(false); }
   };
 
