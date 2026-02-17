@@ -75,6 +75,10 @@ export default function CallingPage() {
     const [showNewLeadAlert, setShowNewLeadAlert] = useState(false);
     const prevCustomerId = useRef<string | null>(null);
 
+    const [isEditingExpiry, setIsEditingExpiry] = useState(false);
+    const [tempExpiryDate, setTempExpiryDate] = useState("");
+    const expiryDatePickerRef = useRef<HTMLDivElement>(null);
+
     // Slider State
     const [dragX, setDragX] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
@@ -446,6 +450,9 @@ export default function CallingPage() {
             if (assignPickerRef.current && !assignPickerRef.current.contains(event.target as Node)) {
                 setIsAssignPickerOpen(false);
             }
+            if (expiryDatePickerRef.current && !expiryDatePickerRef.current.contains(event.target as Node)) {
+                setIsEditingExpiry(false);
+            }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -741,6 +748,27 @@ export default function CallingPage() {
         } catch (err) {
             console.error("Error updating managed_by:", err);
             alert("Failed to update manager");
+        }
+    };
+
+    const handleUpdateExpiry = async (newDate: string) => {
+        if (!customer?.id || !newDate) return;
+        setSaving(true);
+        try {
+            const { error } = await supabase
+                .from('customers')
+                .update({ expiry_date: newDate })
+                .eq('id', customer.id);
+            
+            if (error) throw error;
+            
+            setCustomer((prev: any) => ({ ...prev, expiry_date: newDate }));
+            setIsEditingExpiry(false);
+        } catch (err) {
+            console.error("Error updating expiry_date:", err);
+            alert("Failed to update expiry date");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -2524,12 +2552,87 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
 
                                              {/* Valid Until Tile */}
-                                             <div className="p-1 sm:p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile">
+                                             <div className="p-1 sm:p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-0.5 hover:bg-slate-50 transition-all cursor-default group/tile relative">
                                                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-100 flex items-center justify-center text-amber-400 mb-0.5 group-hover/tile:scale-110 transition-transform">
                                                      <i className="fi flex  fi-rr-calendar-clock text-xs sm:text-sm"></i>
                                                 </div>
                                                 <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wide">Expiry</p>
-                                                <p className="text-[10px] sm:text-xs font-bold text-slate-700 truncate w-full px-1 sm:px-2">{formatDate(customer?.expiry_date)}</p>
+                                                <div className="flex items-center gap-1 group/expiry">
+                                                    <p className="text-[10px] sm:text-xs font-bold text-slate-700 truncate max-w-[80px] px-1 sm:px-2">{formatDate(customer?.expiry_date)}</p>
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Convert to YYYY-MM-DD for input date
+                                                            let dStr = "";
+                                                            if (customer?.expiry_date) {
+                                                                try {
+                                                                    const d = new Date(customer.expiry_date);
+                                                                    if (!isNaN(d.getTime())) {
+                                                                        dStr = d.toISOString().split('T')[0];
+                                                                    }
+                                                                } catch(err) {}
+                                                            }
+                                                            setTempExpiryDate(dStr);
+                                                            setIsEditingExpiry(!isEditingExpiry);
+                                                        }}
+                                                        className="w-5 h-5 flex items-center justify-center rounded-md hover:bg-amber-50 text-slate-300 hover:text-amber-500 transition-all opacity-0 group-hover/tile:opacity-100"
+                                                    >
+                                                        <i className="fi flex fi-rr-edit text-[10px]"></i>
+                                                    </button>
+                                                </div>
+
+                                                {/* Expiry Date Picker Popper */}
+                                                {isEditingExpiry && (
+                                                    <div 
+                                                        ref={expiryDatePickerRef}
+                                                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[60] bg-white p-3 rounded-2xl shadow-2xl border border-slate-300 w-48 animate-in fade-in zoom-in duration-200"
+                                                    >
+                                                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Update Expiry</p>
+                                                        <div className="relative mb-3 group/exp-input">
+                                                            <div className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold flex items-center justify-between">
+                                                                <span className="text-slate-700">
+                                                                    {tempExpiryDate ? (() => {
+                                                                        const [y, m, d] = tempExpiryDate.split('-');
+                                                                        return `${d}/${m}/${y}`;
+                                                                    })() : 'DD/MM/YYYY'}
+                                                                </span>
+                                                                <i className="fi fi-rr-calendar text-slate-400"></i>
+                                                            </div>
+                                                            <input 
+                                                                type="date" 
+                                                                value={tempExpiryDate}
+                                                                onChange={(e) => setTempExpiryDate(e.target.value)}
+                                                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                                            />
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setIsEditingExpiry(false);
+                                                                }}
+                                                                className="flex-1 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-bold hover:bg-slate-200 transition-all"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleUpdateExpiry(tempExpiryDate);
+                                                                }}
+                                                                disabled={saving}
+                                                                className="flex-1 py-1.5 rounded-lg bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-1"
+                                                            >
+                                                                {saving ? '...' : (
+                                                                    <>
+                                                                        <i className="fi flex fi-rr-check text-[8px]"></i>
+                                                                        Save
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
 
                                              {/* Campaign Tile */}
@@ -3822,7 +3925,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                     <div className="flex items-center gap-2 py-1">
                                                                         <i className={`fi fi-rr-calendar text-[10px] ${selectedScheduleDate && new Date().toDateString() === selectedScheduleDate.toDateString() ? 'text-indigo-600' : 'text-slate-300'}`}></i>
                                                                         <span className={`text-[11px] font-bold uppercase tracking-tight ${selectedScheduleDate && new Date().toDateString() === selectedScheduleDate.toDateString() ? 'text-indigo-600' : 'text-slate-600'}`}>
-                                                                            {selectedScheduleDate ? selectedScheduleDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Select Date'}
+                                                                            {selectedScheduleDate ? selectedScheduleDate.toLocaleDateString('en-GB') : 'Select Date'}
                                                                         </span>
                                                                     </div>
                                                                     <input 
