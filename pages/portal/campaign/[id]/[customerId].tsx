@@ -232,11 +232,15 @@ export default function CallingPage() {
 
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
-            console.log(`🤙 [EndCall] Customer phone detected: ${customer.phone_no}`);
+            const rawPhone = decryptPhone(customer.phone_no);
+            const hashedPhone = computePhoneHash(rawPhone);
+            
+            console.log(`🤙 [EndCall] Customer phone: ${rawPhone}, Hash: ${hashedPhone}`);
+            
             // Only send command to flutter if we initiated it from UI
             if (!isFromBridge) {
                 console.log('🤙 [EndCall] Notifying Flutter to disconnect...');
-                notifyFlutter('call_disconnect', customer.phone_no);
+                notifyFlutter('call_disconnect', rawPhone);
             } else {
                 console.log('🤙 [EndCall] Skipping Flutter notification (already disconnected on native side)');
             }
@@ -248,13 +252,14 @@ export default function CallingPage() {
                     // If bridge already disconnected, just clear the busy state in DB
                     updateSyncMetaCallStatus(user.employeeId, '', "");
                 } else {
-                    console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect for: ${user.employeeId}`);
-                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', customer.phone_no);
+                    console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect hash for: ${user.employeeId}`);
+                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', hashedPhone || "");
                 }
             } else {
                 console.warn('🤙 [EndCall] Employee ID missing, skipping SyncMeta update');
             }
-        } else {
+        }
+ else {
             console.warn('🤙 [EndCall] Customer phone number missing');
         }
 
@@ -1404,6 +1409,7 @@ export default function CallingPage() {
             }
             
             const decryptedPhone = decryptPhone(customer.phone_no);
+            const hashedPhone = computePhoneHash(decryptedPhone);
             const bridgeConnected = notifyFlutter('call_to', decryptedPhone);
             
             if (bridgeConnected) {
@@ -1414,7 +1420,7 @@ export default function CallingPage() {
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone);
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', hashedPhone || "");
                 updateSyncMetaCallingStatus(user.employeeId, 'preparing');
             }
             setLocalCallingStatus('preparing');
