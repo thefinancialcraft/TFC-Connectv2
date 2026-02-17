@@ -156,14 +156,13 @@
 						teamMemberIds = [...new Set(teamMemberIds)];
 
 						if (teamMemberIds.length > 0) {
-							// Use .or with properly escaped and quoted JSON strings to handle special characters in Postgrest
-							const orFilter = teamMemberIds.map(id => `users.cs."[{\\"user_id\\":\\"${id}\\"}]"`).join(',');
+							const orFilter = teamMemberIds.map(id => `users.cs.[{"user_id":"${id}"}]`).join(',');
 							console.log("👥 [Campaign] Level 2: TL Filter Applied. Searching for members:", teamMemberIds);
 							console.log("🔗 [Campaign] Generated OR Filter:", orFilter);
 							query = query.or(orFilter);
 						} else {
 							console.warn("👥 [Campaign] TL has no active team members. Searching only for self.");
-							query = query.filter('users', 'cs', `"[{\\"user_id\\":\\"${user.uid}\\"}]"`);
+							query = query.filter('users', 'cs', `[{"user_id":"${user.uid}"}]`);
 						}
 					} 
 					else if (['ceo', 'developer', 'manager'].includes(normalizedDesignation)) {
@@ -174,8 +173,7 @@
 						console.log("👤 [Campaign] Level 1: Agent Filter. Status: active, UserID:", user.uid);
 						query = query.eq('status', 'active');
 						if (user.uid) { 
-							// Use filter with quoted JSON string to avoid syntax errors in Postgrest
-							const agentFilter = `"[{\\"user_id\\":\\"${user.uid}\\"}]"`;
+							const agentFilter = `[{"user_id":"${user.uid}"}]`;
 							console.log("🔍 [Campaign] Agent JSON Filter Value:", agentFilter);
 							query = query.filter('users', 'cs', agentFilter);
 						}
@@ -189,34 +187,35 @@
 					throw campaignError;
 				}
 				
-				const baseCampaigns = (campaignData || []) as Campaign[];
-				console.log(`✅ [Campaign] Successfully fetched ${baseCampaigns.length} campaigns.`);
+				let finalBaseCampaigns = (campaignData || []) as Campaign[];
+				console.log(`✅ [Campaign] Query returned ${finalBaseCampaigns.length} campaigns.`);
 				
-				if (baseCampaigns.length === 0 && user.organization_id) {
-					console.info("🔍 [Campaign] Starting Diagnostics: Why are 0 campaigns showing?");
+				if (finalBaseCampaigns.length === 0 && user.organization_id) {
+					console.info("🔍 [Campaign] Starting Diagnostics & Fallback...");
 					
-					// Diagnostic Fetch: See ALL campaigns in org without user filter
+					// Diagnostic Fetch: See ALL campaigns in org
 					const { data: allOrgCamps } = await supabase
 						.from('campaigns')
-						.select('id, name, status, users')
+						.select('*, organizations(id, company_name, org_code)')
 						.eq('organization_id', user.organization_id);
 						
-					if (!allOrgCamps || allOrgCamps.length === 0) {
-						console.error("🕵️ Diagnostic: No campaigns exist AT ALL for this Organization.");
-					} else {
-						console.log(`🕵️ Diagnostic: Found ${allOrgCamps.length} total campaigns in Org. Checking assignments...`);
-						allOrgCamps.forEach(camp => {
+					if (allOrgCamps && allOrgCamps.length > 0) {
+						// 🕵️ Manual Match as Fallback
+						const manualMatches = allOrgCamps.filter(camp => {
 							const userList = Array.isArray(camp.users) ? camp.users : [];
-							const isAssigned = userList.some((u: any) => (u.user_id || u.id) === user.uid);
-							
-							console.log(`   - Campaign: "${camp.name}" (ID: ${camp.id}) | Status: ${camp.status}`);
-							console.log(`     Assignment: ${isAssigned ? "✅ ASSIGNED" : "❌ NOT ASSIGNED"}`);
-							if (!isAssigned) {
-								console.log(`     Expected UID: ${user.uid} | Found UIDs:`, userList.map((u: any) => u.user_id || u.id));
-							}
+							return userList.some((u: any) => (u.user_id || u.id) === user.uid);
 						});
+
+						if (manualMatches.length > 0) {
+							console.log(`💡 [Campaign] Fallback: Found ${manualMatches.length} campaigns via Local Matching.`);
+							finalBaseCampaigns = manualMatches as Campaign[];
+						} else {
+							console.warn("🕵️ Diagnostic: Found 0 local matches in", allOrgCamps.length, "org campaigns.");
+						}
 					}
 				}
+				
+				const baseCampaigns = finalBaseCampaigns;
 				
 				// 2. Fetch all campaign stats via high-performance RPC
 				const { data: statsData, error: statsError } = await supabase.rpc('get_campaign_stats');
