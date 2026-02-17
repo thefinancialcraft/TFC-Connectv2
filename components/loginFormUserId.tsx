@@ -1,12 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotUserIdForm from "./ForgotUserIdForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import { showError } from "../lib/dialogUtils";
-import { getBrowserLocation } from "../lib/deviceUtils";
-import { storeUserData } from "../lib/localStorageUtils";
-import { saveAccount, getStoredAccounts } from "../lib/sessionManager";
 
 interface LoginFormUserIdProps {
   showForgotForm?: boolean;
@@ -29,30 +26,6 @@ export default function LoginFormUserId({
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [flutterDeviceInfo, setFlutterDeviceInfo] = useState<any>(null);
-  
-  // Listen for device info if in Flutter environment
-  useEffect(() => {
-    // 1. Request device info immediately
-    const initBridge = async () => {
-       const { requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
-       requestDeviceInfoFromFlutter();
-    };
-    initBridge();
-
-    // 2. Listen for response
-    const handleFlutterMessage = (event: any) => {
-      const data = event.detail;
-      if (data?.type === 'device_info') {
-        console.log("📱 [Login] Received Device Info from Flutter:", data.value);
-        setFlutterDeviceInfo(data.value);
-      }
-    };
-
-    window.addEventListener('tfc-bridge-message' as any, handleFlutterMessage);
-    return () => window.removeEventListener('tfc-bridge-message' as any, handleFlutterMessage);
-  }, []);
-
 
   const handleForgotFormToggle = (show: boolean) => {
     onForgotFormToggle?.(show);
@@ -68,100 +41,59 @@ export default function LoginFormUserId({
     setIsLoading(true);
     
     try {
-      // Get location from browser (with permission)
-      let location: string | null = null;
-      try {
-        location = await getBrowserLocation();
-      } catch (locError) {
-        console.log('Location permission denied or error:', locError);
-      }
-
-      // --- FIX: Only reuse token_id if the SAME user is logging in again ---
-      const accounts = getStoredAccounts();
-      const existingAccount = accounts.find(a => 
-         a.employee_id === userId.trim() || 
-         a.email === userId.trim() || 
-         a.user_id === userId.trim()
-      );
+      const inputId = userId.trim();
+      console.log("🔍 [Login] Starting login for ID:", inputId);
       
-      const existingTokenId = existingAccount ? existingAccount.token_id : undefined;
-
-
-      const response = await fetch("/api/auth/login-userid", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          userId: userId.trim(), 
-          password: password,
-          location: location || undefined,
-          token_id: existingTokenId,
-          device_info: flutterDeviceInfo || undefined
-        }),
+      // Fetch email using secure API (bypasses RLS)
+      const emailRes = await fetch('/api/auth/get-email-by-id', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: inputId })
       });
 
-      const data = await response.json();
+      const emailData = await emailRes.json();
+      
+      if (!emailRes.ok || !emailData.email) {
+        console.error("❌ [Login] Email lookup failed:", emailData.error || "Not found");
+        throw new Error(emailData.error || "Invalid Employee ID. Please check and try again.");
+      }
+      
+      const email = emailData.email;
+      console.log("📧 [Login] Found email via API:", email);
 
-      if (!response.ok) {
-        const errorMessage = data.error || "Invalid User ID or password";
-        setError(errorMessage);
-        onError?.(errorMessage);
-        setIsLoading(false);
-        return;
+      // Simple Supabase Sign In
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        console.error("❌ [Login] Supabase sign-in error:", signInError.message);
+        throw new Error(signInError.message);
       }
 
-      if (data.success && data.session) {
-        const { access_token, refresh_token, token_id, expires_at } = data.session;
-        const userData = data.user;
+      if (data.session) {
+        console.log("✅ [Login] Supabase Auth successful for user:", data.user.id);
+        
+        // Fetch profile for redirection
+        const { data: profileData, error: fetchError } = await supabase
+          .from('user_profiles')
+          .select('profile_complete, approval_status, status')
+          .ilike('employee_id', inputId)
+          .maybeSingle();
 
-        // 1. Set session in Supabase client
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: access_token,
-          refresh_token: refresh_token,
-        });
-
-        if (sessionError) {
-          throw new Error("Failed to create session");
+        if (fetchError) {
+          console.error("⚠️ [Login] Profile re-fetch error:", fetchError);
         }
 
-        // 2. Save to Multi-Account Storage (Our New Token System)
-        saveAccount({
-          token_id: token_id,
-          user_id: userData.id,
-          email: userData.email,
-          user_name: userData.displayName || '',
-          role: userData.role || 'user',
-          profile_pic_url: userData.profile_pic_url || null,
-          employee_id: userData.employee_id || '',
-          access_token: access_token,
-          refresh_token: refresh_token,
-          expiry_date: expires_at,
-          last_login_at: new Date().toISOString(),
-          device_info: flutterDeviceInfo
+        console.log("📋 [Login] Profile status:", {
+          complete: profileData?.profile_complete,
+          approval: profileData?.approval_status,
+          status: profileData?.status
         });
 
-        // 3. Compatibility: Save to old localStorage keys if other components still use them
-        storeUserData({
-          user_id: userData.id,
-          email: userData.email,
-          user_name: userData.displayName,
-          employee_id: userData.employee_id,
-          role: userData.role,
-          profile_pic_url: userData.profile_pic_url,
-          session_token: access_token,
-          refresh_token: refresh_token,
-          token_id: token_id,
-        });
-
-
-        // 4. Flutter Bridge Notifications
-        const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
-        notifyLoginToFlutter();
-        syncUserInfoToFlutter(userData);
-
-        // 5. Redirect Logic
-        if (userData.profile_complete === false) {
+        if (profileData?.profile_complete === false) {
+          console.log("➡️ [Login] Redirecting to profile completion");
           router.push("/profile-completion");
           return;
         }
@@ -173,12 +105,13 @@ export default function LoginFormUserId({
           hold: "/hold"
         };
         
-        const redirectPath = pathMap[userData.approval_status] || pathMap[userData.status] || "/dashboard";
+        const redirectPath = pathMap[profileData?.approval_status || ''] || pathMap[profileData?.status || ''] || "/dashboard";
+        console.log("🚀 [Login] Final redirect to:", redirectPath);
         router.push(redirectPath);
       }
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred during login";
-      showError(errorMessage, "Login Error");
+      console.error("🔴 [Login] Fatal error:", errorMessage);
       setError(errorMessage);
       onError?.(errorMessage);
       setIsLoading(false);
@@ -203,7 +136,7 @@ export default function LoginFormUserId({
             color: '#263238',
             textAlign: 'center',
           }}>
-          Login With User ID
+          Login With Employee ID
         </h2>
 
       {/* User ID Field */}
@@ -213,7 +146,7 @@ export default function LoginFormUserId({
           className="block text-sm font-medium mb-1"
           style={{ color: 'rgb(38, 50, 56)' }}
         >
-          User ID
+          Employee ID
         </label>
         <div className="relative">
           <i 
@@ -243,7 +176,7 @@ export default function LoginFormUserId({
             onBlur={(e) => {
               e.currentTarget.style.borderColor = '#DCDEE3';
             }}
-            placeholder="Enter your User ID"
+            placeholder="Enter Employee ID"
             required
           />
         </div>
@@ -258,14 +191,8 @@ export default function LoginFormUserId({
               e.preventDefault();
               handleForgotFormToggle(true);
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgb(255, 91, 91)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#4b33e8';
-            }}
           >
-            Forgot User ID?
+            Forgot Employee ID?
           </a>
         </div>
       </div>
@@ -327,53 +254,20 @@ export default function LoginFormUserId({
             <i className={`fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`}></i>
           </button>
         </div>
-        <div className="flex justify-end mt-1">
-        <a 
-            href="#" 
-            className="text-sm "
-            style={{
-              fontSize: '12px',
-              color: '#4b33e8' }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleForgotPasswordFormToggle(true);
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgb(255, 91, 91)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#4b33e8';
-            }}
-          >
-            Forgot Password?
-          </a>
-        </div>
       </div>
 
-          {/* Login Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-full mt-1 px-4 py-3 md:py-[11px] md:text-[13px] font-semibold text-white transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ 
-              background: 'linear-gradient(to right, #4b33e8)',
-              fontFamily: "'Poppins', sans-serif"
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.background = 'linear-gradient(to right,#4b33e8)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-              }
-            }}
-          >
-            {isLoading ? "Logging in..." : "Login with User ID"}
-          </button>
+      {/* Login Button */}
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full rounded-full mt-4 px-4 py-3 md:py-[11px] md:text-[13px] font-semibold text-white transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ 
+          background: '#4b33e8',
+          fontFamily: "'Poppins', sans-serif"
+        }}
+      >
+        {isLoading ? "Logging in..." : "Login"}
+      </button>
     </form>
   );
 }
-
-

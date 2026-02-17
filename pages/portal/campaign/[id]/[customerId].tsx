@@ -13,8 +13,8 @@ export default function CallingPage() {
     const router = useRouter();
     const { id: campaignId, customerId } = router.query;
 
-    const handleLogoutClick = async (tokenId?: string) => {
-        await handleLogout(router, tokenId);
+    const handleLogoutClick = async () => {
+        await handleLogout(router);
     };
     
     const [user, setUser] = useState<UserProfile | null>(null);

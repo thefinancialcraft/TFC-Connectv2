@@ -168,7 +168,7 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
             color: '#263238',
             textAlign: 'center',
           }}>
-          Here is your User ID
+          Here is your Employee ID
         </h2>
         
         <div className="text-center mb-6">
@@ -198,7 +198,7 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
             fontFamily: "'Roboto', sans-serif"
           }}
         >
-          Hurray! We've found your user ID! Keep it safe for your next adventure with us!
+          Hurray! We've found your Employee ID! Keep it safe for your next adventure with us!
         </p>
       </div>
     );
@@ -214,7 +214,7 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
           color: '#263238',
           textAlign: 'center',
         }}>
-        Forgot User ID
+        Forgot Employee ID
       </h2>
 
       {/* Email Field */}
@@ -370,7 +370,7 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
             e.currentTarget.style.background = 'linear-gradient(to right, #4A32E7)';
           }}
         >
-          Find User ID
+          Find Employee ID
         </button>
       )}
     </div>

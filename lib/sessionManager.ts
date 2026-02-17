@@ -1,65 +1,5 @@
 import { supabase } from "./supabase";
 
-export interface StoredUser {
-  token_id: string;
-  user_id: string;
-  email: string;
-  user_name: string;
-  role: string;
-  profile_pic_url: string | null;
-  employee_id: string;
-  access_token: string;
-  refresh_token: string;
-  expiry_date: string;
-  last_login_at: string;
-  device_info?: any;
-}
-
-const STORAGE_KEY = "tfc_stored_accounts";
-
-/**
- * Generate a unique token ID for the browser/app
- */
-export const generateTokenId = (): string => {
-  const random = Math.random().toString(36).substring(2, 12);
-  return `token_${random}`;
-};
-
-/**
- * Get all stored accounts from LocalStorage
- */
-export const getStoredAccounts = (): StoredUser[] => {
-  if (typeof window === "undefined") return [];
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
-};
-
-/**
- * Save user account to the array in LocalStorage
- */
-export const saveAccount = (user: StoredUser) => {
-  if (typeof window === "undefined") return;
-  const accounts = getStoredAccounts();
-  const index = accounts.findIndex((a) => a.token_id === user.token_id);
-
-  if (index >= 0) {
-    accounts[index] = user;
-  } else {
-    accounts.push(user);
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-};
-
-/**
- * Remove a specific account from LocalStorage
- */
-export const removeAccount = (tokenId: string) => {
-  if (typeof window === "undefined") return;
-  const accounts = getStoredAccounts().filter((a) => a.token_id !== tokenId);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-};
-
 /**
  * Detect environment and get device info
  */
@@ -96,29 +36,17 @@ export const getEnvDeviceInfo = async (flutterDeviceInfo: any = null) => {
     device_type: ua.includes("Mobi") ? "mobile" : "desktop",
   };
 };
+
 /**
- * Force-hydrates the Supabase session from stored accounts if it's missing.
- * This prevents race conditions where Supabase hasn't yet initialized but we have tokens.
+ * Get the current session from Supabase
  */
 export const ensureValidSession = async () => {
-  const { data } = await supabase.auth.getSession();
-  if (data.session) return data.session;
-
-  // No session in Supabase? Try to restore from our Multi-Account store
-  const accounts = getStoredAccounts();
-  if (accounts.length > 0) {
-    // Take the most recent account or first one
-    const account = accounts[0]; 
-    const { data: restoreData, error } = await supabase.auth.setSession({
-      access_token: account.access_token,
-      refresh_token: account.refresh_token,
-    });
-
-    if (!error && restoreData.session) {
-      console.log("🛠️ [SessionManager] Hydrated Supabase session from LocalStorage backup");
-      return restoreData.session;
-    }
-  }
-
-  return null;
+    const { data: { session } } = await supabase.auth.getSession();
+    return session;
 };
+
+// Obsolete functions kept as empty to prevent bridge breakage if called
+export const getStoredAccounts = () => [];
+export const saveAccount = (user: any) => {};
+export const removeAccount = (tokenId: string) => {};
+export const generateTokenId = () => `token_${Math.random().toString(36).substring(2, 12)}`;

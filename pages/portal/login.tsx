@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import AppLogo from "../../components/AppLogo";
 import LoginFormUserId from "../../components/loginFormUserId";
@@ -6,8 +6,6 @@ import LoginFormEmailId from "../../components/loginFormEmailId";
 import SocialLoginButtons from "../../components/SocialLoginButtons";
 import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
-import LoggedOutUserCard from "../../components/LoggedOutUserCard";
-import { getStoredAccounts } from "../../lib/sessionManager";
 
 export default function Login() {
   const router = useRouter();
@@ -15,22 +13,11 @@ export default function Login() {
   const [showForgotForm, setShowForgotForm] = useState(false);
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [error, setError] = useState("");
-  const [showLoginForm, setShowLoginForm] = useState(false);
-
-  useEffect(() => {
-    // Check if any account cards exist in the new multi-account system
-    const accounts = getStoredAccounts();
-    if (!accounts || accounts.length === 0) {
-      setShowLoginForm(true);
-    } else {
-      setShowLoginForm(false);
-    }
-  }, []);
-
 
   const toggleForm = () => {
     setFormType(formType === "userId" ? "email" : "userId");
   };
+
 
   return (
     <div 
@@ -80,76 +67,56 @@ export default function Login() {
           {/* Logo/Title Section */}
           <div className="flex justify-center mb-6 md:mb-4">
             <AppLogo />
-            {/* <p className="mt-4" style={{ color: '#263238' }}>
-             Welcome Back!
-            </p> */}
           </div>
 
-          {/* Show User Card or Login Form */}
-          {!showLoginForm ? (
-            <LoggedOutUserCard 
-              onShowLoginForm={() => setShowLoginForm(true)} 
-              onLoginAnotherAccount={() => setShowLoginForm(true)}
-              formType={formType}
-              onToggleForm={() => {
-                // Toggle form type and show login form
-                toggleForm();
-                setShowLoginForm(true);
-              }}
-            />
-          ) : (
-            <>
-              {formType === "userId" ? (
-                <LoginFormUserId 
-                  onError={setError} 
-                  onForgotFormToggle={(show: boolean) => setShowForgotForm(show)}
-                  onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
-                />
-              ) : (
-                <LoginFormEmailId 
-                  onError={setError} 
-                  onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
-                />
-              )}
+            {formType === "userId" ? (
+              <LoginFormUserId 
+                onError={setError} 
+                onForgotFormToggle={(show: boolean) => setShowForgotForm(show)}
+                onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
+              />
+            ) : (
+              <LoginFormEmailId 
+                onError={setError} 
+                onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
+              />
+            )}
 
-              {/* Social Login Buttons - Simplified for Portal */}
-              <div className="mt-4">
-                <SocialLoginButtons formType={formType} onToggleForm={toggleForm} />
-              </div>
+            {/* Social Login Buttons handles the toggle and Google login */}
+            <div className="mt-4">
+              <SocialLoginButtons formType={formType} onToggleForm={toggleForm} />
+            </div>
 
-              {/* Forgot Password Link - Simplified */}
-              <div className="text-center mt-4">
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => setShowForgotPasswordForm(true)}
+                className="text-xs font-semibold hover:underline"
+                style={{ color: '#4b33e8' }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            <div className="my-3 flex items-center">
+              <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
+              <span className="px-4 text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>New to Rynxly?</span>
+              <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm md:text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>
+                Don't have an account?{" "}
                 <button
                   type="button"
-                  onClick={() => setShowForgotPasswordForm(true)}
-                  className="text-xs font-semibold hover:underline"
-                  style={{ color: '#4b33e8' }}
+                  onClick={() => router.push("/signup")}
+                  className="font-semibold hover:underline"
+                  style={{ color: '#4b33e8', cursor: 'pointer' }}
                 >
-                  Forgot Password?
+                  Sign Up
                 </button>
-              </div>
-
-              <div className="my-3 flex items-center">
-                <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
-                <span className="px-4 text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>New to Rynxly?</span>
-                <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-sm md:text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>
-                  Don't have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => router.push("/signup")}
-                    className="font-semibold hover:underline"
-                    style={{ color: '#4b33e8', cursor: 'pointer' }}
-                  >
-                    Sign Up
-                  </button>
-                </p>
-              </div>
-            </>
-          )} 
+              </p>
+            </div>
           </div>
         </div>
       </div>

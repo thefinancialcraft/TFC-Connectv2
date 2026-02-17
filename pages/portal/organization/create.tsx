@@ -102,8 +102,8 @@ export default function CreateOrganization() {
     }
   };
 
-  const handleLogoutClick = async (tokenId?: string) => {
-    await handleLogout(router, tokenId);
+  const handleLogoutClick = async () => {
+    await handleLogout(router);
   };
 
   // Page level protection logic (Strict: Hidden by default)

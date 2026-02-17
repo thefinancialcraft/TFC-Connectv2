@@ -330,9 +330,9 @@ function UserProfilePage() {
     }
   };
 
-  const handleLogoutClick = async (tokenId?: string) => {
+  const handleLogoutClick = async () => {
     const { handleLogout } = await import("@/lib/authService");
-    await handleLogout(router, tokenId);
+    await handleLogout(router);
   };
 
   const handleChangeAvatar = () => {

@@ -93,8 +93,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
   }, [user, mounted]);
 
 
-  const handleLogoutClick = useCallback(async (tokenId?: string) => {
-    await handleLogout(router, tokenId);
+  const handleLogoutClick = useCallback(async () => {
+    await handleLogout(router);
   }, [router]);
 
 

@@ -74,27 +74,12 @@ const Sidebar = memo(function Sidebar({
     if (isLoggingOut || !onLogout) return;
     setIsLoggingOut(true);
     try {
-      // 1. Get current active token from metadata
-      const { getStoredUserData } = await import("../lib/localStorageUtils");
-      const activeData = getStoredUserData();
-      const accounts = (await import("../lib/sessionManager")).getStoredAccounts();
-      
-      let currentTokenId = activeData?.token_id;
-
-      // 2. Fallback: Search in accounts
-      if (!currentTokenId) {
-        currentTokenId = displayUser?.employeeId 
-          ? accounts.find(a => a.employee_id === displayUser.employeeId)?.token_id 
-          : accounts[0]?.token_id;
-      }
-
-      onLogout(currentTokenId);
-
+      onLogout();
     } catch (err) {
       console.error("Logout exception:", err);
       setIsLoggingOut(false);
     }
-  }, [isLoggingOut, onLogout, displayUser?.employeeId]);
+  }, [isLoggingOut, onLogout]);
 
   // Memoize derived UI values
   const initials = useMemo(() => {

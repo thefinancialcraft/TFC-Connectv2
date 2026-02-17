@@ -35,104 +35,20 @@ const STORAGE_KEY = 'tfc_user_data';
 const STORAGE_KEY_ARRAY = 'tfc_user_data_array'; // For multiple users
 
 /**
- * Store user data in localStorage (single user - for backward compatibility)
- * Ensures session tokens are always stored with card details
+ * Store user data in localStorage (single user)
  */
 export function storeUserData(userData: StoredUserData): void {
   if (typeof window === 'undefined') return;
   
   try {
-    // Ensure session tokens are included
     const dataToStore: StoredUserData = {
       ...userData,
-      // Explicitly ensure session tokens are present (even if undefined, they'll be stored)
-      session_token: userData.session_token || undefined,
-      refresh_token: userData.refresh_token || undefined,
       all_time_active: userData.all_time_active ?? true,
     };
     
-    console.log('storeUserData called with:', {
-      hasSessionToken: !!dataToStore.session_token,
-      hasRefreshToken: !!dataToStore.refresh_token,
-      userId: dataToStore.user_id,
-      email: dataToStore.email
-    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
+    console.log('User data stored successfully');
     
-    const dataString = JSON.stringify(dataToStore);
-    localStorage.setItem(STORAGE_KEY, dataString);
-    console.log('User data stored successfully with session tokens');
-    
-    // Also store in array format for multiple users support
-    const allUsers = getAllStoredUsers();
-    const existingIndex = allUsers.findIndex(
-      (u) => u.user_id === dataToStore.user_id
-    );
-
-    // Safety check: If we didn't find by user_id, but we would have found by employee_id, log a warning
-    if (existingIndex === -1 && dataToStore.employee_id) {
-       const collisionIndex = allUsers.findIndex(u => u.employee_id === dataToStore.employee_id);
-       if (collisionIndex >= 0) {
-         console.warn('Potential user data collision detected: employee_id matches but user_id differs. Preventing overwrite.', {
-           existing: allUsers[collisionIndex],
-           new: dataToStore
-         });
-         // Do NOT overwrite. Potentially we should append? 
-         // For now, we will treat it as a new user to avoid corrupting the existing one.
-       }
-    }
-    
-    if (existingIndex >= 0) {
-      // Update existing user with new session tokens
-      allUsers[existingIndex] = {
-        ...allUsers[existingIndex],
-        ...dataToStore,
-        // Preserve session tokens if they exist
-        session_token: dataToStore.session_token || allUsers[existingIndex].session_token,
-        refresh_token: dataToStore.refresh_token || allUsers[existingIndex].refresh_token,
-      };
-      console.log('Updated existing user in array with session tokens');
-    } else {
-      // Add new user with session tokens
-      allUsers.push(dataToStore);
-      console.log('Added new user to array with session tokens');
-    }
-    
-    localStorage.setItem(STORAGE_KEY_ARRAY, JSON.stringify(allUsers));
-
-    // --- CRITICAL SYNC: Update 'sessionManager' accounts too ---
-    // This ensures that token_id is consistent across both storage locations
-    if (typeof window !== 'undefined') {
-        import("./sessionManager").then(({ getStoredAccounts, saveAccount }) => {
-            const accounts = getStoredAccounts();
-            const matchingAccount = accounts.find(a => a.user_id === dataToStore.user_id);
-            if (matchingAccount) {
-                saveAccount({
-                    ...matchingAccount,
-                    access_token: dataToStore.session_token || matchingAccount.access_token || "",
-                    refresh_token: dataToStore.refresh_token || matchingAccount.refresh_token || "",
-                    token_id: dataToStore.token_id || matchingAccount.token_id,
-                    user_name: dataToStore.user_name || matchingAccount.user_name,
-                    profile_pic_url: dataToStore.profile_pic_url || matchingAccount.profile_pic_url,
-                    role: dataToStore.role || matchingAccount.role
-                });
-
-                console.log("🔄 [LocalStorage] Synced login data to sessionManager");
-            }
-        });
-    }
-
-    // Verify it was stored correctly
-    const stored = localStorage.getItem(STORAGE_KEY);
-
-    if (stored) {
-      const parsed = JSON.parse(stored) as StoredUserData;
-      console.log('Verified stored data:', {
-        hasSessionToken: !!parsed.session_token,
-        hasRefreshToken: !!parsed.refresh_token,
-        sessionTokenLength: parsed.session_token?.length || 0,
-        refreshTokenLength: parsed.refresh_token?.length || 0
-      });
-    }
   } catch (error) {
     console.error('Error storing user data:', error);
   }
