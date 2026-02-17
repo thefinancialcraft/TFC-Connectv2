@@ -806,7 +806,7 @@ export default function CallingPage() {
                          // 1. Organization Check (Mandatory)
                          if (campData.organization_id === user.organization_id) {
                               // 2. Role Check
-                              if (['ceo', 'developer'].includes(normalizedDesignation)) {
+                              if (['ceo', 'developer', 'manager'].includes(normalizedDesignation)) {
                                   hasAccess = true; // Admins see everything in their org
                               } else if (normalizedDesignation === 'team_leader') {
                                   // For TL, we just check if they are explicitly assigned to this CAM

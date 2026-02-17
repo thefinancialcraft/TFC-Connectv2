@@ -76,8 +76,8 @@
 				};
 			}
 
-			// Level 3: Client Admin (CEO/Developer)
-			if (user.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
+			// Level 3: Client Admin (CEO/Developer/Manager)
+			if (user.isClient && ['ceo', 'developer', 'manager'].includes(user.designation?.toLowerCase() || '')) {
 				return {
 					isCreateCampaginButtonVisible: true,
 					isCampaginEditButtonVisible: true,
@@ -125,7 +125,7 @@
 					}
 
 					// 2. Assignment Filters based on Level
-					if (normalizedDesignation === 'team_leader') {
+					if (normalizedDesignation === 'team_leader' || normalizedDesignation === 'teamleader' || normalizedDesignation.includes('tl')) {
 						// Level 2: Team Leader (Self + Team)
 						let teamMemberIds: string[] = [user.uid];
 						const { data: teamData } = await supabase
@@ -150,7 +150,7 @@
 							query = query.or(orFilter);
 						}
 					} 
-					else if (['ceo', 'developer'].includes(normalizedDesignation)) {
+					else if (['ceo', 'developer', 'manager'].includes(normalizedDesignation)) {
 						// Level 3: Client Admin (Sees all in organization - no extra filter)
 					} 
 					else {

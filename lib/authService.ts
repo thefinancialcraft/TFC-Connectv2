@@ -29,7 +29,7 @@ export interface UserProfile {
   currentCallSession?: {
     campaign_id: string;
     customer_id: string;
-    status: 'assigned' | 'active' | 'disposition_pending' | 'closed';
+    status: "assigned" | "active" | "disposition_pending" | "closed";
     call_start_at: string;
   } | null;
   allTimeActive?: boolean;
@@ -53,7 +53,10 @@ export interface AuthResult {
  */
 export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
   try {
-    const { data: { user: authUser }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user: authUser },
+      error: userError,
+    } = await supabase.auth.getUser();
 
     if (userError || !authUser) {
       return {
@@ -65,9 +68,9 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
 
     // Fetch profile from database
     const { data: profileData, error: profileError } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('user_id', authUser.id)
+      .from("user_profiles")
+      .select("*")
+      .eq("user_id", authUser.id)
       .maybeSingle();
 
     if (profileError) {
@@ -77,7 +80,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
     const userData: UserProfile = {
       uid: authUser.id,
       displayName: profileData?.user_name || null,
-      email: authUser.email || '',
+      email: authUser.email || "",
       phone: profileData?.contact_no || null,
       providers: [],
       providerType: null,
@@ -88,7 +91,8 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       approvalStatus: profileData?.approval_status || null,
       accountStatus: profileData?.status || null,
       updatedAt: profileData?.updated_at || null,
-      profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
+      profilePicUrl:
+        profileData?.profile_pic_url || profileData?.profile_image || null,
       googleCalendarConnected: profileData?.google_calendar_connected || false,
       googleCalendarSkipped: profileData?.google_calendar_skipped || false,
       isClient: profileData?.is_client || false,
@@ -101,6 +105,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       statusReason: profileData?.status_reason || null,
       holdStartDate: profileData?.hold_start_date || null,
       holdEndDate: profileData?.hold_end_date || null,
+      organization_id: profileData?.organization_id || null,
     };
 
     return {
@@ -126,12 +131,15 @@ export async function handleLogout(router: NextRouter): Promise<void> {
     console.log("🚀 [Auth] Starting complete logout...");
 
     // 1. Notify Flutter bridge of logout if available
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const win = window as any;
       if (win.flutter_inappwebview?.callHandler) {
-        win.flutter_inappwebview.callHandler('fromWebApp', { type: 'logout', value: true });
+        win.flutter_inappwebview.callHandler("fromWebApp", {
+          type: "logout",
+          value: true,
+        });
       }
-      
+
       // Clear all auth related local storage
       localStorage.clear();
       sessionStorage.clear();
@@ -139,7 +147,7 @@ export async function handleLogout(router: NextRouter): Promise<void> {
 
     // 2. Clear Supabase session on server and client
     await supabase.auth.signOut();
-    
+
     console.log("👋 [Auth] Logout complete, redirecting to login...");
     router.replace("/login");
   } catch (err) {
