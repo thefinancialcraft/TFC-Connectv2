@@ -28,6 +28,9 @@ interface Customer {
   managed_by_id?: string | null;
   organization_id?: string | null;
   organization_name?: string | null;
+  disposition?: string | null;
+  closed_at?: string | null;
+  rejected_at?: string | null;
 }
 
 
@@ -139,6 +142,7 @@ export default function Customer() {
     new Set()
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [dataSource, setDataSource] = useState<"live" | "rejected" | "closed">("live");
 
   useEffect(() => {
     if (selectedCustomer?.customer_details) {
@@ -189,7 +193,7 @@ export default function Customer() {
 
 
   // Format date safely for SSR (only format on client)
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | null | undefined) => {
     if (!mounted || !dateString) return "N/A";
     try {
       const date = new Date(dateString);
@@ -205,34 +209,17 @@ export default function Customer() {
 
   const fetchCustomers = async (page: number = currentPage) => {
     try {
-      if (!user) return; // Prevent fetching without user payload
       setLoadingCustomers(true);
+      const todayISO = new Date();
+      todayISO.setHours(0,0,0,0);
 
-      // Get total count with filters applied
-      let countQuery = supabase
-        .from("customers")
-        .select("*", { count: "exact", head: true });
+      const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
+      const dispCol = dataSource === "closed" ? "final_disposition" : "disposition";
 
-      if (searchQuery) {
-        countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
-      }
-
-      // --- DATA MINING ALGORITHM ---
-      // Level 1: Client Agent (Own Leads Only)
-      if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
-          if (user.organization_id) countQuery = countQuery.eq('organization_id', user.organization_id);
-          if (user.uid) countQuery = countQuery.eq('assigned_to', user.uid);
-      }
-      // Level 2: Team Leader (Own + Team Leads)
-      else if (user?.isClient && user.designation === 'team_leader') {
-         if (user.organization_id) countQuery = countQuery.eq('organization_id', user.organization_id);
-         
-         // Fetch team members logic (moved to top of function for reuse or kept inline if simple)
-         // For cleanliness, we'll keep the fetch logic efficiently placed or reused.
-         // (Re-implementing the fetch here for consistency with previous steps, but structured cleanly)
-         let teamMemberIds: string[] = [];
-         
-          const { data: teamData } = await supabase
+      // 1. Fetch Shared Team Members for TL (Re-use in all sub-queries)
+      let sharedTeamMemberIds: string[] = [];
+      if (user?.isClient && user.designation === 'team_leader') {
+         const { data: teamData } = await supabase
            .from('teams')
            .select('members')
            .eq('leader_id', user.uid)
@@ -242,392 +229,149 @@ export default function Customer() {
            teamData.forEach(team => {
              if (Array.isArray(team.members)) {
                 team.members.forEach((member: any) => {
-                  if (typeof member === 'string') teamMemberIds.push(member);
+                  if (typeof member === 'string') sharedTeamMemberIds.push(member);
                 });
              } else if (typeof team.members === 'string') {
                 try {
                   const parsedIds = JSON.parse(team.members);
-                  if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => teamMemberIds.push(String(id))); 
+                  if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => sharedTeamMemberIds.push(String(id))); 
                 } catch (e) {}
              }
            });
          }
-         teamMemberIds.push(user.uid);
-         teamMemberIds = [...new Set(teamMemberIds)];
-         
-         if (teamMemberIds.length > 0) countQuery = countQuery.in('assigned_to', teamMemberIds);
-         else countQuery = countQuery.eq('assigned_to', user.uid);
-      }
-      // Level 3: Client Admin (Org Wide)
-      else if (user?.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
-          if (user.organization_id) {
-             countQuery = countQuery.eq('organization_id', user.organization_id);
-          } else {
-             // Fail-secure: If no Org ID, show nothing
-             countQuery = countQuery.eq('id', '00000000-0000-0000-0000-000000000000');
-          }
-      }
-      // Level 4: Internal Staff (Global Access) - No Filters Applied
-
-      if (filters.organization) {
-        countQuery = countQuery.eq("organization_id", filters.organization);
-      }
-      if (filters.campaign) {
-        countQuery = countQuery.eq("campaign_id", filters.campaign);
-      }
-      if (filters.assignedTo) {
-        if (filters.assignedTo === "unassigned") {
-          countQuery = countQuery.is("assigned_to", null);
-        } else {
-          countQuery = countQuery.eq("assigned_to", filters.assignedTo);
-        }
-      }
-      if (filters.disposition) {
-        countQuery = countQuery.eq("disposition", filters.disposition);
+         sharedTeamMemberIds.push(user.uid);
+         sharedTeamMemberIds = [...new Set(sharedTeamMemberIds)];
       }
 
-      const { count, error: countError } = await countQuery;
-
-      if (countError) {
-        console.error("Error fetching customer count:", countError);
-      } else {
-        setTotalCustomers(count || 0);
-      }
-
-      // --- Follow Up Stats Queries ---
-      const todayISO = new Date();
-      todayISO.setHours(0,0,0,0);
-      
-      // Helper function to apply user filters to any query
+      // 2. Helper function to apply user filters consistently
       const applyUserFilters = (q: any) => {
           if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-              if (user.uid) q = q.eq('assigned_to', user.uid);
+              if (user.uid) q = q.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
           }
           else if (user?.isClient && user.designation === 'team_leader') {
                if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-               // IMPORTANT: For Team Leader stats, we ideally assume organizational scope or specific team scope.
-               // Applying Org ID filter is the basic fail-safe step here. 
+               if (sharedTeamMemberIds.length > 0) q = q.in(dataSource === 'live' ? 'assigned_to' : 'agent_id', sharedTeamMemberIds);
+               else q = q.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
           }
-          else if (user?.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
+          else if (user?.isClient && ['ceo', 'developer', 'manager'].includes(user.designation || '')) {
               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
               else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
           }
           return q;
       };
 
-      // 1. Pending (Total Call Back)
-      let pendingQuery = supabase
-        .from("customers")
-        .select("*", { count: "exact", head: true })
-        .eq("disposition", "Call Back");
-      
-      pendingQuery = applyUserFilters(pendingQuery);
-      
-      // 2. Overdue (Call Back < Today)
-      let overdueQuery = supabase
-        .from("customers")
-        .select("*", { count: "exact", head: true })
-        .eq("disposition", "Call Back")
-        .lt("updated_at", todayISO.toISOString());
-        
-      overdueQuery = applyUserFilters(overdueQuery);
-
-      const [{ count: pendingCount }, { count: overdueCount }] = await Promise.all([
-          pendingQuery,
-          overdueQuery
-      ]);
-
-      setPendingFollowUps(pendingCount || 0);
-      setOverdueFollowUps(overdueCount || 0);
-      setUpcomingFollowUps((pendingCount || 0) - (overdueCount || 0));
-
-
-      // Get fresh customers count (unassigned leads) - always unassigned, but follow other filters
-      let freshCountQuery = supabase
-        .from("customers")
-        .select("*", { count: "exact", head: true })
-        .is("assigned_to", null)
-        .eq("attempt_count", 0);
-
+      // 3. Get total count
+      let countQuery = supabase.from(table).select("*", { count: "exact", head: true });
       if (searchQuery) {
-        freshCountQuery = freshCountQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+        countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+      }
+      countQuery = applyUserFilters(countQuery);
+      if (filters.organization) countQuery = countQuery.eq("organization_id", filters.organization);
+      if (filters.campaign) countQuery = countQuery.eq("campaign_id", filters.campaign);
+      if (filters.assignedTo) {
+        if (filters.assignedTo === "unassigned") countQuery = countQuery.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
+        else countQuery = countQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
+      }
+      if (filters.disposition) countQuery = countQuery.eq(dispCol, filters.disposition);
+
+      const { count, error: countError } = await countQuery;
+      if (countError) console.error("Error fetching customer count:", countError);
+      else setTotalCustomers(count || 0);
+
+      try {
+        let pendingQuery = supabase.from(table).select("*", { count: "exact", head: true }).eq(dispCol, "Call Back");
+        pendingQuery = applyUserFilters(pendingQuery);
+
+        let overdueQuery = supabase.from(table).select("*", { count: "exact", head: true })
+          .eq(dispCol, "Call Back")
+          .lt("updated_at", todayISO.toISOString());
+        overdueQuery = applyUserFilters(overdueQuery);
+
+        let freshCountQuery = supabase.from(table).select("*", { count: "exact", head: true });
+        if (dataSource === 'live') {
+            freshCountQuery = freshCountQuery.is("assigned_to", null).is(dispCol, null);
+        } else {
+            freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
+        }
+        freshCountQuery = applyUserFilters(freshCountQuery);
+
+        if (dataSource === "closed") {
+            setPendingFollowUps(0);
+            setOverdueFollowUps(0);
+            setUpcomingFollowUps(0);
+            setFreshCustomersCount(0);
+        } else {
+            const [pStats, oStats, fStats] = await Promise.all([pendingQuery, overdueQuery, freshCountQuery]);
+            setPendingFollowUps(pStats.count || 0);
+            setOverdueFollowUps(oStats.count || 0);
+            setUpcomingFollowUps((pStats.count || 0) - (oStats.count || 0));
+            setFreshCustomersCount(fStats.count || 0);
+        }
+      } catch (statsErr) {
+        console.warn("Follow-up/Fresh stats failed to load:", statsErr);
       }
 
-      // --- DATA MINING ALGORITHM (Fresh Count) ---
-      // Level 1: Client Agent (Own Leads Only) -> Cannot see unassigned, so 0 results usually
-      if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
-          if (user.organization_id) freshCountQuery = freshCountQuery.eq('organization_id', user.organization_id);
-          if (user.uid) freshCountQuery = freshCountQuery.eq('assigned_to', user.uid);
-      }
-      // Level 2: Team Leader (Own + Team Leads)
-      else if (user?.isClient && user.designation === 'team_leader') {
-         if (user.organization_id) freshCountQuery = freshCountQuery.eq('organization_id', user.organization_id);
-         
-         // Re-use teamMemberIds if scoped variable available, else re-fetch (simplifying here assuming logic consistency)
-         // For safety in this specific block without scope sharing:
-         // Note: We need the IDs. Ideally we fetch once at top. For now, strict block logic:
-         // We will rely on filters.assignedTo for team logic if needed, but for "Fresh" (unassigned),
-         // Team Leaders only see unassigned if they are allowed to grab them?
-         // Current logic: freshCountQuery checks `is('assigned_to', null)`.
-         // AND we add `in('assigned_to', members)`.
-         // Intersection is EMPTY.
-         // This implies Team Leaders CANNOT see fresh leads unless we change logic to "Unassigned leads in their Org".
-         // BUT, prompt said "assigned organization and self assigned agents".
-         // So effectively they see NO fresh leads (unassigned) unless we open it up.
-         // Keeping strict to previous logic:
-         // If we added the filter `assigned_to IN (members)`, result is 0.
-         // If we want them to see Unassigned in Org, we should ONLY filter by Org.
-         // However, instruction was "check assigned agents".
-         // We will maintain the previous logic: if (members) -> in(members).
-         
-         // To avoid re-fetching, we can't easily validly assume IDs here without top-level fetch.
-         // BUT, for fresh leads (unassigned), filtering by assigned_to will always yield 0.
-         // So for Level 2, Fresh Count is effectively 0 unless we change requirements.
-         // We will apply the same filters as before to be consistent.
-         
-         // IMPORTANT: We need the IDs again if we want to be exact.
-         // However, for efficiency, let's just apply the Org filter if we assume they can see Org Unassigned?
-         // No, strictly follow Level 2 definition.
-         // Since I cannot easily share `teamMemberIds` across these blocks without a major refactor of `fetchCustomers` to hoist the fetch,
-         // I will assume for `freshCountQuery` we replicate the "Zero Result" effect if that's what the logic dictates,
-         // OR we just apply Org filter if that's the intention.
-         // Let's stick to the EXACT previous logic: Re-fetch is expensive but safe.
-         // Actually, wait. `freshCountQuery` has `.is("assigned_to", null)`.
-         // Any `.eq("assigned_to", ...)` makes it 0.
-         // So for Level 1 & 2, fresh count is 0.
-         // We can optimize this by just returning 0 if we want, but let's run the query with filters to be safe.
-         // We will skip re-fetching for Level 2 here and just set a condition that will result in 0 to match previous behavior,
-         // UNLESS we want to allow them to see specific unassigned ones (impossible).
-         
-         // ACTUALLY: Let's just apply the logic:
-         if (user.organization_id) freshCountQuery = freshCountQuery.eq('organization_id', user.organization_id);
-         // The previous logic added `.in('assigned_to', ids)`. 
-         // Since `assigned_to` is null, this is `null IN (ids)` -> False.
-         // We can simulate this by adding a dummy filter if we don't have IDs.
-         freshCountQuery = freshCountQuery.eq('assigned_to', '00000000-0000-0000-0000-000000000000'); 
-      }
-      // Level 3: Client Admin (Org Wide) -> Can see Org Unassigned!
-      else if (user?.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
-          if (user.organization_id) {
-             freshCountQuery = freshCountQuery.eq('organization_id', user.organization_id);
-          } else {
-             // Fail-secure
-             freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
-          }
-      }
-      // Level 4: Internal Staff -> Can see ALL Unassigned
-
-      if (filters.organization) {
-        freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
-      }
-      if (filters.campaign) {
-        freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
-      }
-      if (filters.disposition) {
-        freshCountQuery = freshCountQuery.eq("disposition", filters.disposition);
-      }
-
-      const { count: freshCount, error: freshCountError } = await freshCountQuery;
-
-      if (freshCountError) {
-        console.error("Error fetching fresh customers count:", freshCountError);
-      } else {
-        setFreshCustomersCount(freshCount || 0);
-      }
-
-      // Fetch data based on page size
-      let query = supabase
-        .from("customers")
-        .select("*")
-        .order("created_at", { ascending: false });
+      // 5. Fetch Main Data
+      const orderCol = dataSource === "rejected" ? "rejected_at" : dataSource === "closed" ? "closed_at" : "created_at";
+      let query = supabase.from(table).select("*")
+        .order(orderCol, { ascending: false });
 
       if (searchQuery) {
         let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
-        
-        // If the search looks like a phone number (mostly digits), try hashing it for exact match
         if (searchQuery.replace(/\D/g, '').length > 0) {
              const hash = computePhoneHash(searchQuery);
-             if (hash) {
-                 orConditions += `,phone_search_hash.eq.${hash}`;
-             }
+             if (hash) orConditions += `,phone_search_hash.eq.${hash}`;
         }
-        
         query = query.or(orConditions);
       }
-
-      // --- DATA MINING ALGORITHM (Main Query) ---
-      // Level 1: Client Agent
-      if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
-          if (user.organization_id) query = query.eq('organization_id', user.organization_id);
-          if (user.uid) query = query.eq('assigned_to', user.uid);
-      }
-      // Level 2: Team Leader
-      else if (user?.isClient && user.designation === 'team_leader') {
-          if (user.organization_id) query = query.eq('organization_id', user.organization_id);
-          
-          // Re-fetch logic or assume variables. 
-          // Since query is sequential in function, we MUST re-fetch or hoist variables.
-          // Hoisting is best, but due to tool limitations, we'll re-implement fetch briefly or reuse if scope allows.
-          // Note: `teamMemberIds` was defined in the `if` block of Count query, so it's NOT available here.
-          // We must re-fetch for safety.
-          let tMembers: string[] = [];
-          const { data: tData } = await supabase.from('teams').select('members').eq('leader_id', user.uid).eq('is_active', true);
-           if (tData) {
-               tData.forEach(t => {
-                   if (Array.isArray(t.members)) {
-                       t.members.forEach((m:any) => { if(typeof m==='string') tMembers.push(m) });
-                   } else if (typeof t.members === 'string') {
-                        try { const p = JSON.parse(t.members); if(Array.isArray(p)) p.forEach((id:any)=>tMembers.push(String(id))); } catch(e){}
-                   }
-               });
-           }
-           tMembers.push(user.uid);
-           tMembers = [...new Set(tMembers)];
-           
-           if (tMembers.length > 0) query = query.in('assigned_to', tMembers);
-           else query = query.eq('assigned_to', user.uid);
-      }
-      // Level 3: Client Admin
-      else if (user?.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
-          if (user.organization_id) {
-             query = query.eq('organization_id', user.organization_id);
-          } else {
-             // Fail-secure
-             query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-          }
-      }
-      // Level 4: Internal Staff -> No Filters
-
-
-      if (filters.organization) {
-        query = query.eq("organization_id", filters.organization);
-      }
-      if (filters.campaign) {
-        query = query.eq("campaign_id", filters.campaign);
-      }
+      query = applyUserFilters(query);
+      if (filters.organization) query = query.eq("organization_id", filters.organization);
+      if (filters.campaign) query = query.eq("campaign_id", filters.campaign);
       if (filters.assignedTo) {
-        if (filters.assignedTo === "unassigned") {
-          query = query.is("assigned_to", null);
-        } else {
-          query = query.eq("assigned_to", filters.assignedTo);
-        }
+        if (filters.assignedTo === "unassigned") query = query.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
+        else query = query.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
-      if (filters.disposition) {
-        query = query.eq("disposition", filters.disposition);
-      }
-
+      if (filters.disposition) query = query.eq(dispCol, filters.disposition);
 
       let data: any[] | null = null;
       let error: any = null;
 
       if (pageSize === "all") {
-        // Fetch all data in batches of 1000 to bypass API limits
         let allData: any[] = [];
         let hasMore = true;
         let pageIndex = 0;
         const batchSize = 1000;
-
         while (hasMore) {
-            let batchQuery = supabase
-                .from("customers")
-                .select("*")
-                .order("created_at", { ascending: false });
-
+            let batchQuery = supabase.from(table).select("*")
+                .order(orderCol, { ascending: false });
             if (searchQuery) {
                 let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
-                
-                // If the search looks like a phone number (mostly digits), try hashing it for exact match
                 if (searchQuery.replace(/\D/g, '').length > 0) {
                      const hash = computePhoneHash(searchQuery);
-                     if (hash) {
-                         // Add exact match check on phone_search_hash
-                         orConditions += `,phone_search_hash.eq.${hash}`;
-                     }
+                     if (hash) orConditions += `,phone_search_hash.eq.${hash}`;
                 }
-                
                 batchQuery = batchQuery.or(orConditions);
             }
-
-            // --- DATA MINING ALGORITHM (Batch Query) ---
-            // Level 1: Client Agent
-            if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
-                if (user.organization_id) batchQuery = batchQuery.eq('organization_id', user.organization_id);
-                if (user.uid) batchQuery = batchQuery.eq('assigned_to', user.uid);
-            }
-            // Level 2: Team Leader
-            else if (user?.isClient && user.designation === 'team_leader') {
-                if (user.organization_id) batchQuery = batchQuery.eq('organization_id', user.organization_id);
-                
-                // Re-fetch logic for batch loop
-                let bMembers: string[] = [];
-                const { data: bData } = await supabase.from('teams').select('members').eq('leader_id', user.uid).eq('is_active', true);
-                if (bData) {
-                    bData.forEach(t => {
-                        if (Array.isArray(t.members)) {
-                            t.members.forEach((m:any) => { if(typeof m==='string') bMembers.push(m) });
-                        } else if (typeof t.members === 'string') {
-                                try { const p = JSON.parse(t.members); if(Array.isArray(p)) p.forEach((id:any)=>bMembers.push(String(id))); } catch(e){}
-                        }
-                    });
-                }
-                bMembers.push(user.uid);
-                bMembers = [...new Set(bMembers)];
-                
-                if (bMembers.length > 0) batchQuery = batchQuery.in('assigned_to', bMembers);
-                else batchQuery = batchQuery.eq('assigned_to', user.uid);
-            }
-            // Level 3: Client Admin
-            else if (user?.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
-                if (user.organization_id) {
-                    batchQuery = batchQuery.eq('organization_id', user.organization_id);
-                } else {
-                    // Fail-secure
-                    batchQuery = batchQuery.eq('id', '00000000-0000-0000-0000-000000000000');
-                }
-            }
-            // Level 4: Internal Staff -> No Filters
-
-
-            if (filters.organization) {
-                batchQuery = batchQuery.eq("organization_id", filters.organization);
-            }
-            if (filters.campaign) {
-                batchQuery = batchQuery.eq("campaign_id", filters.campaign);
-            }
+            batchQuery = applyUserFilters(batchQuery);
+            if (filters.organization) batchQuery = batchQuery.eq("organization_id", filters.organization);
+            if (filters.campaign) batchQuery = batchQuery.eq("campaign_id", filters.campaign);
             if (filters.assignedTo) {
-                if (filters.assignedTo === "unassigned") {
-                    batchQuery = batchQuery.is("assigned_to", null);
-                } else {
-                    batchQuery = batchQuery.eq("assigned_to", filters.assignedTo);
-                }
+                if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
+                else batchQuery = batchQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
-            if (filters.disposition) {
-                batchQuery = batchQuery.eq("disposition", filters.disposition);
-            }
+            if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
 
-
-            const { data: batch, error: batchError } = await batchQuery
-                .range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
-
-            if (batchError) {
-                error = batchError;
-                break;
-            }
-
+            const { data: batch, error: batchError } = await batchQuery.range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
+            if (batchError) { error = batchError; break; }
             if (batch && batch.length > 0) {
                 allData = [...allData, ...batch];
-                if (batch.length < batchSize) {
-                    hasMore = false;
-                }
+                if (batch.length < batchSize) hasMore = false;
                 pageIndex++;
-            } else {
-                hasMore = false;
-            }
+            } else { hasMore = false; }
         }
         data = allData;
       } else {
-        // Calculate offset for pagination
         const offset = (page - 1) * pageSize;
         const { data: pagedData, error: pagedError } = await query.range(offset, offset + pageSize - 1);
         data = pagedData;
@@ -638,133 +382,70 @@ export default function Customer() {
         console.error("Error fetching customers:", error);
         setAllCustomers([]);
       } else {
-        // Fetch assigned user names separately
-        const allUserIds = [
-          ...new Set(
-            (data || [])
-              .flatMap((c: any) => [c.assigned_to, c.managed_by])
-              .filter((id: string | null) => id)
-          ),
-        ];
-
-        let userMap: Record<
-          string,
-          { user_name: string | null; employee_id: string | null }
-        > = {};
-
+        // Fetch related data
+        const allUserIds = [...new Set((data || []).flatMap((c: any) => [c.assigned_to || c.agent_id, c.managed_by]).filter(id => id))];
+        let userMap: Record<string, { user_name: string | null; employee_id: string | null }> = {};
         if (allUserIds.length > 0) {
-          const { data: userData } = await supabase
-            .from("user_profiles")
-            .select("user_id, id, user_name, employee_id")
+          const { data: userData } = await supabase.from("user_profiles").select("user_id, id, user_name, employee_id")
             .or(`user_id.in.("${allUserIds.join('","')}"),id.in.("${allUserIds.join('","')}")`);
-
           if (userData) {
-            userData.forEach((user) => {
-                const info = {
-                    user_name: user.user_name,
-                    employee_id: user.employee_id,
-                };
-                userMap[user.user_id] = info;
-                userMap[user.id] = info;
+            userData.forEach(u => {
+                const info = { user_name: u.user_name, employee_id: u.employee_id };
+                userMap[u.user_id] = info;
+                userMap[u.id] = info;
             });
           }
         }
 
-        // Fetch campaign names separately (manual join)
-        const campaignIds = [
-          ...new Set(
-            (data || [])
-              .map((c: any) => c.campaign_id)
-              .filter((id: string | null) => id)
-          ),
-        ];
-
+        const campaignIds = [...new Set((data || []).map((c: any) => c.campaign_id).filter(id => id))];
         let campaignMap: Record<string, string> = {};
-
         if (campaignIds.length > 0) {
-          const { data: campaignData } = await supabase
-            .from("campaigns")
-            .select("id, name")
-            .in("id", campaignIds);
-
-          if (campaignData) {
-            campaignData.forEach((camp) => {
-              campaignMap[camp.id] = camp.name;
-            });
-          }
+          const { data: cData } = await supabase.from("campaigns").select("id, name").in("id", campaignIds);
+          if (cData) cData.forEach(c => { campaignMap[c.id] = c.name; });
         }
 
-        // Fetch organization names separately
-        const organizationIds = [
-          ...new Set(
-            (data || [])
-              .map((c: any) => c.organization_id)
-              .filter((id: string | null) => id)
-          ),
-        ];
-
-        let organizationMap: Record<string, string> = {};
-
-        if (organizationIds.length > 0) {
-          const { data: orgData } = await supabase
-            .from("organizations")
-            .select("id, company_name")
-            .in("id", organizationIds);
-
-          if (orgData) {
-            orgData.forEach((org) => {
-              organizationMap[org.id] = org.company_name;
-            });
-          }
+        const orgIds = [...new Set((data || []).map((c: any) => c.organization_id).filter(id => id))];
+        let orgMap: Record<string, string> = {};
+        if (orgIds.length > 0) {
+          const { data: oData } = await supabase.from("organizations").select("id, company_name").in("id", orgIds);
+          if (oData) oData.forEach(o => { orgMap[o.id] = o.company_name; });
         }
 
-        // Map the data to include assigned user name and campaign name
+        // Map data
         const mappedData = (data || []).map((customer: any) => ({
           ...customer,
-          assigned_user_name: customer.assigned_to
-            ? userMap[customer.assigned_to]?.user_name || null
-            : null,
-          assigned_employee_id: customer.assigned_to
-            ? userMap[customer.assigned_to]?.employee_id || null
-            : null,
-          managed_by_name: customer.managed_by
-            ? userMap[customer.managed_by]?.user_name || "Unknown"
-            : "Self",
-          managed_by_id: customer.managed_by
-            ? userMap[customer.managed_by]?.employee_id || customer.managed_by.slice(0, 8).toUpperCase()
-            : null,
-          campaign_name: customer.campaign_id
-            ? campaignMap[customer.campaign_id] || null
-            : null,
-          organization_name: customer.organization_id
-            ? organizationMap[customer.organization_id] || null
-            : null,
+          assigned_to: customer.assigned_to || customer.agent_id,
+          disposition: customer.disposition || customer.final_disposition || (dataSource === 'closed' ? 'Deal Done' : null),
+          assigned_user_name: userMap[customer.assigned_to || customer.agent_id]?.user_name || null,
+          assigned_employee_id: userMap[customer.assigned_to || customer.agent_id]?.employee_id || null,
+          managed_by_name: customer.managed_by ? userMap[customer.managed_by]?.user_name || "Unknown" : "Self",
+          managed_by_id: customer.managed_by ? userMap[customer.managed_by]?.employee_id || customer.managed_by.slice(0, 8).toUpperCase() : null,
+          campaign_name: customer.campaign_id ? campaignMap[customer.campaign_id] || null : null,
+          organization_name: customer.organization_id ? orgMap[customer.organization_id] || null : null,
         }));
         setAllCustomers(mappedData);
       }
     } catch (err) {
-      console.error("Error fetching customers:", err);
+      console.error("Critical error in fetchCustomers:", err);
       setAllCustomers([]);
     } finally {
       setLoadingCustomers(false);
     }
   };
 
-
   useEffect(() => {
     if (user || userLoaded) {
+      setCurrentPage(1);
       fetchCustomers(1);
       fetchFilterMetadata();
+      setSelectedCustomers(new Set());
+      setSearchQuery("");
+      setTempSearchQuery("");
     }
-
-    // Refresh data when page comes into focus
-    const handleFocus = () => {
-      fetchCustomers(currentPage);
-    };
-
+    const handleFocus = () => { fetchCustomers(currentPage); };
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [user, userLoaded]);
+  }, [user, userLoaded, dataSource]);
 
   const fetchFilterMetadata = async () => {
     try {
@@ -778,32 +459,14 @@ export default function Customer() {
           campQuery = campQuery.eq('organization_id', user.organization_id);
           agentQuery = agentQuery.eq('organization_id', user.organization_id);
         } else {
-          // Fail-secure
           orgQuery = orgQuery.eq('id', '00000000-0000-0000-0000-000000000000');
           campQuery = campQuery.eq('id', '00000000-0000-0000-0000-000000000000');
           agentQuery = agentQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
       }
-
-      const [
-        { data: orgs },
-        { data: camps },
-        { data: agents }
-      ] = await Promise.all([
-        orgQuery,
-        campQuery,
-        agentQuery,
-      ]);
-
-      setFilterStats(prev => ({
-        ...prev,
-        organizations: orgs || [],
-        campaigns: camps || [],
-        agents: agents || [],
-      }));
-    } catch (err) {
-      console.error("Error fetching filter metadata:", err);
-    }
+      const [{ data: orgs }, { data: camps }, { data: agents }] = await Promise.all([orgQuery, campQuery, agentQuery]);
+      setFilterStats(prev => ({ ...prev, organizations: orgs || [], campaigns: camps || [], agents: agents || [] }));
+    } catch (err) { console.error("Error fetching filter metadata:", err); }
   };
 
   const handleBulkUpdate = async (field: string, value: string | null) => {
@@ -906,6 +569,67 @@ export default function Customer() {
     }
   };
 
+  const [isMovingToLive, setIsMovingToLive] = useState(false);
+
+  const handleMoveToLive = async () => {
+    if (!selectedCustomers.size || dataSource !== 'rejected') return;
+    
+    setIsMovingToLive(true);
+    try {
+      const ids = Array.from(selectedCustomers);
+
+      // 1. Fetch from rejected_leads
+      const { data: rejectedLeads, error: fetchError } = await supabase
+        .from("rejected_leads")
+        .select("*")
+        .in("id", ids);
+
+      if (fetchError) throw fetchError;
+
+      if (rejectedLeads && rejectedLeads.length > 0) {
+        // 2. Map back to customers
+        const liveCustomers = rejectedLeads.map(lead => ({
+          id: lead.customer_id,
+          customer_name: lead.customer_name,
+          phone_no: lead.phone_no,
+          phone_search_hash: lead.phone_search_hash,
+          campaign_id: lead.campaign_id,
+          disposition: lead.disposition,
+          sub_disposition: lead.sub_disposition,
+          assigned_to: lead.agent_id,
+          managed_by: lead.managed_by,
+          organization_id: lead.organization_id,
+          status: "active",
+          updated_at: new Date().toISOString()
+        }));
+
+        // 3. Insert into customers
+        const { error: insertError } = await supabase
+          .from("customers")
+          .upsert(liveCustomers); // Use upsert in case the record somehow exists
+
+        if (insertError) throw insertError;
+
+        // 4. Delete from rejected_leads
+        const { error: deleteError } = await supabase
+          .from("rejected_leads")
+          .delete()
+          .in("id", ids);
+
+        if (deleteError) throw deleteError;
+      }
+
+      setSelectedCustomers(new Set());
+      await fetchCustomers(currentPage);
+      alert(`Successfully moved ${rejectedLeads?.length} lead(s) back to Live.`);
+    } catch (err) {
+      console.error("Error moving to live:", err);
+      alert("Failed to move leads back to live. Please try again.");
+    } finally {
+      setIsMovingToLive(false);
+    }
+  };
+
   // Fetch customers when page size changes
   useEffect(() => {
     if (mounted) {
@@ -923,6 +647,14 @@ export default function Customer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
+
+  // Reset search immediately if tempSearchQuery is cleared
+  useEffect(() => {
+    if (tempSearchQuery === "") {
+      setSearchQuery("");
+      setCurrentPage(1);
+    }
+  }, [tempSearchQuery]);
 
   // Fetch customers when page changes (only if not showing all)
   useEffect(() => {
@@ -980,6 +712,55 @@ export default function Customer() {
                   >
                     View and manage all customers in the system
                   </p>
+                </div>
+
+                {/* Data Source Toggle */}
+                <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl  gap-2  flex items-center min-w-[300px]">
+                  <button
+                    onClick={() => {
+                      setDataSource("live");
+                      setFilters(prev => ({ ...prev, disposition: "" }));
+                      setCurrentPage(1);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "live"
+                        ? "bg-white text-[#4b33e8]  scale-[1.02]"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                  >
+                    <i className={`fi flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`}></i>
+                    Live
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDataSource("rejected");
+                      setFilters(prev => ({ ...prev, disposition: "" }));
+                      setCurrentPage(1);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "rejected"
+                        ? "bg-white text-rose-600  scale-[1.02]"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                  >
+                    <i className={`fi flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`}></i>
+                    Rejected
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDataSource("closed");
+                      setFilters(prev => ({ ...prev, disposition: "" }));
+                      setCurrentPage(1);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "closed"
+                        ? "bg-white text-emerald-600  scale-[1.02]"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                  >
+                    <i className={`fi flex ${dataSource === "closed" ? "fi-sr-badge-check" : "fi-rr-badge-check"}`}></i>
+                    Closed
+                  </button>
                 </div>
               </div>
 
@@ -1417,43 +1198,65 @@ export default function Customer() {
                     {/* Bulk Action Buttons */}
                     {selectedCustomers.size > 0 && (
                       <>
-                        <button
-                          onClick={() => setShowBulkOrgModal(true)}
-                          className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
-                          title="Change Organization"
-                        >
-                          <i className="fi flex fi-rr-building text-sm"></i>
-                        </button>
-                        <button
-                          onClick={() => setShowBulkCampaignModal(true)}
-                          className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
-                          title="Change Campaign"
-                        >
-                          <i className="fi flex fi-rr-megaphone text-sm"></i>
-                        </button>
-                        <button
-                          onClick={() => setShowBulkAssignedModal(true)}
-                          className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
-                          title="Change Assigned"
-                        >
-                          <i className="fi flex fi-rr-user-pen text-sm"></i>
-                        </button>
-                        <button
-                          onClick={() => setShowBulkDispositionModal(true)}
-                          className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
-                          title="Change Disposition"
-                        >
-                          <i className="fi flex fi-rr-list-check text-sm"></i>
-                        </button>
-                        <button
-                          onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
-                          className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
-                          title="Move Fresh"
-                        >
-                          <i className="fi flex fi-rr-refresh text-sm"></i>
-                        </button>
+                        {dataSource !== 'rejected' && (
+                          <>
+                            <button
+                              onClick={() => setShowBulkOrgModal(true)}
+                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
+                              title="Change Organization"
+                            >
+                              <i className="fi flex fi-rr-building text-sm"></i>
+                            </button>
+                            <button
+                              onClick={() => setShowBulkCampaignModal(true)}
+                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
+                              title="Change Campaign"
+                            >
+                              <i className="fi flex fi-rr-megaphone text-sm"></i>
+                            </button>
+                            <button
+                              onClick={() => setShowBulkAssignedModal(true)}
+                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
+                              title="Change Assigned"
+                            >
+                              <i className="fi flex fi-rr-user-pen text-sm"></i>
+                            </button>
+                            <button
+                              onClick={() => setShowBulkDispositionModal(true)}
+                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
+                              title="Change Disposition"
+                            >
+                              <i className="fi flex fi-rr-list-check text-sm"></i>
+                            </button>
+                              <button
+                                onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
+                                title="Move Fresh"
+                              >
+                                <i className="fi flex fi-rr-refresh text-sm"></i>
+                              </button>
+                          </>
+                        )}
                       </>
                     )}
+                      {/* Move to Live Button - Only for Rejected Data source */}
+                      {selectedCustomers.size > 0 && dataSource === 'rejected' && (
+                        <button
+                          onClick={handleMoveToLive}
+                          disabled={isMovingToLive}
+                          className="h-10 px-3 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-1.5"
+                          title="Move to Live"
+                        >
+                          {isMovingToLive ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
+                          ) : (
+                            <>
+                              <i className="fi flex fi-rr-redo text-sm"></i>
+                              <span className="text-[10px] font-bold">LIVE</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     {/* Delete Button - Show when customers are selected */}
                     {selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && (
                       <button
@@ -1482,8 +1285,9 @@ export default function Customer() {
                                   i,
                                   i + batchSize
                                 );
+                                const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
                                 const { error } = await supabase
-                                  .from("customers")
+                                  .from(table)
                                   .delete()
                                   .in("id", batch);
 
@@ -1663,8 +1467,9 @@ export default function Customer() {
                                     i,
                                     i + batchSize
                                   );
+                                  const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
                                   const { error } = await supabase
-                                    .from("customers")
+                                    .from(table)
                                     .delete()
                                     .in("id", batch);
 
@@ -1730,51 +1535,74 @@ export default function Customer() {
                               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
                             />
                           </div>
-                          <button 
+                          {/* <button 
                             onClick={() => setSearchQuery(tempSearchQuery)}
                             className="px-4 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold hover:bg-[#3d29c2] transition-colors shadow-sm active:scale-95 flex items-center gap-2"
                           >
                             <i className="fi flex fi-rr-search text-xs"></i>
                             Search
-                          </button>
+                          </button> */}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                          <button
-                            onClick={() => setShowBulkOrgModal(true)}
-                            className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
-                            title="Change Organization"
-                          >
-                            <i className="fi flex fi-rr-building text-sm"></i>
-                          </button>
-                          <button
-                            onClick={() => setShowBulkCampaignModal(true)}
-                            className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
-                            title="Change Campaign"
-                          >
-                            <i className="fi flex fi-rr-megaphone text-sm"></i>
-                          </button>
-                          <button
-                            onClick={() => setShowBulkAssignedModal(true)}
-                            className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
-                            title="Change Assigned"
-                          >
-                            <i className="fi flex fi-rr-user-pen text-sm"></i>
-                          </button>
-                          <button
-                            onClick={() => setShowBulkDispositionModal(true)}
-                            className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
-                            title="Change Disposition"
-                          >
-                            <i className="fi flex fi-rr-list-check text-sm"></i>
-                          </button>
-                          <button
-                            onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
-                            className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
-                            title="Move Fresh"
-                          >
-                            <i className="fi flex fi-rr-refresh text-sm"></i>
-                          </button>
+                          {dataSource !== 'rejected' && (
+                            <>
+                              <button
+                                onClick={() => setShowBulkOrgModal(true)}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
+                                title="Change Organization"
+                              >
+                                <i className="fi flex fi-rr-building text-sm"></i>
+                              </button>
+                              <button
+                                onClick={() => setShowBulkCampaignModal(true)}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
+                                title="Change Campaign"
+                              >
+                                <i className="fi flex fi-rr-megaphone text-sm"></i>
+                              </button>
+                              <button
+                                onClick={() => setShowBulkAssignedModal(true)}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
+                                title="Change Assigned"
+                              >
+                                <i className="fi flex fi-rr-user-pen text-sm"></i>
+                              </button>
+                              <button
+                                onClick={() => setShowBulkDispositionModal(true)}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
+                                title="Change Disposition"
+                              >
+                                <i className="fi flex fi-rr-list-check text-sm"></i>
+                              </button>
+                              <button
+                                onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
+                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
+                                title="Move Fresh"
+                              >
+                                <i className="fi flex fi-rr-refresh text-sm"></i>
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Move to Live Button - Only for Rejected Data source */}
+                          {dataSource === 'rejected' && (
+                            <button
+                              onClick={handleMoveToLive}
+                              disabled={isMovingToLive}
+                              className="h-10 px-4 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-2 font-bold text-xs"
+                              title="Move to Live"
+                            >
+                              {isMovingToLive ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
+                              ) : (
+                                <>
+                                  <i className="fi flex fi-rr-redo text-sm"></i>
+                                  MOVE TO LIVE
+                                </>
+                              )}
+                            </button>
+                          )}
                         </div>
                       )}
                       {/* Filter Button */}
@@ -1927,10 +1755,10 @@ export default function Customer() {
                                   Managed By
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                                  Expiry Date
+                                  {dataSource === "closed" ? "Final Status" : dataSource === "rejected" ? "Rejection Reason" : "Expiry Date"}
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                                  Created Date
+                                  {dataSource === "closed" ? "Closed Date" : dataSource === "rejected" ? "Rejected Date" : "Created Date"}
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right">
                                   Action
@@ -1989,18 +1817,18 @@ export default function Customer() {
                                   <td className="px-4 py-4 text-center">
                                     <div className="flex justify-center">
                                       <div
-                                        className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${customer.status === "active"
-                                            ? "bg-green-50 text-green-600 border border-green-100"
-                                            : customer.status === "inactive"
-                                              ? "bg-gray-50 text-gray-600 border border-gray-100"
-                                              : "bg-orange-50 text-orange-600 border border-orange-100"
+                                        className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+                                            dataSource === "closed" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
+                                            dataSource === "rejected" ? "bg-rose-50 text-rose-600 border border-rose-100" :
+                                            customer.status === "active" ? "bg-green-50 text-green-600 border border-green-100" :
+                                            customer.status === "inactive" ? "bg-gray-50 text-gray-600 border border-gray-100" :
+                                            "bg-orange-50 text-orange-600 border border-orange-100"
                                           }`}
                                       >
-                                        {customer.status === "active"
-                                          ? "Active"
-                                          : customer.status === "inactive"
-                                            ? "Inactive"
-                                            : "Pending"}
+                                        {dataSource === "closed" ? "Deal Done" : 
+                                         dataSource === "rejected" ? "Rejected" :
+                                         customer.status === "active" ? "Active" :
+                                         customer.status === "inactive" ? "Inactive" : "Pending"}
                                       </div>
                                     </div>
                                   </td>
@@ -2044,22 +1872,22 @@ export default function Customer() {
                                   <td className="px-4 py-4">
                                     <div className="flex flex-col">
                                       <span className="text-xs font-medium text-gray-700 leading-none mb-1">
-                                        {customer.expiry_date
-                                          ? formatDate(customer.expiry_date)
-                                          : "---"}
+                                        {dataSource === "closed" || dataSource === "rejected" 
+                                          ? customer.disposition || "N/A"
+                                          : customer.expiry_date ? formatDate(customer.expiry_date) : "---"}
                                       </span>
                                       <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
-                                        Expires
+                                        {dataSource === "closed" || dataSource === "rejected" ? "Disposition" : "Expires"}
                                       </span>
                                     </div>
                                   </td>
                                   <td className="px-4 py-4">
                                     <div className="flex flex-col">
                                       <span className="text-xs font-medium text-gray-700 leading-none mb-1">
-                                        {formatDate(customer.created_at)}
+                                        {formatDate(dataSource === "closed" ? customer.closed_at : dataSource === "rejected" ? customer.rejected_at : customer.created_at)}
                                       </span>
                                       <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
-                                        Created
+                                        {dataSource === "closed" ? "Closed" : dataSource === "rejected" ? "Rejected" : "Created"}
                                       </span>
                                     </div>
                                   </td>
