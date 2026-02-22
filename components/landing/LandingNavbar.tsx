@@ -19,7 +19,7 @@ export default function LandingNavbar() {
             <Link href="/features" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Features</Link>
             <Link href="/how-it-works" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">How it Works</Link>
             <Link href="/pricing" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Pricing</Link>
-            <Link href="/team" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Team</Link>
+            <Link href="/leadership" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Team</Link>
             <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">Blog</Link>
             <Link href="/faq" className="text-sm font-medium text-gray-600 hover:text-[#4b33e8] transition-colors">FAQ</Link>
           </div>
