@@ -90,7 +90,7 @@ export default function LoginFormEmailId({
   return (
     <form onSubmit={handleSubmit} className="mt-0" style={{ position: 'relative' }}>
       <h2 
-        className="mb-6 md:mb-0 text-xl md:text-lg"
+        className="mb-6 md:mb-2 text-xl md:text-lg"
         style={{ 
           fontWeight: '700',
           fontFamily: 'poppins',

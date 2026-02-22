@@ -129,14 +129,14 @@ export default function LoginFormUserId({
   return (
     <form onSubmit={handleSubmit} className="mt-0" style={{ position: 'relative' }}>
         <h2 
-          className="mb-6 md:mb-0 text-xl md:text-lg"
+          className="mb-6 md:mb-2 text-xl md:text-lg"
           style={{ 
             fontWeight: '700',
             fontFamily: 'poppins',
             color: '#263238',
             textAlign: 'center',
           }}>
-          Login With Employee ID
+          Login With User ID
         </h2>
 
       {/* User ID Field */}
@@ -146,7 +146,7 @@ export default function LoginFormUserId({
           className="block text-sm font-medium mb-1"
           style={{ color: 'rgb(38, 50, 56)' }}
         >
-          Employee ID
+          User ID
         </label>
         <div className="relative">
           <i 
@@ -176,7 +176,7 @@ export default function LoginFormUserId({
             onBlur={(e) => {
               e.currentTarget.style.borderColor = '#DCDEE3';
             }}
-            placeholder="Enter Employee ID"
+            placeholder="Enter User ID"
             required
           />
         </div>
@@ -192,7 +192,7 @@ export default function LoginFormUserId({
               handleForgotFormToggle(true);
             }}
           >
-            Forgot Employee ID?
+            Forgot User ID?
           </a>
         </div>
       </div>
