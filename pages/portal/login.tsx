@@ -98,25 +98,7 @@ export default function Login() {
               </button>
             </div>
 
-            <div className="my-3 flex items-center">
-              <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
-              <span className="px-4 text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>New to Rynxly?</span>
-              <div className="flex-1 border-t" style={{ borderColor: '#DCDEE3' }}></div>
-            </div>
 
-            <div className="text-center">
-              <p className="text-sm md:text-[12px]" style={{ color: 'rgb(38, 50, 56)' }}>
-                Don't have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => router.push("/signup")}
-                  className="font-semibold hover:underline"
-                  style={{ color: '#4b33e8', cursor: 'pointer' }}
-                >
-                  Sign Up
-                </button>
-              </p>
-            </div>
           </div>
         </div>
       </div>
