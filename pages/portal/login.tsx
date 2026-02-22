@@ -87,16 +87,7 @@ export default function Login() {
               <SocialLoginButtons formType={formType} onToggleForm={toggleForm} />
             </div>
 
-            <div className="text-center mt-4">
-              <button
-                type="button"
-                onClick={() => setShowForgotPasswordForm(true)}
-                className="text-xs font-semibold hover:underline"
-                style={{ color: '#4b33e8' }}
-              >
-                Forgot Password?
-              </button>
-            </div>
+
 
 
           </div>

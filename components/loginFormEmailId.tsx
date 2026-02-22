@@ -215,6 +215,16 @@ export default function LoginFormEmailId({
             <i className={`fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`}></i>
           </button>
         </div>
+        <div className="flex justify-end mt-1">
+          <button
+            type="button"
+            onClick={() => handleForgotPasswordFormToggle(true)}
+            className="text-[12px] font-semibold hover:underline"
+            style={{ color: '#4b33e8' }}
+          >
+            Forgot Password?
+          </button>
+        </div>
       </div>
 
       {/* Login Button */}
