@@ -253,7 +253,7 @@ export default function CallingPage() {
                     updateSyncMetaCallStatus(user.employeeId, '', "");
                 } else {
                     console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect hash for: ${user.employeeId}`);
-                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', hashedPhone || "");
+                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', decryptedPhone || "");
                 }
             } else {
                 console.warn('🤙 [EndCall] Employee ID missing, skipping SyncMeta update');
