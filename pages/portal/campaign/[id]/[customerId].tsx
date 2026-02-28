@@ -233,9 +233,8 @@ export default function CallingPage() {
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
             const decryptedPhone = decryptPhone(customer.phone_no);
-            const hashedPhone = computePhoneHash(decryptedPhone);
             
-            console.log(`🤙 [EndCall] Customer phone: ${decryptedPhone}, Hash: ${hashedPhone}`);
+            console.log(`🤙 [EndCall] Customer phone: ${decryptedPhone}`);
             
             // Only send command to flutter if we initiated it from UI
             if (!isFromBridge) {
@@ -252,7 +251,7 @@ export default function CallingPage() {
                     // If bridge already disconnected, just clear the busy state in DB
                     updateSyncMetaCallStatus(user.employeeId, '', "");
                 } else {
-                    console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect hash for: ${user.employeeId}`);
+                    console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect for: ${user.employeeId}`);
                     updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', decryptedPhone || "");
                 }
             } else {
@@ -380,6 +379,16 @@ export default function CallingPage() {
                     console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring.');
                 }
             } else if (eventType === 'connecting' || eventType === 'connected') {
+                // --- NUMBER VERIFICATION FOR CONNECTING/CONNECTED ---
+                const incomingPhone = phoneNo ? String(phoneNo).replace(/\D/g, '').slice(-10) : null;
+                const rawCustomerPhone = customer?.phone_no ? decryptPhone(customer.phone_no) : "";
+                const currentPhone = String(rawCustomerPhone || "").replace(/\D/g, '').slice(-10);
+
+                if (incomingPhone && incomingPhone !== currentPhone) {
+                    console.log(`📬 [Bridge] ❌ NUMBER MISMATCH for ${eventType}. Incoming: ${incomingPhone}, Profile: ${currentPhone}. Ignoring.`);
+                    return;
+                }
+
                 console.log(`📬 [Bridge] Setting status to: ${eventType}`);
                 setLocalCallingStatus(eventType);
                 
@@ -1409,7 +1418,6 @@ export default function CallingPage() {
             }
             
             const decryptedPhone = decryptPhone(customer.phone_no);
-            const hashedPhone = computePhoneHash(decryptedPhone);
             const bridgeConnected = notifyFlutter('call_to', decryptedPhone);
             
             if (bridgeConnected) {
