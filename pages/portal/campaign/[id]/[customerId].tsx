@@ -1420,7 +1420,7 @@ export default function CallingPage() {
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', hashedPhone || "");
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone || "");
                 updateSyncMetaCallingStatus(user.employeeId, 'preparing');
             }
             setLocalCallingStatus('preparing');
