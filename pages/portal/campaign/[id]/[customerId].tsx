@@ -232,15 +232,15 @@ export default function CallingPage() {
 
         // Notify Flutter bridge to disconnect the call
         if (customer?.phone_no) {
-            const rawPhone = decryptPhone(customer.phone_no);
-            const hashedPhone = computePhoneHash(rawPhone);
+            const decryptedPhone = decryptPhone(customer.phone_no);
+            const hashedPhone = computePhoneHash(decryptedPhone);
             
-            console.log(`🤙 [EndCall] Customer phone: ${rawPhone}, Hash: ${hashedPhone}`);
+            console.log(`🤙 [EndCall] Customer phone: ${decryptedPhone}, Hash: ${hashedPhone}`);
             
             // Only send command to flutter if we initiated it from UI
             if (!isFromBridge) {
                 console.log('🤙 [EndCall] Notifying Flutter to disconnect...');
-                notifyFlutter('call_disconnect', rawPhone);
+                notifyFlutter('call_disconnect', decryptedPhone);
             } else {
                 console.log('🤙 [EndCall] Skipping Flutter notification (already disconnected on native side)');
             }
