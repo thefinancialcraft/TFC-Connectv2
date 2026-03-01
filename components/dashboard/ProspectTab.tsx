@@ -23,6 +23,7 @@ interface ProspectTabProps {
   performanceMetrics: PerformanceMetrics;
   campaignData: CampaignDataPoint[];
   pieData: PieDataPoint[];
+  loading?: boolean;
 }
 
 export default function ProspectTab({
@@ -30,6 +31,7 @@ export default function ProspectTab({
   performanceMetrics,
   campaignData,
   pieData,
+  loading = false,
 }: ProspectTabProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -44,7 +46,12 @@ export default function ProspectTab({
       {/* Middle Row (Analytics & Performance) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Sales Performance (Gauge) */}
-        <div className="lg:col-span-4 bg-white rounded-[20px] p-6 shadow-sm border border-gray-50 flex flex-col relative overflow-hidden">
+        <div className="lg:col-span-4 bg-white rounded-[20px] p-6 flex flex-col relative overflow-hidden">
+          {loading && (
+            <div className="absolute inset-0 bg-white/40 z-10 animate-pulse flex items-center justify-center rounded-[20px]">
+               <div className="w-8 h-8 border-2 border-[#4b33e8] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-[#263238] text-sm flex items-center gap-2">
               Efficiency Score
@@ -103,7 +110,7 @@ export default function ProspectTab({
         </div>
 
         {/* Summary Details */}
-        <div className="lg:col-span-8 bg-white rounded-[20px] p-6 shadow-sm border border-gray-50 flex flex-col">
+        <div className="lg:col-span-8 bg-white rounded-[20px] p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-[#263238] text-sm">
               Engagement Summary
@@ -163,7 +170,7 @@ export default function ProspectTab({
       {/* Bottom Row (Heatmap & Pie) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pb-4">
         {/* Campaign-wise Analysis */}
-        <div className="lg:col-span-8 bg-white rounded-[20px] p-6 border border-gray-50 flex flex-col">
+        <div className="lg:col-span-8 bg-white rounded-[20px] p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-[#263238] text-sm flex items-center gap-2">
               Campaign Responses
@@ -248,7 +255,7 @@ export default function ProspectTab({
         </div>
 
         {/* Latest Responses Distribution */}
-        <div className="lg:col-span-4 bg-white rounded-[20px] p-6 border border-gray-50 flex flex-col">
+        <div className="lg:col-span-4 bg-white rounded-[20px] p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-[#263238] text-sm flex items-center gap-2">
               Latest Status

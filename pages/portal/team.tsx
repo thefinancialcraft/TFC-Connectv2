@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import { handleLogout } from "@/lib/authService";
 import TeamManagementModal from "@/components/TeamManagementModal";
@@ -184,7 +184,7 @@ export default function Team() {
 
 
   return (
-    <AppLayout>
+    <>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             
             {/* Page Header */}
@@ -319,6 +319,6 @@ export default function Team() {
         users={allUsers}
         organizations={organizations}
       />
-    </AppLayout>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import { handleLogout } from "@/lib/authService";
 import AppLogo from "@/components/AppLogo";
@@ -59,7 +59,7 @@ const Suspended = () => {
 
 
   return (
-    <AppLayout hideSidebar hideHeader>
+    <>
       <div className="min-h-screen flex items-center justify-center py-8" style={{ backgroundColor: "#e7e3ff" }}>
       <div className="w-full max-w-2xl p-6 sm:p-8 bg-white rounded-xl shadow-lg border border-gray-100 mx-4">
         {/* Header with Logo */}
@@ -167,7 +167,7 @@ const Suspended = () => {
         </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 

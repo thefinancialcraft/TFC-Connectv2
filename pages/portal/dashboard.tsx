@@ -10,7 +10,7 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useDashboardCharts } from "@/hooks/useDashboardCharts";
 import { useAgentPerformance } from "@/hooks/useAgentPerformance";
 import { DashboardErrorBoundary } from "@/components/DashboardErrorBoundary";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 import dynamic from "next/dynamic";
@@ -34,9 +34,22 @@ export default function Dashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>("all");
   
-  // Tab management
+  // Filters Dropdown state
+  const [showFilters, setShowFilters] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState("prospect");
-  
+
+  // Close filters when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Data hooks
   const { stats, secondaryStats, performanceMetrics, loading: statsLoading, fetchStats } = useDashboardStats();
   const { chartData, pieData, heatmapData, campaignData, hourlyStats, loading: chartsLoading, fetchChartData } = useDashboardCharts();
@@ -47,6 +60,7 @@ export default function Dashboard() {
   const [isOrgLocked, setIsOrgLocked] = useState(false);
   const [isUserLocked, setIsUserLocked] = useState(false);
   const hasInitialized = useRef(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Initialize Dashboard Level Logic & Constraints
   useEffect(() => {
@@ -184,7 +198,7 @@ export default function Dashboard() {
   }, [selectedOrgId, isUserLocked, dashboardLevel, mounted, user?.uid]);
 
   // Date filter state
-  const [dateFilter, setDateFilter] = useState("all_time");
+  const [dateFilter, setDateFilter] = useState("today");
 
   // Fetch all dashboard data when filters change
   useEffect(() => {
@@ -212,11 +226,25 @@ export default function Dashboard() {
 
   const loading = statsLoading || chartsLoading || agentLoading;
 
+  useEffect(() => {
+    if (!loading) {
+      setIsInitialLoad(false);
+    }
+  }, [loading]);
+
   return (
-    <AppLayout>
+    <>
       <DashboardErrorBoundary>
-        <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]">
-          {/* Header / Welcome Row */}
+        {isInitialLoad && (statsLoading && chartsLoading && agentLoading) ? (
+          <div className="flex flex-col min-h-[80vh] items-center justify-center animate-in fade-in duration-300">
+            <div className="w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-[#263238] font-bold text-lg animate-pulse" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Loading Dashboard...
+            </p>
+            <p className="text-[#787E9D] text-sm font-medium mt-1">Please wait while we gather your statistics</p>
+          </div>
+        ) : (
+          <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]">
           {/* Header / Welcome Row */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6">
             <div className="flex-1">
@@ -235,80 +263,124 @@ export default function Dashboard() {
               </p>
             </div>
             
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              {/* Org Filter */}
-              <div className="relative flex-1 sm:flex-none min-w-[140px] sm:min-w-[180px]">
-                <select
-                  value={selectedOrgId}
-                  onChange={(e) => setSelectedOrgId(e.target.value)}
-                  className={`w-full appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none ${isOrgLocked ? 'opacity-70 cursor-not-allowed bg-gray-50' : ''}`}
-                  disabled={loading || isOrgLocked}
+            <div className="flex items-center gap-3">
+              {/* Consolidated Filters Dropdown */}
+              <div className="relative" ref={filterRef}>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`h-10 px-4 rounded-xl border flex items-center gap-2 transition-all  font-bold text-sm ${
+                    showFilters
+                      ? "border-[#4b33e8] bg-[#4b33e8] text-white"
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
-                  <option value="all" disabled={isOrgLocked}>Global (All Orgs)</option>
-                  {organizations.map((org) => (
-                    <option key={org.id} value={org.id} disabled={isOrgLocked && selectedOrgId !== org.id}>
-                      {org.company_name}
-                    </option>
-                  ))}
-                </select>
-                <i className="fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                {!isOrgLocked && <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>}
-                {isOrgLocked && <i className="fi fi-rr-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>}
-              </div>
-
-              {/* User Filter */}
-              <div className="relative flex-1 sm:flex-none min-w-[140px] sm:min-w-[180px]">
-                <select
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
-                  className={`w-full appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none ${isUserLocked ? 'opacity-70 cursor-not-allowed bg-gray-50' : ''}`}
-                  disabled={loading || isUserLocked}
-                >
-                  <option value="all" disabled={isUserLocked}>
-                    {dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES ? "All Team Members" : "All Users"}
-                  </option>
-                  {isUserLocked ? (
-                      <option value={user?.uid}>{user?.displayName || 'Me'}</option>
-                  ) : (
-                    users.map((u) => (
-                        <option key={u.user_id} value={u.user_id}>
-                        {u.user_name || "Unknown User"}
-                        </option>
-                    ))
+                  <i className="fi flex fi-rr-filter"></i>
+                  <span className="hidden sm:inline">Filters</span>
+                  {(selectedOrgId !== "all" || selectedUserId !== "all" || dateFilter !== "today") && (
+                    <span className={`flex items-center justify-center w-2 h-2 rounded-full ${showFilters ? 'bg-white' : 'bg-[#4b33e8]'}`}></span>
                   )}
-                </select>
-                <i className="fi fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                {!isUserLocked && <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>}
-                {isUserLocked && <i className="fi fi-rr-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>}
-              </div>
+                </button>
 
-              {/* Date Filter */}
-              <div className="relative flex-1 sm:flex-none min-w-[110px] sm:min-w-[140px]">
-                <select
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className="w-full appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none"
-                  disabled={loading}
-                >
-                  <option value="today">Today</option>
-                  <option value="yesterday">Yesterday</option>
-                  <option value="this_week">This Week</option>
-                  <option value="last_7_days">Last 7 Days</option>
-                  <option value="this_month">This Month</option>
-                  <option value="last_month">Last Month</option>
-                  <option value="this_year">1 Year</option>
-                  <option value="multi_year">Multi-Year</option>
-                  <option value="all_time">All Time</option>
-                </select>
-                <i className="fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                {showFilters && (
+                  <div className="absolute top-full right-0 mt-2 w-[240px] sm:w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-[100] animate-in fade-in zoom-in duration-200">
+                    <div className="space-y-4">
+                      {/* Org Filter */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Organization</label>
+                        <div className="relative">
+                          <select
+                            value={selectedOrgId}
+                            onChange={(e) => setSelectedOrgId(e.target.value)}
+                            className={`w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isOrgLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                            disabled={isOrgLocked}
+                          >
+                            <option value="all" disabled={isOrgLocked}>Global (All Orgs)</option>
+                            {organizations.map((org) => (
+                              <option key={org.id} value={org.id} disabled={isOrgLocked && selectedOrgId !== org.id}>
+                                {org.company_name}
+                              </option>
+                            ))}
+                          </select>
+                          <i className="fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className={`fi ${isOrgLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
+                        </div>
+                      </div>
+
+                      {/* User Filter */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">User Selection</label>
+                        <div className="relative">
+                          <select
+                            value={selectedUserId}
+                            onChange={(e) => setSelectedUserId(e.target.value)}
+                            className={`w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isUserLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                            disabled={isUserLocked}
+                          >
+                            <option value="all" disabled={isUserLocked}>
+                              {dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES ? "All Team Members" : "All Users"}
+                            </option>
+                            {isUserLocked ? (
+                                <option value={user?.uid}>{user?.displayName || 'Me'}</option>
+                            ) : (
+                              users.map((u) => (
+                                  <option key={u.user_id} value={u.user_id}>
+                                  {u.user_name || "Unknown User"}
+                                  </option>
+                              ))
+                            )}
+                          </select>
+                          <i className="fi fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className={`fi ${isUserLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
+                        </div>
+                      </div>
+
+                      {/* Date Filter */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Time Period</label>
+                        <div className="relative">
+                          <select
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all cursor-pointer"
+                          >
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this_week">This Week</option>
+                            <option value="last_7_days">Last 7 Days</option>
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="this_year">1 Year</option>
+                            <option value="multi_year">Multi-Year</option>
+                            <option value="all_time">All Time</option>
+                          </select>
+                          <i className="fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <button
+                          onClick={() => {
+                            setSelectedOrgId(isOrgLocked ? selectedOrgId : "all");
+                            setSelectedUserId(isUserLocked ? selectedUserId : "all");
+                            setDateFilter("all_time");
+                            setShowFilters(false);
+                          }}
+                          className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-xs font-bold transition-all"
+                        >
+                          Reset Filters
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="px-3 sm:px-4 py-2 bg-[#4b33e8] rounded-xl text-xs sm:text-sm font-bold text-white cursor-default flex items-center gap-2">
-                  <span className={`w-1.5 h-1.5 rounded-full bg-white ${loading ? '' : 'animate-pulse'}`}></span>
-                  <span className="hidden sm:inline">{loading ? "Updating..." : "Live Updates"}</span>
-                  <span className="sm:hidden">{loading ? "..." : "Live"}</span>
+                <div className="px-3 h-10 bg-[#4b33e8] rounded-xl text-xs font-bold text-white cursor-default flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full bg-white ${(statsLoading || chartsLoading || agentLoading) ? '' : 'animate-pulse'}`}></span>
+                  <span className="hidden sm:inline">{(statsLoading || chartsLoading || agentLoading) ? "Updating..." : "Live Updates"}</span>
+                  <span className="sm:hidden">{(statsLoading || chartsLoading || agentLoading) ? "..." : "Live"}</span>
                 </div>
                 
                 <button
@@ -318,7 +390,7 @@ export default function Dashboard() {
                         const dFilter = dateFilter;
                         window.open(`/dashboard_report?orgId=${oid}&userId=${uid}&dateFilter=${dFilter}`, '_blank');
                     }}
-                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all"
+                    className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all"
                     title="Generate Report"
                 >
                     <i className="fi flex fi-rr-print"></i>
@@ -327,11 +399,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Top Stats Row */}
-          <TopStats stats={stats} chartData={chartData} loading={loading} />
+          {/* Top Stats Row (Only depends on stats and charts) */}
+          <TopStats stats={stats} chartData={chartData} loading={statsLoading || chartsLoading} />
 
-          {/* Secondary Stats Grid */}
-          <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={loading} />
+          {/* Secondary Stats Grid (Only depends on stats) */}
+          <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={statsLoading} />
 
           {/* Analytics Tab Selection */}
           <div className="bg-gray-100/50 p-1 rounded-2xl inline-flex gap-1 w-full sm:w-auto">
@@ -363,6 +435,7 @@ export default function Dashboard() {
               performanceMetrics={performanceMetrics}
               campaignData={campaignData}
               pieData={pieData}
+              loading={statsLoading || chartsLoading}
             />
           )}
 
@@ -372,6 +445,8 @@ export default function Dashboard() {
               totalDials={stats.totalDials}
               selectedOrgId={selectedOrgId}
               selectedUserId={selectedUserId}
+              dateFilter={dateFilter}
+              loading={agentLoading}
             />
           )}
 
@@ -381,11 +456,14 @@ export default function Dashboard() {
               hourlyStats={hourlyStats}
               selectedOrgId={selectedOrgId}
               selectedUserId={selectedUserId}
+              dateFilter={dateFilter}
+              loading={chartsLoading}
             />
           )}
 
         </div>
+        )}
       </DashboardErrorBoundary>
-    </AppLayout>
+    </>
   );
 }

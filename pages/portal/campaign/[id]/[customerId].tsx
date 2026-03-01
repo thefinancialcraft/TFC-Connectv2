@@ -913,7 +913,7 @@ export default function CallingPage() {
                 setCustomer(foundCustomer);
                 setLiveNotes(foundCustomer.live_notes || "");
                 if (typeof customerId === 'string') {
-                    fetchAttachments(customerId);
+                    fetchAttachments(String(customerId));
                 }
                 
                 // Resolve Manager Info
@@ -2365,7 +2365,7 @@ Campaign: ${campaign?.name || campaignId}
             
             {/* <div className="hidden">{console.log('Campaign[id]/[customerId] User:', user)}</div> */}
             
-            <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
+            <div className="flex-1 flex flex-col w-full min-w-0">
                 <Header 
                     user={user ? {
                         displayName: user.displayName,
@@ -2379,7 +2379,7 @@ Campaign: ${campaign?.name || campaignId}
                     hideSidebar={false}
                 />
                 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] relative" style={{ backgroundColor: "#f8fafc" }}>
+                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full relative" style={{ backgroundColor: "#f8fafc" }}>
                     {/* Floating New Lead Alert */}
                     {showNewLeadAlert && (
                         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md animate-in fade-in slide-in-from-top-4 duration-500">
@@ -2632,7 +2632,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    handleUpdateExpiry(tempExpiryDate);
+                                                                    console.warn('handleUpdateExpiry', tempExpiryDate);
                                                                 }}
                                                                 disabled={saving}
                                                                 className="flex-1 py-1.5 rounded-lg bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-1"

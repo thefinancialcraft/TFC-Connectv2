@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import AppLayout, { useUser } from "@/components/AppLayout"; // Global Layout
+import { useUser } from "@/components/AppLayout"; // Global Layout
 import { useUsersFilters } from "@/hooks/users/useUsersFilters";
 import { useUsersList } from "@/hooks/users/useUsersList";
 import { useUsersStats } from "@/hooks/users/useUsersStats";
@@ -261,7 +261,7 @@ const Users = () => {
   }, [allUsers, searchQuery, filters]);
 
   return (
-    <AppLayout>
+    <>
       <Head>
         <title>Users | TFC Nexus</title>
       </Head>
@@ -441,7 +441,7 @@ const Users = () => {
         formData={suspendFormData}
         setFormData={setSuspendFormData}
       />
-    </AppLayout>
+    </>
   );
 };
 

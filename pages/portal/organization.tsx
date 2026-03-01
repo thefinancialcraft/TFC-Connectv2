@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/router";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import ExpiryBadge from "@/components/ExpiryBadge";
 import { useOrganizationData, Organization } from "@/hooks/useOrganizationData";
@@ -157,7 +157,7 @@ export default function OrganizationPage() {
 
 
   return (
-    <AppLayout>
+    <>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
@@ -622,6 +622,6 @@ export default function OrganizationPage() {
           background: #cbd5e1;
         }
       `}</style>
-    </AppLayout>
+    </>
   );
 }

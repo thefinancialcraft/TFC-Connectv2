@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/router";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { useFollowUpLeads, FollowUpLead } from "@/hooks/useFollowUpLeads";
 import { formatMaskedPhone } from "@/lib/phoneUtils";
 
@@ -167,7 +167,7 @@ export default function FollowUp() {
 
 
   return (
-    <AppLayout>
+    <>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             
             {/* Page Title */}
@@ -1232,6 +1232,6 @@ export default function FollowUp() {
                 )}
             </div>
           </div>
-    </AppLayout>
+    </>
   );
 }

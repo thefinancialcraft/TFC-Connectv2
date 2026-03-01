@@ -18,6 +18,8 @@ interface AgentPerformanceTabProps {
   totalDials?: number;
   selectedOrgId?: string;
   selectedUserId?: string;
+  dateFilter?: string;
+  loading?: boolean;
 }
 
 export default function AgentPerformanceTab({
@@ -25,16 +27,50 @@ export default function AgentPerformanceTab({
   totalDials: initialTotal,
   selectedOrgId,
   selectedUserId,
+  dateFilter: propDateFilter = "today",
+  loading = false,
 }: AgentPerformanceTabProps) {
   const router = useRouter();
-  const [dateFilter, setDateFilter] = useState("today");
+  
+  // Date states for local filtration
+  const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+  const [startDate, setStartDate] = useState(todayStr);
+  const [endDate, setEndDate] = useState(todayStr);
+  const [isFiltered, setIsFiltered] = useState(false);
+
+  const dateFilter = propDateFilter;
   
   const { 
     agentData, 
     fetchAgentPerformance, 
-    loading,
+    loading: internalLoading,
     totalDuration
   } = useAgentPerformance();
+
+  const handleApplyFilter = () => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      
+      const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+      const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+      
+      setIsFiltered(true);
+      fetchAgentPerformance(orgFilter, "custom", {
+        start: start.toISOString(),
+        end: end.toISOString()
+      }, false, userFilter);
+    }
+  };
+
+  // Reset local filter if parent dateFilter changes
+  useEffect(() => {
+    setIsFiltered(false);
+  }, [dateFilter]);
+
+  const isLoading = loading || internalLoading;
   const [mounted, setMounted] = useState(false);
   const [metric, setMetric] = useState<'dials' | 'talktime'>('dials');
 
@@ -90,22 +126,33 @@ export default function AgentPerformanceTab({
     };
   };
 
-  // Fetch data when filter changes
+  // Fetch data when filter changes (Only if not using local custom filter)
   useEffect(() => {
-    const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-    const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-    fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
-  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance]);
+    if (!isFiltered) {
+        const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+        const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
+    }
+  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance, isFiltered]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-      const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-      fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
-    }, 30000); // 30 seconds
+        const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+        const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+        
+        if (isFiltered && startDate && endDate) {
+             const start = new Date(startDate);
+             start.setHours(0, 0, 0, 0);
+             const end = new Date(endDate);
+             end.setHours(23, 59, 59, 999);
+             fetchAgentPerformance(orgFilter, "custom", { start: start.toISOString(), end: end.toISOString() }, false, userFilter);
+        } else {
+             fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
+        }
+    }, 30000); 
     return () => clearInterval(interval);
-  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance]);
+  }, [dateFilter, selectedOrgId, selectedUserId, fetchAgentPerformance, isFiltered, startDate, endDate]);
 
   const totalDials = agentData.reduce((acc, curr) => acc + curr.count, 0);
 
@@ -144,36 +191,46 @@ export default function AgentPerformanceTab({
         }
       `}</style>
 
-      {/* Date Filter */}
-      <div className="flex justify-end">
-        <div className="relative group">
-          <select
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-            className="appearance-none pl-9 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-[#263238] hover:bg-gray-50 transition-all cursor-pointer focus:outline-none shadow-sm"
-            style={{ minWidth: "140px" }}
-            disabled={loading}
-          >
-            <option value="today">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="this_week">This Week</option>
-            <option value="last_7_days">Last 7 Days</option>
-            <option value="this_month">This Month</option>
-            <option value="last_month">Last Month</option>
-            <option value="all_time">All Time</option>
-          </select>
-          <i className="fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-          <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+      {/* Date Range Filter Controls */}
+      <div className="flex justify-end items-center gap-3">
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
+          />
+          <span className="text-gray-400 font-bold">-</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
+          />
         </div>
+        <button
+          onClick={handleApplyFilter}
+          disabled={isLoading || !startDate || !endDate}
+          className="px-5 py-2 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2"
+        >
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          ) : (
+            <>
+              <i className="fi fi-rr-filter flex text-xs"></i>
+              <span>Apply Filter</span>
+            </>
+          )}
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Agent Leaderboard Chart */}
         <div 
           id="agent-leaderboard-print-area"
-          className="lg:col-span-8 bg-white rounded-[24px] p-8 shadow-sm border border-gray-50 flex flex-col relative"
+          className="lg:col-span-8 bg-white rounded-[24px] p-8 flex flex-col relative"
         >
-          {loading && (
+          {isLoading && (
             <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px] no-print">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"></div>
             </div>
@@ -311,8 +368,8 @@ export default function AgentPerformanceTab({
         </div>
 
         {/* Top Performers Table */}
-        <div className="lg:col-span-4 bg-white rounded-[24px] p-8 shadow-sm border border-gray-50 flex flex-col relative">
-          {loading && (
+        <div className="lg:col-span-4 bg-white rounded-[24px] p-8 flex flex-col relative">
+          {isLoading && (
             <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px]">
                {/* Minimal spinner or just opacity */}
             </div>
@@ -375,7 +432,7 @@ export default function AgentPerformanceTab({
       </div>
 
       {/* Detailed Member Performance Table */}
-      <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden text-left">
+      <div className="bg-white rounded-[24px] overflow-hidden text-left">
           <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
               <div>
                   <h3 className="font-bold text-[#263238] text-xl">Member Performance Breakdown</h3>
@@ -439,14 +496,14 @@ export default function AgentPerformanceTab({
                               <tr key={agent.id} className="hover:bg-gray-50/50 transition-colors group">
                                   <td className="px-5 py-5">
                                       <div className="flex items-center gap-4">
-                                          <div className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center text-[#4b33e8] font-bold group-hover:bg-[#4b33e8] group-hover:text-white transition-all">
+                                          <div className="w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center text-[#4b33e8] font-bold group-hover:bg-[#4b33e8] group-hover:text-white transition-all cursor-pointer">
                                               {agent.profile_pic_url ? (
                                                   <img src={agent.profile_pic_url} alt="" className="w-full h-full object-cover" />
                                               ) : (
                                                   <span className="text-sm">{agent.name.charAt(0)}</span>
                                               )}
                                           </div>
-                                          <div>
+                                          <div className="cursor-pointer">
                                               <p className="text-sm font-bold text-[#263238]">{agent.name}</p>
                                               <p className="text-[10px] text-gray-400 font-medium">ID: {agent.employee_id || i + 101}</p>
                                           </div>

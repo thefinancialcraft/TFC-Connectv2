@@ -288,19 +288,19 @@ export default function OrganizationDetail() {
   const orgDaysLeft = getOrgDaysLeft();
 
   return (
-    <AppLayout>
+    <>
       <Head>
         <title>{organization.company_name} • TFC Nexus</title>
       </Head>
 
       <div className="flex-1 flex flex-col w-full min-w-0 font-poppins">
-        <div className="flex-1 pt-6 pb-12">
+        <div className="flex-1 pb-12">
             
            {/* Top Dynamic Header Background */}
-           <div className="relative w-full overflow-hidden px-4 md:px-8 pb-10">
+           <div className="relative w-full overflow-hidden  pb-10">
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[100px] -mr-64 -mt-64 pointer-events-none"></div>
 
-              <div className="container mx-auto max-w-7xl relative z-10">
+              <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl relative z-10">
                  {/* Breadcrumbs */}
                  <div className="flex items-center gap-2 text-xs text-slate-400 mb-6 font-semibold tracking-wide text-left">
                    <span className="cursor-pointer hover:text-indigo-600 transition-colors" onClick={() => router.push("/organization")}>Organizations</span>
@@ -863,6 +863,6 @@ export default function OrganizationDetail() {
             preselectedCampaignId=""
         />
       </div>
-    </AppLayout>
+    </>
   );
 }

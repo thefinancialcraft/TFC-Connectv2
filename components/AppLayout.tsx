@@ -6,8 +6,10 @@ import BottomNav from "./BottomNav";
 import { useUser } from "../context/UserContext";
 export { useUser };
 import { handleLogout } from "../lib/authService";
-import { getStoredUserData } from "../lib/localStorageUtils";
 import UtilitySidebar from "./UtilitySidebar";
+import AppLogo from "./AppLogo";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { supabase } from "@/lib/supabase";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -17,101 +19,29 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, hideSidebar = false, hideHeader = false }: AppLayoutProps) {
   const router = useRouter();
-  const { user, loading: authLoading, error, mounted } = useUser();
-
-  // Create stableUser state with lazy initializer from localStorage to prevent flicker
-  const [stableUser, setStableUser] = useState<any>(() => {
-    if (typeof window === "undefined") return null;
-    const cached = getStoredUserData();
-    if (cached) {
-      return {
-        displayName: cached.user_name || cached.displayName || null,
-        email: cached.email || "",
-        employeeId: cached.employee_id || null,
-        lastSignInAt: null,
-        profilePicUrl: cached.profile_pic_url || null,
-        isClient: cached.is_client,
-        designation: cached.designation,
-        googleCalendarConnected: cached.google_calendar_connected ?? false,
-        googleCalendarSkipped: cached.google_calendar_skipped ?? false,
-      };
-    }
-    return null;
-  });
-
-  // Controlled ghost-update: Update stableUser ONLY if actual user fields change
-  useEffect(() => {
-    if (user) {
-      setStableUser((prev: any) => {
-        if (!prev) {
-          return {
-            displayName: user.displayName || null,
-            email: user.email || "",
-            employeeId: user.employeeId || null,
-            lastSignInAt: user.lastSignInAt || null,
-            profilePicUrl: user.profilePicUrl || null,
-            isClient: user.isClient,
-            designation: user.designation,
-            uid: user.uid || (user as any).id,
-            googleCalendarConnected: user.googleCalendarConnected,
-            googleCalendarSkipped: user.googleCalendarSkipped,
-          };
-        }
- 
-        const hasChanged =
-          prev.displayName !== (user.displayName || null) ||
-          prev.email !== (user.email || "") ||
-          prev.employeeId !== (user.employeeId || null) ||
-          prev.lastSignInAt !== (user.lastSignInAt || null) ||
-          prev.profilePicUrl !== (user.profilePicUrl || null) ||
-          prev.isClient !== user.isClient ||
-          prev.designation !== user.designation ||
-          prev.googleCalendarConnected !== user.googleCalendarConnected ||
-          prev.googleCalendarSkipped !== user.googleCalendarSkipped ||
-          prev.uid !== (user.uid || (user as any).id);
- 
-        if (hasChanged) {
-          return {
-            displayName: user.displayName || null,
-            email: user.email || "",
-            employeeId: user.employeeId || null,
-            lastSignInAt: user.lastSignInAt || null,
-            profilePicUrl: user.profilePicUrl || null,
-            isClient: user.isClient,
-            designation: user.designation,
-            uid: user.uid || (user as any).id,
-            googleCalendarConnected: user.googleCalendarConnected,
-            googleCalendarSkipped: user.googleCalendarSkipped,
-          };
-        }
-        return prev;
-      });
-    } else if (mounted && !authLoading) {
-      // Only clear stableUser if we are definitely NOT loading and STILL have no user
-      setStableUser(null);
-    }
-  }, [user, mounted]);
-
+  const { user, loading: authLoading, error, mounted, statusMessage } = useUser();
 
   const handleLogoutClick = useCallback(async () => {
     await handleLogout(router);
   }, [router]);
 
 
-  // Loading state
-  if (authLoading && !mounted) {
+  const isAuthPage = ['/portal/login', '/portal/signup', '/portal/signup-success'].includes(router.pathname);
+
+  // Loading state: Wait for mount, auth finish, and user availability
+  if (!mounted || authLoading || (!user && !isAuthPage)) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center"
-        style={{ backgroundColor: "#f6f5f7" }}
-      >
-        <div className="text-center">
-          <div
-            className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4"
-            style={{ borderColor: "#4b33e8" }}
-          ></div>
-          <div className="text-lg" style={{ color: "#4b33e8" }}>
-            Loading...
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f6f5ff]">
+        <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
+          <div className="scale-125 mb-4">
+            <AppLogo />
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[#263238] font-bold text-lg animate-pulse" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              {statusMessage || "Retrieving logged details..."}
+            </p>
+            <p className="text-[#787E9D] text-sm font-medium">Please wait while we sync your session</p>
           </div>
         </div>
       </div>
@@ -152,7 +82,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       {/* Left Sidebar */}
       {!hideSidebar && (
         <Sidebar
-          user={stableUser}
+          user={user as any}
           userRole={userRole}
           onLogout={handleLogoutClick}
         />
@@ -164,7 +94,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         {/* Top Header */}
         {!hideHeader && (
           <Header
-            user={stableUser}
+            user={user as any}
             onLogout={handleLogoutClick}
             hideSidebar={hideSidebar}
           />
@@ -184,8 +114,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
         <BottomNav 
           activeNav={router.pathname.replace('/portal', '').replace('/', '') || 'dashboard'} 
           userRole={userRole} 
-          isClient={stableUser?.isClient}
-          designation={stableUser?.designation}
+          isClient={user?.isClient}
+          designation={user?.designation}
         />
       )}
 

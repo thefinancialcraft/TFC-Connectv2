@@ -6,24 +6,35 @@ interface HourlyAnalyticsTabProps {
   hourlyStats?: HourlyStatPoint[];
   selectedUserId?: string;
   selectedOrgId?: string;
+  dateFilter?: string;
+  loading?: boolean;
 }
 
 export default function HourlyAnalyticsTab({
   heatmapData: initialHeatmap,
   hourlyStats: initialHourly,
   selectedUserId,
-  selectedOrgId
+  selectedOrgId,
+  dateFilter = "today",
+  loading: parentLoading = false
 }: HourlyAnalyticsTabProps) {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  // Default to current date for the local filter inputs
+  const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+  const [startDate, setStartDate] = useState(todayStr);
+  const [endDate, setEndDate] = useState(todayStr);
   const [isFiltered, setIsFiltered] = useState(false);
   
   const { 
     heatmapData, 
     hourlyStats, 
     fetchChartData, 
-    loading 
+    loading: internalLoading 
   } = useDashboardCharts();
+
+  // Reset local filter if parent dateFilter changes (excluding initial load)
+  useEffect(() => {
+    setIsFiltered(false);
+  }, [dateFilter]);
 
   const handleApplyFilter = () => {
     if (startDate && endDate) {
@@ -44,7 +55,7 @@ export default function HourlyAnalyticsTab({
 
   const currentHeatmap = isFiltered ? heatmapData : (initialHeatmap || []);
   const currentHourly = isFiltered ? hourlyStats : (initialHourly || []);
-  const isLoading = isFiltered ? loading : false;
+  const isLoading = parentLoading || internalLoading;
 
   const timeSlots = [
     "8 AM - 10 AM",
@@ -90,7 +101,7 @@ export default function HourlyAnalyticsTab({
       </div>
 
       {/* Heatmap Widget */}
-      <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-50 flex flex-col relative">
+      <div className="bg-white rounded-[20px] p-6 flex flex-col relative">
         {isLoading && (
           <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[20px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"></div>
@@ -145,7 +156,7 @@ export default function HourlyAnalyticsTab({
                   </td>
                   {currentHeatmap.map((dayData, i) => {
                     const val = (dayData[timeslot] as number) || 0;
-                    const intensity = Math.min(1, val / 100);
+                    const intensity = Math.min(1, val / 20);
                     return (
                       <td key={i} className="p-0.5">
                         <div
@@ -169,8 +180,8 @@ export default function HourlyAnalyticsTab({
       </div>
 
       {/* Hourly Table */}
-      <div className="bg-white rounded-[20px] p-6 shadow-sm border border-gray-50 flex flex-col relative">
-        {loading && (
+      <div className="bg-white rounded-[20px] p-6 flex flex-col relative">
+        {isLoading && (
           <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[20px]">
              {/* Spinner already shown in heatmap, avoid duplicate if close or just show subtle opacity */}
           </div>

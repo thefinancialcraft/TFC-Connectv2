@@ -92,15 +92,21 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
           ...(userId && { userId }),
         });
 
-        const response = await fetch(`/api/dashboard/agent_performance?${params}`, {
+        const response = await fetch(`/api/agent_performance?${params}`, {
           headers: { Authorization: `Bearer ${session.access_token}` },
           signal: controller.signal,
         });
 
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
+        let result;
+        try {
+          result = await response.json();
+        } catch (e) {
+          throw new Error(`API error: ${response.status}`);
+        }
 
-        const result = await response.json();
-        if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch agent performance data");
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(result.error || `API error: ${response.status}`);
+        }
 
         const data = {
             agentData: result.data.agents,

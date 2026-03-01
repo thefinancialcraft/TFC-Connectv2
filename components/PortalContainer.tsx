@@ -1,22 +1,38 @@
 import React from 'react';
 import SessionRedirect from "./SessionRedirect";
 import { UserProvider } from "./UserProvider";
-import LogPip from "./LogPip";
+import AppLayout from "./AppLayout";
 import GlobalCallHandler from "./GlobalCallHandler";
+import { useRouter } from "next/router";
 import CallReminderOverlay from "./CallReminderOverlay";
+import LogPip from "./LogPip";
 
-interface PortalContainerProps {
-  children: React.ReactNode;
-}
+export default function PortalContainer({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  
+  // Minimal Layout Pages (No Sidebar/Header)
+  const minimalPages = [
+    '/portal/login',
+    '/portal/signup',
+    '/portal/signup-success',
+    '/portal/hold',
+    '/portal/pending', 
+    '/portal/suspended',
+    '/portal/rejected',
+    '/portal/profile-completion'
+  ];
 
-export default function PortalContainer({ children }: PortalContainerProps) {
+  const isMinimal = minimalPages.includes(router.pathname);
+
   return (
     <UserProvider>
       <SessionRedirect />
-      <GlobalCallHandler />
-      <CallReminderOverlay />
-      <LogPip />
-      {children}
+      <AppLayout hideSidebar={isMinimal} hideHeader={isMinimal}>
+        {children}
+        <GlobalCallHandler />
+        <CallReminderOverlay />
+        <LogPip />
+      </AppLayout>
     </UserProvider>
   );
 }

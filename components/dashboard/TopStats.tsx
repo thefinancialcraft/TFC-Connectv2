@@ -31,43 +31,38 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
 
 
   const cards = [
-    // ... same cards
     {
-      label: "Total Talktime",
+      label: "TOTAL TALKTIME",
       value: (() => {
         const totalSecs = stats.totalTalktime || 0;
         const h = Math.floor(totalSecs / 3600);
         const m = Math.floor((totalSecs % 3600) / 60);
         return h > 0 ? `${h}h ${m}m` : `${m}m ${totalSecs % 60}s`;
       })(),
-      sub: "+12%",
-      color: "#4b33e8",
-      icon: "fi-rr-headset",
-      chartType: "bar" as const,
+      trend: "12%",
+      color: "#6366F1", // Indigo
+      trendColor: "#6366F1",
     },
     {
-      label: "Total Dials",
+      label: "TOTAL DIALS",
       value: (stats.totalDials || 0).toLocaleString(),
-      sub: "+9%",
-      color: "#f97316",
-      icon: "fi-rr-phone-call",
-      chartType: "area" as const,
+      trend: "8%",
+      color: "#F59E0B", // Amber
+      trendColor: "#F59E0B",
     },
     {
-      label: "Deals Closed",
+      label: "DEALS CLOSED",
       value: (stats.totalConverted || 0).toLocaleString(),
-      sub: "+7%",
-      color: "#10b981",
-      icon: "fi-rr-check-circle",
-      chartType: "bar" as const,
+      trend: "4%",
+      color: "#10B981", // Emerald
+      trendColor: "#10B981",
     },
     {
-      label: "Conversion Rate",
+      label: "CONVERSION RATE",
       value: `${stats.conversionRate}%`,
-      sub: "-2%",
-      color: "#ef4444",
-      icon: "fi-rr-chart-pie",
-      chartType: "area" as const,
+      trend: "2%",
+      color: "#EC4899", // Pink/Rose
+      trendColor: "#EC4899",
     },
   ];
 
@@ -76,89 +71,58 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
       {cards.map((card, i) => (
         <div
           key={i}
-          className="bg-white rounded-2xl p-5 flex flex-col justify-between group hover:shadow-md transition-all duration-300 min-h-[160px]"
+          className="relative bg-white rounded-[20px] p-5 flex flex-col justify-start"
+          style={{ overflow: 'hidden' }}
         >
+          {/* Left Accent Border */}
+          <div 
+            className="absolute left-0 top-[30%] bottom-[30%] w-[3px] rounded-r-full"
+            style={{ backgroundColor: card.color }}
+          ></div>
+
           {loading ? (
              <div className="animate-pulse w-full">
-                <div className="flex justify-between items-start mb-4">
-                    <div className="space-y-3 w-full">
-                        <div className="h-3 bg-gray-100 rounded w-1/3"></div>
-                        <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                        <div className="h-2 bg-gray-100 rounded w-1/4"></div>
-                    </div>
-                    <div className="w-9 h-9 bg-gray-100 rounded-xl"></div>
+                <div className="flex justify-between items-start mb-3">
+                    <div className="h-2 bg-gray-100 rounded w-1/3"></div>
+                    <div className="h-1 w-3 bg-gray-100 rounded-full"></div>
                 </div>
-                <div className="mt-6 pt-4 border-t border-gray-50 flex items-center justify-between">
-                    <div className="w-24 h-8 bg-gray-100 rounded"></div>
-                    <div className="w-16 h-3 bg-gray-100 rounded"></div>
-                </div>
+                <div className="h-7 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-gray-50 rounded w-1/4"></div>
              </div>
           ) : (
             <>
-              <div className="flex justify-between items-start mb-3">
-                <div className="space-y-0.5">
-                  <p className="text-xs font-medium text-[#787E9D] flex items-center gap-1.5">
-                    {card.label}
-                    <i className="fi fi-rr-info text-[9px]"></i>
-                  </p>
-                  <h2 className="text-xl font-bold text-[#263238] font-poppins">
-                    {card.value}
-                  </h2>
-                  <p
-                    className={`text-[10px] font-bold ${
-                      card.sub.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    vs last month <span className="ml-1">{card.sub}</span>
-                  </p>
-                </div>
-                <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-gray-50 group-hover:scale-110"
-                  style={{ color: card.color }}
-                >
-                  <i className={`fi ${card.icon} flex text-base`}></i>
+              {/* Card Header */}
+              <div className="flex justify-between items-start mb-2.5">
+                <p className="text-[9px] font-bold text-gray-400 tracking-[0.05em] uppercase">
+                  {card.label}
+                </p>
+                <div className="text-gray-300 hover:text-gray-500 cursor-pointer transition-colors p-1 -mt-1 -mr-1">
+                   <div className="flex gap-[1.5px]">
+                      <div className="w-[2px] h-[2px] rounded-full bg-current"></div>
+                      <div className="w-[2px] h-[2px] rounded-full bg-current"></div>
+                      <div className="w-[2px] h-[2px] rounded-full bg-current"></div>
+                   </div>
                 </div>
               </div>
 
-              <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                <div style={{ width: '96px', height: '40px' }}>
-                  {mounted && (
-                    card.chartType === "bar" ? (
-                      <BarChart width={96} height={40} data={chartData}>
-                        <Bar
-                          dataKey="dials"
-                          fill={card.color}
-                          radius={[2, 2, 0, 0]}
-                          opacity={0.6}
-                        />
-                      </BarChart>
-                    ) : (
-                      <AreaChart width={96} height={40} data={chartData}>
-                        <Area
-                          type="monotone"
-                          dataKey="dials"
-                          stroke={card.color}
-                          fill={card.color}
-                          fillOpacity={0.1}
-                          strokeWidth={2}
-                        />
-                      </AreaChart>
-                    )
-                  )}
-                </div>
+              {/* Big Value */}
+              <div className="mb-3.5">
+                <h2 className="text-xl font-bold text-[#1F2937] font-poppins tracking-tight">
+                  {card.value}
+                </h2>
+              </div>
 
-
-
-
-                <button
-                  onClick={() => router.push("/activity")}
-                  className="text-xs font-bold text-gray-400 hover:text-[#4b33e8] transition-colors flex items-center gap-1 group/btn"
+              {/* Trend Info */}
+              <div className="flex items-center gap-2">
+                <div 
+                   className="w-4.5 h-4.5 rounded-md flex items-center justify-center transition-transform group-hover:scale-110"
+                   style={{ backgroundColor: `${card.color}15`, color: card.color }}
                 >
-                  See Details{" "}
-                  <i className="fi fi-rr-arrow-right text-[10px] mt-0.5 group-hover/btn:translate-x-1 transition-transform"></i>
-                </button>
+                   <i className="fi fi-rr-arrow-trend-up flex text-[8px]"></i>
+                </div>
+                <p className="text-[10px] font-bold text-gray-600">
+                  {card.trend}
+                </p>
               </div>
             </>
           )}

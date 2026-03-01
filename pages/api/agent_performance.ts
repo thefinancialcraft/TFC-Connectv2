@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase, supabaseAdmin } from "../../../lib/supabase";
-import { DashboardLevel, getUserDashboardLevel } from "../../../lib/dashboardUtils";
+import { supabase, supabaseAdmin } from "../../lib/supabase";
+import { DashboardLevel, getUserDashboardLevel } from "../../lib/dashboardUtils";
 
 /**
  * Agent Performance API
@@ -45,61 +45,75 @@ interface AgentPerformanceResponse {
  * Calculate date range based on filter
  */
 function getDateRange(filter: string) {
-  const now = new Date();
-  const todayStart = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  ).toISOString();
-  const todayEnd = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    23,
-    59,
-    59
-  ).toISOString();
+  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
+  const nowUtc = new Date();
+  const nowIst = new Date(nowUtc.getTime() + IST_OFFSET);
 
-  let start = todayStart;
-  let end = todayEnd;
+  // Helper to get midnight IST for a given IST date
+  const getMidnightIstAsUtc = (dateIst: Date) => {
+    const midnight = new Date(dateIst);
+    midnight.setUTCHours(0, 0, 0, 0);
+    return new Date(midnight.getTime() - IST_OFFSET);
+  };
+
+  const todayStart = getMidnightIstAsUtc(nowIst);
+  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000 - 1000);
+
+  let start = todayStart.toISOString();
+  let end = todayEnd.toISOString();
 
   switch (filter) {
     case "yesterday": {
-      const y = new Date(now);
-      y.setDate(y.getDate() - 1);
-      start = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
-      end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59).toISOString();
+      const yesterdayIst = new Date(nowIst.getTime() - 24 * 60 * 60 * 1000);
+      const yStart = getMidnightIstAsUtc(yesterdayIst);
+      start = yStart.toISOString();
+      end = new Date(yStart.getTime() + 24 * 60 * 60 * 1000 - 1000).toISOString();
       break;
     }
     case "this_week": {
-      const d = new Date(now);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(d.setDate(diff));
-      start = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).toISOString();
+      const day = nowIst.getDay();
+      const diff = nowIst.getDate() - day + (day === 0 ? -6 : 1);
+      const mondayIst = new Date(nowIst);
+      mondayIst.setDate(diff);
+      start = getMidnightIstAsUtc(mondayIst).toISOString();
+      end = nowUtc.toISOString();
       break;
     }
     case "last_7_days": {
-      const d = new Date(now);
-      d.setDate(d.getDate() - 7);
-      start = d.toISOString();
+      const dStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+      start = dStart.toISOString();
+      end = nowUtc.toISOString();
       break;
     }
-    case "this_month":
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    case "this_month": {
+      const firstDayIst = new Date(nowIst.getFullYear(), nowIst.getMonth(), 1);
+      start = getMidnightIstAsUtc(firstDayIst).toISOString();
+      end = nowUtc.toISOString();
       break;
-    case "last_month":
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-      end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
+    }
+    case "last_month": {
+      const firstDayLastMonthIst = new Date(nowIst.getFullYear(), nowIst.getMonth() - 1, 1);
+      const lastDayLastMonthIst = new Date(nowIst.getFullYear(), nowIst.getMonth(), 0);
+      start = getMidnightIstAsUtc(firstDayLastMonthIst).toISOString();
+      const lEnd = getMidnightIstAsUtc(lastDayLastMonthIst);
+      end = new Date(lEnd.getTime() + 24 * 60 * 60 * 1000 - 1000).toISOString();
       break;
-    case "this_year":
-      start = new Date(now.getFullYear(), 0, 1).toISOString();
+    }
+    case "this_year": {
+      const firstDayYearIst = new Date(nowIst.getFullYear(), 0, 1);
+      start = getMidnightIstAsUtc(firstDayYearIst).toISOString();
+      end = nowUtc.toISOString();
       break;
-    case "multi_year":
-      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
+    }
+    case "multi_year": {
+      const threeYearsAgoIst = new Date(nowIst.getFullYear() - 3, 0, 1);
+      start = getMidnightIstAsUtc(threeYearsAgoIst).toISOString();
+      end = nowUtc.toISOString();
       break;
+    }
     case "all_time":
-      start = "2000-01-01T00:00:00.000Z";
+      start = "2020-01-01T00:00:00.000Z";
+      end = nowUtc.toISOString();
       break;
   }
 
@@ -309,182 +323,69 @@ export default async function handler(
       }
     }
 
-    // 1. Fetch all users for the target org(s)
-    let profilesQuery = dbClient
-      .from("user_profiles")
-      .select("user_id, user_name, role, employee_id, profile_pic_url")
-      .neq("approval_status", "rejected"); // Filter out rejected users
-
-    if (targetOrgId) {
-      profilesQuery = profilesQuery.eq("organization_id", targetOrgId);
-    }
-    
-    // RESTRICTION FOR TL (LEVEL 3)
-    if (restrictedUserIds && (!filterUserId || filterUserId === 'all')) {
-      profilesQuery = profilesQuery.in('user_id', restrictedUserIds);
-    } else if (filterUserId && filterUserId !== 'all') {
-      profilesQuery = profilesQuery.eq('user_id', filterUserId);
-    }
-
-    // Prepare agent map with all users initialized to 0
-    const { data: profiles } = await profilesQuery;
-    const agentMap: Record<string, AgentDataPoint> = {};
-    const employeeIdMap: Record<string, string> = {}; // Map employee_id -> user_id
-    
-    if (profiles) {
-      profiles.forEach((p) => {
-        const name = p.user_name || "Unknown Agent";
-        agentMap[p.user_id] = { 
-          id: p.user_id, 
-          name, 
-          employee_id: p.employee_id,
-          profile_pic_url: p.profile_pic_url,
-          count: 0, 
-          duration: 0,
-          connected_count: 0,
-          deals_count: 0,
-          follow_ups_count: 0,
-          last_active: null,
-          last_online: null,
-          on_call: false,
-          is_personal: false
-        };
-        // Populate employee id map for lookup
-        if (p.employee_id) {
-            employeeIdMap[p.employee_id] = p.user_id;
-        }
+    // --- HIGH PERFORMANCE OPTIMIZED CALL (RPC) ---
+    try {
+      console.log("🚀 [Performance] Attempting optimized agent performance RPC call...");
+      const { data: agentsRaw, error: rpcError } = await dbClient.rpc('get_agent_performance_optimized', {
+        p_start_date: start,
+        p_end_date: end,
+        p_org_id: targetOrgId || null,
+        p_restricted_user_ids: (restrictedUserIds && restrictedUserIds.length > 0) ? restrictedUserIds : null,
+        p_filter_user_id: (filterUserId && filterUserId !== 'all') ? filterUserId : null
       });
-    }
 
-    // 2. Fetch call logs from call_history
-    const callLogs = await fetchAllRows(
-      dbClient,
-      "call_history",
-      "employee_id, duration, call_type, timestamp", 
-      {
-        orgId: targetOrgId,
-        startDate: start,
-        endDate: end,
-        dateColumn: "timestamp",
-        employeeId: filterEmployeeId || restrictedEmployeeIds
-      }
-    );
+      if (rpcError) throw rpcError;
 
-    // 3. Aggregate counts and duration
-    let totalDuration = 0;
-   // const successDispositions = ['Sold', 'Converted', 'Success', 'Closed', 'Deal Done'];
-
-    callLogs.forEach((log: any) => {
-      const duration = Number(log.duration) || 0;
-      // Filter out invalid logs if necessary?
+      // Safe extract as RPC sometimes returns single object or array
+      const agentsUnwrapped = Array.isArray(agentsRaw) ? agentsRaw : (agentsRaw ? [agentsRaw] : []);
       
-      const employeeId = log.employee_id;
-      const userId = employeeId ? employeeIdMap[employeeId] : null;
+      // Extract data
+      const agents: AgentDataPoint[] = (agentsUnwrapped || []).map((a: any) => ({
+        ...a,
+        connected_count: Number(a.connected_count) || 0,
+        count: Number(a.count) || 0,
+        duration: Number(a.duration) || 0,
+        deals_count: Number(a.deals_count) || 0,
+        follow_ups_count: Number(a.follow_ups_count) || 0,
+        last_active: a.last_active || null,
+        last_online: a.last_online || null,
+        on_call: !!a.on_call,
+        is_personal: !!a.is_personal
+      }));
 
-      if (userId && agentMap[userId]) {
-        totalDuration += duration;
-        const agent = agentMap[userId];
-        agent.count++;
-        agent.duration += duration;
+      const employeeIds = agents.map(a => a.employee_id).filter(id => !!id);
 
-        // Connected logic for call_history
-        const type = (log.call_type || '').toLowerCase();
-        const isConnected = (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
-
-        if (isConnected) agent.connected_count++;
-
-        // Last active tracking with timestamp
-        if (!agent.last_active || new Date(log.timestamp) > new Date(agent.last_active)) {
-          agent.last_active = log.timestamp;
-        }
-      }
-    });
-
-    // 4. Fetch follow-ups count from customers
-    const agentIds = Object.keys(agentMap);
-    if (agentIds.length > 0) {
-      const now = new Date().toISOString();
-      const { data: followUps } = await dbClient
-        .from('customers')
-        .select('assigned_to')
-        .in('assigned_to', agentIds)
-        .gt('next_called_at', now);
-      
-      if (followUps) {
-        followUps.forEach((f: any) => {
-          if (agentMap[f.assigned_to]) {
-            agentMap[f.assigned_to].follow_ups_count++;
-          }
-        });
-      }
-    }
-
-    // 5. Fetch Real-time On-Call status from sync_meta
-    const employeeIds = Object.values(agentMap)
-      .map(a => a.employee_id)
-      .filter((id): id is string => !!id);
-
-    if (employeeIds.length > 0) {
-      const { data: syncMeta } = await dbClient
-        .from('sync_meta')
-        .select('employee_id, on_call, is_personal')
-        .in('employee_id', employeeIds);
-      
-      if (syncMeta) {
-        syncMeta.forEach((meta: any) => {
-          // Find the agents with this employee_id
-          Object.values(agentMap).forEach(agent => {
-            if (agent.employee_id === meta.employee_id) {
+      // Fetch Real-time On-Call status
+      if (employeeIds.length > 0) {
+        const { data: syncMeta } = await dbClient.from('sync_meta').select('employee_id, on_call, is_personal').in('employee_id', employeeIds);
+        if (syncMeta) {
+          syncMeta.forEach((meta: any) => {
+            const agent = agents.find(a => a.employee_id === meta.employee_id);
+            if (agent) {
               agent.on_call = !!meta.on_call;
               agent.is_personal = !!meta.is_personal;
             }
           });
-        });
+        }
       }
+
+      const totalDials = agents.reduce((acc, a) => acc + a.count, 0);
+      const totalDuration = agents.reduce((acc, a) => acc + a.duration, 0);
+
+      const endTime = Date.now();
+      console.log(`✅ [Performance] Agent Performance RPC Success - Duration: ${endTime - startTime}ms`);
+
+      return res.status(200).json({
+        success: true,
+        data: { agents, totalDials, totalDuration },
+      });
+
+    } catch (err: any) {
+        console.error("Agent performance API error:", err);
+        return res.status(500).json({ success: false, error: err.message || "Internal server error" });
     }
-
-    // 6. Fetch last_online from user_sessions
-    const userIds = Object.keys(agentMap);
-    if (userIds.length > 0) {
-      // Fetch latest session for each user
-      const { data: sessions } = await dbClient
-        .from('user_sessions')
-        .select('user_id, last_accessed_at')
-        .in('user_id', userIds)
-        .order('last_accessed_at', { ascending: false });
-
-      if (sessions) {
-        sessions.forEach((session: any) => {
-          // Since it's ordered by last_accessed_at desc, the first one we see for a user is the latest
-          if (agentMap[session.user_id] && !agentMap[session.user_id].last_online) {
-            agentMap[session.user_id].last_online = session.last_accessed_at;
-          }
-        });
-      }
-    }
-
-    // 4. Sort and return ALL agents (no slice)
-    const agents = Object.values(agentMap)
-      .sort((a, b) => b.count - a.count);
-
-    const totalDials = callLogs.length;
-
-    const endTime = Date.now();
-    console.log(`[API] agent_performance - Status: 200 - Duration: ${endTime - startTime}ms`);
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        agents,
-        totalDials,
-        totalDuration,
-      },
-    });
-  } catch (error) {
-    console.error("Agent performance API error:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Internal server error",
-    });
+  } catch (error: any) {
+    console.error("Fatal Agent Performance API error:", error);
+    return res.status(500).json({ success: false, error: error.message || "Internal server error" });
   }
 }

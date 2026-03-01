@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       { source: '/organization', destination: '/portal/organization' },
       { source: '/organization/:path*', destination: '/portal/organization/:path*' },
       { source: '/team', destination: '/portal/team' },
+      { source: '/team/:path*', destination: '/portal/team/:path*' },
       { source: '/pending', destination: '/portal/pending' },
       { source: '/rejected', destination: '/portal/rejected' },
       { source: '/suspended', destination: '/portal/suspended' },

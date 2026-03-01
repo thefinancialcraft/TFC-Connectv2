@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import AppLayout from "@/components/AppLayout";
+// Removed AppLayout import as it's now handled globally in PortalContainer
 import { useActivityData } from "@/hooks/useActivityData";
 
 export default function Activity() {
@@ -82,7 +82,7 @@ export default function Activity() {
 
 
   return (
-    <AppLayout>
+    <>
           <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             <div className="space-y-6 sm:space-y-8">
               <div className="mb-6 flex items-start justify-between">
@@ -939,6 +939,6 @@ export default function Activity() {
               </div>
             </div>
           </div>
-    </AppLayout>
+    </>
   );
 }

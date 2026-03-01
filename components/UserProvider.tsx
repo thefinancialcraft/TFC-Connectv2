@@ -7,7 +7,7 @@ interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps) {
-  const { user, loading, error, mounted, refetchUser } = useAuthGuard();
+  const { user, loading, error, mounted, statusMessage, refetchUser } = useAuthGuard();
   const prevUserRef = useRef<any>(null);
 
   // Bridge Sync Logic (Reliability Pinger for refresh/cold-start)
@@ -96,8 +96,9 @@ export function UserProvider({ children }: UserProviderProps) {
     loading,
     error: error || null,
     mounted,
+    statusMessage,
     refetchUser
-  }), [user, loading, error, mounted, refetchUser]);
+  }), [user, loading, error, mounted, statusMessage, refetchUser]);
 
   return (
     <UserContext.Provider value={contextValue}>

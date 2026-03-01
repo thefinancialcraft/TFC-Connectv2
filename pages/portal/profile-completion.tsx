@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import { showSuccess, showError } from "@/lib/dialogUtils";
 import SettingsFormFields from "@/components/SettingsFormFields";
@@ -323,7 +323,7 @@ function ProfileCompletion() {
   ];
 
   return (
-    <AppLayout hideSidebar hideHeader>
+    <>
       <div className="min-h-screen py-8" style={{ backgroundColor: "#e7e3ff" }}>
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
@@ -440,7 +440,7 @@ function ProfileCompletion() {
         </div>
       </div>
       </div>
-    </AppLayout>
+    </>
   );
 }
 

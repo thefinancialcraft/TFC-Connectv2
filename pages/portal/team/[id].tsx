@@ -467,20 +467,20 @@ export default function TeamDetails() {
 
   if ((loading && !team) || (loading && members.length === 0 && team)) {
     return (
-      <AppLayout>
+      <>
         <div className="flex h-[80vh] items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#4b33e8] border-t-transparent"></div>
                 <p className="text-sm font-medium text-gray-400">Loading team analytics...</p>
             </div>
         </div>
-      </AppLayout>
+      </>
     );
   }
 
   if (error || !team) {
     return (
-      <AppLayout>
+      <>
         <div className="flex h-[80vh] items-center justify-center">
             <div className="flex flex-col items-center gap-6 max-w-md text-center px-6">
                 <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center text-red-500 text-3xl">
@@ -500,18 +500,18 @@ export default function TeamDetails() {
                 </button>
             </div>
         </div>
-      </AppLayout>
+      </>
     );
   }
 
   return (
-    <AppLayout>
+    <>
       <Head>
         <title>{team?.name || 'Team Details'} • TFC Nexus</title>
       </Head>
 
       <div className="flex-1 flex flex-col w-full min-w-0 font-poppins">
-          <div className="container mx-auto px-4 py-8 max-w-7xl pb-24">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
             
             {/* Breadcrumb & Header */}
             <div className="mb-6">
@@ -868,6 +868,6 @@ export default function TeamDetails() {
 
           </div>
       </div>
-    </AppLayout>
+    </>
   );
 }

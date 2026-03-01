@@ -1,13 +1,10 @@
-
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
 import { supabase } from "@/lib/supabase";
+import { useUser } from "@/context/UserContext"; 
 import { getStoredUserData, storeUserData } from "@/lib/localStorageUtils";
 import { useCallSessionRedirect } from "@/hooks/useCallSessionRedirect";
-import BottomNav from "@/components/BottomNav";
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
     BarChart, Bar, Cell, 
@@ -80,37 +77,15 @@ export default function CampaignDetails() {
     const router = useRouter();
     const { id } = router.query;
 
-    const [user, setUser] = useState<UserProfile | null>(() => {
-        const cachedData = getStoredUserData();
-        if (cachedData) {
-            return {
-                uid: cachedData.user_id || '',
-                displayName: cachedData.user_name || cachedData.displayName || null,
-                email: cachedData.email || '',
-                phone: null,
-                providers: [],
-                providerType: null,
-                createdAt: '',
-                lastSignInAt: null,
-                employeeId: cachedData.employee_id || null,
-                role: cachedData.role || null,
-                approvalStatus: null,
-                accountStatus: null,
-                updatedAt: null,
-                profilePicUrl: cachedData.profile_pic_url || null,
-                isCaller: cachedData.is_caller ?? false,
-                isClient: cachedData.is_client ?? true,
-                designation: cachedData.designation || null,
-                googleCalendarConnected: cachedData.google_calendar_connected ?? false,
-                googleCalendarSkipped: cachedData.google_calendar_skipped ?? false,
-            };
-        }
-        return null;
-    });
+    const { user, loading: authLoading, mounted: userMounted } = useUser();
     
-    useCallSessionRedirect(user?.uid);
+    // Permission Flags using the global user
+    const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
+    const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
+    const userId = user?.uid;
 
-    const [isAuthLoading, setIsAuthLoading] = useState(true);
+    useCallSessionRedirect(userId);
+
     const [loading, setLoading] = useState(true);
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [stats, setStats] = useState<CampaignStats>({
@@ -169,20 +144,6 @@ export default function CampaignDetails() {
         }
     };
 
-    const fetchAuth = async () => {
-        try {
-            const result = await checkAuthAndFetchProfile();
-            if (result.shouldRedirect) {
-                router.push("/login");
-                return;
-            }
-            if (result.user) {
-                setUser(result.user);
-            }
-        } finally {
-            setIsAuthLoading(false);
-        }
-    };
 
     const fetchCampaignData = async () => {
         if (!id) return;
@@ -206,10 +167,7 @@ export default function CampaignDetails() {
             const twentyFourHoursAgoCount = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
             // 2. Fetch Stats & Analytics in Parallel
-            // Determine user constraints
-            const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
-            const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
-            const userId = user?.uid;
+            // User constraints are now defined at the component level
             
             // --- LEVEL 2: Fetch Team Members if applicable ---
             let effectiveTeamMembers: string[] = [];
@@ -580,8 +538,7 @@ export default function CampaignDetails() {
         }
     };
 
-    const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
-    const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
+
 
     const fetchLeads = async (pageOverride?: number, teamIdsOverride?: string[]) => {
         if (!id) return;
@@ -746,15 +703,11 @@ export default function CampaignDetails() {
         }
     };
 
-    useEffect(() => {
-        if (!router.isReady) return;
-        fetchAuth();
-    }, [router.isReady]);
 
     useEffect(() => {
-        if (!router.isReady || !id || isAuthLoading || !user?.uid) return;
+        if (!router.isReady || !id || authLoading || !userId) return;
         fetchCampaignData();
-    }, [router.isReady, id, user?.uid, isLevel1User, isAuthLoading, selectedDate]);
+    }, [router.isReady, id, userId, isLevel1User, authLoading, selectedDate]);
 
     // Effect for Page Change (Standard pagination)
     useEffect(() => {
@@ -912,59 +865,35 @@ export default function CampaignDetails() {
         </div>
     );
 
-    if (isAuthLoading || (loading && !campaign)) {
+    if ((loading || authLoading) && !campaign) {
         return (
-            <div className="flex h-screen bg-gray-50">
-                <Sidebar user={user ? {
-                    displayName: user.displayName,
-                    email: user.email,
-                    employeeId: user.employeeId,
-                    lastSignInAt: user.lastSignInAt,
-                    profilePicUrl: user.profilePicUrl,
-                    isClient: user.isClient,
-                    designation: user.designation,
-                } : undefined} onLogout={handleLogoutClick} />
-                <div className="flex-1 flex flex-col lg:ml-56 min-w-0 overflow-hidden">
-                    <Header user={user ? {
-                        displayName: user.displayName,
-                        email: user.email,
-                        employeeId: user.employeeId,
-                        profilePicUrl: user.profilePicUrl,
-                        lastSignInAt: user.lastSignInAt,
-                        uid: user.uid
-                    } : undefined} />
-                    <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-[60px] lg:pt-[60px]">
-                        <div className="max-w-[1600px] mx-auto space-y-8">
-                            {/* Header Skeleton */}
-                            <div className="h-32 bg-white rounded-3xl border border-gray-100 animate-pulse"></div>
-                            
-                            {/* Stats Grid Skeleton */}
-                            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-                                {[1, 2, 3, 4, 5, 6, 7].map(i => (
-                                    <div key={i} className="h-24 bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
-                                ))}
-                            </div>
+            <div className="max-w-[1600px] mx-auto space-y-8 p-4 md:p-8">
+                {/* Header Skeleton */}
+                <div className="h-32 bg-white rounded-3xl border border-gray-100 animate-pulse"></div>
+                
+                {/* Stats Grid Skeleton */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+                    {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                        <div key={i} className="h-24 bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+                    ))}
+                </div>
 
-                            {/* Analytics Skeleton */}
-                            {mounted && !isLevel1User && (
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="h-[300px] bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
-                                    ))}
-                                </div>
-                            )}
+                {/* Analytics Skeleton */}
+                {userMounted && !isLevel1User && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="h-[300px] bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+                        ))}
+                    </div>
+                )}
 
-                            {/* Breakdown Table Skeleton */}
-                            <SkeletonTable />
+                {/* Breakdown Table Skeleton */}
+                <SkeletonTable />
 
-                            {/* Tiles Grid Skeleton */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <SkeletonTile />
-                                <SkeletonTile />
-                            </div>
-                        </div>
-                    </main>
-                    <BottomNav />
+                {/* Tiles Grid Skeleton */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <SkeletonTile />
+                    <SkeletonTile />
                 </div>
             </div>
         );
@@ -989,77 +918,45 @@ export default function CampaignDetails() {
     }
 
     return (
-        <div className="flex min-h-screen w-full overflow-x-hidden bg-[#f6f5f7]">
-            <Sidebar
-                user={user ? {
-                    displayName: user.displayName,
-                    email: user.email,
-                    employeeId: user.employeeId,
-                    lastSignInAt: user.lastSignInAt,
-                    profilePicUrl: user.profilePicUrl,
-                    isClient: user.isClient,
-                    designation: user.designation,
-                } : undefined}
-                activeNav="campaign"
-                onNavChange={() => { }}
-                userRole={user?.role || null}
-                onLogout={handleLogoutClick}
-            />
+        <>
+            <div className="max-w-[1600px] mx-auto space-y-8 p-4 md:p-8">
+                {/* Breadcrumbs */}
+                <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
+                    <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push('/campaign')}>Campaigns</span>
+                    <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
+                    <span className="text-gray-600 font-bold">{campaign?.name}</span>
+                </div>
 
-            {/* DEBUG: Check User Object */}
-            {/* <div className="hidden">{console.log('Campaign[id] User:', user)}</div> */}
-
-            <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0">
-                <Header
-                    user={user ? {
-                        displayName: user.displayName,
-                        email: user.email,
-                        employeeId: user.employeeId,
-                        profilePicUrl: user.profilePicUrl,
-                        lastSignInAt: user.lastSignInAt
-                    } : undefined}
-                    onLogout={handleLogoutClick}
+                {/* Top Banner */}
+                <CampaignHeader 
+                    id={id}
+                    campaign={campaign}
+                    campaignStats={campaignStats}
+                    calling={calling}
+                    onStartCalling={handleStartCalling}
                 />
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full pt-[60px] lg:pt-[60px] lg:ml-0">
-                    <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
-                        {/* Breadcrumbs */}
-                        <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
-                            <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push('/campaign')}>Campaigns</span>
-                            <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
-                            <span className="text-gray-600 font-bold">{campaign?.name}</span>
-                        </div>
+                {/* Stats Grid */}
+                <CampaignStatsGrid stats={stats} />
 
-                        {/* Top Banner */}
-                        <CampaignHeader 
-                            id={id}
-                            campaign={campaign}
-                            campaignStats={campaignStats}
-                            calling={calling}
-                            onStartCalling={handleStartCalling}
-                        />
-
-                           {/* Stats Grid */}
-                        <CampaignStatsGrid stats={stats} />
-
-                        {/* ANALYTICS SECTION - Hidden for Level 1 Users but Visible for Level 2 */}
-                        {(isLevel2User || !isLevel1User) && (
-                        <>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                                 {/* 1. Hourly Activity (Area Chart) */}
-                                 {(campaign?.ishourlyactivitywidgevisible || isLevel2User) && (
-                                     <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
-                                         expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
-                                     }`}>
-                                         <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                             <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
-                                             Hourly Activity (Today) {isLevel2User && <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full ml-2">Team Mode</span>}
-                                         </h3>
-                                         <div className="flex-1 w-full min-h-0">
-                                             <ResponsiveContainer width="100%" height="100%">
-                                                 <AreaChart data={analytics.hourly_calls}>
-                                                     <defs>
-                                                         <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                {/* ANALYTICS SECTION - Hidden for Level 1 Users but Visible for Level 2 */}
+                {(isLevel2User || !isLevel1User) && (
+                    <>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            {/* 1. Hourly Activity (Area Chart) */}
+                            {(campaign?.ishourlyactivitywidgevisible || isLevel2User) && (
+                                <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-[300px] relative transition-all duration-300 ${
+                                    expandedChart === 'hourly' ? 'lg:col-span-3' : 'col-span-1 lg:col-span-1'
+                                }`}>
+                                    <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                        <i className="fi fi-rr-chart-histogram text-[#4b33e8]"></i>
+                                        Hourly Activity (Today) {isLevel2User && <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full ml-2">Team Mode</span>}
+                                    </h3>
+                                    <div className="flex-1 w-full min-h-0">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={analytics.hourly_calls}>
+                                                <defs>
+                                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
                                                              <stop offset="5%" stopColor="#4b33e8" stopOpacity={0.3}/>
                                                              <stop offset="95%" stopColor="#4b33e8" stopOpacity={0}/>
                                                          </linearGradient>
@@ -1216,8 +1113,8 @@ export default function CampaignDetails() {
                                                 />
                                             </div>
                                         </div>
-                                </div>
-                                <div className="overflow-x-auto">
+                                    </div>
+                                    <div className="overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead className="bg-[#f9fafb]">
                                             <tr>
@@ -1596,8 +1493,9 @@ export default function CampaignDetails() {
                                      </div>
                                  </div>
                             </div>
+                        </div>
 
-                            {/* Large Bottom Card: All Leads */}
+                        {/* Large Bottom Card: All Leads */}
                             <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 min-h-[400px] relative overflow-hidden group hover:shadow-md transition-all">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
                                 
@@ -1928,25 +1826,19 @@ export default function CampaignDetails() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Import Customers Modal */}
+                            <ImportCustomersModal 
+                                show={showImportModal}
+                                onClose={() => setShowImportModal(false)}
+                                onSuccess={() => {
+                                    fetchLeads(1);
+                                    fetchCampaignData();
+                                }}
+                                preselectedOrgId={campaign?.organization_id || ""}
+                                preselectedCampaignId={id as string}
+                            />
                         </div>
-                    </div>
-                </main>
-            </div>
-
-            {/* Bottom Navigation for Mobile */}
-            <BottomNav activeNav="campaign" userRole={user?.role || null} />
-
-            {/* Import Customers Modal */}
-            <ImportCustomersModal 
-                show={showImportModal}
-                onClose={() => setShowImportModal(false)}
-                onSuccess={() => {
-                    fetchLeads(1);
-                    fetchCampaignData();
-                }}
-                preselectedOrgId={campaign?.organization_id || ""}
-                preselectedCampaignId={id as string}
-            />
-        </div>
-    );
-}
+                    </>
+                );
+            }

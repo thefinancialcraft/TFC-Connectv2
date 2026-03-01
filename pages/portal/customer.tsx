@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import AppLayout, { useUser } from "@/components/AppLayout";
+import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import ImportCustomersModal from "@/components/ImportCustomersModal";
+import AddCustomerModal from "@/components/AddCustomerModal";
 import { formatMaskedPhone, computePhoneHash, decryptPhone } from "@/lib/phoneUtils";
 
 interface Customer {
@@ -134,6 +135,7 @@ export default function Customer() {
   const [pageSize, setPageSize] = useState<number | "all">(100);
   const [viewType, setViewType] = useState<"grid" | "list">("list");
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
   const [showCustomerDetailsModal, setShowCustomerDetailsModal] =
     useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -682,7 +684,7 @@ export default function Customer() {
 
 
   return (
-    <AppLayout>
+    <>
       <Head>
         <title>Customers | TFC Connect</title>
       </Head>
@@ -1399,6 +1401,7 @@ export default function Customer() {
                     {/* Add Customer Button */}
                     {permissionFlags.isAddCustomerButtonVisible && (
                     <button
+                      onClick={() => setShowAddCustomerModal(true)}
                       className="h-10 w-10 rounded-lg transition-colors flex items-center justify-center hover:opacity-90"
                       style={{
                         fontFamily: "'Roboto', sans-serif",
@@ -1668,6 +1671,7 @@ export default function Customer() {
                       {/* Add Customer Button */}
                       {permissionFlags.isAddCustomerButtonVisible && (
                       <button
+                        onClick={() => setShowAddCustomerModal(true)}
                         className="h-10 w-10 rounded-lg transition-colors flex items-center justify-center hover:opacity-90"
                         style={{
                           fontFamily: "'Roboto', sans-serif",
@@ -2308,6 +2312,15 @@ export default function Customer() {
         show={showImportModal}
         onClose={() => setShowImportModal(false)}
         onSuccess={() => fetchCustomers(1)}
+      />
+
+      <AddCustomerModal
+        show={showAddCustomerModal}
+        onClose={() => setShowAddCustomerModal(false)}
+        onSuccess={() => {
+          setShowAddCustomerModal(false);
+          fetchCustomers(); // Refresh data
+        }}
       />
 
       {/* Customer Details Modal */}
@@ -3082,7 +3095,6 @@ export default function Customer() {
           </div>
         </div>
       )}
-
-    </AppLayout>
+    </>
   );
 }

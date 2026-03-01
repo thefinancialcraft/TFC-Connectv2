@@ -6,14 +6,16 @@ export interface UserContextType {
   mounted: boolean;
   loading: boolean;
   error: string | null;
+  statusMessage?: string;
   refetchUser: () => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType>({
   user: null,
   mounted: false,
-  loading: false,
+  loading: true,
   error: null,
+  statusMessage: "",
   refetchUser: async () => {},
 });
 
