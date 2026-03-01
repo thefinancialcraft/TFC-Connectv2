@@ -75,10 +75,11 @@ export function useAuthGuard(): UseAuthGuardReturn {
           // Silently update user in memory (and it's already saved to cache by checkAuthAndFetchProfile)
           setUser(result.user);
           
-          // Logged in: if on login/root, move to dashboard
+          // Logged in: if on login/root, move to dashboard or last path
           if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
-            if (!hasCachedUser && !user) setStatusMessage("Redirecting to dashboard...");
-            router.push("/dashboard");
+            if (!hasCachedUser && !user) setStatusMessage("Restoring your screen...");
+            const lastPath = typeof window !== 'undefined' ? localStorage.getItem('last_visited_path') : null;
+            router.push(lastPath || "/dashboard");
           }
         } else if (result.shouldRedirect) {
            setUser(null);
@@ -154,10 +155,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
     } else {
         // Logged in and trying to access login/root
         if (isLoginPage || isRootPath) {
-            router.push("/dashboard");
+            const lastPath = localStorage.getItem('last_visited_path');
+            router.push(lastPath || "/dashboard");
+        } else if (!isPublicLandingPage) {
+            // Save the valid current path so Flutter WebView can restore it on wakeup
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('last_visited_path', router.asPath);
+            }
         }
     }
-  }, [router.pathname, user?.uid, mounted, loading]);
+  }, [router.pathname, router.asPath, user?.uid, mounted, loading]);
 
   return { user, loading, error, mounted, statusMessage, refetchUser: fetchAuth };
 }
