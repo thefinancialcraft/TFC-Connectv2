@@ -110,6 +110,10 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       organization_id: profileData?.organization_id || null,
     };
 
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cached_user_profile", JSON.stringify(userData));
+    }
+
     return {
       user: userData,
       error: null,
