@@ -61,7 +61,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
       const isRootPath = router.pathname === "/";
       
       setStatusMessage("Verifying active session...");
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const { data: { session: authSession }, error: authError } = await supabase.auth.getSession();
+      const authUser = authSession?.user;
 
       if (authUser) {
         // Fetch/Refresh Profile
