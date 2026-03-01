@@ -121,11 +121,6 @@ export function useAuthGuard(): UseAuthGuardReturn {
     const isRootPath = router.pathname === "/";
 
     if (!user) {
-        // Protect against momentary offline drops during Flutter App Resume
-        if (typeof navigator !== 'undefined' && !navigator.onLine) {
-            return;
-        }
-
         // Not logged in and trying to access protected page
         if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
             router.push("/login");
