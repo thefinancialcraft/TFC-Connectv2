@@ -77,7 +77,10 @@ export default function CallingPage() {
 
     const [isEditingExpiry, setIsEditingExpiry] = useState(false);
     const [tempExpiryDate, setTempExpiryDate] = useState("");
+    const [isEditingDetails, setIsEditingDetails] = useState(false);
+    const [tempDetails, setTempDetails] = useState<any[]>([]);
     const expiryDatePickerRef = useRef<HTMLDivElement>(null);
+    const detailsEditRef = useRef<HTMLDivElement>(null);
 
     // Slider State
     const [dragX, setDragX] = useState(0);
@@ -467,6 +470,9 @@ export default function CallingPage() {
             if (expiryDatePickerRef.current && !expiryDatePickerRef.current.contains(event.target as Node)) {
                 setIsEditingExpiry(false);
             }
+            if (detailsEditRef.current && !detailsEditRef.current.contains(event.target as Node)) {
+                setIsEditingDetails(false);
+            }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -786,6 +792,86 @@ export default function CallingPage() {
         }
     };
 
+    const handleEditDetailsClick = () => {
+        let currentData = {};
+        if (customer?.customer_details) {
+            try {
+                const rawData = typeof customer.customer_details === 'string' ? JSON.parse(customer.customer_details) : customer.customer_details;
+                if (rawData?.active_details && rawData?.history) {
+                    const activeKey = viewingDetailsKey || rawData.active_details;
+                    currentData = rawData.history[activeKey] || {};
+                } else if (rawData && typeof rawData === 'object') {
+                    currentData = rawData;
+                }
+            } catch (e) {
+                console.error("Error parsing details for editor:", e);
+                // If it's a string but NOT JSON, we treat it as value for a generic 'Note' field
+                if (typeof customer.customer_details === 'string') {
+                    currentData = { "Details": customer.customer_details };
+                }
+            }
+        }
+        
+        // Convert to array of objects for easier editing
+        const detailsArray = Object.entries(currentData).map(([key, value]) => ({
+            id: Math.random().toString(36).substring(2, 9),
+            key: key.replace(/_(un)?checked/gi, '').replace(/_/g, ' '),
+            originalKey: key,
+            value: String(value)
+        }));
+        
+        setTempDetails(detailsArray);
+        setIsEditingDetails(true);
+    };
+
+    const handleSaveDetails = async () => {
+        if (!customer?.id) return;
+        setSaving(true);
+        try {
+            const updatedSubData: Record<string, any> = {};
+            tempDetails.forEach(item => {
+                if (!item.key.trim()) return;
+                // Use original key if it hasn't changed, otherwise derive from key name
+                const k = item.originalKey || item.key.trim().replace(/\s+/g, '_').toLowerCase();
+                updatedSubData[k] = item.value;
+            });
+
+            let finalDetails = customer.customer_details;
+            if (typeof finalDetails === 'string') {
+                try {
+                    finalDetails = JSON.parse(finalDetails);
+                } catch (e) {
+                    // Not JSON? Overwrite with object
+                    finalDetails = updatedSubData;
+                }
+            }
+
+            if (finalDetails && typeof finalDetails === 'object' && finalDetails.active_details && finalDetails.history) {
+                const activeKey = viewingDetailsKey || finalDetails.active_details;
+                finalDetails.history[activeKey] = updatedSubData;
+            } else {
+                finalDetails = updatedSubData;
+            }
+
+            const { error } = await supabase
+                .from('customers')
+                .update({ 
+                    customer_details: typeof finalDetails === 'string' ? finalDetails : JSON.stringify(finalDetails) 
+                })
+                .eq('id', customer.id);
+            
+            if (error) throw error;
+            
+            setCustomer((prev: any) => ({ ...prev, customer_details: finalDetails }));
+            setIsEditingDetails(false);
+        } catch (err) {
+            console.error("Error saving details:", err);
+            alert("Failed to save details");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const fetchData = async (overrideId?: string) => {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
@@ -794,7 +880,11 @@ export default function CallingPage() {
         fetchSchedules();
         
         try {
-            setLoading(true);
+            // Only show full-screen loader if we don't have this lead prefetched
+            const isPrefetched = prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch);
+            if (!isPrefetched) {
+                setLoading(true);
+            }
 
             // 0. STRICT PERMISSION GUARD
             // Validate if user is actually assigned to THIS campaign before proceeding or creating sessions
@@ -879,33 +969,43 @@ export default function CallingPage() {
             // 2. Fetch Customer (Try all three tables)
             let foundCustomer: any = null;
             
-            // Try primary customers table
-            const { data: cDataRows } = await supabase
-                .from('customers')
-                .select('*')
-                .eq('id', idToFetch)
-                .limit(1);
-            
-            if (cDataRows && cDataRows[0]) {
-                foundCustomer = cDataRows[0];
+            if (prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch)) {
+                foundCustomer = prefetchedDataRef.current.customer;
+                // Also set history if pre-fetched
+                if (prefetchedDataRef.current.history) {
+                    setHistory(prefetchedDataRef.current.history);
+                }
+                prefetchedDataRef.current = null; // Clear to prevent stale usage
+                console.log('⚡ [Pre-fetch] Utilized background fetched customer data!');
             } else {
-                // Try closed_deals
-                const { data: clDataRows } = await supabase
-                    .from('closed_deals')
+                // Try primary customers table
+                const { data: cDataRows } = await supabase
+                    .from('customers')
                     .select('*')
                     .eq('id', idToFetch)
                     .limit(1);
                 
-                if (clDataRows && clDataRows[0]) {
-                    foundCustomer = clDataRows[0];
+                if (cDataRows && cDataRows[0]) {
+                    foundCustomer = cDataRows[0];
                 } else {
-                    // Try rejected_leads
-                    const { data: rDataRows } = await supabase
-                        .from('rejected_leads')
+                    // Try closed_deals
+                    const { data: clDataRows } = await supabase
+                        .from('closed_deals')
                         .select('*')
                         .eq('id', idToFetch)
                         .limit(1);
-                    if (rDataRows && rDataRows[0]) foundCustomer = rDataRows[0];
+                    
+                    if (clDataRows && clDataRows[0]) {
+                        foundCustomer = clDataRows[0];
+                    } else {
+                        // Try rejected_leads
+                        const { data: rDataRows } = await supabase
+                            .from('rejected_leads')
+                            .select('*')
+                            .eq('id', idToFetch)
+                            .limit(1);
+                        if (rDataRows && rDataRows[0]) foundCustomer = rDataRows[0];
+                    }
                 }
             }
             
@@ -1007,22 +1107,24 @@ export default function CallingPage() {
                 }
             }
 
-            // 3. Fetch History (Call Logs) - Always attempt this
             // 3. Fetch History (Call Logs) - Use Secure API to bypass RLS
-            try {
-                const historyResponse = await fetch(`/api/call/history?customerId=${idToFetch}`);
-                const historyResult = await historyResponse.json();
-                
-                if (historyResult.success && historyResult.data) {
-                    console.log(`[Fetch] Found ${historyResult.data.length} history records via API.`);
-                    setHistory(historyResult.data);
-                } else {
-                    console.error("[Fetch] History API error:", historyResult.error);
-                    setHistory([]);
+            // Skip ONLY IF history was already set via prefetch above
+            if (!history || history.length === 0 || history[0]?.customer_id !== idToFetch) {
+                try {
+                    const historyResponse = await fetch(`/api/call/history?customerId=${idToFetch}`);
+                    const historyResult = await historyResponse.json();
+                    
+                    if (historyResult.success && historyResult.data) {
+                        console.log(`[Fetch] Found ${historyResult.data.length} history records via API.`);
+                        setHistory(historyResult.data);
+                    } else {
+                        console.error("[Fetch] History API error:", historyResult.error);
+                        setHistory([]);
+                    }
+                } catch (err) {
+                     console.error("[Fetch] History API exception:", err);
+                     setHistory([]);
                 }
-            } catch (err) {
-                 console.error("[Fetch] History API exception:", err);
-                 setHistory([]);
             }
 
             // 4. Fetch Mobile Call Logs (New Logic)
@@ -1373,6 +1475,49 @@ export default function CallingPage() {
             }
         }
     }, [isCalling, postCall]);
+
+    // Background Lead Pre-fetching
+    const prefetchPromiseRef = useRef<any>(null);
+    const prefetchedDataRef = useRef<any>(null);
+
+    useEffect(() => {
+        // Trigger pre-fetch when disposition is selected
+        if (disposition && user?.uid && campaignId && customerId && !prefetchPromiseRef.current) {
+            console.log('⚡ [Pre-fetch] Background fetching next lead & data...');
+            prefetchPromiseRef.current = supabase.rpc('assign_next_lead', {
+                p_campaign_id: campaignId,
+                p_user_id: user.uid,
+                p_exclude_lead_id: customerId 
+            }).then(async (res: any) => {
+                if (res.data) {
+                    const nextId = res.data;
+                    try {
+                        // Pre-fetch customer and history in parallel
+                        const [cRes, hRes] = await Promise.all([
+                            supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
+                            fetch(`/api/call/history?customerId=${nextId}`).then(r => r.json()).catch(() => null)
+                        ]);
+                        
+                        prefetchedDataRef.current = {
+                            id: nextId,
+                            customer: cRes.data,
+                            history: hRes?.success ? hRes.data : []
+                        };
+                        console.log('⚡ [Pre-fetch] Data prefetch complete for:', nextId);
+                    } catch (e) {
+                         console.error('Prefetch data error:', e);
+                    }
+                }
+                return res;
+            });
+        }
+        
+        // Reset if disposition is cleared
+        if (!disposition) {
+            prefetchPromiseRef.current = null;
+            prefetchedDataRef.current = null;
+        }
+    }, [disposition, user?.uid, campaignId, customerId]);
 
     type Data = {
         success?: boolean;
@@ -2187,11 +2332,23 @@ Campaign: ${campaign?.name || campaignId}
                 
                 // STEP 1: Find next lead first WITHOUT terminating the session yet.
                 // This prevents other devices from jumping to dashboard prematurely.
-                const { data: nextLeadId, error: reassignError } = await supabase.rpc('assign_next_lead', {
-                    p_campaign_id: campaignId,
-                    p_user_id: user?.uid,
-                    p_exclude_lead_id: customerId 
-                });
+                let nextLeadId = null, reassignError = null;
+
+                if (prefetchPromiseRef.current) {
+                    console.log('⚡ [Pre-fetch] Using background prefetched lead...');
+                    const res = await prefetchPromiseRef.current;
+                    nextLeadId = res.data;
+                    reassignError = res.error;
+                    prefetchPromiseRef.current = null; // Clear it for next time
+                } else {
+                    const { data, error } = await supabase.rpc('assign_next_lead', {
+                        p_campaign_id: campaignId,
+                        p_user_id: user?.uid,
+                        p_exclude_lead_id: customerId 
+                    });
+                    nextLeadId = data;
+                    reassignError = error;
+                }
 
                 if (reassignError) {
                     console.error("Auto-assignment failed:", reassignError);
@@ -3035,8 +3192,17 @@ Campaign: ${campaign?.name || campaignId}
                                                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-100 flex items-center justify-center text-white">
                                                     <i className="fi flex   fi-rr-info text-sm"></i>
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-semibold text-slate-800"> Details</h3>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <h3 className="font-semibold text-slate-800"> Details</h3>
+                                                        <button 
+                                                            onClick={handleEditDetailsClick}
+                                                            className="flex items-center  px-3 py-3 rounded-lg bg-indigo-50  text-indigo-600 hover:bg-slate-900 hover:text-white transition-all group/editbtn"
+                                                        >
+                                                            <i className="fi flex fi-rr-edit text-[9px] group-hover/editbtn:text-indigo-300"></i>
+                                                          
+                                                        </button>
+                                                    </div>
                                                     <p className="text-[10px] font-semibold text-slate-400 ">Reference Data</p>
                                                 </div>
                                             </div>
@@ -3727,14 +3893,14 @@ Campaign: ${campaign?.name || campaignId}
                                                             {/* Header: Disposition + Date */}
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className={`text-xs font-bold uppercase tracking-tight ${
+                                                                    <span className={`text-[10px] font-bold uppercase tracking-tight ${
                                                                         log.disposition === 'Deal Done' ? 'text-green-600' :
                                                                         log.disposition === 'Call Back' ? 'text-amber-600' :
                                                                         log.disposition === 'Not Contactable' ? 'text-red-500' :
                                                                         'text-slate-900'
                                                                     }`}>{log.disposition || 'N/A'}</span>
                                                                     {log.sub_disposition && (
-                                                                        <span className="text-[12px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                                                                        <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
                                                                             {log.sub_disposition}
                                                                         </span>
                                                                     )}
@@ -3745,10 +3911,10 @@ Campaign: ${campaign?.name || campaignId}
                                                             </div>
 
                                                             {/* Content Card */}
-                                                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 group hover:border-indigo-100 hover:bg-white    transition-all space-y-3">
+                                                            <div className="p-4 rounded-2xl  border border-slate-200 group hover:border-indigo-100 hover:bg-white    transition-all space-y-3">
                                                                 {/* Notes */}
                                                                 {log.notes && (
-                                                                    <p className="text-xs font-medium text-slate-500 leading-relaxed italic">
+                                                                    <p className="text-sm font-medium text-slate-700 leading-relaxed italic">
                                                                         "{log.notes}"
                                                                     </p>
                                                                 )}
@@ -3761,8 +3927,8 @@ Campaign: ${campaign?.name || campaignId}
                                                                         <div className="flex items-center gap-1.5 col-span-2">
                                                                             
                                                                             <div className="flex grid">
-                                                                                <span className="text-[12px] flex font-semibold text-slate-400"> <i className="fi flex  mr-2 fi-rr-calendar-clock text-[12px] text-amber-400"></i> Follow Up: </span>
-                                                                                <span className="text-[12px] font-bold text-amber-600">
+                                                                                <span className="text-[10px] flex font-medium text-slate-400"> <i className="fi flex  mr-2 fi-rr-calendar-clock text-[10px] text-amber-400"></i> Follow Up: </span>
+                                                                                <span className="text-[10px] font-semibold text-amber-600">
                                                                                     {new Date(log.next_called_at).toLocaleString('en-IN', {
                                                                                         day: '2-digit',
                                                                                         month: 'short',
@@ -4389,6 +4555,119 @@ Campaign: ${campaign?.name || campaignId}
                                     Save & Done
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Edit Details Modal */}
+            {isEditingDetails && (
+                <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div 
+                        ref={detailsEditRef}
+                        className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 ring-1 ring-slate-200"
+                    >
+                        {/* Compact Header */}
+                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shrink-0">
+                                    <i className="fi flex fi-rr-edit-alt text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-800 tracking-tight">Modify Details</h3>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Customer Reference Data</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setIsEditingDetails(false)}
+                                className="w-8 h-8 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors"
+                            >
+                                <i className="fi flex fi-rr-cross-small text-lg"></i>
+                            </button>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="flex-1 overflow-y-auto px-6 py-5 custom-scrollbar bg-white">
+                            <div className="space-y-3">
+                                {tempDetails.map((item, index) => (
+                                    <div key={item.id} className="group relative p-2 px-3 rounded-2xl bg-white border border-slate-200/60 hover:border-slate-300 transition-all">
+                                        <div className="flex items-center gap-2">
+                                            {/* Extra Minimal Inputs */}
+                                            <div className="flex-1 space-y-0.5">
+                                                <input 
+                                                    type="text"
+                                                    value={item.key}
+                                                    onChange={(e) => {
+                                                        const newArr = [...tempDetails];
+                                                        newArr[index].key = e.target.value;
+                                                        setTempDetails(newArr);
+                                                    }}
+                                                    className="w-full text-[9px] font-black text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none placeholder:text-slate-200"
+                                                    placeholder="LABEL"
+                                                />
+                                                <textarea 
+                                                    value={item.value}
+                                                    onChange={(e) => {
+                                                        const newArr = [...tempDetails];
+                                                        newArr[index].value = e.target.value;
+                                                        setTempDetails(newArr);
+                                                    }}
+                                                    rows={1}
+                                                    className="w-full min-h-[20px] bg-transparent border-none p-0 text-[12px] font-semibold text-slate-700 outline-none resize-none placeholder:text-slate-300 custom-scrollbar"
+                                                    placeholder="Add information..."
+                                                />
+                                            </div>
+                                            
+                                            <button 
+                                                onClick={() => {
+                                                    const newArr = tempDetails.filter((_, i) => i !== index);
+                                                    setTempDetails(newArr);
+                                                }}
+                                                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-200 hover:text-rose-500 transition-colors shrink-0"
+                                            >
+                                                <i className="fi flex fi-rr-trash text-[10px]"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {tempDetails.length === 0 && (
+                                    <div className="py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No details recorded</p>
+                                    </div>
+                                )}
+
+                                <button 
+                                    onClick={() => {
+                                        setTempDetails([...tempDetails, { id: Math.random().toString(36).substring(2, 9), key: "", value: "" }]);
+                                    }}
+                                    className="w-full py-3 rounded-2xl border border-dashed border-slate-200 text-slate-400 hover:border-slate-400 hover:text-slate-600 transition-all flex items-center justify-center gap-2 group/add"
+                                >
+                                    <i className="fi flex fi-rr-plus-small text-lg"></i>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">New Field</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Streamlined Footer */}
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3 font-semibold">
+                            <button 
+                                onClick={() => setIsEditingDetails(false)}
+                                className="px-4 py-2 text-slate-500 text-xs hover:text-slate-800 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleSaveDetails}
+                                disabled={saving}
+                                className="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-xs hover:bg-black transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {saving ? (
+                                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                ) : (
+                                    <i className="fi flex fi-rr-disk-check"></i>
+                                )}
+                                <span>Save Changes</span>
+                            </button>
                         </div>
                     </div>
                 </div>
