@@ -12,6 +12,7 @@ import { useAgentPerformance } from "@/hooks/useAgentPerformance";
 import { DashboardErrorBoundary } from "@/components/DashboardErrorBoundary";
 import { useUser } from "@/components/AppLayout";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
+import { useSessionState } from "@/hooks/useSessionState";
 
 import dynamic from "next/dynamic";
 
@@ -28,16 +29,16 @@ export default function Dashboard() {
   
   // Organization filter
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [selectedOrgId, setSelectedOrgId] = useState<string>("all");
+  const [selectedOrgId, setSelectedOrgId] = useSessionState<string>("dash_selectedOrgId", "all");
 
   // User filter
   const [users, setUsers] = useState<any[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string>("all");
+  const [selectedUserId, setSelectedUserId] = useSessionState<string>("dash_selectedUserId", "all");
   
   // Filters Dropdown state
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState("prospect");
+  const [activeTab, setActiveTab] = useSessionState<string>("dash_activeTab", "prospect");
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -198,7 +199,7 @@ export default function Dashboard() {
   }, [selectedOrgId, isUserLocked, dashboardLevel, mounted, user?.uid]);
 
   // Date filter state
-  const [dateFilter, setDateFilter] = useState("today");
+  const [dateFilter, setDateFilter] = useSessionState<string>("dash_dateFilter", "today");
 
   // Fetch all dashboard data when filters change
   useEffect(() => {

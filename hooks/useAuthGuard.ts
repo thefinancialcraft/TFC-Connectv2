@@ -46,7 +46,29 @@ export function useAuthGuard(): UseAuthGuardReturn {
       const authUser = authSession?.user;
 
       if (authUser) {
-        // Fetch/Refresh Profile
+        
+        // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
+        // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
+        const sessionProfileStr = typeof window !== 'undefined' ? sessionStorage.getItem('active_user_profile') : null;
+        if (sessionProfileStr) {
+            try {
+                const cachedProfile = JSON.parse(sessionProfileStr);
+                setUser(cachedProfile);
+                console.log("⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.");
+                
+                if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
+                    const lastPath = typeof window !== 'undefined' ? localStorage.getItem('last_visited_path') : null;
+                    router.push(lastPath || "/dashboard");
+                }
+                setLoading(false);
+                loadingRef.current = false;
+                return;
+            } catch (e) {
+                console.warn("Failed to parse session profile cache", e);
+            }
+        }
+
+        // Fetch/Refresh Profile from DB (Only happens on very first login or when tab is perfectly closed)
         setStatusMessage("Fetching user profile...");
         const result = await checkAuthAndFetchProfile();
         
@@ -54,6 +76,10 @@ export function useAuthGuard(): UseAuthGuardReturn {
           if (!user) setStatusMessage("Finalizing setup...");
           
           setUser(result.user);
+          // Store securely in Tab Memory
+          if (typeof window !== 'undefined') {
+              sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+          }
           
           // Logged in: if on login/root, move to dashboard or last path
           if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
@@ -102,13 +128,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
       // on tab-switches or background wakeups.
       if (event === 'SIGNED_IN') {
         fetchAuth(true); // Sync data only on explicit login
-      } else if (event === 'SIGNED_OUT') {
+        } else if (event === 'SIGNED_OUT') {
         // Prevent accidental kicks due to token refresh timing out when waking from suspended background tabs
         setTimeout(async () => {
              const { data } = await supabase.auth.getSession();
              if (!data.session) {
                  // Clear cache so it doesn't try to auto-login next time
-                 if (typeof window !== "undefined") localStorage.removeItem("cached_user_profile");
+                 if (typeof window !== "undefined") {
+                   localStorage.removeItem("cached_user_profile");
+                   sessionStorage.removeItem("active_user_profile");
+                 }
                  setUser(null);
                  router.push("/login");
              } else {

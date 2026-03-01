@@ -4,6 +4,7 @@ import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
 import { handleLogout } from "@/lib/authService";
 import TeamManagementModal from "@/components/TeamManagementModal";
+import { useSessionState } from "@/hooks/useSessionState";
 
 export default function Team() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function Team() {
   }, [mounted, user]);
   
   const [teams, setTeams] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionState<string>("team_searchQuery", "");
   const [showModal, setShowModal] = useState(false);
   const [editingTeam, setEditingTeam] = useState<any>(null);
   const [allUsers, setAllUsers] = useState<any[]>([]);

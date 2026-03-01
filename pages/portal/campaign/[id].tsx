@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
+import { handleLogout } from "@/lib/authService";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/context/UserContext"; 
 import { getStoredUserData, storeUserData } from "@/lib/localStorageUtils";
+import { useSessionState } from "@/hooks/useSessionState";
 import { useCallSessionRedirect } from "@/hooks/useCallSessionRedirect";
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -105,7 +106,7 @@ export default function CampaignDetails() {
         caller_performance: []
     });
     const [error, setError] = useState("");
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useSessionState<string>("camp_selectedDate", new Date().toISOString().split('T')[0]);
     const [leads, setLeads] = useState<any[]>([]);
     const [recentCalls, setRecentCalls] = useState<any[]>([]);
     const [overdueLeads, setOverdueLeads] = useState<any[]>([]);
@@ -115,7 +116,7 @@ export default function CampaignDetails() {
     const [expandedChart, setExpandedChart] = useState<'hourly' | 'users' | null>(null);
     const [campaignStats, setCampaignStats] = useState({ talkTime: '0h 0m', totalDials: 0 });
     const dateInputRef = useRef<HTMLInputElement>(null);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useSessionState<number>("camp_currentPage", 1);
     const [leadsPerPage] = useState(10);
     const [totalLeadsCount, setTotalLeadsCount] = useState(0);
     const [mounted, setMounted] = useState(false);
@@ -124,10 +125,10 @@ export default function CampaignDetails() {
     useEffect(() => {
         setMounted(true);
     }, []);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useSessionState<string>("camp_searchQuery", "");
     const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-    const [selectedUserFilter, setSelectedUserFilter] = useState("");
-    const [selectedDispositionFilter, setSelectedDispositionFilter] = useState("");
+    const [selectedUserFilter, setSelectedUserFilter] = useSessionState<string>("camp_selectedUserFilter", "");
+    const [selectedDispositionFilter, setSelectedDispositionFilter] = useSessionState<string>("camp_selectedDispFilter", "");
     const [showImportModal, setShowImportModal] = useState(false);
 
     const formatDate = (dateStr: string) => {

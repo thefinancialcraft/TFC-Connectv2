@@ -2,19 +2,20 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { UserFilters } from "../../components/users/types";
 import { useRouter } from "next/router";
+import { useSessionState } from "../../hooks/useSessionState";
 
 export function useUsersFilters(
   organizationId: string | null = null,
   isAuthorised: boolean = false
 ) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionState<string>("users_searchQuery", "");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [viewType, setViewType] = useState<"grid" | "list">("grid");
-  const [userTypeToggle, setUserTypeToggle] = useState<"all" | "employee" | "posp_agent">("all");
+  const [viewType, setViewType] = useSessionState<"grid" | "list">("users_viewType", "grid");
+  const [userTypeToggle, setUserTypeToggle] = useSessionState<"all" | "employee" | "posp_agent">("users_userTypeToggle", "all");
   const [organizations, setOrganizations] = useState<{ id: string; company_name: string }[]>([]);
   
-  const [filters, setFilters] = useState<UserFilters>({
+  const [filters, setFilters] = useSessionState<UserFilters>("users_filters", {
     approval_status: "",
     role: "",
     department: "",

@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
-import { checkAuthAndFetchProfile } from "../lib/authService";
 import { supabase } from "../lib/supabase";
 
 export default function SessionRedirect() {
@@ -56,14 +55,19 @@ export default function SessionRedirect() {
     useEffect(() => {
         const init = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user?.id) {
-                setUserId(session.user.id);
-            }
+            if (!session?.user?.id) return;
+            setUserId(session.user.id);
             
             if (router.isReady && !router.pathname.includes("/login")) {
-                const result = await checkAuthAndFetchProfile();
-                if (result.user?.currentCallSession) {
-                    applyRedirect(result.user.currentCallSession);
+                const { data } = await supabase
+                    .from('call_sessions')
+                    .select('*')
+                    .eq('user_id', session.user.id)
+                    .in('status', ['assigned', 'active', 'disposition_pending'])
+                    .maybeSingle();
+
+                if (data) {
+                    applyRedirect(data);
                 }
             }
         };

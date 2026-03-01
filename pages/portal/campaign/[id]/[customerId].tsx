@@ -150,6 +150,25 @@ export default function CallingPage() {
         return { label: 'Low', color: 'text-rose-500', icon: 'fi-sr-star' };
     })();
 
+    // --- 💾 STATE PERSISTENCE ENGINE ---
+    // Automatically backups the user's active screen/data so tab suspensions don't wipe it
+    useEffect(() => {
+        if (!campaignId || !customerId || !customer) return; // Wait until data exists
+        const cacheKey = `call_state_${campaignId}_${customerId}`;
+        const statePayload = {
+             timestamp: Date.now(),
+             customer,
+             campaign,
+             history,
+             mobileLogs,
+             disposition,
+             subDisposition,
+             notes,
+             timelineView
+        };
+        sessionStorage.setItem(cacheKey, JSON.stringify(statePayload));
+    }, [campaignId, customerId, customer, campaign, history, mobileLogs, disposition, subDisposition, notes, timelineView]);
+
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
     const assignPickerRef = useRef<HTMLDivElement>(null);
@@ -876,7 +895,37 @@ export default function CallingPage() {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
         
-        // Refresh schedules and timeline when loading a lead
+        // --- ⚡ SESSION CACHE RESTORER (Pulls from memory instead of API on hard reloads) ---
+        const cacheKey = `call_state_${campaignId}_${idToFetch}`;
+        try {
+            const cachedStr = sessionStorage.getItem(cacheKey);
+            // Ignore cache if explicitly moving to the "next" prospect via overrideId to prevent skipping fresh fetch
+            if (cachedStr && !overrideId) {
+                const cached = JSON.parse(cachedStr);
+                // Valid for 30 minutes inside the same tab session
+                if (Date.now() - cached.timestamp < 30 * 60 * 1000) {
+                    if (cached.customer) setCustomer(cached.customer);
+                    if (cached.campaign) setCampaign(cached.campaign);
+                    if (cached.history) setHistory(cached.history);
+                    if (cached.mobileLogs) setMobileLogs(cached.mobileLogs);
+                    
+                    // Restore active inputs natively
+                    if (cached.disposition) setDisposition(cached.disposition);
+                    if (cached.subDisposition) setSubDisposition(cached.subDisposition);
+                    if (cached.notes) setNotes(cached.notes);
+                    if (cached.timelineView) setTimelineView(cached.timelineView);
+                    
+                    setLoading(false);
+                    fetchSchedules(); // Just run non-blocking minor check
+                    console.log("⚡ [Cache] Instantly restored Call Engine state from memory. Zero API hit.");
+                    return; // Skip the heavy database loading!
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to parse local session state", e);
+        }
+
+        // Refresh schedules and timeline when loading a lead (if no cache)
         fetchSchedules();
         
         try {

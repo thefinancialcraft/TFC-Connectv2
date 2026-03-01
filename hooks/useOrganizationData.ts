@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
+import { useSessionState } from "./useSessionState";
 
 export interface Organization {
   id: string;
@@ -25,7 +26,7 @@ export function useOrganizationData(user: any, mounted: boolean) {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useSessionState<string>("org_searchQuery", "");
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchOrganizations = useCallback(async (isBackground = false) => {
