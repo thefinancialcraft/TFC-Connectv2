@@ -54,11 +54,13 @@ export interface AuthResult {
 export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
   try {
     const {
-      data: { user: authUser },
-      error: userError,
-    } = await supabase.auth.getUser();
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
+    
+    const authUser = session?.user;
 
-    if (userError || !authUser) {
+    if (sessionError || !authUser) {
       return {
         user: null,
         error: "No session found",

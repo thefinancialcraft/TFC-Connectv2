@@ -93,8 +93,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         fetchAuth(true); // Sync data on login or updates
       } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        router.push("/login");
+        // Prevent accidental kicks due to token refresh timing out when waking from suspended background tabs
+        setTimeout(async () => {
+             const { data } = await supabase.auth.getSession();
+             if (!data.session) {
+                 setUser(null);
+                 router.push("/login");
+             } else {
+                 console.log("🔐 [Auth Guard] False SIGNED_OUT event caught and ignored.");
+             }
+        }, 1500);
       }
     });
 
