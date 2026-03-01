@@ -34,26 +34,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
     if (loadingRef.current) return;
     loadingRef.current = true;
     
-    // Only show loading screen if we don't have a user yet and aren't forcing a refresh quietly
-    // OR if we don't even have a cached version
-    const cachedProfile = typeof window !== 'undefined' ? localStorage.getItem('cached_user_profile') : null;
-    let hasCachedUser = false;
-    
-    if (cachedProfile && !force && !user) {
-         try {
-             const parsed = JSON.parse(cachedProfile);
-             if (parsed && typeof parsed === 'object') {
-                 hasCachedUser = true;
-                 setUser(parsed);
-                 setLoading(false); // Instantly remove loader!
-                 console.log("⚡ [Auth] Loaded user instantly from localStorage cache.");
-             }
-         } catch (e) {
-             console.warn("Issue parsing cached profile:", e);
-         }
-    }
-
-    if (!hasCachedUser && !user) setLoading(true);
+    if (!user) setLoading(true);
     
     try {
       const isLoginPage = router.pathname === "/login" || router.pathname === "/auth/login" || router.pathname === "/portal/login";
@@ -70,14 +51,13 @@ export function useAuthGuard(): UseAuthGuardReturn {
         const result = await checkAuthAndFetchProfile();
         
         if (result.user) {
-          if (!hasCachedUser && !user) setStatusMessage("Finalizing setup...");
+          if (!user) setStatusMessage("Finalizing setup...");
           
-          // Silently update user in memory (and it's already saved to cache by checkAuthAndFetchProfile)
           setUser(result.user);
           
           // Logged in: if on login/root, move to dashboard or last path
           if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
-            if (!hasCachedUser && !user) setStatusMessage("Restoring your screen...");
+            if (!user) setStatusMessage("Restoring your screen...");
             const lastPath = typeof window !== 'undefined' ? localStorage.getItem('last_visited_path') : null;
             router.push(lastPath || "/dashboard");
           }
@@ -99,10 +79,11 @@ export function useAuthGuard(): UseAuthGuardReturn {
     } catch (err: any) {
       console.error("Auth check failed:", err);
       // Clear cache on fatal auth errors
-      if (typeof window !== "undefined") localStorage.removeItem("cached_user_profile");
+      if (typeof window !== "undefined") {
+          localStorage.removeItem("cached_user_profile");
+      }
       setError(err.message || "Authentication error");
     } finally {
-      // If we loaded from cache instantly, loading is already false. Otherwise, set it false now.
       setLoading(false);
       loadingRef.current = false;
     }
