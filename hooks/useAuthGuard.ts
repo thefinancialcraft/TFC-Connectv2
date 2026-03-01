@@ -115,8 +115,12 @@ export function useAuthGuard(): UseAuthGuardReturn {
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log(`🔐 [Auth Event] ${event}`);
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        fetchAuth(true); // Sync data on login or updates
+      
+      // STRICT SINGLE-FETCH: 
+      // We purposefully ignore "TOKEN_REFRESH" and "USER_UPDATED" events to prevent redundant API calls 
+      // on tab-switches or background wakeups.
+      if (event === 'SIGNED_IN') {
+        fetchAuth(true); // Sync data only on explicit login
       } else if (event === 'SIGNED_OUT') {
         // Prevent accidental kicks due to token refresh timing out when waking from suspended background tabs
         setTimeout(async () => {
