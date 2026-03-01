@@ -68,15 +68,22 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       };
     }
 
-    // Fetch profile from database
-    const { data: profileData, error: profileError } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", authUser.id)
-      .maybeSingle();
+    // Fetch profile from database with its own local fail-safe
+    let profileData: any = null;
+    try {
+        const { data, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("*")
+          .eq("user_id", authUser.id)
+          .maybeSingle();
 
-    if (profileError) {
-      console.error("Error fetching user profile:", profileError);
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+        } else {
+          profileData = data;
+        }
+    } catch (e: any) {
+        console.warn("⚠️ Network drop during profile fetch, using cached auth user instead.", e.message);
     }
 
     const userData: UserProfile = {
@@ -117,10 +124,15 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
     };
   } catch (error: any) {
     console.error("Auth check error:", error);
+    
+    // Prevent redirecting to login on pure network dropouts
+    const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+    const isNetworkError = error.message?.toLowerCase().includes('fetch') || error.message?.toLowerCase().includes('network');
+    
     return {
       user: null,
       error: error.message || "An error occurred",
-      shouldRedirect: true,
+      shouldRedirect: !(isOffline || isNetworkError),
     };
   }
 }

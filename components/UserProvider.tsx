@@ -31,9 +31,13 @@ export function UserProvider({ children }: UserProviderProps) {
       if (success) {
         // Request device info if bridge is active
         requestDeviceInfoFromFlutter();
-        // If it worked, we also send a login event if we just "detected" a session on load
         if (user && !prevUserRef.current) {
-          notifyLoginToFlutter();
+          const path = window.location.pathname;
+          // Only send the 'login' event to Flutter if we are on base routes. 
+          // If we send it deep in the app (like /campaign), Flutter might mistakenly redirect Webview to the Dashboard!
+          if (path === '/login' || path === '/dashboard' || path === '/') {
+              notifyLoginToFlutter();
+          }
         }
         
         if (user) prevUserRef.current = user;
