@@ -29,7 +29,6 @@ export function useCallSessionRedirect(userId: string | undefined) {
             if (!sessions || sessions.length === 0) return;
 
             // 1. Filter for "HOT" sessions (Active or Pending)
-            // We separate them to prioritize Manual calls over System calls
             const manualHotSessions = sessions.filter(s => 
                 (s.manual_status === 'active' || s.manual_status === 'disposition_pending')
             );
@@ -37,6 +36,8 @@ export function useCallSessionRedirect(userId: string | undefined) {
             const systemHotSessions = sessions.filter(s => 
                 (s.status === 'active' || s.status === 'disposition_pending')
             );
+
+            console.log(`[Session-Guard] Pulse Check: Manual-Hot=${manualHotSessions.length}, System-Hot=${systemHotSessions.length}`);
 
             let sessionToFollow = null;
             let prioritizeManual = false;

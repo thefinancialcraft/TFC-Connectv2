@@ -12,42 +12,41 @@ export default function SessionRedirect() {
     const applyRedirect = useCallback((session: any) => {
         if (!session) return;
             
-        // DUAL SESSION LOGIC: 
-        // If is_manual is true, use manual columns, otherwise use primary columns
-        const isManual = session.is_manual === true;
-        const status = isManual ? (session.manual_status || session.status) : session.status;
-        const campaignId = (isManual && session.manual_campaign_id) ? session.manual_campaign_id : session.campaign_id;
-        const customerId = (isManual && session.manual_customer_id) ? session.manual_customer_id : session.customer_id;
+        // DUAL SESSION LOGIC: Determine which context is "HOT" (Active or Pending)
+        // PRIORITY RULE: Manual sessions take priority over System sessions
+        const isManualHot = (session.manual_status === 'active' || session.manual_status === 'disposition_pending');
+        const isSystemHot = (session.status === 'active' || session.status === 'disposition_pending');
 
-        if (status === 'active' || status === 'disposition_pending' || status === 'assigned') {
-            const targetPath = `/campaign/${campaignId}/${customerId}`;
-            const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
-            const normalizedTarget = targetPath.replace(/\/$/, "");
+        if (isManualHot || isSystemHot) {
+            // Priority: Manual > System
+            const useManual = isManualHot;
+            const campaignId = (useManual && session.manual_campaign_id) ? session.manual_campaign_id : session.campaign_id;
+            const customerId = (useManual && session.manual_customer_id) ? session.manual_customer_id : session.customer_id;
 
-            const now = Date.now();
-            const stabilityCooldown = 3000; // 3 seconds cooldown to prevent race conditions
+            if (campaignId && customerId) {
+                const targetPath = `/portal/campaign/${campaignId}/${customerId}`;
+                const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
+                const normalizedTarget = targetPath.replace(/\/$/, "");
 
-            if (currentPath !== normalizedTarget && 
-                (lastRedirectedPath.current !== normalizedTarget || (now - lastRedirectTimestamp.current) > stabilityCooldown)) {
-                
-                console.log(`[Redirect] 🚀 Redirection triggered to: ${normalizedTarget}`);
-                lastRedirectedPath.current = normalizedTarget;
-                lastRedirectTimestamp.current = now;
-                router.replace(normalizedTarget);
-                
-                setTimeout(() => { lastRedirectedPath.current = null; }, 5000);
-            }
-        } else {
-            // EXIT LOGIC: If session is no longer active/pending, and we are ON that campaign's lead profile, leave.
-            const currentPath = router.asPath;
-            const pathParts = currentPath.split('/').filter(p => Boolean(p) && p !== 'portal');
-            if (pathParts[0] === 'campaign' && pathParts.length >= 3) {
-                const campaignIdInPath = pathParts[1];
-                if (campaignIdInPath === session.campaign_id) {
-                    console.log(`[Redirect] 🏠 Session status for ${session.campaign_id} is "${status}". Exiting profile.`);
-                    router.push(`/campaign/${session.campaign_id}`);
+                const now = Date.now();
+                const stabilityCooldown = 3000; 
+
+                if (currentPath !== normalizedTarget && 
+                    (lastRedirectedPath.current !== normalizedTarget || (now - lastRedirectTimestamp.current) > stabilityCooldown)) {
+                    
+                    console.log(`[Redirect] 🚀 Forced redirection to HOT session (${useManual ? 'Manual' : 'System'}): ${normalizedTarget}`);
+                    lastRedirectedPath.current = normalizedTarget;
+                    lastRedirectTimestamp.current = now;
+                    router.replace(normalizedTarget);
+                    
+                    setTimeout(() => { lastRedirectedPath.current = null; }, 5000);
                 }
             }
+        } else {
+            // NO HOT SESSIONS FOUND:
+            // If the status is just 'assigned', we intentionally DO NOT forcedly redirect.
+            // This allows the agent to navigate the dashboard/portal freely until they actually start a call.
+            console.log(`[Redirect] Session is parked (Status: ${session.status}, Manual: ${session.manual_status}). Navigation allowed.`);
         }
     }, [router]);
 
@@ -63,7 +62,6 @@ export default function SessionRedirect() {
                     .from('call_sessions')
                     .select('*')
                     .eq('user_id', session.user.id)
-                    .in('status', ['assigned', 'active', 'disposition_pending'])
                     .maybeSingle();
 
                 if (data) {
