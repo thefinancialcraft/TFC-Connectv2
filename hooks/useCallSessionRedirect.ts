@@ -19,46 +19,67 @@ export function useCallSessionRedirect(userId: string | undefined) {
         lastPulseRef.current = now;
 
         try {
-            const { data: session, error } = await supabase
+            // Fetch all sessions to monitor them separately
+            const { data: sessions, error } = await supabase
                 .from('call_sessions')
                 .select('*')
-                .eq('user_id', userId)
-                .or('status.in.(active,disposition_pending),manual_status.in.(active,disposition_pending)')
-                .order('updated_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
+                .eq('user_id', userId);
 
             if (error) throw error;
+            if (!sessions || sessions.length === 0) return;
 
-            if (session) {
-                const isManualActive = session.is_manual && ['active', 'disposition_pending'].includes(session.manual_status);
-                const isSystemActive = ['active', 'disposition_pending'].includes(session.status);
+            // 1. Filter for "HOT" sessions (Active or Pending)
+            // We separate them to prioritize Manual calls over System calls
+            const manualHotSessions = sessions.filter(s => 
+                (s.manual_status === 'active' || s.manual_status === 'disposition_pending')
+            );
 
-                let targetCamp = null;
-                let targetCust = null;
+            const systemHotSessions = sessions.filter(s => 
+                (s.status === 'active' || s.status === 'disposition_pending')
+            );
 
-                if (isManualActive) {
-                    targetCamp = session.manual_campaign_id || session.campaign_id;
-                    targetCust = session.manual_customer_id;
-                } else if (isSystemActive) {
-                    targetCamp = session.campaign_id;
-                    targetCust = session.customer_id;
-                }
+            let sessionToFollow = null;
+            let prioritizeManual = false;
+
+            // PRIORITY RULE: Manual sessions take priority over System sessions
+            if (manualHotSessions.length > 0) {
+                // Pick the most recently updated manual session
+                sessionToFollow = manualHotSessions.sort((a,b) => 
+                    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                )[0];
+                prioritizeManual = true;
+            } else if (systemHotSessions.length > 0) {
+                // Pick the most recently updated system session
+                sessionToFollow = systemHotSessions.sort((a,b) => 
+                    new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                )[0];
+            }
+
+            if (sessionToFollow) {
+                const targetCamp = prioritizeManual 
+                    ? (sessionToFollow.manual_campaign_id || sessionToFollow.campaign_id) 
+                    : sessionToFollow.campaign_id;
+                
+                const targetCust = prioritizeManual 
+                    ? sessionToFollow.manual_customer_id 
+                    : sessionToFollow.customer_id;
 
                 if (targetCamp && targetCust) {
-                    // 🛡️ PRECISION CHECK: Compare using router query for accuracy
                     const { id: currentCamp, customerId: currentCust } = router.query;
                     
                     const isAlreadyThere = String(currentCamp) === String(targetCamp) && 
                                           String(currentCust) === String(targetCust);
                     
                     if (!isAlreadyThere) {
-                        // Ensure fixed portal prefix to match actual routes
                         const expectedPath = `/portal/campaign/${targetCamp}/${targetCust}`;
-                        console.log(`[Session-Guard] Redirecting to active session context: ${expectedPath}`);
+                        console.log(`[Session-Guard] Forced redirection to HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
                         router.push(expectedPath);
                     }
                 }
+            } else {
+                // NO HOT SESSIONS FOUND
+                // If the leads are just 'assigned' (call_start_at is null, etc.), we ALLOW navigation.
+                // console.log("[Session-Guard] No active/pending sessions. Navigation allowed.");
             }
         } catch (err) {
             console.error('[Session-Guard] Error:', err);
