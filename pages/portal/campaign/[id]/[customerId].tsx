@@ -80,6 +80,9 @@ export default function CallingPage() {
     const [tempExpiryDate, setTempExpiryDate] = useState("");
     const [isEditingDetails, setIsEditingDetails] = useState(false);
     const [tempDetails, setTempDetails] = useState<any[]>([]);
+    const [prefetchStatus, setPrefetchStatus] = useState<'idle' | 'fetching' | 'ready' | 'none' | 'error'>('idle');
+    const [dailyLeadCount, setDailyLeadCount] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const expiryDatePickerRef = useRef<HTMLDivElement>(null);
     const detailsEditRef = useRef<HTMLDivElement>(null);
 
@@ -930,6 +933,7 @@ export default function CallingPage() {
 
         // Refresh schedules and timeline when loading a lead (if no cache)
         fetchSchedules();
+        fetchDailyStats();
         
         try {
             if (!isPrefetched) {
@@ -1508,6 +1512,27 @@ export default function CallingPage() {
         // Clear conflict on change to allow new check
         if (conflictInfo) setConflictInfo(null);
     }, [callbackTime, callbackDate, loading]);
+
+    const fetchDailyStats = async () => {
+        if (!user?.uid || !campaignId) return;
+        try {
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+            
+            const { count, error } = await supabase
+                .from('call_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('last_updated_by', user.uid)
+                .eq('campaign_id', campaignId)
+                .gte('created_at', todayStart.toISOString());
+            
+            if (!error && count !== null) {
+                setDailyLeadCount(count);
+            }
+        } catch (e) {
+            console.error("Error fetching daily stats:", e);
+        }
+    };
     
     // 🔥 SYNC GLOBAL CALL STATUS FLAG
     // This ensures that the CallReminderOverlay (and other components) know the user is busy
@@ -1530,44 +1555,72 @@ export default function CallingPage() {
     const prefetchPromiseRef = useRef<any>(null);
     const prefetchedDataRef = useRef<any>(null);
 
-    useEffect(() => {
-        // Trigger pre-fetch when disposition is selected
-        if (disposition && user?.uid && campaignId && customerId && !prefetchPromiseRef.current) {
-            console.log('⚡ [Pre-fetch] Background fetching next lead & data...');
-            prefetchPromiseRef.current = supabase.rpc('assign_next_lead', {
+    const triggerLeadAssignment = useCallback(async (retryCount = 0): Promise<any> => {
+        if (!user?.uid || !campaignId || !customerId) return null;
+        
+        console.log('⚡ [Assignment] Fetching next lead & data...');
+        setPrefetchStatus('fetching');
+        
+        try {
+            // Set a timeout of 10 seconds for lead assignment
+            const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("Timeout")), 10000));
+            
+            const rpcPromise = supabase.rpc('assign_next_lead', {
                 p_campaign_id: campaignId,
                 p_user_id: user.uid,
                 p_exclude_lead_id: customerId 
-            }).then(async (res: any) => {
-                if (res.data) {
-                    const nextId = res.data;
-                    try {
-                        // Pre-fetch customer and history in parallel
-                        const [cRes, hRes] = await Promise.all([
-                            supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
-                            fetch(`/api/call/history?customerId=${nextId}`).then(r => r.json()).catch(() => null)
-                        ]);
-                        
-                        prefetchedDataRef.current = {
-                            id: nextId,
-                            customer: cRes.data,
-                            history: hRes?.success ? hRes.data : []
-                        };
-                        console.log('⚡ [Pre-fetch] Data prefetch complete for:', nextId);
-                    } catch (e) {
-                         console.error('Prefetch data error:', e);
-                    }
-                }
-                return res;
             });
+
+            const res: any = await Promise.race([rpcPromise, timeoutPromise]);
+            
+            if (res.data) {
+                const nextId = res.data;
+
+                // Case 4: Duplicate Check -> Recount if we got the same lead back
+                if (String(nextId) === String(customerId) && retryCount < 2) {
+                    console.log('🔄 [Assignment] Duplicate lead detected. Retrying...');
+                    return triggerLeadAssignment(retryCount + 1);
+                }
+
+                try {
+                    const [cRes, hRes] = await Promise.all([
+                        supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
+                        fetch(`/api/call/history?customerId=${nextId}`).then(r => r.json()).catch(() => null)
+                    ]);
+                    
+                    prefetchedDataRef.current = {
+                        id: nextId,
+                        customer: cRes.data,
+                        history: hRes?.success ? hRes.data : []
+                    };
+                    setPrefetchStatus('ready');
+                    console.log('⚡ [Assignment] Ready for:', nextId);
+                    return nextId;
+                } catch (e) {
+                     console.error('Assignment data error:', e);
+                     setPrefetchStatus('ready'); 
+                     return nextId;
+                }
+            } else {
+                console.log('🚫 [Assignment] No more leads in campaign.');
+                setPrefetchStatus('none');
+                return null;
+            }
+        } catch (err: any) {
+            console.error('[Assignment] Error or Timeout:', err);
+            setPrefetchStatus('error');
+            return null;
         }
-        
-        // Reset if disposition is cleared
+    }, [user?.uid, campaignId, customerId]);
+
+    // Keep reset logic only for clean state management
+    useEffect(() => {
         if (!disposition) {
+            setPrefetchStatus('idle');
             prefetchPromiseRef.current = null;
             prefetchedDataRef.current = null;
         }
-    }, [disposition, user?.uid, campaignId, customerId]);
+    }, [disposition]);
 
     type Data = {
         success?: boolean;
@@ -2388,103 +2441,92 @@ Campaign: ${campaign?.name || campaignId}
                     }
                     setSaving(false);
                     return;
-                }
- else {
-                // CRM Call (Authorized): Clear session and run auto-assignment
-                console.log('[Disposition] CRM/Primary lead disposed. Fetching next lead...');
-                
-                // STEP 1: Find next lead first WITHOUT terminating the session yet.
-                // This prevents other devices from jumping to dashboard prematurely.
-                let nextLeadId = null, reassignError = null;
-
-                if (prefetchPromiseRef.current) {
-                    console.log('⚡ [Pre-fetch] Using background prefetched lead...');
-                    const res = await prefetchPromiseRef.current;
-                    nextLeadId = res.data;
-                    reassignError = res.error;
-                    prefetchPromiseRef.current = null; // Clear it for next time
                 } else {
-                    const { data, error } = await supabase.rpc('assign_next_lead', {
-                        p_campaign_id: campaignId,
-                        p_user_id: user?.uid,
-                        p_exclude_lead_id: customerId 
-                    });
-                    nextLeadId = data;
-                    reassignError = error;
-                }
+                    // This is a CRM/Authorized call - we should have a next lead or no more leads.
+                    console.log('[Disposition] CRM/Primary lead disposed. Handling next step...');
 
-                if (reassignError) {
-                    console.error("Auto-assignment failed:", reassignError);
-                    // Fallback to dashboard if re-assignment fails
-                    router.push(`/campaign/${campaignId}`);
-                    return;
-                }
-
-                // Final safeguard for Campaign ID
-                const effectiveCampaignId = campaignId || campaign?.id || preservedCampaignId;
-
-                if (nextLeadId && user?.uid && effectiveCampaignId) {
-                    // Update session to 'assigned' for the NEW lead
-                    console.log(`[Disposition] RPC Result - Next Lead: ${nextLeadId}. Current Lead: ${customerId}`);
-                    
-                    await supabase.from('call_sessions').upsert({
-                        user_id: user.uid,
-                        campaign_id: effectiveCampaignId,
-                        customer_id: nextLeadId,
-                        status: 'assigned',
-                        is_manual: false,
-                        manual_campaign_id: null,
-                        manual_customer_id: null,
-                        manual_status: null,
-                        call_start_at: null,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'user_id,campaign_id' });
-                    
-                    // Redirect to the next lead automatically
-                    console.log('[Disposition] Redirecting to next lead:', nextLeadId);
-                    
-                    // Reset calling status before redirect
-                    setLocalCallingStatus(null);
-                    setIsAssigning(true); // Trigger modern transition screen
-                    router.push(`/campaign/${effectiveCampaignId}/${nextLeadId}`);
-                    // Note: useEffect will handle fetchData() for the new lead
-                    setSaving(false);
-                    return; 
-                } else if (effectiveCampaignId) {
-                    // No more leads: TERMINATE the session so devices return to dashboard
-                    console.log('[Disposition] No more leads. Terminating session and returning to campaign dashboard.');
-                    
-                    try {
-                        const { data: { session: authSession } } = await supabase.auth.getSession();
-                        if (authSession?.access_token) {
-                            await fetch("/api/auth/update-call-session", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: `Bearer ${authSession.access_token}`,
-                                },
-                                body: JSON.stringify({ campaign_id: effectiveCampaignId, terminate: true })
-                            });
-                        }
-                    } catch (e) {
-                         console.error("[Disposition] Final cleanup error:", e);
+                    // 🛡️ CRM/Authorized Lead Assignment (Triggered on SAVE now)
+                    if (prefetchStatus === 'idle') {
+                        console.log('[Disposition] Triggering lead assignment on save...');
+                        await triggerLeadAssignment();
                     }
 
-                    alert('No more leads available in this campaign.');
-                    setLocalCallingStatus(null);
-                    router.push(`/campaign/${effectiveCampaignId}`);
-                    setSaving(false);
-                    return;
-                } else {
-                    setLocalCallingStatus(null);
-                    router.push('/campaign');
-                    setSaving(false);
-                    return;
-                }
-            }
+                    // 🛡️ Case 3 Check: Network/Timeout Error
+                    if (prefetchStatus === 'error') {
+                        alert("⚠️ Logic Sync Error: Facing some network issues. Redirection might be delayed. Refreshing page...");
+                        window.location.reload();
+                        setSaving(false);
+                        return;
+                    }
 
-            // If we reached here, no automatic redirection happened (standard fallback or different flow)
-            fetchData();
+                    // 🛡️ Case 2 Check: Save Button Lock (Fallback safeguard)
+                    if (prefetchStatus === 'fetching') {
+                        alert("Please wait 1 second for system to finalize next lead...");
+                        setSaving(false);
+                        return;
+                    }
+
+                    // 🛡️ Case 1 Check: No More Leads Available
+                    if (prefetchStatus === 'none') {
+                        alert("✅ Good job! No more leads available in this campaign.");
+                        
+                        try {
+                            const { data: { session: authSession } } = await supabase.auth.getSession();
+                            if (authSession?.access_token) {
+                                await fetch("/api/auth/update-call-session", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${authSession.access_token}`,
+                                    },
+                                    body: JSON.stringify({ campaign_id: campaignId, terminate: true })
+                                });
+                            }
+                        } catch (e) {
+                             console.error("Session cleanup error:", e);
+                        }
+                        
+                        router.push(`/portal/campaign/${campaignId}`);
+                        setSaving(false);
+                        return;
+                    }
+
+                    let nextLeadId = prefetchedDataRef.current?.id;
+
+                    // Final safeguard for Campaign ID
+                    const effectiveCampaignId = campaignId || campaign?.id || preservedCampaignId;
+
+                    if (nextLeadId && user?.uid && effectiveCampaignId) {
+                        // Update session to 'assigned' for the NEW lead
+                        console.log(`[Disposition] Redirecting to next lead: ${nextLeadId}`);
+                        
+                        await supabase.from('call_sessions').upsert({
+                            user_id: user.uid,
+                            campaign_id: effectiveCampaignId,
+                            customer_id: nextLeadId,
+                            status: 'assigned',
+                            is_manual: false,
+                            manual_campaign_id: null,
+                            manual_customer_id: null,
+                            manual_status: null,
+                            call_start_at: null,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'user_id,campaign_id' });
+                        
+                        setLocalCallingStatus(null);
+                        setIsAssigning(true); // Trigger modern transition screen
+                        router.push(`/portal/campaign/${effectiveCampaignId}/${nextLeadId}`);
+                        setSaving(false);
+                        return; 
+                    } else {
+                        // Fallback if something went wrong but no specific error state caught
+                        router.push(`/portal/campaign/${campaignId}`);
+                        setSaving(false);
+                        return;
+                    }
+                }
+
+            // Reset state for non-redirecting cases
             setPostCall(false);
             setLocalCallingStatus(null);
             setDisposition("");
@@ -2557,27 +2599,73 @@ Campaign: ${campaign?.name || campaignId}
     ];
 
     if (isAssigning) {
+        // Dynamic Motivational Messages
+        const getMotivationalQuote = () => {
+             if (dailyLeadCount <= 5) return "Great start! Let's build some momentum.";
+             if (dailyLeadCount <= 20) return "You're on fire! Keep the energy up.";
+             if (dailyLeadCount <= 50) return "Unstoppable! You're dominating this campaign.";
+             return "Absolute Legend! You're a dialling machine today.";
+        };
+
         return (
-            <div className="flex min-h-screen items-center justify-center bg-white">
-                <div className="flex flex-col items-center max-w-xs text-center px-6">
-                    {/* Compact Modern Loader */}
-                    <div className="relative w-14 h-14 mb-6">
-                        <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <i className="fi flex fi-rr-shuffle text-indigo-600 text-sm animate-pulse"></i>
+            <div className="flex min-h-screen items-center justify-center bg-slate-50 relative overflow-hidden">
+                {/* 🌈 Pulse Background */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-200/20 rounded-full blur-[120px] animate-pulse"></div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-violet-200/20 rounded-full blur-[100px] animate-pulse [animation-delay:1s]"></div>
+                </div>
+
+                <div className="relative z-10 flex flex-col items-center max-w-sm text-center px-8 py-10 rounded-[2.5rem] bg-white/70 backdrop-blur-xl border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] animate-in zoom-in-95 duration-500">
+                    <div className="relative w-24 h-24 mb-8">
+                         {/* Circle Ring */}
+                         <div className="absolute inset-0 border-[6px] border-slate-100 rounded-full"></div>
+                         <div className="absolute inset-0 border-[6px] border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"></div>
+                         
+                         {/* Core Icon */}
+                         <div className="absolute inset-0 flex items-center justify-center">
+                            <i className="fi flex fi-rr-shuffle text-indigo-600 text-2xl animate-pulse"></i>
+                         </div>
+
+                         {/* Mini satellites for extra "Wow" */}
+                         <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-white animate-bounce shadow-lg"></div>
+                    </div>
+
+                    <h2 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Assigning Lead</h2>
+                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-6">Syncing Next Opportunity</p>
+                    
+                    {/* Progress Loader Dots */}
+                    <div className="flex gap-2 mb-8">
+                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce"></div>
+                    </div>
+
+                    {/* Leaderboard / Stats Card */}
+                    <div className="w-full bg-indigo-950 rounded-3xl p-5 text-white mb-8 shadow-2xl shadow-indigo-200/50">
+                        <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-1">Today's Progress</p>
+                        <div className="flex items-center justify-center gap-3 mb-3">
+                             <span className="text-4xl font-black">{dailyLeadCount}</span>
+                             <div className="h-8 w-px bg-indigo-800"></div>
+                             <div className="text-left">
+                                <p className="text-[10px] font-black uppercase text-indigo-400">Total Dials</p>
+                                <p className="text-xs font-bold">Processed</p>
+                             </div>
+                        </div>
+                        <div className="pt-3 border-t border-indigo-900">
+                            <p className="text-[11px] font-medium text-indigo-200 italic">"{getMotivationalQuote()}"</p>
                         </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-slate-900 mb-1">Assigning Lead</h2>
-                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Syncing your next prospect...</p>
+                    {/* 🆘 EMERGENCY EXIT (UX Safety) */}
+                    <button 
+                        onClick={() => router.push(`/portal/campaign/${campaignId}`)}
+                        className="group flex items-center gap-2 text-slate-400 hover:text-rose-500 transition-colors py-2 px-4"
+                    >
+                        <i className="fi flex fi-rr-exit text-sm group-hover:-translate-x-1 transition-transform"></i>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Exit to Dashboard</span>
+                    </button>
                     
-                    {/* Minimal Progress indicator */}
-                    <div className="mt-6 flex gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce"></div>
-                    </div>
+                    <p className="mt-8 text-[9px] font-bold text-slate-300 uppercase tracking-[0.1em]">TFC Connect Engine v2.5</p>
                 </div>
             </div>
         );
@@ -3930,11 +4018,23 @@ Campaign: ${campaign?.name || campaignId}
                                                 </div>
 
                                                 <button 
-                                                    disabled={saving || !postCall}
+                                                    disabled={saving || !postCall || prefetchStatus === 'fetching'}
                                                     onClick={handleSaveDisposition}
-                                                    className="w-full h-11 rounded-2xl bg-indigo-600 hover:bg-slate-900 text-white font-semibold text-xs uppercase tracking-[0.2em]   transition-all disabled:opacity-50"
+                                                    className={`w-full h-11 rounded-2xl font-semibold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${prefetchStatus === 'fetching' ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-slate-900 text-white shadow-lg active:scale-95'}`}
                                                 >
-                                                    {saving ? 'Processing...' : 'Save & Continue'}
+                                                    {saving ? (
+                                                        <>
+                                                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                            <span>Processing...</span>
+                                                        </>
+                                                    ) : prefetchStatus === 'fetching' ? (
+                                                        <>
+                                                            <div className="w-3 h-3 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin"></div>
+                                                            <span>Syncing Lead...</span>
+                                                        </>
+                                                    ) : (
+                                                        'Save & Continue'
+                                                    )}
                                                 </button>
                                            </div>
                                         </div>
