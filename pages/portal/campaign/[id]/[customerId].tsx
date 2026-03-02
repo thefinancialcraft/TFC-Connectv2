@@ -2330,11 +2330,12 @@ Campaign: ${campaign?.name || campaignId}
             let isInterruption = false;
             let preservedCampaignId = null;
             let preservedCustomerId = null;
+            let preservedStatus = null;
 
             if (user?.uid) {
                 const { data: sRows } = await supabase
                     .from('call_sessions')
-                    .select('is_manual, campaign_id, customer_id, manual_customer_id, is_unassigned')
+                    .select('is_manual, campaign_id, customer_id, manual_customer_id, is_unassigned, status')
                     .eq('user_id', user.uid)
                     .eq('campaign_id', campaignId)
                     .limit(1);
@@ -2346,6 +2347,7 @@ Campaign: ${campaign?.name || campaignId}
                     isUnassignedCall = currentSession.is_unassigned || false;
                     preservedCampaignId = currentSession.campaign_id;
                     preservedCustomerId = currentSession.customer_id;
+                    preservedStatus = currentSession.status;
                     const manualCustId = currentSession.manual_customer_id;
 
                     console.log('[Disposition] Session Match Check:', { isManualCall, preservedCustomerId, manualCustId, savingId: customerId });
@@ -2428,7 +2430,7 @@ Campaign: ${campaign?.name || campaignId}
                                     body: JSON.stringify({
                                         campaign_id: preservedCampaignId,
                                         customer_id: preservedCustomerId,
-                                        status: 'assigned', // Move back to assigned state
+                                        status: preservedStatus || 'assigned', // Restore original state (e.g. disposition_pending)
                                         manual_override: true 
                                     })
                                 });
