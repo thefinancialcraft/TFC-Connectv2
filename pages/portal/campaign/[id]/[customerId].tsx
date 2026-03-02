@@ -30,6 +30,7 @@ export default function CallingPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [isAssigning, setIsAssigning] = useState(false);
     
     // Call States
     const [isCalling, setIsCalling] = useState(false);
@@ -151,23 +152,7 @@ export default function CallingPage() {
     })();
 
     // --- 💾 STATE PERSISTENCE ENGINE ---
-    // Automatically backups the user's active screen/data so tab suspensions don't wipe it
-    useEffect(() => {
-        if (!campaignId || !customerId || !customer) return; // Wait until data exists
-        const cacheKey = `call_state_${campaignId}_${customerId}`;
-        const statePayload = {
-             timestamp: Date.now(),
-             customer,
-             campaign,
-             history,
-             mobileLogs,
-             disposition,
-             subDisposition,
-             notes,
-             timelineView
-        };
-        sessionStorage.setItem(cacheKey, JSON.stringify(statePayload));
-    }, [campaignId, customerId, customer, campaign, history, mobileLogs, disposition, subDisposition, notes, timelineView]);
+
 
     const datePickerRef = useRef<HTMLDivElement>(null);
     const timePickerRef = useRef<HTMLDivElement>(null);
@@ -895,35 +880,9 @@ export default function CallingPage() {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
         
-        // --- ⚡ SESSION CACHE RESTORER (Pulls from memory instead of API on hard reloads) ---
-        const cacheKey = `call_state_${campaignId}_${idToFetch}`;
-        try {
-            const cachedStr = sessionStorage.getItem(cacheKey);
-            // Ignore cache if explicitly moving to the "next" prospect via overrideId to prevent skipping fresh fetch
-            if (cachedStr && !overrideId) {
-                const cached = JSON.parse(cachedStr);
-                // Valid for 30 minutes inside the same tab session
-                if (Date.now() - cached.timestamp < 30 * 60 * 1000) {
-                    if (cached.customer) setCustomer(cached.customer);
-                    if (cached.campaign) setCampaign(cached.campaign);
-                    if (cached.history) setHistory(cached.history);
-                    if (cached.mobileLogs) setMobileLogs(cached.mobileLogs);
-                    
-                    // Restore active inputs natively
-                    if (cached.disposition) setDisposition(cached.disposition);
-                    if (cached.subDisposition) setSubDisposition(cached.subDisposition);
-                    if (cached.notes) setNotes(cached.notes);
-                    if (cached.timelineView) setTimelineView(cached.timelineView);
-                    
-                    setLoading(false);
-                    fetchSchedules(); // Just run non-blocking minor check
-                    console.log("⚡ [Cache] Instantly restored Call Engine state from memory. Zero API hit.");
-                    return; // Skip the heavy database loading!
-                }
-            }
-        } catch (e) {
-            console.warn("Failed to parse local session state", e);
-        }
+        setError("");
+        
+
 
         // Refresh schedules and timeline when loading a lead (if no cache)
         fetchSchedules();
@@ -1298,6 +1257,7 @@ export default function CallingPage() {
             setError(err.message);
         } finally {
             setLoading(false);
+            setIsAssigning(false);
         }
     };
 
@@ -2431,7 +2391,7 @@ Campaign: ${campaign?.name || campaignId}
                     
                     // Reset calling status before redirect
                     setLocalCallingStatus(null);
-                    
+                    setIsAssigning(true); // Trigger modern transition screen
                     router.push(`/campaign/${effectiveCampaignId}/${nextLeadId}`);
                     // Note: useEffect will handle fetchData() for the new lead
                     setSaving(false);
@@ -2541,6 +2501,33 @@ Campaign: ${campaign?.name || campaignId}
         "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", 
         "18:00", "18:30", "19:00", "19:30", "20:00"
     ];
+
+    if (isAssigning) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-white">
+                <div className="flex flex-col items-center max-w-xs text-center px-6">
+                    {/* Compact Modern Loader */}
+                    <div className="relative w-14 h-14 mb-6">
+                        <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <i className="fi flex fi-rr-shuffle text-indigo-600 text-sm animate-pulse"></i>
+                        </div>
+                    </div>
+
+                    <h2 className="text-lg font-bold text-slate-900 mb-1">Assigning Lead</h2>
+                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Syncing your next prospect...</p>
+                    
+                    {/* Minimal Progress indicator */}
+                    <div className="mt-6 flex gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (loading || !user) {
         return (
