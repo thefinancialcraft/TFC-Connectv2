@@ -7,8 +7,12 @@ export function useCallSessionRedirect(userId: string | undefined) {
     const lastPulseRef = useRef<number>(0);
 
     const checkActiveSession = async () => {
-        if (!userId) return;
+        if (!userId || !router.isReady) return;
         
+        // Prevent redirects during active save operations
+        const isSaving = typeof window !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
+        if (isSaving) return;
+
         // Match debounce to heartbeat (approx 500ms-1000ms is safe)
         const now = Date.now();
         if (now - lastPulseRef.current < 500) return;
@@ -73,15 +77,24 @@ export function useCallSessionRedirect(userId: string | undefined) {
                 schema: 'public', 
                 table: 'call_sessions',
                 filter: `user_id=eq.${userId}`
-             }, () => checkActiveSession())
+             }, () => {
+                // Short delay to allow DB propagation
+                setTimeout(checkActiveSession, 500);
+             })
             .subscribe();
 
         const handleVisibility = () => {
             if (document.visibilityState === 'visible') checkActiveSession();
         };
 
-        // 500ms Aggressive Heartbeat
-        const heartbeat = setInterval(checkActiveSession, 500);
+        // 2000ms Stable Heartbeat (Reduced from aggressive 500ms)
+        const heartbeat = setInterval(() => {
+            // Check for localized "save-in-progress" lock to prevent race conditions
+            const isSaving = typeof window !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
+            if (!isSaving) {
+                checkActiveSession();
+            }
+        }, 2000);
 
         window.addEventListener('visibilitychange', handleVisibility);
 

@@ -1555,72 +1555,74 @@ export default function CallingPage() {
     const prefetchPromiseRef = useRef<any>(null);
     const prefetchedDataRef = useRef<any>(null);
 
-    const triggerLeadAssignment = useCallback(async (retryCount = 0): Promise<any> => {
-        if (!user?.uid || !campaignId || !customerId) return null;
-        
-        console.log('⚡ [Assignment] Fetching next lead & data...');
-        setPrefetchStatus('fetching');
-        
-        try {
-            // Set a timeout of 10 seconds for lead assignment
-            const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("Timeout")), 10000));
-            
-            const rpcPromise = supabase.rpc('assign_next_lead', {
-                p_campaign_id: campaignId,
-                p_user_id: user.uid,
-                p_exclude_lead_id: customerId 
-            });
-
-            const res: any = await Promise.race([rpcPromise, timeoutPromise]);
-            
-            if (res.data) {
-                const nextId = res.data;
-
-                // Case 4: Duplicate Check -> Recount if we got the same lead back
-                if (String(nextId) === String(customerId) && retryCount < 2) {
-                    console.log('🔄 [Assignment] Duplicate lead detected. Retrying...');
-                    return triggerLeadAssignment(retryCount + 1);
-                }
-
-                try {
-                    const [cRes, hRes] = await Promise.all([
-                        supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
-                        fetch(`/api/call/history?customerId=${nextId}`).then(r => r.json()).catch(() => null)
-                    ]);
-                    
-                    prefetchedDataRef.current = {
-                        id: nextId,
-                        customer: cRes.data,
-                        history: hRes?.success ? hRes.data : []
-                    };
-                    setPrefetchStatus('ready');
-                    console.log('⚡ [Assignment] Ready for:', nextId);
-                    return nextId;
-                } catch (e) {
-                     console.error('Assignment data error:', e);
-                     setPrefetchStatus('ready'); 
-                     return nextId;
-                }
-            } else {
-                console.log('🚫 [Assignment] No more leads in campaign.');
-                setPrefetchStatus('none');
-                return null;
-            }
-        } catch (err: any) {
-            console.error('[Assignment] Error or Timeout:', err);
-            setPrefetchStatus('error');
-            return null;
-        }
-    }, [user?.uid, campaignId, customerId]);
-
-    // Keep reset logic only for clean state management
     useEffect(() => {
+        // Trigger pre-fetch when disposition is selected
+        if (disposition && user?.uid && campaignId && customerId && prefetchStatus === 'idle') {
+            console.log('⚡ [Pre-fetch] Background fetching next lead & data...');
+            setPrefetchStatus('fetching');
+            
+            const performPrefetch = async (retryCount = 0) => {
+                try {
+                    // Set a timeout of 10 seconds for lead assignment
+                    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("Timeout")), 10000));
+                    
+                    const rpcPromise = supabase.rpc('assign_next_lead', {
+                        p_campaign_id: campaignId,
+                        p_user_id: user.uid,
+                        p_exclude_lead_id: customerId 
+                    });
+
+                    const res: any = await Promise.race([rpcPromise, timeoutPromise]);
+                    
+                    if (res.data) {
+                        const nextId = res.data;
+
+                        // Case 4: Duplicate Check -> Recount if we got the same lead back
+                        if (String(nextId) === String(customerId) && retryCount < 2) {
+                            console.log('🔄 [Pre-fetch] Duplicate lead detected. Retrying...');
+                            return performPrefetch(retryCount + 1);
+                        }
+
+                        try {
+                            const [cRes, hRes] = await Promise.all([
+                                supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
+                                fetch(`/api/call/history?customerId=${nextId}`).then(r => r.json()).catch(() => null)
+                            ]);
+                            
+                            prefetchedDataRef.current = {
+                                id: nextId,
+                                customer: cRes.data,
+                                history: hRes?.success ? hRes.data : []
+                            };
+                            setPrefetchStatus('ready');
+                            console.log('⚡ [Pre-fetch] Ready for:', nextId);
+                        } catch (e) {
+                             console.error('Prefetch data error:', e);
+                             setPrefetchStatus('ready'); // Fallback: ID is ready even if profile fetch failed
+                        }
+                    } else {
+                        // Case 1: No Lead Available
+                        console.log('🚫 [Pre-fetch] No more leads in campaign.');
+                        setPrefetchStatus('none');
+                    }
+                } catch (err: any) {
+                    console.error('[Pre-fetch] Error or Timeout:', err);
+                    setPrefetchStatus('error');
+                    // Case 3 fallback: Handled during Save attempt
+                }
+            };
+            
+            performPrefetch();
+            prefetchPromiseRef.current = true; // Mark as started
+        }
+        
+        // Reset if disposition is cleared
         if (!disposition) {
             setPrefetchStatus('idle');
             prefetchPromiseRef.current = null;
             prefetchedDataRef.current = null;
         }
-    }, [disposition]);
+    }, [disposition, user?.uid, campaignId, customerId, prefetchStatus]);
 
     type Data = {
         success?: boolean;
@@ -2006,6 +2008,7 @@ export default function CallingPage() {
     };
 
     const executeSaveDisposition = async (overrideDate?: string, overrideTime?: string) => {
+        if (typeof window !== 'undefined') localStorage.setItem('lead_save_in_progress', 'true');
         try {
             setSaving(true);
             const finalDate = overrideDate || callbackDate;
@@ -2445,12 +2448,6 @@ Campaign: ${campaign?.name || campaignId}
                     // This is a CRM/Authorized call - we should have a next lead or no more leads.
                     console.log('[Disposition] CRM/Primary lead disposed. Handling next step...');
 
-                    // 🛡️ CRM/Authorized Lead Assignment (Triggered on SAVE now)
-                    if (prefetchStatus === 'idle') {
-                        console.log('[Disposition] Triggering lead assignment on save...');
-                        await triggerLeadAssignment();
-                    }
-
                     // 🛡️ Case 3 Check: Network/Timeout Error
                     if (prefetchStatus === 'error') {
                         alert("⚠️ Logic Sync Error: Facing some network issues. Redirection might be delayed. Refreshing page...");
@@ -2541,6 +2538,7 @@ Campaign: ${campaign?.name || campaignId}
             alert("Failed to save disposition. Please try again.");
         } finally {
             setSaving(false);
+            if (typeof window !== 'undefined') localStorage.removeItem('lead_save_in_progress');
         }
     };
 
