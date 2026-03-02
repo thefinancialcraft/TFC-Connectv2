@@ -10,6 +10,7 @@ import UtilitySidebar from "./UtilitySidebar";
 import AppLogo from "./AppLogo";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { supabase } from "@/lib/supabase";
+import { useCallSessionRedirect } from "@/hooks/useCallSessionRedirect";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -20,6 +21,9 @@ interface AppLayoutProps {
 export default function AppLayout({ children, hideSidebar = false, hideHeader = false }: AppLayoutProps) {
   const router = useRouter();
   const { user, loading: authLoading, error, mounted, statusMessage } = useUser();
+
+  // 🛡️ Global Session Guard
+  useCallSessionRedirect(user?.uid);
 
   const handleLogoutClick = useCallback(async () => {
     await handleLogout(router);

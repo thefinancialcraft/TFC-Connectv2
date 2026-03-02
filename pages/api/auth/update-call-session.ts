@@ -91,6 +91,16 @@ export default async function handler(
 
         console.log(`[API-Session] Manual Event for Lead Campaign: ${campaign_id}. Existing Primary Lead: ${existing?.customer_id || 'None'}`);
 
+        // 🔄 REFRESH LOGIC: If manual lead is same as currently assigned primary lead, recreate session
+        if (existing && String(existing.customer_id) === String(customer_id)) {
+            console.log(`[API-Session] Manual dial matches assigned lead. Deleting and recreating session for ${customer_id}`);
+            await client
+                .from('call_sessions')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('campaign_id', campaign_id);
+        }
+
         updatePayload = {
             ...updatePayload,
             // If row exists, keep primary lead. If new, set this lead as primary too as fallback.

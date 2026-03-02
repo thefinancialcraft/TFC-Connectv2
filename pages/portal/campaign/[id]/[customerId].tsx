@@ -89,6 +89,40 @@ export default function CallingPage() {
     const startXRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const lastActiveRef = useRef<number>(Date.now());
+
+    // 🔄 STALE SESSION AUTO-RELOAD (Reload if user returns after 5+ minutes)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible") {
+                const now = Date.now();
+                const diffMinutes = (now - lastActiveRef.current) / (1000 * 60);
+                
+                if (diffMinutes >= 5) {
+                    console.log(`[AutoReload] Returning after ${Math.round(diffMinutes)} mins. Refreshing lead data.`);
+                    window.location.reload();
+                }
+            } else {
+                // Mark timestamp when the user leaves the tab
+                lastActiveRef.current = Date.now();
+            }
+        };
+
+        const updateActivityTime = () => {
+            lastActiveRef.current = Date.now();
+        };
+
+        window.addEventListener("visibilitychange", handleVisibilityChange);
+        document.addEventListener("mousedown", updateActivityTime);
+        document.addEventListener("keydown", updateActivityTime);
+
+        return () => {
+            window.removeEventListener("visibilitychange", handleVisibilityChange);
+            document.removeEventListener("mousedown", updateActivityTime);
+            document.removeEventListener("keydown", updateActivityTime);
+        };
+    }, []);
+
     // Time Picker Drag State
     const [timePickerPos, setTimePickerPos] = useState({ x: 0, y: 0 });
     const [isTimePickerDragging, setIsTimePickerDragging] = useState(false);
@@ -2237,13 +2271,14 @@ Campaign: ${campaign?.name || campaignId}
             // 2.5 Check if this is a manual call before clearing session
             let isManualCall = false;
             let isUnassignedCall = false;
+            let isInterruption = false;
             let preservedCampaignId = null;
             let preservedCustomerId = null;
 
             if (user?.uid) {
                 const { data: sRows } = await supabase
                     .from('call_sessions')
-                    .select('is_manual, campaign_id, customer_id, is_unassigned')
+                    .select('is_manual, campaign_id, customer_id, manual_customer_id, is_unassigned')
                     .eq('user_id', user.uid)
                     .eq('campaign_id', campaignId)
                     .limit(1);
@@ -2255,17 +2290,29 @@ Campaign: ${campaign?.name || campaignId}
                     isUnassignedCall = currentSession.is_unassigned || false;
                     preservedCampaignId = currentSession.campaign_id;
                     preservedCustomerId = currentSession.customer_id;
-                    console.log('[Disposition] Current session check:', { isManualCall, isUnassignedCall, preservedCampaignId, preservedCustomerId });
+                    const manualCustId = currentSession.manual_customer_id;
+
+                    console.log('[Disposition] Session Match Check:', { isManualCall, preservedCustomerId, manualCustId, savingId: customerId });
+
+                    // 🛡️ MANUAL SHIELD: Check if this was a manual dial (Ad-hoc)
+                    if (isManualCall) {
+                        // Determine if we should go back to a DIFFERENT lead (Interruption)
+                        if (manualCustId && String(manualCustId) !== String(preservedCustomerId)) {
+                            isInterruption = true;
+                        }
+                    }
+
+                    console.log('[Disposition] Final check:', { isManualCall, isUnassignedCall, isInterruption });
                 }
             }
 
 
             // 3. Handle Manual Call vs CRM Call differently
-            // CRITICAL FIX: Only treat as "interruption" if manual lead is DIFFERENT from primary lead
-            const isInterruption = isManualCall && String(preservedCustomerId) !== String(customerId);
-
+            // USER RULE: Manual dials NEVER trigger RPC for new leads. 
+            // They always return the user to the "Preserved Lead" (The original assigned context).
+            
                 // Redirect Logic:
-                if (isInterruption || !isAssignedToCampaign) {
+                if (isManualCall || !isAssignedToCampaign) {
                     console.log(`[Disposition] Flow Exit Path: IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
                     try {
