@@ -98,7 +98,8 @@ export function useCallSessionRedirect(userId: string | undefined) {
                 schema: 'public', 
                 table: 'call_sessions',
                 filter: `user_id=eq.${userId}`
-             }, () => {
+             }, (payload) => {
+                console.log(`[Session-Guard] Realtime sync event received:`, payload.eventType);
                 // Short delay to allow DB propagation
                 setTimeout(checkActiveSession, 500);
              })
