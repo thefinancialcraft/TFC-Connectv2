@@ -882,25 +882,39 @@ export default function CallingPage() {
         
         setError("");
         
+        // ⚡ INSTANT PRE-FETCH RESTORATION
+        const isPrefetched = prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch);
+        if (isPrefetched) {
+            setCustomer(prefetchedDataRef.current.customer);
+            setLiveNotes(prefetchedDataRef.current.customer?.live_notes || "");
+            if (prefetchedDataRef.current.history) setHistory(prefetchedDataRef.current.history);
+            setLoading(false);
+            setIsAssigning(false);
+        }
+        
 
 
         // Refresh schedules and timeline when loading a lead (if no cache)
         fetchSchedules();
         
         try {
-            // Only show full-screen loader if we don't have this lead prefetched
-            const isPrefetched = prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch);
             if (!isPrefetched) {
                 setLoading(true);
             }
 
-            // 0. STRICT PERMISSION GUARD
-            // Validate if user is actually assigned to THIS campaign before proceeding or creating sessions
+            // 0. STRICT PERMISSION GUARD (Optimized: Skip network if campaign is already cached)
             let campData: any = null;
-            try {
-                const { data: fetchedCamp, error: campErr } = await supabase.from('campaigns').select('*, organizations(id, company_name, org_code)').eq('id', campaignId).single();
+            if (campaign && String(campaign.id) === String(campaignId)) {
+                campData = campaign;
+            } else {
+                const { data: fetchedCamp, error: campErr } = await supabase
+                    .from('campaigns')
+                    .select('*, organizations(id, company_name, org_code)')
+                    .eq('id', campaignId)
+                    .single();
                 if (campErr) throw campErr;
                 campData = fetchedCamp;
+            }
 
                 if (campData && user) {
                     const normalizedDesignation = (user.designation || "").toLowerCase();
@@ -933,14 +947,14 @@ export default function CallingPage() {
                          // 3. SPECIAL MANUAL OVERRIDE (Allow if an active manual session exists for this user/campaign)
                          if (!hasAccess) {
                              try {
-                                 const { data: sData } = await supabase
+                                 const { data: guardSession } = await supabase
                                      .from('call_sessions')
                                      .select('is_unassigned, is_manual')
                                      .eq('user_id', user.uid)
                                      .eq('campaign_id', campaignId)
                                      .maybeSingle();
                                      
-                                 if (sData?.is_unassigned && sData?.is_manual) {
+                                 if (guardSession?.is_unassigned && guardSession?.is_manual) {
                                      console.log("[Guard] Allowing access via active unassigned manual session.");
                                      hasAccess = true;
                                  }
@@ -957,9 +971,7 @@ export default function CallingPage() {
                          return;
                     }
                 }
-            } catch (e) {
-                console.error("[Guard] Permission check bypass/error (Proceeding with caution):", e);
-            }
+
             
             // 1. Fetch Campaign (Static for the page)
             // Use the data retrieved during the guard to avoid double query
@@ -977,14 +989,10 @@ export default function CallingPage() {
             // 2. Fetch Customer (Try all three tables)
             let foundCustomer: any = null;
             
-            if (prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch)) {
+            if (isPrefetched) {
                 foundCustomer = prefetchedDataRef.current.customer;
-                // Also set history if pre-fetched
-                if (prefetchedDataRef.current.history) {
-                    setHistory(prefetchedDataRef.current.history);
-                }
-                prefetchedDataRef.current = null; // Clear to prevent stale usage
-                console.log('⚡ [Pre-fetch] Utilized background fetched customer data!');
+                prefetchedDataRef.current = null; // Clear now that we've used it
+                console.log('⚡ [Pre-fetch] Sync complete!');
             } else {
                 // Try primary customers table
                 const { data: cDataRows } = await supabase
@@ -1055,13 +1063,13 @@ export default function CallingPage() {
                 console.warn(`[Fetch] Customer ${idToFetch} not found in any table.`);
                 
                 // Ghost Session Recovery: If this missing customer is currently assigned to the user, clear it and re-assign.
-                const { data: sData } = await supabase
+                const { data: ghostSession } = await supabase
                     .from('call_sessions')
                     .select('*')
                     .eq('user_id', user.uid)
                     .eq('campaign_id', campaignId)
                     .maybeSingle();
-                const sessionData = sData;
+                const sessionData = ghostSession;
 
                 // If user has a session for THIS missing customer, clear and re-assign
                 if (sessionData && sessionData.customer_id === idToFetch) {
@@ -1219,15 +1227,15 @@ export default function CallingPage() {
 
             // 4. Initial Session State (Active Call/Disposition Recovery)
             // Check if there is an active session for the CURRENT lead (Primary or Manual)
-            const { data: sData } = await supabase
+            const { data: currentSession } = await supabase
                 .from('call_sessions')
                 .select('*')
                 .eq('user_id', user.uid)
                 .eq('campaign_id', campaignId)
                 .maybeSingle();
 
-            if (sData) {
-                const session = sData;
+            if (currentSession) {
+                const session = currentSession;
                 const isManualMode = session.is_manual === true;
                 
                 // Determine which lead this session is actually tracking for the current view
@@ -1251,7 +1259,6 @@ export default function CallingPage() {
                     }
                 }
             }
-
         } catch (err: any) {
             console.error("[Fetch] Error in fetchData:", err);
             setError(err.message);
@@ -2531,10 +2538,26 @@ Campaign: ${campaign?.name || campaignId}
 
     if (loading || !user) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#f8faff]">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-[#4b33e8]"></div>
-                    <p className="text-sm font-semibold text-slate-400 animate-pulse uppercase tracking-widest">Initialising Session...</p>
+            <div className="flex min-h-screen items-center justify-center bg-white">
+                <div className="flex flex-col items-center max-w-xs text-center px-6">
+                    {/* Compact Modern Loader */}
+                    <div className="relative w-14 h-14 mb-6">
+                        <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <i className="fi flex fi-rr-shuffle text-indigo-600 text-sm animate-pulse"></i>
+                        </div>
+                    </div>
+
+                    <h2 className="text-lg font-bold text-slate-900 mb-1">Assigning Lead</h2>
+                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Syncing your lead data...</p>
+                    
+                    {/* Minimal Progress indicator */}
+                    <div className="mt-6 flex gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce"></div>
+                    </div>
                 </div>
             </div>
         );
