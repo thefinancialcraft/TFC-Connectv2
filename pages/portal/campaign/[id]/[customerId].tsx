@@ -83,6 +83,8 @@ export default function CallingPage() {
     const [prefetchStatus, setPrefetchStatus] = useState<'idle' | 'fetching' | 'ready' | 'none' | 'error'>('idle');
     const [dailyLeadCount, setDailyLeadCount] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isManualMode, setIsManualMode] = useState(false);
+    const [isInterruption, setIsInterruption] = useState(false);
     const expiryDatePickerRef = useRef<HTMLDivElement>(null);
     const detailsEditRef = useRef<HTMLDivElement>(null);
 
@@ -1274,16 +1276,24 @@ export default function CallingPage() {
 
             if (currentSession) {
                 const session = currentSession;
-                const isManualMode = session.is_manual === true;
+                const isManualModeFromSession = session.is_manual === true;
                 
                 // Determine which lead this session is actually tracking for the current view
-                const sessionCustomerId = isManualMode ? session.manual_customer_id : session.customer_id;
-                const sessionStatus = isManualMode ? (session.manual_status || session.status) : session.status;
+                const sessionCustomerId = isManualModeFromSession ? session.manual_customer_id : session.customer_id;
+                const sessionStatus = isManualModeFromSession ? (session.manual_status || session.status) : session.status;
                 const sessionStartTime = session.call_start_at;
 
                 if (String(sessionCustomerId) === String(idToFetch)) {
                     console.log(`[Fetch-Session] Active session found for this lead: ${sessionStatus}`);
                     
+                    setIsManualMode(isManualModeFromSession);
+                    // Check for interruption: Manual customer != Preserved customer
+                    if (isManualModeFromSession && session.manual_customer_id && session.customer_id && String(session.manual_customer_id) !== String(session.customer_id)) {
+                        setIsInterruption(true);
+                    } else {
+                        setIsInterruption(false);
+                    }
+
                     if (sessionStatus === 'active') {
                         setIsCalling(true);
                         setPostCall(false);
@@ -1376,14 +1386,21 @@ export default function CallingPage() {
                     const currentCustomerId = String(customerId || "");
                     
                     // DUAL SESSION REAL-TIME LOGIC
-                    const isManualMode = session.is_manual === true;
-                    const sessionCustomerId = isManualMode ? session.manual_customer_id : session.customer_id;
-                    const sessionStatus = isManualMode ? (session.manual_status || session.status) : session.status;
-                    const sessionCampaignId = isManualMode ? (session.manual_campaign_id || session.campaign_id) : session.campaign_id;
+                    const isManualModeFromSession = session.is_manual === true;
+                    const sessionCustomerId = isManualModeFromSession ? session.manual_customer_id : session.customer_id;
+                    const sessionStatus = isManualModeFromSession ? (session.manual_status || session.status) : session.status;
+                    const sessionCampaignId = isManualModeFromSession ? (session.manual_campaign_id || session.campaign_id) : session.campaign_id;
 
                     if (!sessionCustomerId || sessionCustomerId === "undefined") return;
 
                     if (String(sessionCustomerId) === currentCustomerId) {
+                        setIsManualMode(isManualModeFromSession);
+                        if (isManualModeFromSession && session.manual_customer_id && session.customer_id && String(session.manual_customer_id) !== String(session.customer_id)) {
+                            setIsInterruption(true);
+                        } else {
+                            setIsInterruption(false);
+                        }
+
                         if (sessionStatus === 'active') {
                             setPostCall(false);
                             setIsCalling(true);
@@ -1556,8 +1573,13 @@ export default function CallingPage() {
     const prefetchedDataRef = useRef<any>(null);
 
     useEffect(() => {
-        // Trigger pre-fetch when disposition is selected
-        if (disposition && user?.uid && campaignId && customerId && prefetchStatus === 'idle') {
+        // USER RULE: 
+        // 1. Standard CRM Lead (isManualMode == false) -> Prefetch Next
+        // 2. Manual Call on THE SAME lead (Manual == System) -> Prefetch Next
+        // 3. Manual Interruption (Manual != System) -> DONT Prefetch
+        const shouldPrefetch = !isManualMode || (isManualMode && !isInterruption);
+
+        if (disposition && user?.uid && campaignId && customerId && prefetchStatus === 'idle' && shouldPrefetch) {
             console.log('⚡ [Pre-fetch] Background fetching next lead & data...');
             setPrefetchStatus('fetching');
             
@@ -1622,7 +1644,7 @@ export default function CallingPage() {
             prefetchPromiseRef.current = null;
             prefetchedDataRef.current = null;
         }
-    }, [disposition, user?.uid, campaignId, customerId, prefetchStatus]);
+    }, [disposition, user?.uid, campaignId, customerId, prefetchStatus, isManualMode, isInterruption]);
 
     type Data = {
         success?: boolean;
@@ -2327,7 +2349,7 @@ Campaign: ${campaign?.name || campaignId}
             // 2.5 Check if this is a manual call before clearing session
             let isManualCall = false;
             let isUnassignedCall = false;
-            let isInterruption = false;
+            let currentIsInterruption = false;
             let preservedCampaignId = null;
             let preservedCustomerId = null;
             let preservedStatus = null;
@@ -2356,21 +2378,23 @@ Campaign: ${campaign?.name || campaignId}
                     if (isManualCall) {
                         // Determine if we should go back to a DIFFERENT lead (Interruption)
                         if (manualCustId && String(manualCustId) !== String(preservedCustomerId)) {
-                            isInterruption = true;
+                            currentIsInterruption = true;
                         }
                     }
 
-                    console.log('[Disposition] Final check:', { isManualCall, isUnassignedCall, isInterruption });
+                    console.log('[Disposition] Final check:', { isManualCall, isUnassignedCall, currentIsInterruption });
                 }
             }
 
-
             // 3. Handle Manual Call vs CRM Call differently
-            // USER RULE: Manual dials NEVER trigger RPC for new leads. 
-            // They always return the user to the "Preserved Lead" (The original assigned context).
+            // USER RULE: 
+            // - Interrupted manual dials (Manual != System) restore to the preserved lead.
+            // - Same-lead manual dials (Manual == System) proceed to NEXT lead (CRM Flow).
             
                 // Redirect Logic:
-                if (isManualCall || !isAssignedToCampaign) {
+                // Only use "Scenario 1 (Restore)" if it was a manual interruption.
+                // If it was the SAME lead, we treat it like a primary lead disposed.
+                if (!isAssignedToCampaign || (isManualCall && currentIsInterruption)) {
                     console.log(`[Disposition] Flow Exit Path: IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
                     try {
