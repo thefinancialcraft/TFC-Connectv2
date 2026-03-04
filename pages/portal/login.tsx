@@ -17,49 +17,78 @@ export default function Login() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
+    // 🛡️ SAFETY FALLBACK: If checking takes too long (e.g. 12s), force show login form.
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
+        console.warn("⚠️ [Login] Session check timed out. Showing login form.");
+        setCheckingSession(false);
+      }
+    }, 12000);
+
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        if (session) {
+        if (session && isMounted) {
           console.log("🔄 [Login] Active session found, retrieving profile...");
-          // Fetch profile for accurate redirection
-          const { data: profile } = await supabase
+          
+          // ⏳ DATABASE TIMEOUT: If profile fetch takes too long (e.g. 8s), fallback
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Database Timeout")), 8000)
+          );
+
+          const profilePromise = supabase
             .from('user_profiles')
             .select('profile_complete, approval_status, status')
             .eq('user_id', session.user.id)
             .maybeSingle();
 
-          if (profile) {
-            if (profile.profile_complete === false) {
-              router.push("/profile-completion");
-              return;
-            }
+          try {
+            const result: any = await Promise.race([profilePromise, timeoutPromise]);
+            const profile = result?.data || result; // Handle both RPC and Select response formats
 
-            const pathMap: Record<string, string> = {
-              rejected: "/rejected",
-              pending: "/pending",
-              suspend: "/suspended",
-              hold: "/hold"
-            };
-            
-            const redirectPath = pathMap[profile.approval_status || ''] || pathMap[profile.status || ''] || "/dashboard";
-            console.log("🚀 [Login] Existing session, redirecting to:", redirectPath);
-            router.push(redirectPath);
-            // We stay in checkingSession state during redirect
-          } else {
-            setCheckingSession(false);
+            if (profile && isMounted) {
+              if (profile.profile_complete === false) {
+                router.push("/profile-completion");
+                return;
+              }
+
+              const pathMap: Record<string, string> = {
+                rejected: "/rejected",
+                pending: "/pending",
+                suspend: "/suspended",
+                hold: "/hold"
+              };
+              
+              const redirectPath = pathMap[profile.approval_status || ''] || pathMap[profile.status || ''] || "/dashboard";
+              console.log("🚀 [Login] Existing session, redirecting to:", redirectPath);
+              router.push(redirectPath);
+            } else if (isMounted) {
+              // Session exists but no profile found - likely a stale or broken session
+              console.error("❌ [Login] Session exists but profile missing. Signing out.");
+              await supabase.auth.signOut();
+              setCheckingSession(false);
+            }
+          } catch (fetchErr) {
+            console.error("❌ [Login] Profile fetch error or timeout:", fetchErr);
+            if (isMounted) setCheckingSession(false);
           }
-        } else {
+        } else if (isMounted) {
           setCheckingSession(false);
         }
       } catch (err) {
         console.error("Error checking session:", err);
-        setCheckingSession(false);
+        if (isMounted) setCheckingSession(false);
       }
     };
 
     checkUser();
+    return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
+    };
   }, [router]);
 
   const toggleForm = () => {
