@@ -717,21 +717,21 @@ export default function Customer() {
                 </div>
 
                 {/* Data Source Toggle */}
-                <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl  gap-2  flex items-center min-w-[300px]">
+                <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl gap-2 flex items-center md:min-w-[300px]">
                   <button
                     onClick={() => {
                       setDataSource("live");
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "live"
-                        ? "bg-white text-[#4b33e8]  scale-[1.02]"
+                        ? "bg-white text-[#4b33e8] scale-[1.02] shadow-sm"
                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                   >
-                    <i className={`fi flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`}></i>
-                    Live
+                    <i className={`fi text-base flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`}></i>
+                    <span className="hidden md:inline">Live</span>
                   </button>
                   <button
                     onClick={() => {
@@ -739,14 +739,14 @@ export default function Customer() {
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "rejected"
-                        ? "bg-white text-rose-600  scale-[1.02]"
+                        ? "bg-white text-rose-600 scale-[1.02] shadow-sm"
                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                   >
-                    <i className={`fi flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`}></i>
-                    Rejected
+                    <i className={`fi text-base flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`}></i>
+                    <span className="hidden md:inline">Rejected</span>
                   </button>
                   <button
                     onClick={() => {
@@ -754,14 +754,14 @@ export default function Customer() {
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "closed"
-                        ? "bg-white text-emerald-600  scale-[1.02]"
+                        ? "bg-white text-emerald-600 scale-[1.02] shadow-sm"
                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                   >
-                    <i className={`fi flex ${dataSource === "closed" ? "fi-sr-badge-check" : "fi-rr-badge-check"}`}></i>
-                    Closed
+                    <i className={`fi text-base flex ${dataSource === "closed" ? "fi-sr-badge-check" : "fi-rr-badge-check"}`}></i>
+                    <span className="hidden md:inline">Closed</span>
                   </button>
                 </div>
               </div>
