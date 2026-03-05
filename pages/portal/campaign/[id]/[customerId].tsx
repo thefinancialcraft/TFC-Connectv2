@@ -3007,7 +3007,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    console.warn('handleUpdateExpiry', tempExpiryDate);
+                                                                    handleUpdateExpiry(tempExpiryDate);
                                                                 }}
                                                                 disabled={saving}
                                                                 className="flex-1 py-1.5 rounded-lg bg-indigo-600 text-white text-[10px] font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-1"
