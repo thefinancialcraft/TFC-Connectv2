@@ -1998,6 +1998,7 @@ export default function CallingPage() {
                 const { data: conflicts, error: conflictErr } = await supabase
                     .from('customers')
                     .select('id, customer_name, campaign_id, disposition, sub_disposition, outcome, next_called_at')
+                    .or(`managed_by.eq.${user?.uid},assigned_to.eq.${user?.uid}`)
                     .gte('next_called_at', startRange)
                     .lte('next_called_at', endRange)
                     .neq('id', customerId)
@@ -3997,6 +3998,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     const { data: nextConflicts, error: nextConflictErr } = await supabase
                                                                                         .from('customers')
                                                                                         .select('id, customer_name, campaign_id, disposition, sub_disposition, outcome')
+                                                                                        .or(`managed_by.eq.${user?.uid},assigned_to.eq.${user?.uid}`)
                                                                                         .gte('next_called_at', sR)
                                                                                         .lte('next_called_at', eR)
                                                                                         .neq('id', customerId)
