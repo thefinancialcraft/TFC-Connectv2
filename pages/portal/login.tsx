@@ -168,12 +168,15 @@ export default function Login() {
             {formType === "userId" ? (
               <LoginFormUserId 
                 onError={setError} 
+                showForgotForm={showForgotForm}
+                showForgotPasswordForm={showForgotPasswordForm}
                 onForgotFormToggle={(show: boolean) => setShowForgotForm(show)}
                 onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
               />
             ) : (
               <LoginFormEmailId 
                 onError={setError} 
+                showForgotPasswordForm={showForgotPasswordForm}
                 onForgotPasswordFormToggle={(show: boolean) => setShowForgotPasswordForm(show)}
               />
             )}

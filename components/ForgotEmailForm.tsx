@@ -126,6 +126,17 @@ export default function ForgotEmailForm({ onBack, onError }: ForgotEmailFormProp
         >
           Hurray! We've found your email! Keep it safe for your next adventure with us!
         </p>
+
+        <div className="flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm font-semibold hover:underline"
+            style={{ color: '#4b33e8' }}
+          >
+            Back to Login
+          </button>
+        </div>
       </div>
     );
   }
@@ -242,18 +253,21 @@ export default function ForgotEmailForm({ onBack, onError }: ForgotEmailFormProp
             background: 'linear-gradient(to right, #4b33e8)',
             fontFamily: "'Poppins', sans-serif"
           }}
-          onMouseEnter={(e) => {
-            if (!isLoading) {
-              e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-          }}
         >
           {isLoading ? "Finding Email..." : "Find Email"}
         </button>
       </form>
+
+      <div className="flex justify-center mt-6">
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm font-semibold hover:underline"
+          style={{ color: '#4b33e8' }}
+        >
+          Back to Login
+        </button>
+      </div>
     </div>
   );
 }

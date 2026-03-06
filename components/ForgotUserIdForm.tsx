@@ -200,6 +200,17 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
         >
           Hurray! We've found your Employee ID! Keep it safe for your next adventure with us!
         </p>
+
+        <div className="flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm font-semibold hover:underline"
+            style={{ color: '#4A32E7' }}
+          >
+            Back to Login
+          </button>
+        </div>
       </div>
     );
   }
@@ -272,12 +283,6 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
             background: 'linear-gradient(to right, #4A32E7)',
             fontFamily: "'Poppins', sans-serif"
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right,rgb(112, 91, 255))';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4A32E7)';
-          }}
         >
           {isLoading ? "Sending OTP..." : "Request OTP"}
         </button>
@@ -297,14 +302,6 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
               background: 'none',
               border: 'none',
               padding: 0,
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.color = 'rgb(255, 91, 91)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#4A32E7';
             }}
           >
             {isLoading ? "Sending OTP..." : "Request Again?"}
@@ -363,16 +360,21 @@ export default function ForgotUserIdForm({ onBack, onError }: ForgotUserIdFormPr
             background: 'linear-gradient(to right, #4A32E7)',
             fontFamily: "'Poppins', sans-serif"
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, rgb(112, 91, 255))';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4A32E7)';
-          }}
         >
           Find Employee ID
         </button>
       )}
+
+      <div className="flex justify-center mt-6">
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm font-semibold hover:underline"
+          style={{ color: '#4A32E7' }}
+        >
+          Back to Login
+        </button>
+      </div>
     </div>
   );
 }

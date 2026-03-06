@@ -208,15 +208,16 @@ export default function ForgotPasswordForm({ onBack, onError }: ForgotPasswordFo
           </div>
         </div>
 
-        <p 
-          className="text-sm text-center"
-          style={{ 
-            color: 'rgb(38, 50, 56)',
-            fontFamily: "'Roboto', sans-serif"
-          }}
-        >
-          You can now login with your new password.
-        </p>
+        <div className="flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm font-semibold hover:underline"
+            style={{ color: '#4b33e8' }}
+          >
+            Back to Login
+          </button>
+        </div>
       </div>
     );
   }
@@ -331,16 +332,21 @@ export default function ForgotPasswordForm({ onBack, onError }: ForgotPasswordFo
               background: 'linear-gradient(to right, #4b33e8)',
               fontFamily: "'Poppins', sans-serif"
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-            }}
           >
             Reset Password
           </button>
         </form>
+        
+        <div className="flex justify-center mt-6">
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm font-semibold hover:underline"
+            style={{ color: '#4b33e8' }}
+          >
+            Back to Login
+          </button>
+        </div>
       </div>
     );
   }
@@ -413,12 +419,6 @@ export default function ForgotPasswordForm({ onBack, onError }: ForgotPasswordFo
             background: 'linear-gradient(to right, #4b33e8)',
             fontFamily: "'Poppins', sans-serif"
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right,#4b33e8)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-          }}
         >
           {isLoading ? "Sending OTP..." : "Request OTP"}
         </button>
@@ -475,16 +475,21 @@ export default function ForgotPasswordForm({ onBack, onError }: ForgotPasswordFo
             background: 'linear-gradient(to right, #4b33e8)',
             fontFamily: "'Poppins', sans-serif"
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to right, #4b33e8)';
-          }}
         >
           Reset Password
         </button>
       )}
+
+      <div className="flex justify-center mt-6">
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm font-semibold hover:underline"
+          style={{ color: '#4b33e8' }}
+        >
+          Back to Login
+        </button>
+      </div>
     </div>
   );
 }
