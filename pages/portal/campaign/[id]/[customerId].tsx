@@ -2134,7 +2134,7 @@ export default function CallingPage() {
             //           If lead is mine or fresh -> Use MY ID.
             // last_updated_by: The person doing the work (Me/TL)
             
-            const logAgentId = user?.uid; 
+            const logAgentId = finalLogAssignedTo || user?.uid; 
 
             const { error: logError } = await supabase
                 .from('call_logs')
