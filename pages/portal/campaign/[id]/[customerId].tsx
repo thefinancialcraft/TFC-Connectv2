@@ -2639,72 +2639,98 @@ Campaign: ${campaign?.name || campaignId}
     if (isAssigning) {
         // Dynamic Motivational Messages
         const getMotivationalQuote = () => {
-             if (dailyLeadCount <= 5) return "Great start! Let's build some momentum.";
-             if (dailyLeadCount <= 20) return "You're on fire! Keep the energy up.";
-             if (dailyLeadCount <= 50) return "Unstoppable! You're dominating this campaign.";
-             return "Absolute Legend! You're a dialling machine today.";
+             if (dailyLeadCount <= 5) return "Great start! Momentum is building.";
+             if (dailyLeadCount <= 20) return "You're on fire! Keep it up.";
+             if (dailyLeadCount <= 50) return "Unstoppable! You're dominating.";
+             return "Absolute Legend! Dialling machine.";
         };
 
         return (
-            <div className="flex min-h-screen items-center justify-center bg-slate-50 relative overflow-hidden">
-                {/* 🌈 Pulse Background */}
+            <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] relative overflow-hidden font-sans">
+                {/* 🌈 Subtle Background Glows */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-200/20 rounded-full blur-[120px] animate-pulse"></div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-violet-200/20 rounded-full blur-[100px] animate-pulse [animation-delay:1s]"></div>
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/20 rounded-full blur-[100px]"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-200/20 rounded-full blur-[100px]"></div>
                 </div>
 
-                <div className="relative z-10 flex flex-col items-center max-w-sm text-center px-8 py-10 rounded-[2.5rem] bg-white/70 backdrop-blur-xl border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] animate-in zoom-in-95 duration-500">
-                    <div className="relative w-24 h-24 mb-8">
-                         {/* Circle Ring */}
-                         <div className="absolute inset-0 border-[6px] border-slate-100 rounded-full"></div>
-                         <div className="absolute inset-0 border-[6px] border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"></div>
-                         
-                         {/* Core Icon */}
-                         <div className="absolute inset-0 flex items-center justify-center">
-                            <i className="fi flex fi-rr-shuffle text-indigo-600 text-2xl animate-pulse"></i>
-                         </div>
-
-                         {/* Mini satellites for extra "Wow" */}
-                         <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-white animate-bounce shadow-lg"></div>
-                    </div>
-
-                    <h2 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Assigning Lead</h2>
-                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-6">Syncing Next Opportunity</p>
-                    
-                    {/* Progress Loader Dots */}
-                    <div className="flex gap-2 mb-8">
-                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce"></div>
-                    </div>
-
-                    {/* Leaderboard / Stats Card */}
-                    <div className="w-full bg-indigo-950 rounded-3xl p-5 text-white mb-8 shadow-2xl shadow-indigo-200/50">
-                        <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-1">Today's Progress</p>
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                             <span className="text-4xl font-black">{dailyLeadCount}</span>
-                             <div className="h-8 w-px bg-indigo-800"></div>
-                             <div className="text-left">
-                                <p className="text-[10px] font-black uppercase text-indigo-400">Total Dials</p>
-                                <p className="text-xs font-bold">Processed</p>
-                             </div>
+                <div className="relative z-10 w-full max-w-[340px] sm:max-w-md mx-4 text-center">
+                    {/* Compact Glass Card */}
+                    <div className="bg-white/70 backdrop-blur-2xl border border-white/50 rounded-[2rem] p-6 sm:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.06)] animate-in fade-in zoom-in duration-700">
+                        
+                        {/* Status Icon Area */}
+                        <div className="relative w-20 h-20 mx-auto mb-6">
+                            <div className="absolute inset-0 bg-indigo-600/5 rounded-3xl rotate-12 animate-pulse"></div>
+                            <div className="absolute inset-0 bg-white border border-slate-100 rounded-3xl shadow-sm flex items-center justify-center">
+                                <div className="relative">
+                                    <i className="fi fi-rr-shuffle text-2xl text-indigo-600 animate-[spin_3s_linear_infinite]"></i>
+                                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="pt-3 border-t border-indigo-900">
-                            <p className="text-[11px] font-medium text-indigo-200 italic">"{getMotivationalQuote()}"</p>
+
+                        {/* Title Section */}
+                        <div className="mb-8">
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-1">Assigning Lead</h2>
+                            <p className="text-[10px] sm:text-[11px] font-bold text-indigo-500 uppercase tracking-[0.2em] opacity-70">Syncing Next Opportunity</p>
+                        </div>
+                        
+                        {/* Elegant Progress/Stats Pill */}
+                        <div className="bg-slate-900 rounded-2xl p-4 sm:p-5 text-white mb-8 shadow-xl shadow-indigo-100/50 group hover:scale-[1.02] transition-transform duration-500">
+                            <div className="flex items-center justify-between px-2">
+                                <div className="text-left">
+                                    <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-0.5">Today</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-3xl font-black tabular-nums tracking-tighter">{dailyLeadCount}</span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Dials</span>
+                                    </div>
+                                </div>
+                                <div className="h-10 w-px bg-slate-800"></div>
+                                <div className="text-right max-w-[50%]">
+                                    <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Spirit</p>
+                                    <p className="text-[11px] sm:text-xs font-bold leading-tight line-clamp-2">
+                                        "{getMotivationalQuote()}"
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {/* Micro Progress Bar */}
+                            <div className="mt-4 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full animate-[progress_3s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
+                            </div>
+                        </div>
+
+                        {/* Loading Indicator */}
+                        <div className="flex justify-center gap-1.5 mb-10">
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200 animate-[bounce_1s_infinite_-0.3s]"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-[bounce_1s_infinite_-0.15s]"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200 animate-[bounce_1s_infinite]"></div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="flex flex-col gap-6">
+                            <button 
+                                onClick={() => router.push(`/portal/campaign/${campaignId}`)}
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all duration-300 group"
+                            >
+                                <i className="fi fi-rr-exit text-sm transition-transform group-hover:-translate-x-1"></i>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Cancel Assignment</span>
+                            </button>
+                            
+                            <p className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em]">TFC Connect Engine 2.5</p>
                         </div>
                     </div>
-
-                    {/* 🆘 EMERGENCY EXIT (UX Safety) */}
-                    <button 
-                        onClick={() => router.push(`/portal/campaign/${campaignId}`)}
-                        className="group flex items-center gap-2 text-slate-400 hover:text-rose-500 transition-colors py-2 px-4"
-                    >
-                        <i className="fi flex fi-rr-exit text-sm group-hover:-translate-x-1 transition-transform"></i>
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Exit to Dashboard</span>
-                    </button>
-                    
-                    <p className="mt-8 text-[9px] font-bold text-slate-300 uppercase tracking-[0.1em]">TFC Connect Engine v2.5</p>
                 </div>
+
+                {/* Internal Keyframes */}
+                <style jsx>{`
+                    @keyframes progress {
+                        0% { transform: translateX(-100%); }
+                        100% { transform: translateX(250%); }
+                    }
+                `}</style>
             </div>
         );
     }
