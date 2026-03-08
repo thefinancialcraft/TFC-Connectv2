@@ -31,6 +31,8 @@ export default function CallingPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [isAssigning, setIsAssigning] = useState(false);
+    const [assignmentCountdown, setAssignmentCountdown] = useState(3);
+    const [targetNextLead, setTargetNextLead] = useState<{ id: string, campaignId: string } | null>(null);
     const [isAccessDeniedManual, setIsAccessDeniedManual] = useState(false);
     
     // Call States
@@ -56,6 +58,7 @@ export default function CallingPage() {
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
     const [isAssignPickerOpen, setIsAssignPickerOpen] = useState(false);
+    const [isPhoneUnmasked, setIsPhoneUnmasked] = useState(false);
     const [calendarViewDate, setCalendarViewDate] = useState(new Date());
     const [callAlive, setCallAlive] = useState(false);
     const [localCallingStatus, setLocalCallingStatus] = useState<string | null>(null);
@@ -630,14 +633,14 @@ export default function CallingPage() {
             }
         };
 
-        if (isCalling && callStartTime) {
+        if (isCalling && callStartTime && !isAssigning) {
             updateDuration(); // Sync immediately
             interval = setInterval(updateDuration, 1000);
         } else {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [isCalling, callStartTime, serverTimeOffset]);
+    }, [isCalling, callStartTime, serverTimeOffset, isAssigning]);
 
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
@@ -931,7 +934,7 @@ export default function CallingPage() {
             setLiveNotes(prefetchedDataRef.current.customer?.live_notes || "");
             if (prefetchedDataRef.current.history) setHistory(prefetchedDataRef.current.history);
             setLoading(false);
-            setIsAssigning(false);
+            // Removed setIsAssigning(false) from here to prevent flicker
         }
         
 
@@ -1153,13 +1156,23 @@ export default function CallingPage() {
                             call_start_at: null,
                             updated_at: new Date().toISOString()
                         }, { onConflict: 'user_id,campaign_id' });
-                        router.push(`/portal/campaign/${targetCampaignId}/${nextLeadId}`);
+                        setLocalCallingStatus(null);
+                        setIsAssigning(true);
+                        setAssignmentCountdown(3);
+                        setTargetNextLead({ id: nextLeadId, campaignId: targetCampaignId });
+                        fetchDailyStats();
                         return;
                     } else if (targetCampaignId) {
-                        router.push(`/portal/campaign/${targetCampaignId}`);
+                        setIsAssigning(true);
+                        setAssignmentCountdown(3);
+                        setTargetNextLead({ id: "", campaignId: targetCampaignId }); // fallback to campaign list
+                        fetchDailyStats();
                         return;
                     } else {
-                        router.push('/portal/campaign');
+                        setIsAssigning(true);
+                        setAssignmentCountdown(3);
+                        setTargetNextLead(null); // default fallback
+                        fetchDailyStats();
                         return;
                     }
                 } else {
@@ -1325,7 +1338,10 @@ export default function CallingPage() {
             setError(err.message);
         } finally {
             setLoading(false);
-            setIsAssigning(false);
+            // Automatically clear transition screen after 3.5s if it gets stuck
+            if (isAssigning) {
+                setTimeout(() => setIsAssigning(false), 3500);
+            }
         }
     };
 
@@ -1352,9 +1368,47 @@ export default function CallingPage() {
             setIsAccessDeniedManual(false);
             setError("");
             
+            setLocalCallingStatus(null);
+            setIsAccessDeniedManual(false);
+            setError("");
+            
+            // Reset assignment ONLY if it wasn't triggered intentionally (safety)
+            if (!targetNextLead) {
+                setIsAssigning(false);
+                setAssignmentCountdown(3);
+            }
+            setIsPhoneUnmasked(false);
+            
             fetchData();
         }
     }, [router.isReady, campaignId, customerId, user?.uid]);
+
+    // ⏱️ Consolidated Countdown & Navigation Logic
+    useEffect(() => {
+        if (!isAssigning) return;
+        
+        const timer = setInterval(() => {
+            setAssignmentCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    // Navigation trigger
+                    if (targetNextLead?.id) {
+                        router.push(`/portal/campaign/${targetNextLead.campaignId}/${targetNextLead.id}`);
+                    } else if (targetNextLead?.campaignId) {
+                        router.push(`/portal/campaign/${targetNextLead.campaignId}`);
+                    } else {
+                        router.push('/portal/campaign');
+                    }
+                    setIsAssigning(false);
+                    setTargetNextLead(null);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [isAssigning, targetNextLead, router]);
 
     const parseUTCtoMS = (timestamp: string) => {
         if (!timestamp) return null;
@@ -1436,7 +1490,7 @@ export default function CallingPage() {
                             setCallDuration(0);
                             setCallStartTime(null);
                         }
-                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId) {
+                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId && !isAssigning) {
                         // Redirect to another lead only if NOT in a manual interruption or if that manual lead is active
                         if (sessionStatus === 'paused') return;
                         router.push(`/portal/campaign/${sessionCampaignId}/${sessionCustomerId}`);
@@ -2552,13 +2606,16 @@ Campaign: ${campaign?.name || campaignId}
                         
                         setLocalCallingStatus(null);
                         setIsAssigning(true); // Trigger modern transition screen
-                        router.push(`/portal/campaign/${effectiveCampaignId}/${nextLeadId}`);
-                        setSaving(false);
+                        setAssignmentCountdown(3); // Start at 3s
+                        setTargetNextLead({ id: nextLeadId, campaignId: effectiveCampaignId || "" });
+                        fetchDailyStats(); // Refresh stats for the motivational screen
                         return; 
                     } else {
                         // Fallback if something went wrong but no specific error state caught
-                        router.push(`/portal/campaign/${campaignId}`);
-                        setSaving(false);
+                        setIsAssigning(true); // Still show transition for consistency
+                        setAssignmentCountdown(3);
+                        setTargetNextLead({ id: "", campaignId: (campaignId as string) || "" });
+                        fetchDailyStats();
                         return;
                     }
                 }
@@ -2657,17 +2714,36 @@ Campaign: ${campaign?.name || campaignId}
                     {/* Compact Glass Card */}
                     <div className="bg-white/70 backdrop-blur-2xl border border-white/50 rounded-[2rem] p-6 sm:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.06)] animate-in fade-in zoom-in duration-700">
                         
-                        {/* Status Icon Area */}
-                        <div className="relative w-20 h-20 mx-auto mb-6">
-                            <div className="absolute inset-0 bg-indigo-600/5 rounded-3xl rotate-12 animate-pulse"></div>
-                            <div className="absolute inset-0 bg-white border border-slate-100 rounded-3xl shadow-sm flex items-center justify-center">
-                                <div className="relative">
-                                    <i className="fi fi-rr-shuffle text-2xl text-indigo-600 animate-[spin_3s_linear_infinite]"></i>
-                                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
-                                    </span>
-                                </div>
+                        {/* Status Icon Area with Countdown */}
+                        <div className="relative w-24 h-24 mx-auto mb-6">
+                            {/* Circular Progress Background */}
+                            <svg className="absolute inset-0 w-full h-full -rotate-90">
+                                <circle
+                                    cx="48"
+                                    cy="48"
+                                    r="44"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    fill="transparent"
+                                    className="text-slate-100"
+                                />
+                                <circle
+                                    cx="48"
+                                    cy="48"
+                                    r="44"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    fill="transparent"
+                                    strokeDasharray={276}
+                                    strokeDashoffset={276 - (276 * (3 - assignmentCountdown + 1)) / 3}
+                                    className="text-indigo-600 transition-all duration-1000 ease-linear"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                            
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-3xl font-black text-indigo-600 tabular-nums animate-pulse">{assignmentCountdown}</span>
+                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest -mt-1">Sec</span>
                             </div>
                         </div>
 
@@ -2715,11 +2791,11 @@ Campaign: ${campaign?.name || campaignId}
                                 onClick={() => router.push(`/portal/campaign/${campaignId}`)}
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all duration-300 group"
                             >
-                                <i className="fi fi-rr-exit text-sm transition-transform group-hover:-translate-x-1"></i>
+                                <i className="fi flex fi-rr-exit text-sm transition-transform group-hover:-translate-x-1"></i>
                                 <span className="text-[10px] font-black uppercase tracking-widest">Cancel Assignment</span>
                             </button>
                             
-                            <p className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em]">TFC Connect Engine 2.5</p>
+                            <p className="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em]">Rynxly Engine 2.5</p>
                         </div>
                     </div>
                 </div>
@@ -3263,11 +3339,17 @@ Campaign: ${campaign?.name || campaignId}
                                                                  ? 'Mark outcome.' 
                                                                  : 'Line ready.'}
                                                             </p>
-                                                             <div className="flex mt-4 flex-wrap justify-center items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-colors hover:bg-blue-100 hover:border-blue-200 group/phone">
-                                                            <i className="fi flex  fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
-                                                            <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
-                                                                {formatMaskedPhone(customer?.phone_no) || 'N/A'}
-                                                            </span>
+                                                             <div 
+                                                                onClick={() => setIsPhoneUnmasked(!isPhoneUnmasked)}
+                                                                className="flex mt-4 flex-wrap justify-center items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 border border-blue-100 transition-all hover:bg-blue-100 hover:border-blue-200 cursor-pointer group/phone active:scale-95"
+                                                            >
+                                                                <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
+                                                                <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
+                                                                    {isPhoneUnmasked 
+                                                                        ? (customer?.phone_no ? decryptPhone(customer.phone_no) : 'N/A') 
+                                                                        : (formatMaskedPhone(customer?.phone_no) || 'N/A')
+                                                                    }
+                                                                </span>
                                                             <span className={`px-2 ml-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                                                                 (customer?.status || 'Active') !== 'Active'
                                                                 ? 'bg-orange-50 text-orange-600 border-orange-200'
