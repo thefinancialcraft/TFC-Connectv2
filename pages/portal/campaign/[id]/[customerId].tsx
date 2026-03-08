@@ -31,6 +31,7 @@ export default function CallingPage() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [isAssigning, setIsAssigning] = useState(false);
+    const [isAccessDeniedManual, setIsAccessDeniedManual] = useState(false);
     
     // Call States
     const [isCalling, setIsCalling] = useState(false);
@@ -613,7 +614,9 @@ export default function CallingPage() {
         }
     };
 
-    const primaryDispositions = Object.keys(dispositionHierarchy);
+    const primaryDispositions = isAccessDeniedManual 
+        ? ["Call Back", "Deal Done"] 
+        : Object.keys(dispositionHierarchy);
 
     useEffect(() => {
         let interval: any;
@@ -769,7 +772,7 @@ export default function CallingPage() {
     const fetchAuth = async () => {
         const result = await checkAuthAndFetchProfile();
         if (result.shouldRedirect) {
-            router.push("/login");
+            router.push("/portal/login");
             return;
         }
         if (result.user) setUser(result.user);
@@ -989,12 +992,16 @@ export default function CallingPage() {
                              try {
                                  const { data: guardSession } = await supabase
                                      .from('call_sessions')
-                                     .select('is_unassigned, is_manual')
+                                     .select('is_unassigned, is_manual, manual_customer_id')
                                      .eq('user_id', user.uid)
                                      .eq('campaign_id', campaignId)
                                      .maybeSingle();
                                      
-                                 if (guardSession?.is_unassigned && guardSession?.is_manual) {
+                                 if (guardSession?.is_manual && guardSession?.manual_customer_id === idToFetch) {
+                                     console.log("[Guard] Allowing temporary access for unauthorized manual dial.");
+                                     hasAccess = true;
+                                     setIsAccessDeniedManual(true);
+                                 } else if (guardSession?.is_unassigned && guardSession?.is_manual) {
                                      console.log("[Guard] Allowing access via active unassigned manual session.");
                                      hasAccess = true;
                                  }
@@ -1007,7 +1014,7 @@ export default function CallingPage() {
                     if (!hasAccess && user.isClient) {
                          console.warn(`[Guard] Access Denied for ${user.email} (Role: ${normalizedDesignation}) to Campaign ${campaignId}. Redirecting.`);
                          setLoading(false);
-                         router.push(`/campaign/${campaignId}`);
+                         router.push(`/portal/campaign`);
                          return;
                     }
                 }
@@ -1140,13 +1147,13 @@ export default function CallingPage() {
                             call_start_at: null,
                             updated_at: new Date().toISOString()
                         }, { onConflict: 'user_id,campaign_id' });
-                        router.push(`/campaign/${targetCampaignId}/${nextLeadId}`);
+                        router.push(`/portal/campaign/${targetCampaignId}/${nextLeadId}`);
                         return;
                     } else if (targetCampaignId) {
-                        router.push(`/campaign/${targetCampaignId}`);
+                        router.push(`/portal/campaign/${targetCampaignId}`);
                         return;
                     } else {
-                        router.push('/campaign');
+                        router.push('/portal/campaign');
                         return;
                     }
                 } else {
@@ -1155,9 +1162,9 @@ export default function CallingPage() {
                     console.warn(`[Fetch] No session matches missing customer ${idToFetch}. Redirecting to safety.`);
                     const targetCampaignId = campaignId || campaign?.id;
                     if (targetCampaignId) {
-                        router.push(`/campaign/${targetCampaignId}`);
+                        router.push(`/portal/campaign/${targetCampaignId}`);
                     } else {
-                        router.push('/campaign');
+                        router.push('/portal/campaign');
                     }
                     return;
                 }
@@ -1425,7 +1432,7 @@ export default function CallingPage() {
                     } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId) {
                         // Redirect to another lead only if NOT in a manual interruption or if that manual lead is active
                         if (sessionStatus === 'paused') return;
-                        router.push(`/campaign/${sessionCampaignId}/${sessionCustomerId}`);
+                        router.push(`/portal/campaign/${sessionCampaignId}/${sessionCustomerId}`);
                     }
                 }
             )
@@ -2120,7 +2127,7 @@ export default function CallingPage() {
             //           If lead is mine or fresh -> Use MY ID.
             // last_updated_by: The person doing the work (Me/TL)
             
-            const logAgentId = finalLogAssignedTo || user?.uid; 
+            const logAgentId = user?.uid; 
 
             const { error: logError } = await supabase
                 .from('call_logs')
@@ -2186,7 +2193,7 @@ export default function CallingPage() {
                     attempt_count: (customer?.attempt_count || 0) + 1,
                     last_attempt_at: now,
                     next_called_at: null,
-                    assigned_to: null, 
+                    assigned_to: customer?.assigned_to, 
                     
                     status: 'active',
                     disposition: disposition,
@@ -2227,10 +2234,10 @@ export default function CallingPage() {
                     updatePayload.assigned_to = user?.uid;
                     logAssignedTo = user?.uid;
                 } else if (isFollowup && !isAssignedToCampaign) {
-                    // Unauthorized: Force unassign even if it's a follow-up
-                    updatePayload.assigned_to = null;
-                    logAssignedTo = null;
-                    console.warn("[Disposition] Unauthorized assignment blocked for manual lead.");
+                    // Unauthorized: Preserve existing owner for manual lead.
+                    updatePayload.assigned_to = currentAssignedTo;
+                    logAssignedTo = currentAssignedTo;
+                    console.warn("[Disposition] Unauthorized assignment preserved for manual lead.");
                 }
                 
                 // Else: if follow-up but owned by someone else -> Keep original owner
@@ -2395,21 +2402,18 @@ Campaign: ${campaign?.name || campaignId}
                 // Redirect Logic:
                 // Only use "Scenario 1 (Restore)" if it was a manual interruption.
                 // If it was the SAME lead, we treat it like a primary lead disposed.
-                if (!isAssignedToCampaign || (isManualCall && currentIsInterruption)) {
-                    console.log(`[Disposition] Flow Exit Path: IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
+                if (isAccessDeniedManual || !isAssignedToCampaign || (isManualCall && currentIsInterruption)) {
+                    console.log(`[Disposition] Flow Exit Path: IsAccessDeniedManual=${isAccessDeniedManual}, IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
                     try {
                         const { data: { session: authSession } } = await supabase.auth.getSession();
                         if (!authSession) throw new Error("No Auth Session");
 
-                        if (isUnassignedCall || !isAssignedToCampaign) {
-                            // Scenario 2: Unassigned Manual Call -> DELETE & REDIRECT TO ANY OTHER SESSION OR DASHBOARD
-                            console.log(`[Disposition] Cleaning up unassigned manual session: ${campaignId}`);
+                        if (isAccessDeniedManual || isUnassignedCall || !isAssignedToCampaign) {
+                            // Scenario 2: Unassigned or Unauthorized Manual Call -> DELETE & REDIRECT
+                            console.log(`[Disposition] Cleaning up unauthorized/unassigned session: ${campaignId}`);
                             
                             // 1. Force unassign lead if it was unauthorizedly dialled
-                            await supabase.from('customers')
-                               .update({ assigned_to: null, status: 'active' })
-                               .eq('id', customerId);
 
                             // 2. Terminate the session via API for reliable cleanup
                             await fetch("/api/auth/update-call-session", {
@@ -2424,22 +2428,25 @@ Campaign: ${campaign?.name || campaignId}
                                })
                             });
 
-                            // 3. Find another session to redirect to
+                            // 3. Find another session to redirect to (Self-correction)
                             const { data: otherSessions } = await supabase
                                 .from('call_sessions')
-                                .select('campaign_id, customer_id, is_manual, manual_customer_id')
+                                .select('campaign_id, customer_id, is_manual, manual_customer_id, status, manual_status')
                                 .eq('user_id', user?.uid)
                                 .neq('campaign_id', campaignId)
+                                .or('status.in.(active,disposition_pending,assigned),manual_status.in.(active,disposition_pending)')
+                                .order('updated_at', { ascending: false })
                                 .limit(1);
                             
                             if (otherSessions && otherSessions.length > 0) {
                                 const target = otherSessions[0];
-                                const tid = target.is_manual ? target.manual_customer_id : target.customer_id;
+                                const isManualTarget = target.manual_status === 'active' || target.manual_status === 'disposition_pending';
+                                const tid = isManualTarget ? target.manual_customer_id : target.customer_id;
                                 console.log(`[Disposition] Redirecting to another available session: ${tid}`);
-                                router.push(`/campaign/${target.campaign_id}/${tid}`);
+                                router.push(`/portal/campaign/${target.campaign_id}/${tid}`);
                             } else {
-                                console.log(`[Disposition] No other sessions found. Returning to dashboard.`);
-                                router.push(`/campaign`);
+                                console.log(`[Disposition] No other sessions found. Returning to campaign dashboard.`);
+                                router.push(`/portal/campaign`);
                             }
                         } else {
                             // Scenario 1: Authorized Manual Interrupt -> RESTORE Primary Lead Context
@@ -2455,19 +2462,18 @@ Campaign: ${campaign?.name || campaignId}
                                     body: JSON.stringify({
                                         campaign_id: preservedCampaignId,
                                         customer_id: preservedCustomerId,
-                                        status: preservedStatus || 'assigned', // Restore original state (e.g. disposition_pending)
+                                        status: preservedStatus || 'assigned',
                                         manual_override: true 
                                     })
                                 });
-                                router.push(`/campaign/${preservedCampaignId}/${preservedCustomerId}`);
+                                router.push(`/portal/campaign/${preservedCampaignId}/${preservedCustomerId}`);
                             } else {
-                                // Fallback to current campaign dashboard
-                                router.push(`/campaign/${campaignId}`);
+                                router.push(`/portal/campaign/${campaignId}`);
                             }
                         }
                     } catch (err) {
                         console.error("[Disposition] Cleanup/Redirect error:", err);
-                        router.push(`/campaign/${campaignId}`);
+                        router.push(`/portal/campaign`);
                     }
                     setSaving(false);
                     return;
