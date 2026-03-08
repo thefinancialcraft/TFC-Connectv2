@@ -1073,6 +1073,12 @@ export default function CallingPage() {
             }
             
             if (foundCustomer) {
+                // User Requirement: Treat as unauthorized if assigned to someone else
+                if (foundCustomer.assigned_to && String(foundCustomer.assigned_to) !== String(user.uid)) {
+                    console.warn(`[Guard] Lead assigned to another user: ${foundCustomer.assigned_to}. Restricting access.`);
+                    setIsAccessDeniedManual(true);
+                }
+
                 setCustomer(foundCustomer);
                 setLiveNotes(foundCustomer.live_notes || "");
                 if (typeof customerId === 'string') {
@@ -1343,6 +1349,7 @@ export default function CallingPage() {
             setIsCalling(false);
             setPostCall(false);
             setLocalCallingStatus(null);
+            setIsAccessDeniedManual(false);
             setError("");
             
             fetchData();
