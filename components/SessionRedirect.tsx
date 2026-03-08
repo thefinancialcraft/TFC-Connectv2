@@ -124,7 +124,7 @@ export default function SessionRedirect() {
                          const deletedCampaignId = payload.old?.campaign_id;
                          if (!deletedCampaignId || campaignIdInPath === deletedCampaignId) {
                              console.log(`[Realtime-Redirect] Session deleted. Returning to dashboard.`);
-                             router.push('/campaign');
+                             router.push('/portal/campaign');
                          }
                     }
                 }
