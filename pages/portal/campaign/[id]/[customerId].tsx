@@ -1490,7 +1490,7 @@ export default function CallingPage() {
                             setCallDuration(0);
                             setCallStartTime(null);
                         }
-                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId && !isAssigning) {
+                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId && !isAssigning && !postCall) {
                         // Redirect to another lead only if NOT in a manual interruption or if that manual lead is active
                         if (sessionStatus === 'paused') return;
                         router.push(`/portal/campaign/${sessionCampaignId}/${sessionCustomerId}`);
