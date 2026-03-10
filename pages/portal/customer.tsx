@@ -183,19 +183,33 @@ export default function Customer() {
   };
 
   const handleDeleteDuplicateEntry = async (item: any) => {
+    // Determine the correct ID field (could be 'id' or 'customer_id' depending on RPC result)
+    const targetId = item.id || item.customer_id;
+    
+    if (!targetId) {
+      console.error("No ID found for item:", item);
+      alert("Error: Could not find record ID. Deletion failed.");
+      return;
+    }
+
     if (!confirm(`Are you sure you want to delete this specific lead record for ${item.customer_name}?`)) return;
     
     try {
       // Determine the correct table based on the item stage
       const table = item.stage === "Live" ? "customers" : item.stage === "Rejected" ? "rejected_leads" : "closed_deals";
       
-      // Attempt to delete
-      const { error } = await supabase.from(table).delete().eq("id", item.id);
+      // Attempt to delete. Note: the PK column in these tables is 'id'. 
+      // In rejected_leads, 'id' is the internal PK while 'customer_id' is the original ID.
+      // We use the UUID from targetId to perform the match.
+      const { error } = await supabase.from(table).delete().eq("id", targetId);
       
       if (error) throw error;
       
       // Update local duplicateLeads state to reflect deletion
-      setDuplicateLeads(prev => prev.filter(lead => !(lead.id === item.id && lead.stage === item.stage)));
+      setDuplicateLeads(prev => prev.filter(lead => {
+        const leadUuid = lead.id || lead.customer_id;
+        return !(leadUuid === targetId && lead.stage === item.stage);
+      }));
       
       // Also refresh the main customer table if it's currently showing that data source
       fetchCustomers(currentPage);
