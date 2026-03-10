@@ -145,6 +145,13 @@ export default function Customer() {
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [dataSource, setDataSource] = useState<"live" | "rejected" | "closed">("live");
+  
+  // Duplicate Modal States
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateLeads, setDuplicateLeads] = useState<any[]>([]);
+  const [loadingDuplicates, setLoadingDuplicates] = useState(false);
+  const [duplicateDispositionFilter, setDuplicateDispositionFilter] = useState("");
+
 
   useEffect(() => {
     if (selectedCustomer?.customer_details) {
@@ -158,6 +165,22 @@ export default function Customer() {
       } catch (e) {}
     }
   }, [selectedCustomer]);
+
+  const fetchDuplicates = async () => {
+    try {
+      setLoadingDuplicates(true);
+      setShowDuplicateModal(true);
+      const { data, error } = await supabase.rpc('get_duplicate_leads');
+      if (error) throw error;
+      setDuplicateLeads(data || []);
+    } catch (err) {
+      console.error("Error fetching duplicates:", err);
+      alert("Failed to fetch duplicate leads.");
+    } finally {
+      setLoadingDuplicates(false);
+    }
+  };
+
 
   // Filter Modal States
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -181,6 +204,10 @@ export default function Customer() {
     campaign: "",
     assignedTo: "",
     disposition: "",
+    startDate: "",
+    endDate: "",
+    createdStartDate: "",
+    createdEndDate: "",
   });
 
   // Bulk Action States
@@ -276,6 +303,15 @@ export default function Customer() {
         else countQuery = countQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) countQuery = countQuery.eq(dispCol, filters.disposition);
+      
+      const dateField = "expiry_date";
+      if (filters.startDate) countQuery = countQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+      if (filters.endDate) countQuery = countQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+      
+      const lifecycleDateField = dataSource === "rejected" ? "rejected_at" : dataSource === "closed" ? "closed_at" : "created_at";
+      if (filters.createdStartDate) countQuery = countQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+      if (filters.createdEndDate) countQuery = countQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+
 
       const { count, error: countError } = await countQuery;
       if (countError) console.error("Error fetching customer count:", countError);
@@ -297,6 +333,28 @@ export default function Customer() {
             freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
         freshCountQuery = applyUserFilters(freshCountQuery);
+
+        if (filters.startDate) {
+            pendingQuery = pendingQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            overdueQuery = overdueQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            freshCountQuery = freshCountQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+        }
+        if (filters.endDate) {
+            pendingQuery = pendingQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            overdueQuery = overdueQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            freshCountQuery = freshCountQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+        }
+        
+        if (filters.createdStartDate) {
+            pendingQuery = pendingQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            overdueQuery = overdueQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            freshCountQuery = freshCountQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+        }
+        if (filters.createdEndDate) {
+            pendingQuery = pendingQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+            overdueQuery = overdueQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+            freshCountQuery = freshCountQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+        }
 
         if (dataSource === "closed") {
             setPendingFollowUps(0);
@@ -335,6 +393,13 @@ export default function Customer() {
         else query = query.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) query = query.eq(dispCol, filters.disposition);
+      
+      if (filters.startDate) query = query.gte(dateField, `${filters.startDate}T00:00:00`);
+      if (filters.endDate) query = query.lte(dateField, `${filters.endDate}T23:59:59`);
+      
+      if (filters.createdStartDate) query = query.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+      if (filters.createdEndDate) query = query.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+
 
       let data: any[] | null = null;
       let error: any = null;
@@ -363,6 +428,13 @@ export default function Customer() {
                 else batchQuery = batchQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
             if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
+            
+            if (filters.startDate) batchQuery = batchQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            if (filters.endDate) batchQuery = batchQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            
+            if (filters.createdStartDate) batchQuery = batchQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            if (filters.createdEndDate) batchQuery = batchQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+
 
             const { data: batch, error: batchError } = await batchQuery.range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
             if (batchError) { error = batchError; break; }
@@ -1538,6 +1610,14 @@ export default function Customer() {
                               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
                             />
                           </div>
+                          <button
+                            onClick={fetchDuplicates}
+                            className="h-[38px] px-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg text-sm font-bold hover:bg-rose-100 transition-all flex items-center gap-2"
+                            title="Scan for Duplicate Numbers"
+                          >
+                            <i className="fi flex fi-rr-copy-alt text-xs"></i>
+                            Duplicates
+                          </button>
                           {/* <button 
                             onClick={() => setSearchQuery(tempSearchQuery)}
                             className="px-4 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold hover:bg-[#3d29c2] transition-colors shadow-sm active:scale-95 flex items-center gap-2"
@@ -1759,6 +1839,9 @@ export default function Customer() {
                                   Managed By
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Disposition
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
                                   {dataSource === "closed" ? "Final Status" : dataSource === "rejected" ? "Rejection Reason" : "Expiry Date"}
                                 </th>
                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
@@ -1872,6 +1955,11 @@ export default function Customer() {
                                         </span>
                                       )}
                                     </div>
+                                  </td>
+                                   <td className="px-4 py-4">
+                                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 uppercase tracking-tighter">
+                                      {customer.disposition || "No Status"}
+                                    </span>
                                   </td>
                                   <td className="px-4 py-4">
                                     <div className="flex flex-col">
@@ -2860,12 +2948,93 @@ export default function Customer() {
                   ))}
                 </select>
               </div>
+
+              {/* Created Date Range Filter */}
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                    Created Start
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="date"
+                      value={filters.createdStartDate}
+                      onChange={(e) => setFilters(prev => ({ ...prev, createdStartDate: e.target.value }))}
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
+                      <i className="fi fi-rr-calendar text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                    Created End
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="date"
+                      value={filters.createdEndDate}
+                      onChange={(e) => setFilters(prev => ({ ...prev, createdEndDate: e.target.value }))}
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
+                      <i className="fi fi-rr-calendar text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Date Range Filter */}
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                    Expiry Start
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="date"
+                      value={filters.startDate}
+                      onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
+                      <i className="fi fi-rr-calendar text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                    Expiry End
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="date"
+                      value={filters.endDate}
+                      onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
+                      <i className="fi fi-rr-calendar text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
               <button
                 onClick={() => {
-                  setFilters({ organization: "", campaign: "", assignedTo: "", disposition: "" });
+                  setFilters({ 
+                    organization: "", 
+                    campaign: "", 
+                    assignedTo: "", 
+                    disposition: "",
+                    startDate: "",
+                    endDate: "",
+                    createdStartDate: "",
+                    createdEndDate: ""
+                  });
                 }}
                 className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
               >
@@ -2879,6 +3048,164 @@ export default function Customer() {
                 className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
               >
                 Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Numbers Modal */}
+      {showDuplicateModal && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/80 backdrop-blur-sm sticky top-0 z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center">
+                  <i className="fi flex fi-rr-copy-alt text-rose-600 text-lg"></i>
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-gray-800 uppercase tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    Duplicate Numbers Found
+                  </h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
+                    Scanning active customers pool
+                  </p>
+                </div>
+                <div className="ml-8 flex items-center gap-3">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Filter By Disposition:</span>
+                  <select 
+                    value={duplicateDispositionFilter}
+                    onChange={(e) => setDuplicateDispositionFilter(e.target.value)}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 min-w-[150px] uppercase tracking-tighter transition-all"
+                  >
+                    <option value="">All Dispositions</option>
+                    {[...new Set(duplicateLeads.map(l => l.disposition).filter(Boolean))].sort().map(disp => (
+                      <option key={disp} value={disp}>{disp}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowDuplicateModal(false);
+                  setDuplicateDispositionFilter("");
+                }}
+                className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:border-rose-100 transition-all hover:rotate-90"
+              >
+                <i className="fi flex fi-rr-cross-small text-lg"></i>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar lg:p-6 bg-slate-50/30">
+              {loadingDuplicates ? (
+                <div className="py-20 flex flex-col items-center justify-center gap-4">
+                  <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-600 rounded-full animate-spin"></div>
+                  <p className="text-xs font-black text-rose-600 uppercase tracking-[0.2em] animate-pulse">Scanning Customers...</p>
+                </div>
+              ) : duplicateLeads.length === 0 ? (
+                <div className="py-20 text-center opacity-40">
+                  <div className="w-20 h-20 rounded-3xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <i className="fi flex fi-rr-search-check text-3xl"></i>
+                  </div>
+                  <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">No Duplicates Found</p>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  {Object.values(duplicateLeads.reduce((acc: any, lead: any) => {
+                    // Apply disposition filter if selected
+                    if (duplicateDispositionFilter && lead.disposition !== duplicateDispositionFilter) return acc;
+                    
+                    if (!acc[lead.phone_search_hash]) acc[lead.phone_search_hash] = [];
+                    acc[lead.phone_search_hash].push(lead);
+                    return acc;
+                  }, {})).filter((groups: any) => groups.length > 0).map((group: any, idx: number) => (
+                    <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group hover:border-rose-200 transition-all">
+                      <div className="p-4 bg-gray-50/50 border-b border-gray-50 flex items-center justify-between">
+                         <div className="flex items-center gap-2">
+                           <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                           <span className="text-xs font-black text-gray-800 uppercase tracking-widest leading-none">
+                             Group {idx + 1}
+                           </span>
+                         </div>
+                         <div className="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black uppercase tracking-tighter shadow-sm border border-rose-200/50">
+                           {group.length} Records Found
+                         </div>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-[#f8fafc]">
+                            <tr>
+                              <th className="px-5 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Customer</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Lead ID</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Created Date</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Stage</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Assigned Agent (Follow Up)</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Disposition</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-50">
+                            {group.map((item: any, i: number) => (
+                              <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="px-5 py-4">
+                                  <div className="flex flex-col">
+                                    <span className="text-[12px] font-bold text-gray-800 leading-tight">{item.customer_name}</span>
+                                    <span className="text-[10px] font-black text-rose-600 mt-0.5 tracking-tight group-hover:text-rose-700">
+                                      {formatMaskedPhone(item.phone_no)}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200/50 uppercase tracking-tighter">
+                                    {item.lead_id || 'N/A'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <span className="text-[10px] font-bold text-gray-600">
+                                    {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-[0.1em] border ${
+                                    item.stage === 'Live' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                                    item.stage === 'Rejected' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                    'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                  }`}>
+                                    {item.stage}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
+                                      <i className="fi fi-rr-user text-[11px] text-gray-500"></i>
+                                    </div>
+                                    <span className="text-[11px] font-bold text-slate-700">{item.assigned_to_name || 'N/A'}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100 uppercase tracking-tighter">
+                                    {item.disposition || 'No Status'}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 bg-gray-50/80 backdrop-blur-sm border-t border-gray-100 flex items-center justify-between">
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                Total Unique Duplicate Groups: <span className="text-rose-600 font-black ml-1">{[...new Set(duplicateLeads.map(l => l.phone_search_hash))].length}</span>
+              </p>
+              <button
+                onClick={() => setShowDuplicateModal(false)}
+                className="px-8 py-3 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-200 active:scale-95"
+              >
+                Close View
               </button>
             </div>
           </div>
