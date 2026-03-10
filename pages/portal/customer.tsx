@@ -151,6 +151,7 @@ export default function Customer() {
   const [duplicateLeads, setDuplicateLeads] = useState<any[]>([]);
   const [loadingDuplicates, setLoadingDuplicates] = useState(false);
   const [duplicateDispositionFilter, setDuplicateDispositionFilter] = useState("");
+  const [duplicateCampaignFilter, setDuplicateCampaignFilter] = useState("");
 
 
   useEffect(() => {
@@ -178,6 +179,30 @@ export default function Customer() {
       alert("Failed to fetch duplicate leads.");
     } finally {
       setLoadingDuplicates(false);
+    }
+  };
+
+  const handleDeleteDuplicateEntry = async (item: any) => {
+    if (!confirm(`Are you sure you want to delete this specific lead record for ${item.customer_name}?`)) return;
+    
+    try {
+      // Determine the correct table based on the item stage
+      const table = item.stage === "Live" ? "customers" : item.stage === "Rejected" ? "rejected_leads" : "closed_deals";
+      
+      // Attempt to delete
+      const { error } = await supabase.from(table).delete().eq("id", item.id);
+      
+      if (error) throw error;
+      
+      // Update local duplicateLeads state to reflect deletion
+      setDuplicateLeads(prev => prev.filter(lead => !(lead.id === item.id && lead.stage === item.stage)));
+      
+      // Also refresh the main customer table if it's currently showing that data source
+      fetchCustomers(currentPage);
+      
+    } catch (err: any) {
+      console.error("Error deleting duplicate entry:", err);
+      alert("Failed to delete entry: " + (err.message || "Unknown error"));
     }
   };
 
@@ -3084,11 +3109,25 @@ export default function Customer() {
                     ))}
                   </select>
                 </div>
+                <div className="ml-4 flex items-center gap-3">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Filter By Campaign:</span>
+                  <select 
+                    value={duplicateCampaignFilter}
+                    onChange={(e) => setDuplicateCampaignFilter(e.target.value)}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 min-w-[150px] uppercase tracking-tighter transition-all"
+                  >
+                    <option value="">All Campaigns</option>
+                    {[...new Set(duplicateLeads.map(l => l.campaign_name || l.campaign_id).filter(Boolean))].sort().map(camp => (
+                      <option key={camp} value={camp}>{camp}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <button 
                 onClick={() => {
                   setShowDuplicateModal(false);
                   setDuplicateDispositionFilter("");
+                  setDuplicateCampaignFilter("");
                 }}
                 className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:border-rose-100 transition-all hover:rotate-90"
               >
@@ -3112,8 +3151,11 @@ export default function Customer() {
               ) : (
                 <div className="grid gap-6">
                   {Object.values(duplicateLeads.reduce((acc: any, lead: any) => {
-                    // Apply disposition filter if selected
-                    if (duplicateDispositionFilter && lead.disposition !== duplicateDispositionFilter) return acc;
+                    // Apply filters if selected
+                    const matchesDisposition = !duplicateDispositionFilter || lead.disposition === duplicateDispositionFilter;
+                    const matchesCampaign = !duplicateCampaignFilter || (lead.campaign_name === duplicateCampaignFilter || lead.campaign_id === duplicateCampaignFilter);
+                    
+                    if (!matchesDisposition || !matchesCampaign) return acc;
                     
                     if (!acc[lead.phone_search_hash]) acc[lead.phone_search_hash] = [];
                     acc[lead.phone_search_hash].push(lead);
@@ -3139,8 +3181,10 @@ export default function Customer() {
                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Lead ID</th>
                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Created Date</th>
                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Stage</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Assigned Agent (Follow Up)</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Campaign</th>
+                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Assigned Agent (Follow Up)</th>
                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Disposition</th>
+                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Action</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-50">
@@ -3174,6 +3218,11 @@ export default function Customer() {
                                   </span>
                                 </td>
                                 <td className="px-4 py-4">
+                                  <span className="text-[10px] font-bold text-gray-600">
+                                    {item.campaign_name || item.campaign_id || 'N/A'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-4">
                                   <div className="flex items-center gap-2">
                                     <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
                                       <i className="fi fi-rr-user text-[11px] text-gray-500"></i>
@@ -3185,6 +3234,15 @@ export default function Customer() {
                                   <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100 uppercase tracking-tighter">
                                     {item.disposition || 'No Status'}
                                   </span>
+                                </td>
+                                <td className="px-4 py-4">
+                                  <button
+                                    onClick={() => handleDeleteDuplicateEntry(item)}
+                                    className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/50 hover:bg-rose-100 transition-all shadow-sm group/del"
+                                    title="Delete Record"
+                                  >
+                                    <i className="fi flex fi-rr-trash text-xs group-hover/del:scale-110 transition-transform"></i>
+                                  </button>
                                 </td>
                               </tr>
                             ))}
