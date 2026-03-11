@@ -498,17 +498,26 @@ export default function ImportCustomersModal({
         setImportSuccess("");
 
         try {
-            const hashes = fullyProcessedCustomers.map(c => c.phone_search_hash);
+            const hashes = fullyProcessedCustomers
+                .map(c => c.phone_search_hash)
+                .filter(h => h); // Ensure no empty hashes enter the query
             
-            // Query DB for existing numbers in this campaign/org
-            const { data: existingRecords, error } = await supabase
-                .from("customers")
-                .select("*")
-                .in("phone_search_hash", hashes)
-                .eq("campaign_id", selectedCampaignId)
-                .eq("organization_id", selectedOrgId);
+            const batchSize = 100; // Reduced batch size further to prevent URL length (URI Too Long) errors
+            let existingRecords: any[] = [];
+            
+            // Check in batches for 2k+ records support
+            for (let i = 0; i < hashes.length; i += batchSize) {
+                const batch = hashes.slice(i, i + batchSize);
+                const { data, error } = await supabase
+                    .from("customers")
+                    .select("*")
+                    .in("phone_search_hash", batch)
+                    .eq("campaign_id", selectedCampaignId)
+                    .eq("organization_id", selectedOrgId);
 
-            if (error) throw error;
+                if (error) throw error;
+                if (data) existingRecords = [...existingRecords, ...data];
+            }
 
             if (existingRecords && existingRecords.length > 0) {
                 // Determine conflicts
@@ -522,14 +531,14 @@ export default function ImportCustomersModal({
 
                 setDbConflicts(conflicts);
                 setShowDbConflictModal(true);
-                // Notification message
-                setImportError(`Stage 2: Found ${conflicts.length} existing CRM records. ${fullyProcessedCustomers.length - conflicts.length} new records will be added directly.`);
+                setImportError(`Stage 2: Found ${conflicts.length} matches in CRM. ${fullyProcessedCustomers.length - conflicts.length} records are new.`);
             } else {
                 setImportSuccess(`Stage 2 Complete! All ${fullyProcessedCustomers.length} records are new and ready for CRM.`);
                 setIsDbScanComplete(true);
             }
-        } catch (err) {
-            setImportError(`Error checking database: ${err}`);
+        } catch (err: any) {
+            console.error("Database Check Error:", err);
+            setImportError(`Error checking database: ${err.message || String(err)}`);
         } finally {
             setIsScanningDb(false);
         }
