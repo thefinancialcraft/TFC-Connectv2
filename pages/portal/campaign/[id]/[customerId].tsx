@@ -542,7 +542,7 @@ export default function CallingPage() {
     const [isAddingOutcome, setIsAddingOutcome] = useState(false);
 
     useEffect(() => {
-        if (user && subDisposition && disposition === 'Call Back') {
+        if (user && subDisposition && (disposition === 'Call Back' || disposition === 'Not Contactable')) {
             fetchUserOutcomes();
         } else {
             setUserOutcomes([]);
@@ -617,7 +617,7 @@ export default function CallingPage() {
         }
     };
 
-    const primaryDispositions = isAccessDeniedManual 
+    const primaryDispositions = (isAccessDeniedManual && customer?.disposition !== 'Not Contactable') 
         ? ["Call Back", "Deal Done"] 
         : Object.keys(dispositionHierarchy);
 
@@ -3671,8 +3671,8 @@ Campaign: ${campaign?.name || campaignId}
                                                     </div>
                                                 )}
 
-                                                {/* Outcomes (Conditional on Sub-Disposition for Call Back) */}
-                                                {disposition === 'Call Back' && subDisposition && (
+                                                {/* Outcomes (Conditional on Sub-Disposition for Call Back and Not Contactable) */}
+                                                {(disposition === 'Call Back' || disposition === 'Not Contactable') && subDisposition && (
                                                     <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         <div className="flex items-center justify-between pl-1">
                                                             <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Outcome</p>
