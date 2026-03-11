@@ -171,9 +171,79 @@ export default function Customer() {
     try {
       setLoadingDuplicates(true);
       setShowDuplicateModal(true);
-      const { data, error } = await supabase.rpc('get_duplicate_leads');
-      if (error) throw error;
-      setDuplicateLeads(data || []);
+      
+      // 1. Get duplicate summaries from RPC
+      const { data: initialData, error: rpcError } = await supabase.rpc('get_duplicate_leads');
+      if (rpcError) throw rpcError;
+
+      let items = initialData || [];
+      
+      if (items.length > 0) {
+        // 2. Fetch full records from ALL tables to ensure all fields are present
+        const leadIds = items.map((i: any) => i.lead_id).filter(Boolean);
+        if (leadIds.length > 0) {
+           const [liveRes, rejRes, closedRes] = await Promise.all([
+             supabase.from('customers').select('*').in('lead_id', leadIds),
+             supabase.from('rejected_leads').select('*').in('lead_id', leadIds),
+             supabase.from('closed_deals').select('*').in('lead_id', leadIds)
+           ]);
+           
+           const allFullRecords = [...(liveRes.data || []), ...(rejRes.data || []), ...(closedRes.data || [])];
+           
+           if (allFullRecords.length > 0) {
+             const recordMap = new Map(allFullRecords.map(r => [r.lead_id, r]));
+             items = items.map((item: any) => ({
+               ...item,
+               ...(recordMap.get(item.lead_id) || {})
+             }));
+           }
+        }
+
+        // 3. Resolve Campaign Names
+        // Check for campaign_id (UUID) or campaign (often used as name or ID in some tables)
+        const campaignIds = [...new Set(items.map((c: any) => c.campaign_id || c.campaign).filter((id: any) => id && id.length > 20))];
+        let campaignMap: Record<string, string> = {};
+        if (campaignIds.length > 0) {
+          const { data: cData } = await supabase.from("campaigns").select("id, name").in("id", campaignIds);
+          if (cData) cData.forEach(c => { campaignMap[c.id] = c.name; });
+        }
+
+        // 4. Resolve Agent Names
+        const allUserIds = [...new Set(items.map((c: any) => c.assigned_to || c.agent_id).filter((id: any) => id))];
+        let userMap: Record<string, string> = {};
+        if (allUserIds.length > 0) {
+          const { data: userData } = await supabase.from("user_profiles").select("user_id, id, user_name")
+            .or(`user_id.in.("${allUserIds.join('","')}"),id.in.("${allUserIds.join('","')}")`);
+          if (userData) {
+            userData.forEach(u => {
+              userMap[u.user_id] = u.user_name || "Unknown";
+              userMap[u.id] = u.user_name || "Unknown";
+            });
+          }
+        }
+
+        // 5. Final Mapping
+        const mappedData = items.map((item: any) => {
+          const agentId = item.assigned_to || item.agent_id;
+          const campId = item.campaign_id || item.campaign;
+          
+          // Campaign logic: Use resolved name, or string in 'campaign' field if it's not a UUID
+          let resolvedCampaign = item.campaign_name;
+          if (!resolvedCampaign && campId) {
+             resolvedCampaign = campaignMap[campId] || (campId.length < 20 ? campId : null);
+          }
+
+          return {
+            ...item,
+            campaign_name: resolvedCampaign || "N/A",
+            assigned_to_name: item.assigned_to_name || (agentId ? userMap[agentId] || "Unknown" : "Unassigned")
+          };
+        });
+        setDuplicateLeads(mappedData);
+
+      } else {
+        setDuplicateLeads([]);
+      }
     } catch (err) {
       console.error("Error fetching duplicates:", err);
       alert("Failed to fetch duplicate leads.");
@@ -183,33 +253,28 @@ export default function Customer() {
   };
 
   const handleDeleteDuplicateEntry = async (item: any) => {
-    // Determine the correct ID field (could be 'id' or 'customer_id' depending on RPC result)
-    const targetId = item.id || item.customer_id;
+    // Using lead_id as the primary identifier (e.g., LEAD-1772796342061-975)
+    const targetLeadId = item.lead_id;
     
-    if (!targetId) {
-      console.error("No ID found for item:", item);
-      alert("Error: Could not find record ID. Deletion failed.");
+    if (!targetLeadId) {
+      console.error("No Lead ID found for item:", item);
+      alert("Error: Could not find Lead ID. Deletion failed.");
       return;
     }
 
-    if (!confirm(`Are you sure you want to delete this specific lead record for ${item.customer_name}?`)) return;
+    if (!confirm(`Are you sure you want to delete this specific lead record (${targetLeadId}) for ${item.customer_name}?`)) return;
     
     try {
       // Determine the correct table based on the item stage
       const table = item.stage === "Live" ? "customers" : item.stage === "Rejected" ? "rejected_leads" : "closed_deals";
       
-      // Attempt to delete. Note: the PK column in these tables is 'id'. 
-      // In rejected_leads, 'id' is the internal PK while 'customer_id' is the original ID.
-      // We use the UUID from targetId to perform the match.
-      const { error } = await supabase.from(table).delete().eq("id", targetId);
+      // Attempt to delete. This uses lead_id to ensure the exact business record is removed
+      const { error } = await supabase.from(table).delete().eq("lead_id", targetLeadId);
       
       if (error) throw error;
       
       // Update local duplicateLeads state to reflect deletion
-      setDuplicateLeads(prev => prev.filter(lead => {
-        const leadUuid = lead.id || lead.customer_id;
-        return !(leadUuid === targetId && lead.stage === item.stage);
-      }));
+      setDuplicateLeads(prev => prev.filter(lead => !(lead.lead_id === targetLeadId && lead.stage === item.stage)));
       
       // Also refresh the main customer table if it's currently showing that data source
       fetchCustomers(currentPage);
@@ -546,19 +611,21 @@ export default function Customer() {
     }
   };
 
+  // Initial fetch on mount or user change - but restricted to prevent focus/tab-switch loops
   useEffect(() => {
-    if (user || userLoaded) {
-      setCurrentPage(1);
-      fetchCustomers(1);
-      fetchFilterMetadata();
+    if ((user || userLoaded) && mounted) {
+      // Only trigger if we don't have customers yet or it's the first stable mount
+      if (allCustomers.length === 0) {
+        setCurrentPage(1);
+        fetchCustomers(1);
+        fetchFilterMetadata();
+      }
       setSelectedCustomers(new Set());
       setSearchQuery("");
       setTempSearchQuery("");
     }
-    const handleFocus = () => { fetchCustomers(currentPage); };
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [user, userLoaded, dataSource]);
+  }, [user?.uid, userLoaded, mounted]); // Dependency on user?.uid is more stable than the whole user object
+
 
   const fetchFilterMetadata = async () => {
     try {
@@ -834,6 +901,7 @@ export default function Customer() {
                       setDataSource("live");
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
+                      fetchCustomers(1);
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "live"
@@ -849,6 +917,7 @@ export default function Customer() {
                       setDataSource("rejected");
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
+                      fetchCustomers(1);
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "rejected"
@@ -864,6 +933,7 @@ export default function Customer() {
                       setDataSource("closed");
                       setFilters(prev => ({ ...prev, disposition: "" }));
                       setCurrentPage(1);
+                      fetchCustomers(1);
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "closed"
@@ -871,7 +941,7 @@ export default function Customer() {
                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                     }`}
                   >
-                    <i className={`fi text-base flex ${dataSource === "closed" ? "fi-sr-badge-check" : "fi-rr-badge-check"}`}></i>
+                    <i className={`fi text-base flex ${dataSource === "closed" ? "fi-sr-check-circle" : "fi-rr-check-circle"}`}></i>
                     <span className="hidden md:inline">Closed</span>
                   </button>
                 </div>
@@ -1452,6 +1522,14 @@ export default function Customer() {
                         )}
                       </button>
                     )}
+                    <button
+                      onClick={() => fetchCustomers(currentPage)}
+                      className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
+                      title="Refresh Data"
+                      disabled={loadingCustomers}
+                    >
+                      <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
+                    </button>
                     {/* Filter Button */}
                     <button
                       onClick={() => setShowFilterModal(true)}
@@ -1655,7 +1733,7 @@ export default function Customer() {
                             title="Scan for Duplicate Numbers"
                           >
                             <i className="fi flex fi-rr-copy-alt text-xs"></i>
-                            Duplicates
+                           
                           </button>
                           {/* <button 
                             onClick={() => setSearchQuery(tempSearchQuery)}
@@ -1727,6 +1805,16 @@ export default function Customer() {
                           )}
                         </div>
                       )}
+                      {/* Refresh Button - Before Filter */}
+                      <button
+                        onClick={() => fetchCustomers(currentPage)}
+                        className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
+                        title="Refresh Data"
+                        disabled={loadingCustomers}
+                      >
+                        <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
+                      </button>
+
                       {/* Filter Button */}
                       <button
                         onClick={() => setShowFilterModal(true)}
@@ -1745,6 +1833,7 @@ export default function Customer() {
                           </span>
                         )}
                       </button>
+
                       {/* Import Button */}
                       {permissionFlags.isImportButtonVisible && (
                       <button
@@ -3095,40 +3184,28 @@ export default function Customer() {
 
       {/* Duplicate Numbers Modal */}
       {showDuplicateModal && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/80 backdrop-blur-sm sticky top-0 z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center">
-                  <i className="fi flex fi-rr-copy-alt text-rose-600 text-lg"></i>
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-gray-800 uppercase tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                    Duplicate Numbers Found
-                  </h3>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                    Scanning active customers pool
-                  </p>
-                </div>
-                <div className="ml-8 flex items-center gap-3">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Filter By Disposition:</span>
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs">
+          <div className="bg-white rounded-lg w-full max-w-4xl shadow-2xl flex flex-col max-h-[80vh] border border-gray-100">
+            {/* Simple Clean Header */}
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <h3 className="font-bold text-gray-800">Duplicate Entries</h3>
+                
+                <div className="flex items-center gap-3 ml-4">
                   <select 
                     value={duplicateDispositionFilter}
                     onChange={(e) => setDuplicateDispositionFilter(e.target.value)}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 min-w-[150px] uppercase tracking-tighter transition-all"
+                    className="px-2 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-600 focus:outline-none min-w-[140px]"
                   >
                     <option value="">All Dispositions</option>
                     {[...new Set(duplicateLeads.map(l => l.disposition).filter(Boolean))].sort().map(disp => (
                       <option key={disp} value={disp}>{disp}</option>
                     ))}
                   </select>
-                </div>
-                <div className="ml-4 flex items-center gap-3">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Filter By Campaign:</span>
                   <select 
                     value={duplicateCampaignFilter}
                     onChange={(e) => setDuplicateCampaignFilter(e.target.value)}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[10px] font-bold text-gray-700 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 min-w-[150px] uppercase tracking-tighter transition-all"
+                    className="px-2 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-600 focus:outline-none min-w-[140px]"
                   >
                     <option value="">All Campaigns</option>
                     {[...new Set(duplicateLeads.map(l => l.campaign_name || l.campaign_id).filter(Boolean))].sort().map(camp => (
@@ -3137,147 +3214,112 @@ export default function Customer() {
                   </select>
                 </div>
               </div>
+
               <button 
                 onClick={() => {
                   setShowDuplicateModal(false);
                   setDuplicateDispositionFilter("");
                   setDuplicateCampaignFilter("");
                 }}
-                className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:border-rose-100 transition-all hover:rotate-90"
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
-                <i className="fi flex fi-rr-cross-small text-lg"></i>
+                <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar lg:p-6 bg-slate-50/30">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
               {loadingDuplicates ? (
-                <div className="py-20 flex flex-col items-center justify-center gap-4">
-                  <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-600 rounded-full animate-spin"></div>
-                  <p className="text-xs font-black text-rose-600 uppercase tracking-[0.2em] animate-pulse">Scanning Customers...</p>
+                <div className="py-20 text-center text-gray-400 uppercase tracking-widest text-[10px] font-medium">
+                  Scanning for duplicates...
                 </div>
               ) : duplicateLeads.length === 0 ? (
-                <div className="py-20 text-center opacity-40">
-                  <div className="w-20 h-20 rounded-3xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                    <i className="fi flex fi-rr-search-check text-3xl"></i>
-                  </div>
-                  <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">No Duplicates Found</p>
+                <div className="py-20 text-center text-gray-400 text-sm">
+                  No duplicates found.
                 </div>
               ) : (
-                <div className="grid gap-6">
+                <div className="divide-y divide-gray-100">
                   {Object.values(duplicateLeads.reduce((acc: any, lead: any) => {
-                    // Apply filters if selected
                     const matchesDisposition = !duplicateDispositionFilter || lead.disposition === duplicateDispositionFilter;
                     const matchesCampaign = !duplicateCampaignFilter || (lead.campaign_name === duplicateCampaignFilter || lead.campaign_id === duplicateCampaignFilter);
-                    
                     if (!matchesDisposition || !matchesCampaign) return acc;
-                    
                     if (!acc[lead.phone_search_hash]) acc[lead.phone_search_hash] = [];
                     acc[lead.phone_search_hash].push(lead);
                     return acc;
                   }, {})).filter((groups: any) => groups.length > 0).map((group: any, idx: number) => (
-                    <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group hover:border-rose-200 transition-all">
-                      <div className="p-4 bg-gray-50/50 border-b border-gray-50 flex items-center justify-between">
-                         <div className="flex items-center gap-2">
-                           <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-                           <span className="text-xs font-black text-gray-800 uppercase tracking-widest leading-none">
-                             Group {idx + 1}
-                           </span>
-                         </div>
-                         <div className="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black uppercase tracking-tighter shadow-sm border border-rose-200/50">
-                           {group.length} Records Found
-                         </div>
+                    <div key={idx} className="bg-white">
+                      <div className="px-5 py-2 bg-gray-50/50 flex items-center justify-between border-y border-gray-50">
+                         <span className="font-bold text-gray-500 uppercase text-[10px]">Group {idx + 1}</span>
+                         <span className="text-[10px] text-gray-400">{group.length} records</span>
                       </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead className="bg-[#f8fafc]">
-                            <tr>
-                              <th className="px-5 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Customer</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Lead ID</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Created Date</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Stage</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Campaign</th>
-                               <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Assigned Agent (Follow Up)</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Disposition</th>
-                              <th className="px-4 py-3 text-left text-[9px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="text-gray-400 uppercase text-[9px] font-bold border-b border-gray-50">
+                            <th className="px-5 py-2">Customer / Phone</th>
+                            <th className="px-3 py-2">Lead ID</th>
+                            <th className="px-3 py-2">Date</th>
+                            <th className="px-3 py-2">Stage</th>
+                            <th className="px-3 py-2">Campaign</th>
+                            <th className="px-3 py-2">Agent</th>
+                            <th className="px-3 py-2">Status</th>
+                            <th className="px-5 py-2"></th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                          {group.map((item: any, i: number) => (
+                            <tr key={i} className="hover:bg-gray-50/30 transition-colors text-[11px]">
+                              <td className="px-5 py-3">
+                                <div className="font-semibold text-gray-800">{item.customer_name}</div>
+                                <div className="text-gray-400">{formatMaskedPhone(item.phone_no)}</div>
+                              </td>
+                              <td className="px-3 py-3 text-gray-500">{item.lead_id || '-'}</td>
+                              <td className="px-3 py-3 text-gray-500">
+                                {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB') : '-'}
+                              </td>
+                              <td className="px-3 py-3">
+                                <span className={`font-bold ${
+                                  item.stage === 'Live' ? 'text-indigo-600' :
+                                  item.stage === 'Rejected' ? 'text-rose-500' :
+                                  'text-emerald-600'
+                                }`}>
+                                  {item.stage}
+                                </span>
+                              </td>
+                              <td className="px-3 py-3 text-gray-600">{item.campaign_name || item.campaign_id || '-'}</td>
+                              <td className="px-3 py-3 text-gray-600">{item.assigned_to_name || '-'}</td>
+                              <td className="px-3 py-3 text-gray-600">{item.disposition || '-'}</td>
+                              <td className="px-5 py-3 text-right">
+                                <button
+                                  onClick={() => handleDeleteDuplicateEntry(item)}
+                                  className="text-gray-300 hover:text-rose-500 transition-colors"
+                                  title="Delete Entry"
+                                >
+                                  <i className="fi fi-rr-trash"></i>
+                                </button>
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-50">
-                            {group.map((item: any, i: number) => (
-                              <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-5 py-4">
-                                  <div className="flex flex-col">
-                                    <span className="text-[12px] font-bold text-gray-800 leading-tight">{item.customer_name}</span>
-                                    <span className="text-[10px] font-black text-rose-600 mt-0.5 tracking-tight group-hover:text-rose-700">
-                                      {formatMaskedPhone(item.phone_no)}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200/50 uppercase tracking-tighter">
-                                    {item.lead_id || 'N/A'}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <span className="text-[10px] font-bold text-gray-600">
-                                    {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-[0.1em] border ${
-                                    item.stage === 'Live' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
-                                    item.stage === 'Rejected' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                    'bg-emerald-50 text-emerald-600 border-emerald-100'
-                                  }`}>
-                                    {item.stage}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <span className="text-[10px] font-bold text-gray-600">
-                                    {item.campaign_name || item.campaign_id || 'N/A'}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200">
-                                      <i className="fi fi-rr-user text-[11px] text-gray-500"></i>
-                                    </div>
-                                    <span className="text-[11px] font-bold text-slate-700">{item.assigned_to_name || 'N/A'}</span>
-                                  </div>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-100 uppercase tracking-tighter">
-                                    {item.disposition || 'No Status'}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                  <button
-                                    onClick={() => handleDeleteDuplicateEntry(item)}
-                                    className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/50 hover:bg-rose-100 transition-all shadow-sm group/del"
-                                    title="Delete Record"
-                                  >
-                                    <i className="fi flex fi-rr-trash text-xs group-hover/del:scale-110 transition-transform"></i>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="p-6 bg-gray-50/80 backdrop-blur-sm border-t border-gray-100 flex items-center justify-between">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                Total Unique Duplicate Groups: <span className="text-rose-600 font-black ml-1">{[...new Set(duplicateLeads.map(l => l.phone_search_hash))].length}</span>
-              </p>
+            {/* Flat Social Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
+              <span className="text-gray-400 font-medium">
+                Total duplicate groups: <span className="text-gray-700 font-bold">{[...new Set(duplicateLeads.map(l => l.phone_search_hash))].length}</span>
+              </span>
               <button
-                onClick={() => setShowDuplicateModal(false)}
-                className="px-8 py-3 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-200 active:scale-95"
+                onClick={() => {
+                  setShowDuplicateModal(false);
+                  setDuplicateDispositionFilter("");
+                  setDuplicateCampaignFilter("");
+                }}
+                className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
               >
-                Close View
+                Done
               </button>
             </div>
           </div>
