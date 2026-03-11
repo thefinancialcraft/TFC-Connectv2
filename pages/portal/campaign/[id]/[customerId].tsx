@@ -2254,7 +2254,7 @@ export default function CallingPage() {
                     attempt_count: (customer?.attempt_count || 0) + 1,
                     last_attempt_at: now,
                     next_called_at: null,
-                    assigned_to: customer?.assigned_to, 
+                    assigned_to: null, 
                     
                     status: 'active',
                     disposition: disposition,
