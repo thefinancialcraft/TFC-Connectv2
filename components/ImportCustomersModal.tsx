@@ -45,6 +45,22 @@ export default function ImportCustomersModal({
   const [duplicates, setDuplicates] = useState<any[]>([]);
   const [showConflictModal, setShowConflictModal] = useState(false);
 
+  // New states for Step 1 - File Verification
+  const [fileConflicts, setFileConflicts] = useState<any[]>([]);
+  const [showFileConflictModal, setShowFileConflictModal] = useState(false);
+  const [selectedFileConflicts, setSelectedFileConflicts] = useState<Set<number>>(new Set());
+  const [fullyProcessedCustomers, setFullyProcessedCustomers] = useState<any[]>([]);
+  const [isVerificationComplete, setIsVerificationComplete] = useState(false);
+  const [initialRecordCount, setInitialRecordCount] = useState(0);
+
+  // New states for Step 2 - Database Verification
+  const [dbConflicts, setDbConflicts] = useState<any[]>([]);
+  const [showDbConflictModal, setShowDbConflictModal] = useState(false);
+  const [isScanningDb, setIsScanningDb] = useState(false);
+  const [isDbScanComplete, setIsDbScanComplete] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
+  const [selectedDbConflicts, setSelectedDbConflicts] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     setShowImportModal(show);
     if (show) {
@@ -52,6 +68,27 @@ export default function ImportCustomersModal({
       setSelectedCampaignId(preselectedCampaignId);
       fetchOrganizations();
       fetchCampaigns(preselectedOrgId); // Fetch campaigns for the preselected org
+    } else {
+      // Reset all internal states when modal is closed
+      setImportFile(null);
+      setCsvColumns([]);
+      setFieldMapping({});
+      setMergedFields({});
+      setCustomFields([]);
+      setImportError("");
+      setImportSuccess("");
+      setDuplicates([]);
+      setFileConflicts([]);
+      setShowFileConflictModal(false);
+      setSelectedFileConflicts(new Set());
+      setFullyProcessedCustomers([]);
+      setIsVerificationComplete(false);
+      setDbConflicts([]);
+      setShowDbConflictModal(false);
+      setIsScanningDb(false);
+      setIsDbScanComplete(false);
+      setInitialRecordCount(0);
+      setSelectedDbConflicts(new Set());
     }
   }, [show, preselectedOrgId, preselectedCampaignId]);
 
@@ -103,9 +140,15 @@ export default function ImportCustomersModal({
   const handleClose = () => {
     setShowImportModal(false);
     setShowMappingModal(false);
+    setShowFileConflictModal(false);
+    setShowDbConflictModal(false);
+    setShowConflictModal(false);
     setImportFile(null);
     setImportError("");
     setImportSuccess("");
+    setFileConflicts([]);
+    setFullyProcessedCustomers([]);
+    setIsVerificationComplete(false);
     onClose();
   };
 
@@ -149,230 +192,502 @@ export default function ImportCustomersModal({
     return `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   };
 
-    const uploadCustomersToSupabase = async () => {
-    if (!importFile) {
-      setImportError("Please select a file to upload");
-      return;
-    }
-    
-    // Validate Org and Campaign Selection
-    if (!selectedOrgId) {
-        setImportError("Please select an Organization before importing.");
-        return;
-    }
-
-    setImporting(true);
-    setImportError("");
-    setImportSuccess("");
-
-    let finalNewCustomers: any[] = [];
-    let foundConflicts: any[] = [];
-
-    try {
-      const text = await importFile.text();
-      const lines = text.split("\n").filter((line) => line.trim());
-      if (lines.length < 2) {
-        setImportError("CSV file must contain at least a header row and one data row");
-        setImporting(false);
+    const verifyFileData = async () => {
+      if (!importFile) {
+        setImportError("Please select a file to upload");
         return;
       }
       
-      console.log("Importing with Org:", selectedOrgId, "Campaign:", selectedCampaignId); // Debug log
+      if (!selectedOrgId) {
+          setImportError("Please select an Organization.");
+          return;
+      }
 
-      const headers = parseCSVLine(lines[0]);
-      const customers = [];
-      const errors: string[] = [];
+      setImporting(true);
+      setImportError("");
+      setImportSuccess("");
 
-      for (let i = 1; i < lines.length; i++) {
-        try {
-          const values = parseCSVLine(lines[i]);
-          if (values.length === 0 || values.every((v) => !v.trim())) continue;
-          const row: Record<string, string> = {};
-          headers.forEach((header, index) => {
-            row[header.trim()] = values[index]?.trim() || "";
-          });
+      try {
+        const text = await importFile.text();
+        const lines = text.split("\n").filter((line) => line.trim());
+        if (lines.length < 2) {
+          setImportError("CSV file must contain at least a header row and one data row");
+          setImporting(false);
+          return;
+        }
 
-          const customerName = getFieldValue(row, "name", fieldMapping, mergedFields);
-          const phoneNo = getFieldValue(row, "phone", fieldMapping, mergedFields);
-          
-          // Use custom expiry date if selected, otherwise get from CSV
-          const expiryDate = (fieldMapping["expiry_date"] === '__CUSTOM_DATE__')
-             ? customExpiryDate
-             : getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
+        const headers = parseCSVLine(lines[0]);
+        const customers: any[] = [];
+        const errors: string[] = [];
 
-          if (!customerName) {
-            errors.push(`Row ${i + 1}: Customer name is required`);
-            continue;
-          }
+        for (let i = 1; i < lines.length; i++) {
+          try {
+            const values = parseCSVLine(lines[i]);
+            if (values.length === 0 || values.every((v) => !v.trim())) continue;
+            const row: Record<string, string> = {};
+            headers.forEach((header, index) => {
+              row[header.trim()] = values[index]?.trim() || "";
+            });
 
-          const customerDetails: Record<string, string> = {};
+            const customerName = getFieldValue(row, "name", fieldMapping, mergedFields);
+            const phoneNo = getFieldValue(row, "phone", fieldMapping, mergedFields);
+            
+            const expiryDate = (fieldMapping["expiry_date"] === '__CUSTOM_DATE__')
+               ? customExpiryDate
+               : getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
 
-          customFields.forEach((cf) => {
-             // For custom fields, we construct the value manually including merged fields
-             let value = row[cf.mappedTo] || "";
-             const merged = mergedFields[cf.id] || [];
-             if (merged.length > 0) {
-                 const mergedValues = merged
-                     .filter((col) => col && row[col])
-                     .map((col) => row[col])
-                     .join(" ");
-                 if (mergedValues) value = value ? `${value} ${mergedValues}` : mergedValues;
-             }
-             
-             if (value) {
-                const suffix = selectedFields[`custom_${cf.id}`] !== false ? "_checked" : "_unchecked";
-                customerDetails[`${cf.name || cf.mappedTo}${suffix}`] = value.trim();
-             }
-          });
+            if (!customerName || !phoneNo) continue;
 
-          let parsedExpiryDate: string | null = null;
-          if (expiryDate) {
-            try {
-              const cleanDate = expiryDate.replace(/₹/g, "").trim();
-              
-              // Helper to parse DD/MM/YYYY or DD/MM/YY
-              const parseDMY = (str: string) => {
-                const match = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
-                if (match) {
-                  let d = match[1].padStart(2, '0');
-                  let m = match[2].padStart(2, '0');
-                  let y = match[3];
-                  if (y.length === 2) y = "20" + y;
-                  return `${y}-${m}-${d}`;
-                }
-                return null;
-              };
+            const customerDetails: Record<string, string> = {};
+            customFields.forEach((cf) => {
+               let value = row[cf.mappedTo] || "";
+               const merged = mergedFields[cf.id] || [];
+               if (merged.length > 0) {
+                   const mergedValues = merged.filter((col) => col && row[col]).map((col) => row[col]).join(" ");
+                   if (mergedValues) value = value ? `${value} ${mergedValues}` : mergedValues;
+               }
+               if (value) {
+                  const suffix = selectedFields[`custom_${cf.id}`] !== false ? "_checked" : "_unchecked";
+                  customerDetails[`${cf.name || cf.mappedTo}${suffix}`] = value.trim();
+               }
+            });
 
-              // Helper to parse YYYY-MM-DD
-              const parseYMD = (str: string) => {
-                const match = str.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
-                if (match) {
-                  let y = match[1];
-                  let m = match[2].padStart(2, '0');
-                  let d = match[3].padStart(2, '0');
-                  return `${y}-${m}-${d}`;
-                }
-                return null;
-              };
-              
-              const format1 = parseDMY(cleanDate);
-              const format2 = parseYMD(cleanDate);
-              
-              if (format1) {
-                parsedExpiryDate = format1;
-              } else if (format2) {
-                parsedExpiryDate = format2;
-              } else {
-                // Fallback for word-based months like "23 Jan 2024"
-                const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-                const parts = cleanDate.split(/[\s\-/]+/);
-                let d = "", m = "", y = "";
-                parts.forEach(p => {
-                  const mIdx = months.findIndex(name => p.toLowerCase().startsWith(name));
-                  if (mIdx !== -1) m = String(mIdx + 1).padStart(2, "0");
-                  else if (/^\d{4}$/.test(p)) y = p;
-                  else if (/^\d{1,2}$/.test(p)) d = p.padStart(2, "0");
-                });
-                
-                if (d && m) {
-                  if (!y) y = new Date().getFullYear().toString();
-                  parsedExpiryDate = `${y}-${m}-${d}`;
-                } else {
-                  // Final fallback to native Date
-                  const date = new Date(cleanDate);
-                  if (!isNaN(date.getTime())) {
-                    parsedExpiryDate = date.toISOString().split("T")[0];
+            // Robust Date parsing
+            let parsedExpiryDate: string | null = null;
+            if (expiryDate) {
+              try {
+                const cleanDate = expiryDate.toString().replace(/₹/g, "").trim();
+                const parseDMY = (str: string) => {
+                  const match = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
+                  if (match) {
+                    let d = match[1].padStart(2, '0'), m = match[2].padStart(2, '0'), y = match[3];
+                    if (y.length === 2) y = "20" + y;
+                    return `${y}-${m}-${d}`;
                   }
+                  return null;
+                };
+                const parseYMD = (str: string) => {
+                  const match = str.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
+                  if (match) {
+                    let y = match[1], m = match[2].padStart(2, '0'), d = match[3].padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                  }
+                  return null;
+                };
+                parsedExpiryDate = parseDMY(cleanDate) || parseYMD(cleanDate);
+                if (!parsedExpiryDate) {
+                  const date = new Date(cleanDate);
+                  if (!isNaN(date.getTime())) parsedExpiryDate = date.toISOString().split("T")[0];
                 }
-              }
-            } catch (e) {
-              console.error("Date parsing error:", e);
+              } catch (e) {}
             }
-          }
 
-          customers.push({
-            lead_id: generateLeadId(),
-            customer_name: customerName,
-            phone_no: encryptPhone(phoneNo) || null,
-            phone_search_hash: computePhoneHash(phoneNo) || null,
-            expiry_date: parsedExpiryDate,
-            campaign_id: selectedCampaignId || null,
-            organization_id: selectedOrgId || null,
-            customer_details: Object.keys(customerDetails).length > 0 ? JSON.stringify({
+            customers.push({
+              lead_id: generateLeadId(),
+              customer_name: customerName,
+              phone_no: encryptPhone(phoneNo),
+              display_phone: phoneNo, // Save raw number for UI display in conflict modal
+              phone_search_hash: computePhoneHash(phoneNo),
+              expiry_date: parsedExpiryDate,
+              campaign_id: selectedCampaignId || null,
+              organization_id: selectedOrgId || null,
+              customer_details: {
                 active_details: "details-1",
                 history: {
                     "details-1": customerDetails
                 }
-            }) : null,
-            status: "active",
-          });
+              },
+              status: "active",
+            });
+          } catch (e) {}
+        }
+
+        // STEP 1: Internal File Verification
+        const hashCount: Record<string, number[]> = {};
+        customers.forEach((c, idx) => {
+            if (!c.phone_search_hash) return;
+            if (!hashCount[c.phone_search_hash]) hashCount[c.phone_search_hash] = [];
+            hashCount[c.phone_search_hash].push(idx);
+        });
+
+        const internalConflicts: any[] = [];
+        const uniqueIndices = new Set<number>();
+        const processedHashes = new Set<string>();
+
+        Object.entries(hashCount).forEach(([hash, indices]) => {
+            if (indices.length > 1) {
+                // Duplicate found in file
+                internalConflicts.push({
+                    hash,
+                    indices,
+                    records: indices.map(idx => customers[idx])
+                });
+            } else {
+                uniqueIndices.add(indices[0]);
+            }
+        });
+
+        if (internalConflicts.length > 0) {
+            setFileConflicts(internalConflicts);
+            setFullyProcessedCustomers(customers);
+            setInitialRecordCount(customers.length);
+            setShowFileConflictModal(true);
+            setImportError(`File contains ${internalConflicts.length} duplicate groups out of ${customers.length} total records.`);
+        } else {
+            setFullyProcessedCustomers(customers);
+            setInitialRecordCount(customers.length);
+            setIsVerificationComplete(true);
+            setImportSuccess(`Verification complete! All ${customers.length} records ready for Stage 2.`);
+        }
+      } catch (err) {
+        setImportError(`Error verifying file: ${err}`);
+      } finally {
+        setImporting(false);
+      }
+    };
+
+    const handleFileMerge = (conflictIndex: number) => {
+        const conflict = fileConflicts[conflictIndex];
+        const newList = [...fullyProcessedCustomers];
+        
+        // Merge this one
+        const records = conflict.records;
+        const primaryRecord = { ...records[0] };
+        
+        // Combine history from all records
+        const newHistory: any = {};
+        let detailCounter = 1;
+        records.forEach((rec: any) => {
+            if (rec.customer_details.history) {
+                Object.values(rec.customer_details.history).forEach((hVal) => {
+                    newHistory[`details-${detailCounter++}`] = hVal;
+                });
+            } else {
+                // Fallback for flat structure if any
+                newHistory[`details-${detailCounter++}`] = rec.customer_details;
+            }
+        });
+
+        primaryRecord.customer_details = {
+            active_details: "details-1",
+            history: newHistory
+        };
+
+        const idsToRemove = new Set(records.map((r: any) => r.lead_id));
+        const filteredList = newList.filter((rec: any) => !idsToRemove.has(rec.lead_id));
+        filteredList.push(primaryRecord);
+
+        setFullyProcessedCustomers(filteredList);
+        const newConflicts = [...fileConflicts];
+        newConflicts.splice(conflictIndex, 1);
+        setFileConflicts(newConflicts);
+        setSelectedFileConflicts(new Set()); // Reset selection
+
+        if (newConflicts.length === 0) {
+            setShowFileConflictModal(false);
+            setIsVerificationComplete(true);
+            setImportSuccess(`Deduplication complete! Total: ${initialRecordCount} records. Moving ${filteredList.length} records to Stage 2.`);
+        }
+    };
+
+    const handleFileReject = (conflictIndex: number) => {
+        const conflict = fileConflicts[conflictIndex];
+        const newList = [...fullyProcessedCustomers];
+        const idsToRemove = new Set(conflict.records.slice(1).map((r: any) => r.lead_id));
+        const filteredList = newList.filter((rec: any) => !idsToRemove.has(rec.lead_id));
+
+        setFullyProcessedCustomers(filteredList);
+        const newConflicts = [...fileConflicts];
+        newConflicts.splice(conflictIndex, 1);
+        setFileConflicts(newConflicts);
+        setSelectedFileConflicts(new Set()); // Reset selection
+
+        if (newConflicts.length === 0) {
+            setShowFileConflictModal(false);
+            setIsVerificationComplete(true);
+            setImportSuccess(`Deduplication complete! Total: ${initialRecordCount} records. Moving ${filteredList.length} records to Stage 2.`);
+        }
+    };
+
+    const handleBulkFileMerge = () => {
+        if (selectedFileConflicts.size === 0) return;
+        let currentList = [...fullyProcessedCustomers];
+        const conflictsToRemoveIndices = Array.from(selectedFileConflicts).sort((a, b) => b - a); // Sort descending to splice correctly
+        
+        conflictsToRemoveIndices.forEach(idx => {
+            const conflict = fileConflicts[idx];
+            const primaryRecord = { ...conflict.records[0] };
+            
+            const newHistory: any = {};
+            let detailCounter = 1;
+            conflict.records.forEach((rec: any) => {
+                if (rec.customer_details.history) {
+                    Object.values(rec.customer_details.history).forEach((hVal) => {
+                        newHistory[`details-${detailCounter++}`] = hVal;
+                    });
+                } else {
+                    newHistory[`details-${detailCounter++}`] = rec.customer_details;
+                }
+            });
+
+            primaryRecord.customer_details = {
+                active_details: "details-1",
+                history: newHistory
+            };
+            
+            const idsToRemove = new Set(conflict.records.map((r: any) => r.lead_id));
+            currentList = currentList.filter((rec: any) => !idsToRemove.has(rec.lead_id));
+            currentList.push(primaryRecord);
+        });
+
+        setFullyProcessedCustomers(currentList);
+        const newConflicts = fileConflicts.filter((_, idx) => !selectedFileConflicts.has(idx));
+        setFileConflicts(newConflicts);
+        setSelectedFileConflicts(new Set());
+
+        if (newConflicts.length === 0) {
+            setShowFileConflictModal(false);
+            setIsVerificationComplete(true);
+            setImportSuccess(`Deduplication complete (Bulk Merge)! Total: ${initialRecordCount} records. Moving ${currentList.length} records to Stage 2.`);
+        }
+    };
+
+    const handleBulkFileReject = () => {
+        if (selectedFileConflicts.size === 0) return;
+        let currentList = [...fullyProcessedCustomers];
+        const conflictsToRemoveIndices = Array.from(selectedFileConflicts);
+        
+        conflictsToRemoveIndices.forEach(idx => {
+            const conflict = fileConflicts[idx];
+            const idsToRemove = new Set(conflict.records.slice(1).map((r: any) => r.lead_id));
+            currentList = currentList.filter((rec: any) => !idsToRemove.has(rec.lead_id));
+        });
+
+        setFullyProcessedCustomers(currentList);
+        const newConflicts = fileConflicts.filter((_, idx) => !selectedFileConflicts.has(idx));
+        setFileConflicts(newConflicts);
+        setSelectedFileConflicts(new Set());
+
+        if (newConflicts.length === 0) {
+            setShowFileConflictModal(false);
+            setIsVerificationComplete(true);
+            setImportSuccess(`Deduplication complete (Bulk Reject)! Total: ${initialRecordCount} records. Moving ${currentList.length} records to Stage 2.`);
+        }
+    };
+
+    const toggleSelectAllConflicts = () => {
+        if (selectedFileConflicts.size === fileConflicts.length) {
+            setSelectedFileConflicts(new Set());
+        } else {
+            setSelectedFileConflicts(new Set(fileConflicts.map((_, i) => i)));
+        }
+    };
+
+    const toggleConflictSelection = (idx: number) => {
+        const next = new Set(selectedFileConflicts);
+        if (next.has(idx)) next.delete(idx);
+        else next.add(idx);
+        setSelectedFileConflicts(next);
+    };
+
+    const uploadCustomersToSupabase = async () => {
+        if (!fullyProcessedCustomers.length) return;
+        
+        setIsScanningDb(true);
+        setImportError("");
+        setImportSuccess("");
+
+        try {
+            const hashes = fullyProcessedCustomers.map(c => c.phone_search_hash);
+            
+            // Query DB for existing numbers in this campaign/org
+            const { data: existingRecords, error } = await supabase
+                .from("customers")
+                .select("*")
+                .in("phone_search_hash", hashes)
+                .eq("campaign_id", selectedCampaignId)
+                .eq("organization_id", selectedOrgId);
+
+            if (error) throw error;
+
+            if (existingRecords && existingRecords.length > 0) {
+                // Determine conflicts
+                const conflicts = existingRecords.map((dbRec: any) => {
+                    const fileRec = fullyProcessedCustomers.find((f: any) => f.phone_search_hash === dbRec.phone_search_hash);
+                    return {
+                        fileRecord: fileRec,
+                        dbRecord: dbRec
+                    };
+                });
+
+                setDbConflicts(conflicts);
+                setShowDbConflictModal(true);
+                // Notification message
+                setImportError(`Stage 2: Found ${conflicts.length} existing CRM records. ${fullyProcessedCustomers.length - conflicts.length} new records will be added directly.`);
+            } else {
+                setImportSuccess(`Stage 2 Complete! All ${fullyProcessedCustomers.length} records are new and ready for CRM.`);
+                setIsDbScanComplete(true);
+            }
         } catch (err) {
-          errors.push(`Row ${i + 1}: ${err}`);
+            setImportError(`Error checking database: ${err}`);
+        } finally {
+            setIsScanningDb(false);
         }
-      }
+    };
 
-      const batchSize = 100;
-      let success = 0;
+    const handleFinalUpload = async () => {
+        if (!fullyProcessedCustomers.length || isFinalizing) return;
+        
+        setIsFinalizing(true);
+        setImportError("");
+        setImportSuccess("");
 
-      // 1. Check for duplicates using phone_search_hash
-      const allHashes = customers.map(c => c.phone_search_hash).filter(Boolean);
-      const { data: existingRecords } = await supabase
-        .from("customers")
-        .select("id, phone_search_hash, customer_name, customer_details")
-        .in("phone_search_hash", allHashes);
+        try {
+            // Separate records into updates (with ID) and new inserts (without ID)
+            const toUpdate: any[] = [];
+            const toInsert: any[] = [];
 
-      const existingMap = new Map();
-      existingRecords?.forEach(r => existingMap.set(r.phone_search_hash, r));
+            fullyProcessedCustomers.forEach(({ display_phone, ...rest }) => {
+                const payload = {
+                    ...rest,
+                    customer_details: typeof rest.customer_details === 'object' 
+                        ? JSON.stringify(rest.customer_details) 
+                        : rest.customer_details
+                };
 
-      finalNewCustomers = [];
-      foundConflicts = [];
+                if (rest.id) {
+                    toUpdate.push(payload);
+                } else {
+                    // For new records, explicitly DO NOT provide the id key
+                    const { id, ...insertPayload } = payload;
+                    toInsert.push(insertPayload);
+                }
+            });
 
-      customers.forEach(cust => {
-        const existing = existingMap.get(cust.phone_search_hash);
-        if (existing) {
-          foundConflicts.push({ new: cust, existing });
+            // Perform operations in parallel
+            const promises = [];
+            if (toUpdate.length > 0) {
+                promises.push(supabase.from("customers").upsert(toUpdate));
+            }
+            if (toInsert.length > 0) {
+                promises.push(supabase.from("customers").insert(toInsert));
+            }
+
+            const results = await Promise.all(promises);
+            const firstError = results.find(r => r.error)?.error;
+
+            if (firstError) throw firstError;
+
+            setImportSuccess(`Import Successful! ${toUpdate.length + toInsert.length} records processed (${toUpdate.length} updated, ${toInsert.length} newly added).`);
+            
+            // Short delay to show success then close
+            setTimeout(() => {
+                handleClose(); // Resets all states and calls onClose
+                onSuccess?.();
+            }, 1000);
+
+        } catch (err: any) {
+            console.error("Final Upload Error:", err);
+            setImportError(`Error uploading records: ${err.message || err}`);
+        } finally {
+            setIsFinalizing(false);
+        }
+    };
+
+    const toggleDbConflictSelection = (idx: number) => {
+        const newSelected = new Set(selectedDbConflicts);
+        if (newSelected.has(idx)) newSelected.delete(idx);
+        else newSelected.add(idx);
+        setSelectedDbConflicts(newSelected);
+    };
+
+    const toggleSelectAllDbConflicts = () => {
+        if (selectedDbConflicts.size === dbConflicts.length) {
+            setSelectedDbConflicts(new Set());
         } else {
-          finalNewCustomers.push(cust);
+            setSelectedDbConflicts(new Set(dbConflicts.map((_, i) => i)));
         }
-      });
+    };
 
-      // 2. Insert unique customers
-      for (let i = 0; i < finalNewCustomers.length; i += batchSize) {
-        const { error } = await supabase.from("customers").insert(finalNewCustomers.slice(i, i + batchSize));
-        if (!error) success += finalNewCustomers.slice(i, i + batchSize).length;
-      }
+    const handleDbMergeSelected = () => {
+        if (selectedDbConflicts.size === 0) return;
 
-      // 3. Handle duplicates
-      if (foundConflicts.length > 0) {
-        setDuplicates(foundConflicts);
-        setShowConflictModal(true);
-        if (success > 0) {
-          setImportSuccess(`Imported ${success} unique customers! ${foundConflicts.length} duplicates found.`);
-        } else {
-          setImportError(`Found ${foundConflicts.length} duplicates. No new unique customers to import.`);
+        let workingCustomers = [...fullyProcessedCustomers];
+        const conflictsToHandle = Array.from(selectedDbConflicts).sort((a, b) => b - a);
+
+        conflictsToHandle.forEach((idx) => {
+            const conflict = dbConflicts[idx];
+            // Merging Database details into the file record
+            // Keep existing DB ID but merge file information or vice versa?
+            // User usually wants to update the existing record.
+            const dbRec = conflict.dbRecord;
+            const fileRec = conflict.fileRecord;
+
+            // Simple merge strategy: Update existing DB record with new CSV details (keeping history)
+            const dbDetails = (typeof dbRec.customer_details === 'string') 
+                ? JSON.parse(dbRec.customer_details) 
+                : dbRec.customer_details || { active_details: "details-1", history: { "details-1": {} } };
+            
+            const fileDetails = fileRec.customer_details;
+
+            // New history entry in DB details
+            const newIndex = Object.keys(dbDetails.history || {}).length + 1;
+            const newKey = `details-${newIndex}`;
+            
+            if (!dbDetails.history) dbDetails.history = {};
+            // Source the current active details from file or merge them
+            dbDetails.history[newKey] = fileDetails.history?.[fileDetails.active_details] || {};
+            dbDetails.active_details = newKey;
+
+            // Updated record for DB (targeting existing ID)
+            const mergedRecord = {
+                ...fileRec, // Take fields from file
+                id: dbRec.id, // KEEP EXISTING DB ID to perform an update in final upload
+                customer_details: dbDetails,
+                updated_at: new Date().toISOString()
+            };
+
+            // Replace or Update in the fullyProcessedCustomers list
+            const fIndex = workingCustomers.findIndex(c => c.phone_search_hash === fileRec.phone_search_hash);
+            if (fIndex !== -1) {
+                workingCustomers[fIndex] = mergedRecord;
+            }
+        });
+
+        setFullyProcessedCustomers(workingCustomers);
+        
+        // Remove handled ones from dbConflicts
+        const remainingConflicts = dbConflicts.filter((_, i) => !selectedDbConflicts.has(i));
+        setDbConflicts(remainingConflicts);
+        setSelectedDbConflicts(new Set());
+
+        if (remainingConflicts.length === 0) {
+            setShowDbConflictModal(false);
+            setIsDbScanComplete(true);
+            setImportSuccess(`Stage 2 Complete! ${workingCustomers.length} records finalized for CRM.`);
         }
-        setImporting(false);
-        // We stay in the modal state to resolve conflicts
-        return;
-      }
+    };
 
-      if (success > 0) {
-        setImportSuccess(`Successfully imported ${success} customers!`);
-        if (onSuccess) onSuccess();
-        setTimeout(handleClose, 2000);
-      } else {
-        setImportError("No customers were imported.");
-      }
+    const handleDbSkipSelected = () => {
+       if (selectedDbConflicts.size === 0) return;
 
-    } catch (err) {
-      setImportError(`Error: ${err}`);
-    } finally {
-      // Only stop importing if we aren't showing conflicts
-      if (foundConflicts.length === 0) {
-        setImporting(false);
-      }
-    }
-  };
+       const phoneHashesToSkip = Array.from(selectedDbConflicts).map(idx => dbConflicts[idx].fileRecord.phone_search_hash);
+       
+       // Remove these from fullyProcessedCustomers (Rejecting the new import for these phones)
+       const workingCustomers = fullyProcessedCustomers.filter(c => !phoneHashesToSkip.includes(c.phone_search_hash));
+       setFullyProcessedCustomers(workingCustomers);
+
+       // Remove from dbConflicts
+       const remainingConflicts = dbConflicts.filter((_, i) => !selectedDbConflicts.has(i));
+       setDbConflicts(remainingConflicts);
+       setSelectedDbConflicts(new Set());
+
+        if (remainingConflicts.length === 0) {
+            setShowDbConflictModal(false);
+            setIsDbScanComplete(true);
+            setImportSuccess(`Stage 2 Complete! ${workingCustomers.length} records finalized for CRM.`);
+        }
+    };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -903,17 +1218,393 @@ export default function ImportCustomersModal({
 
               <div className="flex justify-end gap-3 border-t pt-4">
                 <button onClick={() => setShowMappingModal(false)} className="px-6 py-2 bg-gray-100 rounded-lg text-sm">Back</button>
-                <button 
-                  onClick={uploadCustomersToSupabase} 
-                  disabled={importing}
-                  className="px-6 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center gap-2"
-                >
-                  {importing ? <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...</> : "Start Import"}
-                </button>
+                {isVerificationComplete ? (
+                    <button 
+                        onClick={isDbScanComplete ? handleFinalUpload : uploadCustomersToSupabase}
+                        disabled={isScanningDb || isFinalizing}
+                        className={`px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${isDbScanComplete ? 'bg-indigo-600 hover:bg-indigo-700 animate-pulse-subtle' : 'bg-green-600 hover:bg-green-700'} text-white transition-all`}
+                    >
+                        {isScanningDb ? (
+                            <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Checking DB...</>
+                        ) : isFinalizing ? (
+                             <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Finalizing...</>
+                        ) : isDbScanComplete ? (
+                            <><i className="fi fi-rr-upload text-sm"></i> Upload Now</>
+                        ) : (
+                            <>Success: {fullyProcessedCustomers.length} Records Ready - Next Step</>
+                        )}
+                    </button>
+                ) : (
+                    <button 
+                        onClick={verifyFileData} 
+                        disabled={importing}
+                        className="px-6 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center gap-2"
+                    >
+                        {importing ? <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Verifying...</> : "Verify File Data"}
+                    </button>
+                )}
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* STEP 1: FILE CONFLICT MODAL (MATCHING DUPLICATE SCAN DESIGN) */}
+      {showFileConflictModal && fileConflicts.length > 0 && (
+          <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs">
+              <div className="bg-white rounded-lg w-full max-w-4xl shadow-2xl flex flex-col max-h-[80vh] border border-gray-100 overflow-hidden">
+                  
+                  {/* Clean Simple Header */}
+                  <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 mr-2">
+                           <input 
+                              type="checkbox" 
+                              checked={selectedFileConflicts.size === fileConflicts.length && fileConflicts.length > 0}
+                              onChange={toggleSelectAllConflicts}
+                              className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                           />
+                        </div>
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                           <i className="fi flex fi-rr-copy-alt text-sm"></i>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>File Internal Duplicates</h3>
+                          <p className="text-[10px] text-gray-400 font-medium">
+                            <span className="text-indigo-600 font-bold">{fileConflicts.length}</span> repeating numbers found in this CSV <span className="text-gray-300 mx-1">|</span> Total Records: <span className="text-gray-600 font-bold">{fullyProcessedCustomers.length}</span>
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => setShowFileConflictModal(false)} 
+                        className="w-8 h-8 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 transition-colors"
+                      >
+                        <i className="fi flex fi-rr-cross-small text-xl"></i>
+                      </button>
+                  </div>
+
+                  {/* Table Content */}
+                  <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+                      {fileConflicts.slice(0, 10).map((conflict, idx) => (
+                          <div key={idx} className="bg-white">
+                              {/* Group Bar */}
+                              <div className="px-5 py-2 bg-gray-50/50 flex items-center justify-between border-y border-gray-50">
+                                  <div className="flex items-center gap-3">
+                                      <input 
+                                          type="checkbox" 
+                                          checked={selectedFileConflicts.has(idx)}
+                                          onChange={() => toggleConflictSelection(idx)}
+                                          className="w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                                      />
+                                      <span className="font-bold text-gray-500 uppercase text-[10px] tracking-tight ml-1">Repeating Group #{idx + 1}</span>
+                                  </div>
+                                  <div className="flex gap-4 items-center">
+                                     <span className="text-[10px] text-indigo-500 font-bold bg-indigo-50 px-2 py-0.5 rounded uppercase">{conflict.records.length} Records Found</span>
+                                     <div className="h-4 w-px bg-gray-200"></div>
+                                     <button 
+                                        onClick={() => handleFileMerge(idx)}
+                                        className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+                                     >
+                                        <i className="fi flex fi-rr-check text-[9px]"></i> Merge All
+                                     </button>
+                                     <button 
+                                        onClick={() => handleFileReject(idx)}
+                                        className="text-[10px] font-bold text-rose-500 hover:text-rose-700 transition-colors flex items-center gap-1"
+                                     >
+                                        <i className="fi flex fi-rr-trash text-[9px]"></i> Reject
+                                     </button>
+                                  </div>
+                              </div>
+                              
+                              <table className="w-full text-left table-fixed">
+                                  <thead>
+                                      <tr className="text-gray-400 uppercase text-[9px] font-bold border-b border-gray-100 bg-gray-50/20">
+                                          <th className="px-5 py-3 w-[25%]">Name / Info</th>
+                                          <th className="px-3 py-3 w-[45%]">Mapped Details</th>
+                                          <th className="px-3 py-3 w-[15%]">Row Index</th>
+                                          <th className="px-5 py-3 w-[15%] text-right">Status</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-gray-50">
+                                      {conflict.records.map((rec: any, ridx: number) => (
+                                          <tr key={ridx} className="hover:bg-gray-50/5 transition-colors group">
+                                              <td className="px-5 py-4 align-top">
+                                                  <div className="font-bold text-gray-800 text-[11px] leading-tight truncate">{rec.customer_name}</div>
+                                                  <div className="text-[10px] text-indigo-500 font-bold mt-1 tracking-tight">
+                                                    {rec.display_phone || 'N/A'}
+                                                  </div>
+                                              </td>
+                                              <td className="px-3 py-4 align-top text-wrap">
+                                                  <div className="flex flex-wrap gap-1.5">
+                                                      {Object.entries(
+                                                          rec.customer_details.history?.[rec.customer_details.active_details] || {}
+                                                      ).slice(0, 6).map(([k, v]) => (
+                                                          <div key={k} className="flex flex-col bg-slate-50 p-1.5 rounded border border-gray-100 min-w-[90px] max-w-[150px]">
+                                                              <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none mb-1">
+                                                                {k.replace('detail_', '').replace(/_/g, ' ')}
+                                                              </span>
+                                                              <span className="text-[10px] text-slate-700 font-semibold truncate">
+                                                                {String(v) || '—'}
+                                                              </span>
+                                                          </div>
+                                                      ))}
+                                                  </div>
+                                              </td>
+                                              <td className="px-3 py-4 align-top">
+                                                  <div className="flex items-center gap-1.5 text-gray-500">
+                                                    <span className="font-mono text-[11px] font-bold">#{conflict.indices[ridx] + 1}</span>
+                                                  </div>
+                                                  <p className="text-[8px] text-gray-400 uppercase mt-1">Row Num</p>
+                                              </td>
+                                              <td className="px-5 py-4 align-top text-right">
+                                                  {ridx === 0 ? (
+                                                      <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100 uppercase tracking-tighter">PRIMARY</span>
+                                                  ) : (
+                                                      <span className="text-[9px] font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-full border border-amber-100 uppercase tracking-tighter">DUPLICATE</span>
+                                                  )}
+                                              </td>
+                                          </tr>
+                                      ))}
+                                  </tbody>
+                              </table>
+                          </div>
+                      ))}
+
+                      {fileConflicts.length > 10 && (
+                          <div className="p-8 text-center bg-gray-50/50 border-t border-gray-100">
+                              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-loose">
+                                  And {fileConflicts.length - 10} more duplicate clusters...<br/>
+                                  <span className="text-[10px] font-medium lowercase">Please handle these first to proceed.</span>
+                              </p>
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Footer with Bulk Actions */}
+                  <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-400 font-medium">
+                            Total groups: <span className="text-gray-700 font-bold">{fileConflicts.length}</span>
+                        </span>
+                        {selectedFileConflicts.size > 0 && (
+                            <div className="flex items-center gap-2 animate-in slide-in-from-left-2 duration-200">
+                                <div className="h-4 w-px bg-gray-200"></div>
+                                <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">
+                                    {selectedFileConflicts.size} Selected
+                                </span>
+                                <button 
+                                    onClick={handleBulkFileReject}
+                                    className="px-4 py-1.5 bg-rose-50 text-rose-600 rounded-lg font-bold text-[11px] hover:bg-rose-100 transition-all border border-rose-100"
+                                >
+                                    Reject Selected
+                                </button>
+                                <button 
+                                    onClick={handleBulkFileMerge}
+                                    className="px-4 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px] hover:bg-slate-900 transition-all shadow-lg shadow-indigo-100"
+                                >
+                                    Merge Selected
+                                </button>
+                            </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                            onClick={() => setShowFileConflictModal(false)}
+                            className="px-5 py-2 bg-gray-50 text-gray-600 rounded-lg font-bold text-[11px] hover:bg-gray-100 transition-all border border-gray-200"
+                        >
+                            Review CSV
+                        </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      )}
+
+      {/* STEP 2: DATABASE CONFLICT MODAL (REDESIGNED: SIMPLE & COMPACT) */}
+      {showDbConflictModal && dbConflicts.length > 0 && (
+          <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs">
+              <div className="bg-white rounded-lg w-full max-w-5xl shadow-2xl flex flex-col max-h-[85vh] border border-gray-100 overflow-hidden">
+                  
+                  {/* Clean Simple Amber Header */}
+                  <div className="px-5 py-4 border-b border-amber-50 flex items-center justify-between bg-white">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 mr-2">
+                           <input 
+                              type="checkbox" 
+                              checked={selectedDbConflicts.size === dbConflicts.length && dbConflicts.length > 0}
+                              onChange={toggleSelectAllDbConflicts}
+                              className="w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                           />
+                        </div>
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                           <i className="fi flex fi-rr-database text-sm"></i>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>Database Correlation Check</h3>
+                           <p className="text-[10px] text-amber-500 font-bold uppercase tracking-tight">
+                            Stage 2: <span className="text-amber-600 font-black">{dbConflicts.length}</span> records already exist in CRM (out of <span className="text-gray-600">{fullyProcessedCustomers.length}</span> total records)
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <button 
+                        onClick={() => setShowDbConflictModal(false)} 
+                        className="w-8 h-8 rounded-lg hover:bg-gray-50 flex items-center justify-center text-gray-400 transition-colors"
+                      >
+                        <i className="fi flex fi-rr-cross-small text-xl"></i>
+                      </button>
+                  </div>
+
+                  {/* Table Content */}
+                  <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+                      {dbConflicts.slice(0, 10).map((conflict, idx) => (
+                          <div key={idx} className="bg-white">
+                              {/* Group Bar */}
+                              <div className="px-5 py-2 bg-amber-50/20 flex items-center justify-between border-y border-amber-50/50">
+                                  <div className="flex items-center gap-3">
+                                      <input 
+                                          type="checkbox" 
+                                          checked={selectedDbConflicts.has(idx)}
+                                          onChange={() => toggleDbConflictSelection(idx)}
+                                          className="w-3.5 h-3.5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                                      />
+                                      <span className="font-bold text-amber-700 uppercase text-[10px] tracking-tight ml-1 leading-none">Correlation Match #{idx + 1}</span>
+                                  </div>
+                                  <div className="flex gap-4 items-center">
+                                     <span className="text-[10px] text-gray-400 font-medium">Phone: <span className="text-gray-700 font-bold">{conflict.fileRecord.display_phone}</span></span>
+                                     <div className="h-4 w-px bg-amber-100"></div>
+                                     <button 
+                                        onClick={() => {
+                                            setSelectedDbConflicts(new Set([idx]));
+                                            handleDbMergeSelected();
+                                        }}
+                                        className="text-[10px] font-bold text-amber-600 hover:text-amber-800 transition-colors flex items-center gap-1"
+                                     >
+                                        <i className="fi flex fi-rr-check text-[9px]"></i> Merge Choice
+                                     </button>
+                                     <button 
+                                        onClick={() => {
+                                            setSelectedDbConflicts(new Set([idx]));
+                                            handleDbSkipSelected();
+                                        }}
+                                        className="text-[10px] font-bold text-rose-500 hover:text-rose-700 transition-colors flex items-center gap-1"
+                                     >
+                                        <i className="fi flex fi-rr-cross text-[9px]"></i> Reject New
+                                     </button>
+                                  </div>
+                              </div>
+                              
+                              {/* Comparison Row */}
+                              <div className="grid grid-cols-2 divide-x divide-gray-100 border-b border-gray-50">
+                                  {/* Left/Incoming */}
+                                  <div className="p-4 bg-indigo-50/5">
+                                      <div className="flex items-center justify-between mb-2">
+                                          <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Incoming Data</span>
+                                      </div>
+                                      <div className="flex items-start gap-3">
+                                          <div className="flex-1">
+                                              <p className="text-[11px] font-bold text-gray-800 leading-tight">{conflict.fileRecord.customer_name}</p>
+                                              <div className="flex flex-wrap gap-1 mt-2">
+                                                   {Object.entries(
+                                                        conflict.fileRecord.customer_details.history?.[conflict.fileRecord.customer_details.active_details] || {}
+                                                   ).slice(0, 4).map(([k, v]) => (
+                                                       <div key={k} className="bg-white px-2 py-1 rounded border border-indigo-100 text-[10px]">
+                                                           <span className="text-gray-400 font-bold text-[8px] mr-1">{k.replace('_checked', '').replace(/_/g, ' ')}:</span>
+                                                           <span className="text-indigo-600 font-bold">{String(v)}</span>
+                                                       </div>
+                                                   ))}
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  {/* Right/Database */}
+                                  <div className="p-4 bg-amber-50/5">
+                                      <div className="flex items-center justify-between mb-2">
+                                          <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Database Record</span>
+                                          <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[9px] font-bold border border-amber-200 uppercase tracking-tighter">EXISTS IN CRM</span>
+                                      </div>
+                                      <div className="flex items-start gap-3">
+                                          <div className="flex-1">
+                                              <p className={`text-[11px] font-bold leading-tight ${conflict.dbRecord.customer_name !== conflict.fileRecord.customer_name ? 'text-rose-500' : 'text-gray-800'}`}>
+                                                  {conflict.dbRecord.customer_name}
+                                                  {conflict.dbRecord.customer_name !== conflict.fileRecord.customer_name && (
+                                                      <span className="block text-[8px] font-medium italic mt-0.5 uppercase">(Name Mismatch)</span>
+                                                  )}
+                                              </p>
+                                              <div className="flex flex-wrap gap-1 mt-2">
+                                                   {(() => {
+                                                        const dbDetails = (typeof conflict.dbRecord.customer_details === 'string') 
+                                                            ? JSON.parse(conflict.dbRecord.customer_details) 
+                                                            : conflict.dbRecord.customer_details || {};
+                                                        
+                                                        const historyKey = dbDetails.active_details || Object.keys(dbDetails.history || {})[0] || 'details-1';
+                                                        const currentDetails = dbDetails.history?.[historyKey] || {};
+
+                                                        return Object.entries(currentDetails).slice(0, 4).map(([k, v]) => (
+                                                            <div key={k} className="bg-white px-2 py-1 rounded border border-amber-100 text-[10px]">
+                                                                <span className="text-gray-400 font-bold text-[8px] mr-1">{k.replace('_checked', '').replace(/_/g, ' ')}:</span>
+                                                                <span className="text-amber-600 font-bold">{String(v)}</span>
+                                                            </div>
+                                                        ));
+                                                   })()}
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+
+                      {dbConflicts.length > 10 && (
+                          <div className="p-8 text-center bg-gray-50/50 border-t border-gray-100">
+                              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-loose">
+                                  And {dbConflicts.length - 10} more Database matches found...<br/>
+                                  <span className="text-[10px] font-medium lowercase italic">Conflict strategy must be chosen for all.</span>
+                              </p>
+                          </div>
+                      )}
+                  </div>
+
+                  {/* Footer with Bulk Actions */}
+                  <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-400 font-medium">
+                            Total overlaps: <span className="text-gray-700 font-bold">{dbConflicts.length}</span>
+                        </span>
+                        {selectedDbConflicts.size > 0 && (
+                            <div className="flex items-center gap-2 animate-in slide-in-from-left-2 duration-200">
+                                <div className="h-4 w-px bg-gray-200"></div>
+                                <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-lg">
+                                    {selectedDbConflicts.size} Selected
+                                </span>
+                                <button 
+                                    onClick={handleDbSkipSelected}
+                                    className="px-4 py-1.5 bg-rose-50 text-rose-600 rounded-lg font-bold text-[11px] hover:bg-rose-100 transition-all border border-rose-100"
+                                >
+                                    Reject Selected
+                                </button>
+                                <button 
+                                    onClick={handleDbMergeSelected}
+                                    className="px-4 py-1.5 bg-amber-600 text-white rounded-lg font-bold text-[11px] hover:bg-amber-700 transition-all shadow-lg shadow-amber-100"
+                                >
+                                    Merge & Update CRM
+                                </button>
+                            </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                            onClick={() => setShowDbConflictModal(false)}
+                            className="px-5 py-2 bg-gray-50 text-gray-600 rounded-lg font-bold text-[11px] hover:bg-gray-100 transition-all border border-gray-200"
+                        >
+                            Back to Map
+                        </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
       )}
 
       {/* Conflict Resolution Modal */}
