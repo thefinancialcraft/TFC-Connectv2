@@ -14,24 +14,44 @@ interface MonitoringLog {
     organization_id?: string;
 }
 
+// Cache to store user profile name during the session to avoid redundant queries
+let cachedUserName: string | null = null;
+
 /**
  * Logs a system event to the monitoring table.
  * Used for real-time tracking of app usage and database requests.
  */
 export const logSystemEvent = async (log: MonitoringLog) => {
     try {
-        // Attempt to get user info if not provided
         let finalUserId = log.user_id;
         let finalUserName = log.user_name;
         let finalOrgId = log.organization_id;
 
-        if (!finalUserId) {
+        // 1. Resolve User ID and Name
+        if (!finalUserId || !finalUserName) {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                finalUserId = user.id;
-                // Since we don't have the profile here easily without an extra query, 
-                // we'll rely on the caller to provide user_name if possible, 
-                // otherwise it stays null/provided value.
+                finalUserId = finalUserId || user.id;
+                
+                if (!finalUserName) {
+                    // Check cache first
+                    if (cachedUserName) {
+                        finalUserName = cachedUserName;
+                    } else {
+                        // Attempt to get name from profile table
+                        const { data: profile } = await supabase
+                            .from('user_profiles')
+                            .select('user_name')
+                            .eq('id', user.id)
+                            .single();
+                        
+                        if (profile?.user_name) {
+                            finalUserName = profile.user_name;
+                            cachedUserName = profile.user_name; // Cache it
+                        }
+
+                    }
+                }
             }
         }
 
@@ -53,10 +73,10 @@ export const logSystemEvent = async (log: MonitoringLog) => {
             console.error('[Sentinel] Failed to log event:', error);
         }
     } catch (err) {
-        // Fail silently to not disrupt the main app flow
         console.warn('[Sentinel] Logging error:', err);
     }
 };
+
 
 /**
  * Utility to estimate size of objects/payloads for Ingress/Egress tracking

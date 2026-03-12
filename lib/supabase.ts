@@ -18,10 +18,12 @@ const customFetch = async (url: string | URL | Request, options?: any) => {
   // EXCLUSIONS: Prevent infinite loops and noise
   // 1. Don't log the monitoring calls themselves
   // 2. Don't log Auth calls (getUser/session) - prevents recursion
-  // 3. Optional: Don't log GET requests to reduce noise from internal polling
+  // 3. Don't log background utility sync calls (To-Do, Notes, etc.) to reduce noise
   const isExcluded = urlStr.includes('system_monitoring_logs') || 
                      urlStr.includes('rpc/get_monitoring_stats') ||
-                     urlStr.includes('/auth/v1/');
+                     urlStr.includes('/auth/v1/') ||
+                     urlStr.includes('/rest/v1/utility_data');
+
   
   const method = options?.method || 'GET';
 
