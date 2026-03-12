@@ -152,6 +152,7 @@ export default function Customer() {
   const [loadingDuplicates, setLoadingDuplicates] = useState(false);
   const [duplicateDispositionFilter, setDuplicateDispositionFilter] = useState("");
   const [duplicateCampaignFilter, setDuplicateCampaignFilter] = useState("");
+  const [selectedDuplicateLeads, setSelectedDuplicateLeads] = useState<Set<string>>(new Set());
 
 
   useEffect(() => {
@@ -282,6 +283,47 @@ export default function Customer() {
     } catch (err: any) {
       console.error("Error deleting duplicate entry:", err);
       alert("Failed to delete entry: " + (err.message || "Unknown error"));
+    }
+  };
+
+  const filteredDuplicateLeads = useMemo(() => {
+    return duplicateLeads.filter(lead => {
+      const matchesDisposition = !duplicateDispositionFilter || lead.disposition === duplicateDispositionFilter;
+      const matchesCampaign = !duplicateCampaignFilter || (lead.campaign_name === duplicateCampaignFilter || lead.campaign_id === duplicateCampaignFilter);
+      return matchesDisposition && matchesCampaign;
+    });
+  }, [duplicateLeads, duplicateDispositionFilter, duplicateCampaignFilter]);
+
+  const handleDeleteMultipleDuplicates = async (items: any[]) => {
+    if (items.length === 0) return;
+    if (!confirm(`Are you sure you want to delete ${items.length} selected lead(s)?`)) return;
+    
+    setLoadingDuplicates(true);
+    try {
+      // Group by table stage
+      const liveItems = items.filter(i => i.stage === "Live").map(i => i.lead_id);
+      const rejectedItems = items.filter(i => i.stage === "Rejected").map(i => i.lead_id);
+      const closedItems = items.filter(i => i.stage === "Closed").map(i => i.lead_id);
+
+      const deletePromises = [];
+      if (liveItems.length > 0) deletePromises.push(supabase.from('customers').delete().in('lead_id', liveItems));
+      if (rejectedItems.length > 0) deletePromises.push(supabase.from('rejected_leads').delete().in('lead_id', rejectedItems));
+      if (closedItems.length > 0) deletePromises.push(supabase.from('closed_deals').delete().in('lead_id', closedItems));
+
+      const results = await Promise.all(deletePromises);
+      const firstError = results.find(r => r.error)?.error;
+      if (firstError) throw firstError;
+
+      const deletedIds = new Set(items.map(i => i.lead_id));
+      setDuplicateLeads(prev => prev.filter(l => !deletedIds.has(l.lead_id)));
+      setSelectedDuplicateLeads(new Set());
+      await fetchCustomers(currentPage);
+      alert(`Successfully deleted ${items.length} records.`);
+    } catch (err: any) {
+      console.error("Bulk delete error:", err);
+      alert("Failed to delete records: " + (err.message || "Unknown error"));
+    } finally {
+      setLoadingDuplicates(false);
     }
   };
 
@@ -432,7 +474,7 @@ export default function Customer() {
 
         let freshCountQuery = supabase.from(table).select("*", { count: "exact", head: true });
         if (dataSource === 'live') {
-            freshCountQuery = freshCountQuery.is("assigned_to", null).is(dispCol, null);
+            freshCountQuery = freshCountQuery.eq("attempt_count", 0).is(dispCol, null);
         } else {
             freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
@@ -3191,11 +3233,28 @@ export default function Customer() {
               <div className="flex items-center gap-6">
                 <h3 className="font-bold text-gray-800">Duplicate Entries</h3>
                 
-                <div className="flex items-center gap-3 ml-4">
+                 <div className="flex items-center gap-3 ml-4 bg-gray-50 rounded-lg p-1 border border-gray-100">
+                   <div className="flex items-center gap-2 px-2 border-r border-gray-200 pr-3">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                        checked={filteredDuplicateLeads.length > 0 && filteredDuplicateLeads.every(l => selectedDuplicateLeads.has(l.lead_id))}
+                        onChange={(e) => {
+                          const newSelected = new Set(selectedDuplicateLeads);
+                          filteredDuplicateLeads.forEach(l => {
+                            if (e.target.checked) newSelected.add(l.lead_id);
+                            else newSelected.delete(l.lead_id);
+                          });
+                          setSelectedDuplicateLeads(newSelected);
+                        }}
+                      />
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Select All</span>
+                   </div>
+
                   <select 
                     value={duplicateDispositionFilter}
                     onChange={(e) => setDuplicateDispositionFilter(e.target.value)}
-                    className="px-2 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-600 focus:outline-none min-w-[140px]"
+                    className="px-2 py-1 bg-transparent text-[11px] text-gray-600 focus:outline-none min-w-[130px]"
                   >
                     <option value="">All Dispositions</option>
                     {[...new Set(duplicateLeads.map(l => l.disposition).filter(Boolean))].sort().map(disp => (
@@ -3238,22 +3297,49 @@ export default function Customer() {
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {Object.values(duplicateLeads.reduce((acc: any, lead: any) => {
-                    const matchesDisposition = !duplicateDispositionFilter || lead.disposition === duplicateDispositionFilter;
-                    const matchesCampaign = !duplicateCampaignFilter || (lead.campaign_name === duplicateCampaignFilter || lead.campaign_id === duplicateCampaignFilter);
-                    if (!matchesDisposition || !matchesCampaign) return acc;
+                  {Object.values(filteredDuplicateLeads.reduce((acc: any, lead: any) => {
                     if (!acc[lead.phone_search_hash]) acc[lead.phone_search_hash] = [];
                     acc[lead.phone_search_hash].push(lead);
                     return acc;
-                  }, {})).filter((groups: any) => groups.length > 0).map((group: any, idx: number) => (
+                  }, {})).map((group: any, idx: number) => (
                     <div key={idx} className="bg-white">
                       <div className="px-5 py-2 bg-gray-50/50 flex items-center justify-between border-y border-gray-50">
-                         <span className="font-bold text-gray-500 uppercase text-[10px]">Group {idx + 1}</span>
-                         <span className="text-[10px] text-gray-400">{group.length} records</span>
+                        <div className="flex items-center gap-3">
+                           <input 
+                             type="checkbox" 
+                             className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                             checked={group.every((item: any) => selectedDuplicateLeads.has(item.lead_id))}
+                             onChange={(e) => {
+                               const newSelected = new Set(selectedDuplicateLeads);
+                               group.forEach((item: any) => {
+                                 if (e.target.checked) newSelected.add(item.lead_id);
+                                 else newSelected.delete(item.lead_id);
+                               });
+                               setSelectedDuplicateLeads(newSelected);
+                             }}
+                           />
+                           <span className="font-bold text-gray-500 uppercase text-[10px]">Group {idx + 1}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                           {group.some((item: any) => selectedDuplicateLeads.has(item.lead_id)) && (
+                             <button
+                               onClick={() => {
+                                 const selectedItemsInGroup = group.filter((item: any) => selectedDuplicateLeads.has(item.lead_id));
+                                 handleDeleteMultipleDuplicates(selectedItemsInGroup);
+                               }}
+                               className="text-[10px] font-bold text-rose-600 hover:text-rose-700 uppercase tracking-tight flex items-center gap-1.5 transition-colors"
+                             >
+                               <i className="fi fi-rr-trash"></i>
+                               Delete Selected
+                             </button>
+                           )}
+                           <span className="text-[10px] text-gray-400">{group.length} records</span>
+                        </div>
                       </div>
                       <table className="w-full text-left">
                         <thead>
                           <tr className="text-gray-400 uppercase text-[9px] font-bold border-b border-gray-50">
+                            <th className="px-5 py-2 w-10"></th>
                             <th className="px-5 py-2">Customer / Phone</th>
                             <th className="px-3 py-2">Lead ID</th>
                             <th className="px-3 py-2">Date</th>
@@ -3266,7 +3352,20 @@ export default function Customer() {
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                           {group.map((item: any, i: number) => (
-                            <tr key={i} className="hover:bg-gray-50/30 transition-colors text-[11px]">
+                            <tr key={i} className={`hover:bg-gray-50/30 transition-colors text-[11px] ${selectedDuplicateLeads.has(item.lead_id) ? 'bg-rose-50/20' : ''}`}>
+                              <td className="px-5 py-3">
+                                <input 
+                                  type="checkbox" 
+                                  className="w-3.5 h-3.5 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                                  checked={selectedDuplicateLeads.has(item.lead_id)}
+                                  onChange={() => {
+                                    const newSelected = new Set(selectedDuplicateLeads);
+                                    if (newSelected.has(item.lead_id)) newSelected.delete(item.lead_id);
+                                    else newSelected.add(item.lead_id);
+                                    setSelectedDuplicateLeads(newSelected);
+                                  }}
+                                />
+                              </td>
                               <td className="px-5 py-3">
                                 <div className="font-semibold text-gray-800">{item.customer_name}</div>
                                 <div className="text-gray-400">{formatMaskedPhone(item.phone_no)}</div>
@@ -3308,9 +3407,23 @@ export default function Customer() {
 
             {/* Flat Social Footer */}
             <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
-              <span className="text-gray-400 font-medium">
-                Total duplicate groups: <span className="text-gray-700 font-bold">{[...new Set(duplicateLeads.map(l => l.phone_search_hash))].length}</span>
-              </span>
+              <div className="flex items-center gap-6">
+                <span className="text-gray-400 font-medium">
+                  Groups: <span className="text-gray-700 font-bold">{Object.keys(filteredDuplicateLeads.reduce((acc: any, l: any) => ({...acc, [l.phone_search_hash]: 1}), {})).length}</span>
+                </span>
+                {selectedDuplicateLeads.size > 0 && (
+                  <button
+                    onClick={() => {
+                      const itemsToDelete = filteredDuplicateLeads.filter(l => selectedDuplicateLeads.has(l.lead_id));
+                      handleDeleteMultipleDuplicates(itemsToDelete);
+                    }}
+                    className="px-3 py-1 bg-rose-600 text-white rounded text-[10px] font-bold uppercase tracking-wider hover:bg-rose-700 transition-colors flex items-center gap-2 shadow-sm shadow-rose-100"
+                  >
+                    <i className="fi fi-rr-trash"></i>
+                    Delete All Selected ({selectedDuplicateLeads.size})
+                  </button>
+                )}
+              </div>
               <button
                 onClick={() => {
                   setShowDuplicateModal(false);

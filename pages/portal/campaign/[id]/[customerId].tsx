@@ -2323,7 +2323,6 @@ export default function CallingPage() {
                     combinedDT.setSeconds(0, 0);
                     const finalISO = combinedDT.toISOString();
                     
-                    updatePayload.expiry_date = finalISO;
                     updatePayload.next_called_at = finalISO;
                     logNextCalledAt = finalISO;
 

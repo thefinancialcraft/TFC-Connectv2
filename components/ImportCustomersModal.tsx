@@ -328,12 +328,15 @@ export default function ImportCustomersModal({
         });
 
         if (internalConflicts.length > 0) {
+            console.log(`[File Check] Internal duplicates found in file: ${internalConflicts.length} groups.`);
+            console.log("[File Check] Conflict details:", internalConflicts);
             setFileConflicts(internalConflicts);
             setFullyProcessedCustomers(customers);
             setInitialRecordCount(customers.length);
             setShowFileConflictModal(true);
             setImportError(`File contains ${internalConflicts.length} duplicate groups out of ${customers.length} total records.`);
         } else {
+            console.log("[File Check] No internal duplicates found in file.");
             setFullyProcessedCustomers(customers);
             setInitialRecordCount(customers.length);
             setIsVerificationComplete(true);
@@ -516,8 +519,13 @@ export default function ImportCustomersModal({
                     .eq("organization_id", selectedOrgId);
 
                 if (error) throw error;
-                if (data) existingRecords = [...existingRecords, ...data];
+                if (data && data.length > 0) {
+                    console.log(`[DB Check] Batch ${Math.floor(i/batchSize) + 1}: Found ${data.length} matches.`);
+                    existingRecords = [...existingRecords, ...data];
+                }
             }
+
+            console.log(`[DB Check] Total existing records found: ${existingRecords.length}`);
 
             if (existingRecords && existingRecords.length > 0) {
                 // Determine conflicts
@@ -528,6 +536,8 @@ export default function ImportCustomersModal({
                         dbRecord: dbRec
                     };
                 });
+
+                console.log("[DB Check] Conflicts found:", conflicts);
 
                 setDbConflicts(conflicts);
                 setShowDbConflictModal(true);
