@@ -10,11 +10,51 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Client-side Supabase client (uses anon key)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Custom Fetch Wrapper for Logging
+const customFetch = async (url: string | URL | Request, options?: any) => {
+  const response = await fetch(url, options);
+  
+  const urlStr = url.toString();
+  // EXCLUSIONS: Prevent infinite loops and noise
+  // 1. Don't log the monitoring calls themselves
+  // 2. Don't log Auth calls (getUser/session) - prevents recursion
+  // 3. Optional: Don't log GET requests to reduce noise from internal polling
+  const isExcluded = urlStr.includes('system_monitoring_logs') || 
+                     urlStr.includes('rpc/get_monitoring_stats') ||
+                     urlStr.includes('/auth/v1/');
+  
+  const method = options?.method || 'GET';
 
-// Server-side Supabase client (uses service role key for admin operations)
-// Only use this in API routes, never expose to client
+  if (!isExcluded && method !== 'GET' && typeof window !== 'undefined') {
+    // We only log WRITE operations (POST, PUT, DELETE, etc.) automatically 
+    // GET requests are too frequent due to internal polling (like call_sessions)
+    try {
+      const { logSystemEvent, estimateSize } = await import('./monitoring');
+      const path = urlStr.split('.co')[1] || urlStr;
+      
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `API_WRITE: ${method} ${path}`,
+        path: path,
+        payload_size: options?.body ? estimateSize(options.body) : 0,
+        response_size: 1024 
+      }).catch(() => {});
+    } catch (e) {}
+  }
+  
+  return response;
+};
+
+
+
+// Client-side Supabase client (uses anon key)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+        fetch: customFetch
+    }
+});
+
+// Server-side Supabase client
 export const supabaseAdmin = supabaseServiceRoleKey
   ? createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
@@ -23,4 +63,5 @@ export const supabaseAdmin = supabaseServiceRoleKey
       },
     })
   : null;
+
 

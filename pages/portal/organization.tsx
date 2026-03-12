@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
+import { logSystemEvent } from "@/lib/monitoring";
 import ExpiryBadge from "@/components/ExpiryBadge";
 import { useOrganizationData, Organization } from "@/hooks/useOrganizationData";
 
@@ -111,6 +112,14 @@ export default function OrganizationPage() {
 
       if (error) throw error;
       fetchOrganizations();
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Delete Organization: ${name}`,
+        metadata: { organization_id: id, organization_name: name },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error deleting organization:", err);
       alert("Failed to delete organization. Please try again.");
@@ -130,6 +139,19 @@ export default function OrganizationPage() {
         .in("id", selectedUserIds);
 
       if (error) throw error;
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Assign ${selectedUserIds.length} members to ${selectedOrg.company_name}`,
+        metadata: { 
+          organization_id: selectedOrg.id, 
+          organization_name: selectedOrg.company_name,
+          user_count: selectedUserIds.length,
+          user_ids: selectedUserIds 
+        },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
 
       alert(`Successfully assigned ${selectedUserIds.length} members to ${selectedOrg.company_name}`);
       setShowAssignModal(false);

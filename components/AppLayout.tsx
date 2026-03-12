@@ -6,6 +6,7 @@ import BottomNav from "./BottomNav";
 import { useUser } from "../context/UserContext";
 export { useUser };
 import { handleLogout } from "../lib/authService";
+import { logSystemEvent } from "@/lib/monitoring";
 import UtilitySidebar from "./UtilitySidebar";
 import AppLogo from "./AppLogo";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
@@ -28,6 +29,19 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
   const handleLogoutClick = useCallback(async () => {
     await handleLogout(router);
   }, [router]);
+
+  // 🛰️ Sentinel: Track Page Visits
+  useEffect(() => {
+    if (mounted && user && !router.pathname.includes('/login')) {
+      logSystemEvent({
+        event_type: 'READ',
+        description: `Page Visit: ${router.pathname}`,
+        path: router.pathname,
+        user_name: user.displayName || 'User',
+        organization_id: user.organization_id || undefined
+      });
+    }
+  }, [router.pathname, user?.uid, mounted]);
 
 
   const isAuthPage = ['/portal/login', '/portal/signup', '/portal/signup-success'].includes(router.pathname);

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { useUser } from "../context/UserContext";
+import { logSystemEvent, estimateSize } from "../lib/monitoring";
 
 interface TeamManagementModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ export default function TeamManagementModal({
   users,
   organizations,
 }: TeamManagementModalProps) {
+  const { user } = useUser();
   const [name, setName] = useState("");
   const [leaderId, setLeaderId] = useState("");
   const [organizationId, setOrganizationId] = useState("");
@@ -79,6 +82,20 @@ export default function TeamManagementModal({
 
       onSave();
       onClose();
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: team?.id ? `Update Team: ${name}` : `Create Team: ${name}`,
+          metadata: { 
+              team_id: team?.id || 'new', 
+              team_name: name, 
+              member_count: selectedMembers.length,
+              organization_id: organizationId 
+          },
+          payload_size: estimateSize(teamData),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
     } catch (err: any) {
       console.error("Error saving team:", err);
       setError(err.message || "Failed to save team");

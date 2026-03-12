@@ -7,6 +7,7 @@ import SocialLoginButtons from "../../components/SocialLoginButtons";
 import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
 import { supabase } from "../../lib/supabase";
+import { logSystemEvent } from "../../lib/monitoring";
 
 export default function Login() {
   const router = useRouter();
@@ -64,6 +65,14 @@ export default function Login() {
               
               const redirectPath = pathMap[profile.approval_status || ''] || pathMap[profile.status || ''] || "/dashboard";
               console.log("🚀 [Login] Existing session, redirecting to:", redirectPath);
+              
+              logSystemEvent({
+                  event_type: 'AUTH',
+                  description: `Session Recovered: Redirecting to ${redirectPath}`,
+                  user_id: session.user.id,
+                  metadata: { redirect_path: redirectPath }
+              });
+
               router.push(redirectPath);
             } else if (isMounted) {
               // Session exists but no profile found - likely a stale or broken session

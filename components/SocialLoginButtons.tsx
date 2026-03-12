@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { logSystemEvent } from '../lib/monitoring';
 
 interface SocialLoginButtonsProps {
   formType: "userId" | "email";
@@ -45,6 +46,13 @@ export default function SocialLoginButtons({ formType, onToggleForm }: SocialLog
       });
 
       if (error) throw error;
+
+      logSystemEvent({
+        event_type: 'AUTH',
+        description: `Initiate Google Login`,
+        metadata: { provider: 'google' },
+        user_name: 'Anonymous'
+      });
       
       if (isMobile && data?.url) {
         const { notifyFlutter } = await import("../lib/flutterBridge");

@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { AllUser } from "../../components/users/types";
+import { useUser } from "../../context/UserContext";
+import { logSystemEvent, estimateSize } from "../../lib/monitoring";
 
 // Helper for exporting CSV - moved to utils.ts
 
 
 export function useUsersActions(refreshData: () => Promise<void>) {
+  const { user } = useUser();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   
   // Modals state
@@ -68,9 +71,16 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       }
 
       // Direct update for other statuses
-      const { error } = await supabase.from("user_profiles").update({ approval_status: approvalStatus }).eq("id", userId);
-      if (error) throw error;
       await refreshData();
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `User Status Change: ${userId} set to ${approvalStatus}`,
+          metadata: { user_id: userId, status: approvalStatus },
+          payload_size: estimateSize({ userId, approvalStatus }),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status");
@@ -82,6 +92,15 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       const { error } = await supabase.from("user_profiles").update({ [field]: value, updated_at: new Date().toISOString() }).eq("id", userId);
       if (error) throw error;
       await refreshData();
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `User Update: Field "${field}" set to "${String(value)}" for user ${userId}`,
+          metadata: { user_id: userId, field, value },
+          payload_size: estimateSize({ userId, field, value }),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
     } catch (err: any) {
       console.error(`Error updating ${field}:`, err);
       alert(`Failed to update ${field}: ${err.message}`);
@@ -121,6 +140,15 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       });
       if (!response.ok) throw new Error("Failed to delete user");
       await refreshData();
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Delete User: ${userId}`,
+          metadata: { user_id: userId },
+          payload_size: estimateSize({ userId }),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error deleting user:", err);
       alert("Failed to delete user");
@@ -237,6 +265,20 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       await refreshData();
       setShowApprovalModal(false);
       setApprovalUserData(null);
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Approve User: ${approvalUserData.user_name || approvalUserData.email}`,
+          metadata: { 
+              user_id: approvalUserData.id, 
+              employee_id: employeeId,
+              role: approvalFormData.role,
+              designation: approvalFormData.designation
+          },
+          payload_size: estimateSize(approvalFormData),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error approving user:", err);
       alert("Failed to approve user");
@@ -319,6 +361,21 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       await refreshData();
       setShowHoldModal(false);
       setHoldUserData(null);
+      
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `User on Hold: ${holdUserData.user_name || holdUserData.email}`,
+          metadata: { 
+              user_id: holdUserData.id, 
+              duration: holdFormData.duration,
+              reason: holdFormData.reason,
+              end_date: holdEndDate.toISOString()
+          },
+          payload_size: estimateSize(holdFormData),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
+
       setHoldFormData({
         duration: "1",
         customDate: "",
@@ -354,6 +411,19 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       await refreshData();
       setShowSuspendModal(false);
       setSuspendUserData(null);
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Suspend User: ${suspendUserData.user_name || suspendUserData.email}`,
+          metadata: { 
+              user_id: suspendUserData.id, 
+              reason: suspendFormData.reason 
+          },
+          payload_size: estimateSize(suspendFormData),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
+
       setSuspendFormData({ reason: "" });
     } catch (err) {
       console.error("Error suspending user:", err);

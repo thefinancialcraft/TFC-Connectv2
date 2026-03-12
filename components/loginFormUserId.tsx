@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabase";
 import ForgotUserIdForm from "./ForgotUserIdForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import { showError } from "../lib/dialogUtils";
+import { logSystemEvent } from "../lib/monitoring";
 
 interface LoginFormUserIdProps {
   showForgotForm?: boolean;
@@ -75,6 +76,14 @@ export default function LoginFormUserId({
       if (data.session) {
         console.log("✅ [Login] Supabase Auth successful for user:", data.user.id);
         
+        logSystemEvent({
+            event_type: 'AUTH',
+            description: `User Login: ${inputId} successful`,
+            metadata: { method: 'userId', employee_id: inputId },
+            payload_size: 0,
+            user_name: inputId,
+        });
+
         // Fetch profile for redirection
         const { data: profileData, error: fetchError } = await supabase
           .from('user_profiles')

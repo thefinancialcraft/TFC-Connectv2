@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { NextRouter } from "next/router";
+import { logSystemEvent } from "./monitoring";
 
 export interface UserProfile {
   uid: string;
@@ -148,6 +149,16 @@ export async function handleLogout(router: NextRouter): Promise<void> {
     }
 
     // 2. Clear Supabase session on server and client
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+        logSystemEvent({
+            event_type: 'AUTH',
+            description: `User Logout: ${user.email}`,
+            user_id: user.id,
+            metadata: { email: user.email }
+        });
+    }
+
     await supabase.auth.signOut();
 
     console.log("👋 [Auth] Logout complete, redirecting to login...");

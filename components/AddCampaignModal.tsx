@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useUser } from '../context/UserContext';
+import { logSystemEvent, estimateSize } from '../lib/monitoring';
 
 interface User {
     id: string;
@@ -203,6 +204,20 @@ export default function AddCampaignModal({
             } else {
                 onSuccess();
                 onClose();
+
+                logSystemEvent({
+                    event_type: 'WRITE',
+                    description: campaign ? `Update Campaign: ${campaignName}` : `Create Campaign: ${campaignName}`,
+                    metadata: { 
+                        campaign_id: campaignId, 
+                        campaign_name: campaignName,
+                        organization_id: selectedOrgId,
+                        user_count: selectedUsers.length
+                    },
+                    payload_size: estimateSize(campaignData),
+                    user_name: currentUser?.displayName || 'Admin',
+                    organization_id: currentUser?.organization_id || undefined
+                });
             }
         } catch (e) {
             console.error("Error saving campaign:", e);

@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { encryptPhone, computePhoneHash } from "../lib/phoneUtils";
+import { logSystemEvent, estimateSize } from "../lib/monitoring";
+import { useUser } from "./AppLayout";
 
 interface ImportCustomersModalProps {
   show: boolean;
@@ -18,6 +20,7 @@ export default function ImportCustomersModal({
   preselectedOrgId = "",
   preselectedCampaignId = "",
 }: ImportCustomersModalProps) {
+  const { user } = useUser();
   const [showImportModal, setShowImportModal] = useState(show);
   const [showMappingModal, setShowMappingModal] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
@@ -597,7 +600,19 @@ export default function ImportCustomersModal({
 
             if (firstError) throw firstError;
 
-            setImportSuccess(`Import Successful! ${toUpdate.length + toInsert.length} records processed (${toUpdate.length} updated, ${toInsert.length} newly added).`);
+            // Log monitoring event
+            const totalRecords = toUpdate.length + toInsert.length;
+            const inputSize = estimateSize([...toUpdate, ...toInsert]);
+            logSystemEvent({
+                event_type: 'WRITE',
+                description: `Bulk Import: ${totalRecords} leads processed (${toUpdate.length} updates, ${toInsert.length} new)`,
+                metadata: { organization_id: selectedOrgId, campaign_id: selectedCampaignId, record_count: totalRecords },
+                payload_size: inputSize,
+                user_name: user?.displayName || 'System User',
+                organization_id: selectedOrgId || undefined
+            });
+
+            setImportSuccess(`Import Successful! ${totalRecords} records processed (${toUpdate.length} updated, ${toInsert.length} newly added).`);
             
             // Short delay to show success then close
             setTimeout(() => {

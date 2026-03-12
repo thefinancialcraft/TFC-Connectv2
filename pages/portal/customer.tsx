@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
+import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 import ImportCustomersModal from "@/components/ImportCustomersModal";
 import AddCustomerModal from "@/components/AddCustomerModal";
 import { formatMaskedPhone, computePhoneHash, decryptPhone } from "@/lib/phoneUtils";
@@ -279,6 +280,15 @@ export default function Customer() {
       
       // Also refresh the main customer table if it's currently showing that data source
       fetchCustomers(currentPage);
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Delete Duplicate: Record ${targetLeadId} removed from ${table} for ${item.customer_name}`,
+          metadata: { lead_id: targetLeadId, table, customer_name: item.customer_name },
+          payload_size: 0,
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
       
     } catch (err: any) {
       console.error("Error deleting duplicate entry:", err);
@@ -318,6 +328,16 @@ export default function Customer() {
       setDuplicateLeads(prev => prev.filter(l => !deletedIds.has(l.lead_id)));
       setSelectedDuplicateLeads(new Set());
       await fetchCustomers(currentPage);
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Bulk Delete Duplicates: ${items.length} records removed (${liveItems.length} Live, ${rejectedItems.length} Rejected, ${closedItems.length} Closed)`,
+          metadata: { record_count: items.length, live_count: liveItems.length, rejected_count: rejectedItems.length, closed_count: closedItems.length },
+          payload_size: estimateSize(items),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
+
       alert(`Successfully deleted ${items.length} records.`);
     } catch (err: any) {
       console.error("Bulk delete error:", err);
@@ -776,6 +796,15 @@ export default function Customer() {
 
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Bulk Update: Field "${field}" set to "${value}" for ${ids.length} records.`,
+          metadata: { field, value, record_count: ids.length },
+          payload_size: estimateSize({ field, value, ids }),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
       
       // Close all bulk modals
       setShowBulkOrgModal(false);
@@ -843,12 +872,68 @@ export default function Customer() {
 
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
+      
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Move to Live: ${rejectedLeads?.length || 0} records restored from rejected_leads`,
+          metadata: { record_count: rejectedLeads?.length || 0, source: 'rejected_leads', target: 'customers' },
+          payload_size: estimateSize(rejectedLeads),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
+
       alert(`Successfully moved ${rejectedLeads?.length} lead(s) back to Live.`);
     } catch (err) {
       console.error("Error moving to live:", err);
       alert("Failed to move leads back to live. Please try again.");
     } finally {
       setIsMovingToLive(false);
+    }
+  };
+
+  const handleExportCustomers = async () => {
+    if (allCustomers.length === 0) {
+      alert("No customers to export.");
+      return;
+    }
+
+    try {
+      // Create CSV content
+      const headers = ["Lead ID", "Name", "Phone", "Organization", "Campaign", "Assigned To", "Disposition", "Created At"];
+      const csvData = allCustomers.map(customer => [
+        `"${customer.lead_id || ''}"`,
+        `"${customer.customer_name || ''}"`,
+        `"${customer.phone_no || ''}"`,
+        `"${customer.organization_name || ''}"`,
+        `"${customer.campaign_name || ''}"`,
+        `"${customer.assigned_user_name || ''}"`,
+        `"${customer.disposition || ''}"`,
+        `"${customer.created_at || ''}"`
+      ]);
+
+      const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `customers_export_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      logSystemEvent({
+          event_type: 'READ',
+          description: `Export Customers: ${allCustomers.length} records exported to CSV`,
+          metadata: { record_count: allCustomers.length, format: 'csv' },
+          payload_size: estimateSize(allCustomers),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
+
+    } catch (err) {
+      console.error("Error exporting customers:", err);
+      alert("Failed to export customers. Please try again.");
     }
   };
 
@@ -1538,11 +1623,20 @@ export default function Customer() {
                                     .slice(0, 2)
                                     .join("; ")}`
                                 );
-                              } else {
-                                // All successful
-                                setSelectedCustomers(new Set());
-                                await fetchCustomers(currentPage);
-                              }
+                                } else {
+                                  // All successful
+                                  setSelectedCustomers(new Set());
+                                  await fetchCustomers(currentPage);
+
+                                  logSystemEvent({
+                                      event_type: 'WRITE',
+                                      description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Mobile View)`,
+                                      metadata: { record_count: customerIds.length },
+                                      payload_size: estimateSize(customerIds),
+                                      user_name: user?.displayName || 'Admin',
+                                      organization_id: user?.organization_id || undefined
+                                  });
+                                }
                             } catch (err) {
                               console.error("Error deleting customers:", err);
                               alert(
@@ -1600,8 +1694,10 @@ export default function Customer() {
                     {/* Export Button */}
                     {permissionFlags.isExportButtonVisible && (
                     <button
+                      onClick={handleExportCustomers}
                       className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
                       style={{ fontFamily: "'Roboto', sans-serif" }}
+                      title="Export Data"
                     >
                       <i className="fi flex fi-rr-download text-sm text-gray-600"></i>
                     </button>
@@ -1729,11 +1825,20 @@ export default function Customer() {
                                       .slice(0, 2)
                                       .join("; ")}`
                                   );
-                                } else {
-                                  // All successful
-                                  setSelectedCustomers(new Set());
-                                  await fetchCustomers(currentPage);
-                                }
+                                  } else {
+                                    // All successful
+                                    setSelectedCustomers(new Set());
+                                    await fetchCustomers(currentPage);
+
+                                    logSystemEvent({
+                                        event_type: 'WRITE',
+                                        description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Desktop View)`,
+                                        metadata: { record_count: customerIds.length },
+                                        payload_size: estimateSize(customerIds),
+                                        user_name: user?.displayName || 'Admin',
+                                        organization_id: user?.organization_id || undefined
+                                    });
+                                  }
                               } catch (err) {
                                 console.error("Error deleting customers:", err);
                                 alert(
@@ -1889,8 +1994,10 @@ export default function Customer() {
                       {/* Export Button */}
                       {permissionFlags.isExportButtonVisible && (
                       <button
+                        onClick={handleExportCustomers}
                         className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
                         style={{ fontFamily: "'Roboto', sans-serif" }}
+                        title="Export Data"
                       >
                         <i className="fi flex fi-rr-download text-sm text-gray-600"></i>
                       </button>
@@ -2190,9 +2297,15 @@ export default function Customer() {
                                                   "Failed to delete customer"
                                                 );
                                               } else {
-                                                await fetchCustomers(
-                                                  currentPage
-                                                );
+                                                await fetchCustomers(currentPage);
+                                                logSystemEvent({
+                                                    event_type: 'WRITE',
+                                                    description: `Delete Customer: ${customer.customer_name || 'N/A'} (ID: ${customer.id}) removed`,
+                                                    metadata: { customer_id: customer.id, customer_name: customer.customer_name },
+                                                    payload_size: 0,
+                                                    user_name: user?.displayName || 'Admin',
+                                                    organization_id: user?.organization_id || undefined
+                                                });
                                               }
                                             } catch (err) {
                                               console.error(
@@ -2263,6 +2376,14 @@ export default function Customer() {
                                       alert("Failed to delete customer");
                                     } else {
                                       await fetchCustomers(currentPage);
+                                      logSystemEvent({
+                                          event_type: 'WRITE',
+                                          description: `Delete Customer: ${customer.customer_name || 'N/A'} (ID: ${customer.id}) removed from Grid`,
+                                          metadata: { customer_id: customer.id, customer_name: customer.customer_name },
+                                          payload_size: 0,
+                                          user_name: user?.displayName || 'Admin',
+                                          organization_id: user?.organization_id || undefined
+                                      });
                                     }
                                   } catch (err) {
                                     console.error(

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
+import { logSystemEvent, estimateSize } from '@/lib/monitoring';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
@@ -257,6 +258,21 @@ export default function CreateOrganization() {
             
             if (updateError) throw updateError;
         }
+
+        logSystemEvent({
+          event_type: 'WRITE',
+          description: `Onboard Organization: ${form.company_name}`,
+          metadata: { 
+            organization_id: newOrg.id, 
+            organization_name: form.company_name,
+            org_code: form.org_code,
+            initial_members: allUserIdsToAssociate.length + 1,
+            owner_mode: ownerMode
+          },
+          payload_size: estimateSize(form),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.uid ? undefined : undefined // This is internal staff action usually
+        });
 
         router.push('/organization');
     } catch (err: any) {

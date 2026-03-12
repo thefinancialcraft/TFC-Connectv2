@@ -2,6 +2,7 @@
 	import { useRouter } from "next/router";
 	import { useUser } from "@/components/AppLayout";
 	import { supabase } from "@/lib/supabase";
+	import { logSystemEvent } from "@/lib/monitoring";
 
 	import CampaignCard, { type Campaign } from "@/components/CampaignCard";
 	import AddCampaignModal from "@/components/AddCampaignModal";
@@ -321,6 +322,14 @@
 					} else {
 						alert("Campaign deleted successfully!");
 						fetchCampaigns();
+
+						logSystemEvent({
+							event_type: 'WRITE',
+							description: `Delete Campaign: ${id}`,
+							metadata: { campaign_id: id },
+							user_name: user?.displayName || 'Admin',
+							organization_id: user?.organization_id || undefined
+						});
 					}
 				} catch (e) {
 					console.error("Error deleting campaign:", e);

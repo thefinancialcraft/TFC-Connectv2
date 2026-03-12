@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import AppLayout, { useUser } from "@/components/AppLayout";
 import { supabase } from "@/lib/supabase";
+import { logSystemEvent } from "@/lib/monitoring";
 import ExpiryBadge from "@/components/ExpiryBadge";
 import SignupForm from "@/components/SignupForm";
 import ImportCustomersModal from "@/components/ImportCustomersModal";
@@ -120,6 +121,17 @@ export default function OrganizationDetail() {
       // I'll refresh data to keep it consistent.
       refreshData(true); 
       fetchUnassignedUsers();
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Add member to ${organization.company_name}`,
+        metadata: { 
+          organization_id: organization.id, 
+          user_id: selectedUserToAdd 
+        },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error adding user:", err);
       alert("Failed to add user");
@@ -141,6 +153,18 @@ export default function OrganizationDetail() {
       // Optimistic update
       setOrgUsers((prev: OrgUser[]) => prev.filter((u: OrgUser) => u.id !== userId));
       fetchUnassignedUsers();
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Remove member from ${organization?.company_name}`,
+        metadata: { 
+          organization_id: organization?.id, 
+          user_id: userId,
+          user_name: userName
+        },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error removing user:", err);
     }
@@ -160,6 +184,18 @@ export default function OrganizationDetail() {
       setOrgUsers((prev: OrgUser[]) => prev.map((u: OrgUser) => 
         u.id === userId ? { ...u, status: newStatus } : u
       ));
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Toggle member status to ${newStatus}`,
+        metadata: { 
+          organization_id: organization?.id, 
+          user_id: userId,
+          status: newStatus
+        },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error updating status:", err);
     }
@@ -217,6 +253,18 @@ export default function OrganizationDetail() {
       await refreshData(true);
       setShowRenewalModal(false);
       alert("Organization renewed successfully!");
+
+      logSystemEvent({
+        event_type: 'WRITE',
+        description: `Renew Organization: ${organization.company_name} for ${monthsToAdd} months`,
+        metadata: { 
+          organization_id: organization.id, 
+          months_added: monthsToAdd,
+          new_expiry: newExpiryString 
+        },
+        user_name: user?.displayName || 'Admin',
+        organization_id: user?.organization_id || undefined
+      });
     } catch (err) {
       console.error("Error renewing organization:", err);
       alert("Failed to renew organization");

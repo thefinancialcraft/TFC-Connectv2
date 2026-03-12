@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { encryptPhone, computePhoneHash } from "../lib/phoneUtils";
+import { useUser } from "../context/UserContext";
+import { logSystemEvent, estimateSize } from "../lib/monitoring";
 
 interface AddCustomerModalProps {
   show: boolean;
@@ -17,6 +19,7 @@ export default function AddCustomerModal({
   preselectedOrgId = "",
   preselectedCampaignId = "",
 }: AddCustomerModalProps) {
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -178,6 +181,15 @@ export default function AddCustomerModal({
 
       const { error: insertError } = await supabase.from("customers").insert(customerData);
       if (insertError) throw insertError;
+
+      logSystemEvent({
+          event_type: 'WRITE',
+          description: `Add Customer: ${formData.name} created manually`,
+          metadata: { customer_id: customerData.lead_id, customer_name: formData.name },
+          payload_size: estimateSize(customerData),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
+      });
 
       setSuccess("Customer added successfully!");
       if (onSuccess) onSuccess();

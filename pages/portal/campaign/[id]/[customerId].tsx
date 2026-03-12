@@ -8,6 +8,7 @@ import BottomNav from "@/components/BottomNav";
 import { notifyFlutter, requestDeviceInfoFromFlutter } from "@/lib/flutterBridge";
 import { decryptPhone, formatMaskedPhone, computePhoneHash } from "@/lib/phoneUtils";
 import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "@/lib/flutterBridge";
+import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 
 export default function CallingPage() {
     const router = useRouter();
@@ -2409,6 +2410,16 @@ Campaign: ${campaign?.name || campaignId}
 
                 // Success: Refresh schedules to show the newly added/removed callback
                 fetchSchedules();
+
+                // Log monitoring event
+                logSystemEvent({
+                    event_type: 'WRITE',
+                    description: `Disposition Saved: ${disposition} for ${customer?.customer_name || 'Customer'}`,
+                    metadata: { disposition, sub_disposition: subDisposition, customer_id: customerId, duration: callDuration },
+                    payload_size: estimateSize(updatePayload),
+                    user_name: user?.displayName || 'Agent',
+                    organization_id: user?.organization_id || undefined
+                });
             }
 
             // 1. Save Call Log (Moved here to include calculated metadata)

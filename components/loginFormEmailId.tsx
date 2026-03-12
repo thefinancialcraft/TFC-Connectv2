@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ForgotEmailForm from "./ForgotEmailForm";
+import { logSystemEvent } from "../lib/monitoring";
 
 interface LoginFormEmailIdProps {
   showForgotPasswordForm?: boolean;
@@ -49,6 +50,14 @@ export default function LoginFormEmailId({
       if (data.session) {
         console.log("✅ Email Login successful");
         
+        logSystemEvent({
+            event_type: 'AUTH',
+            description: `User Login: ${email.trim()} successful`,
+            metadata: { method: 'email', email: email.trim() },
+            payload_size: 0,
+            user_name: email.trim(),
+        });
+
         // Fetch profile for redirection
         const { data: profile } = await supabase
           .from('user_profiles')
