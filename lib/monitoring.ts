@@ -39,16 +39,18 @@ export const logSystemEvent = async (log: MonitoringLog) => {
                         finalUserName = cachedUserName;
                     } else {
                         // Attempt to get name from profile table
+                        // Use maybeSingle to prevent error if profile doesn't exist yet
                         const { data: profile } = await supabase
                             .from('user_profiles')
                             .select('user_name')
                             .eq('id', user.id)
-                            .single();
+                            .maybeSingle();
                         
                         if (profile?.user_name) {
                             finalUserName = profile.user_name;
                             cachedUserName = profile.user_name; // Cache it
                         }
+
 
                     }
                 }

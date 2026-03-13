@@ -10,47 +10,65 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+// Global flag to prevent recursive logging
+let isLoggingInternal = false;
+
 // Custom Fetch Wrapper for Logging
 const customFetch = async (url: string | URL | Request, options?: any) => {
-  const response = await fetch(url, options);
-  
-  const urlStr = url.toString();
-  // EXCLUSIONS: Prevent infinite loops and noise
-  // 1. Don't log the monitoring calls themselves
-  // 2. Don't log Auth calls (getUser/session) - prevents recursion
-  // 3. Don't log background utility sync calls (To-Do, Notes, etc.) to reduce noise
-  // 4. Don't log user_profiles lookups (used by the logging system itself) to prevent loop
-  const isExcluded = urlStr.includes('system_monitoring_logs') || 
+  const urlStr = typeof url === 'string' 
+    ? url 
+    : (url instanceof Request ? url.url : url.toString());
+
+  // CRITICAL: Immediately identify if this is an Auth or internal monitoring request
+  // We skip EVERYTHING for these to ensure no interference with login
+  const isExcluded = isLoggingInternal ||
+                     urlStr.includes('system_monitoring_logs') || 
                      urlStr.includes('rpc/get_monitoring_stats') ||
                      urlStr.includes('/auth/v1/') ||
                      urlStr.includes('/rest/v1/utility_data') ||
                      urlStr.includes('/rest/v1/user_profiles?select=user_name');
 
-
-  
-  const method = options?.method || 'GET';
-
-  if (!isExcluded && typeof window !== 'undefined') {
-    // Re-enabling all methods (including GET) to show backend activity
-    // but we filter out very frequent polling if needed.
-    try {
-      const { logSystemEvent, estimateSize } = await import('./monitoring');
-      const path = urlStr.split('.co')[1] || urlStr;
-      
-      // We only log if it's a real API call or if the user is interacting
-      logSystemEvent({
-        event_type: method === 'GET' ? 'READ' : 'WRITE',
-        description: `API_HIT: ${method} ${path}`,
-        path: path,
-        payload_size: options?.body ? estimateSize(options.body) : 0,
-        response_size: 1024 // Estimation
-      }).catch(() => {});
-    } catch (e) {}
+  // If excluded, just return the standard fetch immediately
+  if (isExcluded) {
+    return fetch(url, options);
   }
 
-  
-  return response;
+  try {
+    // 1. Execute the original request
+    const response = await fetch(url, options);
+
+    // 2. Schedule logging in the background (post-response, non-blocking)
+    if (typeof window !== 'undefined') {
+      (async () => {
+        try {
+          isLoggingInternal = true;
+          const { logSystemEvent, estimateSize } = await import('./monitoring');
+          const path = urlStr.split('.co')[1] || urlStr;
+          const method = options?.method || (url instanceof Request ? url.method : 'GET');
+
+          await logSystemEvent({
+            event_type: method === 'GET' ? 'READ' : 'WRITE',
+            description: `API_HIT: ${method} ${path}`,
+            path: path,
+            payload_size: options?.body ? estimateSize(options.body) : 0,
+            response_size: 1024 
+          });
+        } catch (logErr) {
+          // Ignore background logging errors
+        } finally {
+          isLoggingInternal = false;
+        }
+      })();
+    }
+
+    return response;
+  } catch (err) {
+    console.error('[Sentinel] API Request Failed:', urlStr, err);
+    throw err; // Re-throw so the app can handle it
+  }
 };
+
+
 
 
 
