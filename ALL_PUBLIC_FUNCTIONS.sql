@@ -1,0 +1,609 @@
+-- ==========================================
+-- TFC Connect V2 - All Public Database Functions
+-- Centralized repository for all business logic
+-- Generated: 2024-05-04 (Consolidated & Optimized)
+-- ==========================================
+
+-- 1. handle_updated_at (General Trigger)
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.updated_at = timezone('utc'::text, now());
+    RETURN NEW;
+END;
+$function$;
+
+-- 2. move_to_rejected (Version A - Simple)
+CREATE OR REPLACE FUNCTION public.move_to_rejected(p_customer_id uuid, p_agent_id uuid, p_notes text, p_disposition text, p_sub_disposition text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    INSERT INTO rejected_leads (customer_id, customer_name, phone_no, campaign_id, disposition, sub_disposition, agent_id, notes)
+    SELECT id, customer_name, phone_no, campaign_id, p_disposition, p_sub_disposition, p_agent_id, p_notes
+    FROM customers
+    WHERE id = p_customer_id;
+
+    DELETE FROM customers WHERE id = p_customer_id;
+END;
+$function$;
+
+-- 3. move_to_rejected (Version B - Advanced with Phone Search Hash)
+CREATE OR REPLACE FUNCTION public.move_to_rejected(p_customer_id uuid, p_agent_id uuid, p_notes text, p_disposition text, p_sub_disposition text, p_phone_search_hash text, p_outcome text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    v_customer_data customers%ROWTYPE;
+BEGIN
+    SELECT * INTO v_customer_data FROM customers WHERE id = p_customer_id;
+
+    IF FOUND THEN
+        INSERT INTO rejected_leads (
+            customer_id, customer_name, phone_no, campaign_id, agent_id, rejected_at,
+            disposition, sub_disposition, phone_search_hash, lead_id, expiry_date,
+            customer_details, utilities, status, last_called_at, last_updated_by,
+            is_connected, attempt_count, last_attempt_at, next_called_at,
+            organization_id, outcome, updated_at
+        ) VALUES (
+            v_customer_data.id, v_customer_data.customer_name, v_customer_data.phone_no,
+            v_customer_data.campaign_id, p_agent_id, NOW(), p_disposition, p_sub_disposition,
+            COALESCE(p_phone_search_hash, v_customer_data.phone_search_hash),
+            v_customer_data.lead_id, v_customer_data.expiry_date, v_customer_data.customer_details,
+            v_customer_data.utilities, 'rejected', v_customer_data.last_called_at, p_agent_id,
+            v_customer_data.is_connected, v_customer_data.attempt_count, v_customer_data.last_attempt_at,
+            v_customer_data.next_called_at, v_customer_data.organization_id, p_outcome, NOW()
+        );
+
+        DELETE FROM customers WHERE id = p_customer_id;
+    END IF;
+END;
+$function$;
+
+-- 4. delete_user_profile
+CREATE OR REPLACE FUNCTION public.delete_user_profile(target_user_id uuid)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'auth', 'pg_temp'
+AS $function$
+BEGIN
+    IF NOT public.is_admin() THEN
+        RAISE EXCEPTION 'Only admins can delete users';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM public.user_profiles
+        WHERE user_id = target_user_id AND super_admin = true
+    ) THEN
+        RAISE EXCEPTION 'Cannot delete super admin users';
+    END IF;
+
+    DELETE FROM auth.users WHERE id = target_user_id;
+    RETURN true;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Error deleting user: %', SQLERRM;
+        RETURN false;
+END;
+$function$;
+
+-- 5. update_customers_updated_at
+CREATE OR REPLACE FUNCTION public.update_customers_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$function$;
+
+-- 6. assign_next_lead (Core CRM Logic)
+CREATE OR REPLACE FUNCTION public.assign_next_lead(p_campaign_id text, p_user_id uuid, p_exclude_lead_id uuid DEFAULT NULL::uuid)
+ RETURNS uuid
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+DECLARE
+    v_next_lead_id UUID;
+BEGIN
+    -- Recovery / Sticky Session
+    SELECT customer_id::UUID INTO v_next_lead_id
+    FROM public.call_sessions
+    WHERE user_id = p_user_id
+      AND campaign_id = p_campaign_id
+      AND status NOT IN ('closed', 'disposition_pending')
+      AND (p_exclude_lead_id IS NULL OR customer_id::TEXT != p_exclude_lead_id::TEXT)
+    LIMIT 1;
+
+    IF v_next_lead_id IS NOT NULL THEN
+        RETURN v_next_lead_id;
+    END IF;
+
+    -- Prioritized Queue Logic
+    WITH prioritized_leads AS (
+        SELECT 
+            l.id, l.next_called_at, l.expiry_date, l.updated_at, l.attempt_count,
+            CASE 
+                WHEN l.next_called_at <= now() AND l.assigned_to = p_user_id THEN 1
+                WHEN l.next_called_at > now() AND l.next_called_at <= (now() + interval '4 hours') AND l.assigned_to = p_user_id THEN 2
+                WHEN COALESCE(l.attempt_count, 0) = 0 AND (l.assigned_to IS NULL OR l.assigned_to = p_user_id) THEN 3
+                ELSE 4
+            END as tier_priority
+        FROM public.customers l
+        LEFT JOIN public.call_sessions cs ON l.id::TEXT = cs.customer_id
+        WHERE l.campaign_id = p_campaign_id
+          AND l.status = 'active'
+          AND (l.next_called_at IS NULL OR l.assigned_to = p_user_id)
+          AND (cs.customer_id IS NULL OR cs.user_id = p_user_id OR cs.updated_at < (now() - interval '30 minutes'))
+          AND (p_exclude_lead_id IS NULL OR l.id != p_exclude_lead_id)
+    )
+    SELECT id INTO v_next_lead_id
+    FROM prioritized_leads
+    WHERE tier_priority IS NOT NULL
+    ORDER BY 
+        tier_priority ASC,
+        CASE WHEN tier_priority IN (1, 2) THEN next_called_at END ASC,
+        CASE WHEN tier_priority = 3 THEN expiry_date END ASC NULLS LAST,
+        CASE WHEN tier_priority = 3 THEN updated_at END ASC NULLS LAST,
+        CASE WHEN tier_priority = 4 THEN updated_at END ASC NULLS LAST,
+        CASE WHEN tier_priority = 4 THEN expiry_date END ASC NULLS LAST
+    LIMIT 1;
+
+    IF v_next_lead_id IS NOT NULL THEN
+        UPDATE public.customers 
+        SET assigned_to = p_user_id, updated_at = now()
+        WHERE id = v_next_lead_id;
+        RETURN v_next_lead_id;
+    END IF;
+
+    RETURN NULL;
+END;
+$function$;
+
+-- 7. update_updated_at (General Trigger)
+CREATE OR REPLACE FUNCTION public.update_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$function$;
+
+-- 8. get_agent_performance_optimized (DEDUPLICATED)
+CREATE OR REPLACE FUNCTION public.get_agent_performance_optimized(
+    p_start_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_end_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_org_id uuid DEFAULT NULL::uuid, 
+    p_restricted_user_ids uuid[] DEFAULT NULL::uuid[], 
+    p_filter_user_id uuid DEFAULT NULL::uuid
+)
+ RETURNS json
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+DECLARE
+    result json;
+BEGIN
+    WITH deduplicated_calls AS (
+        SELECT DISTINCT ON (employee_id, number, date_trunc('minute', timestamp), duration)
+            ch.employee_id,
+            ch.duration,
+            ch.timestamp
+        FROM public.call_history ch
+        WHERE (p_start_date IS NULL OR ch.timestamp >= p_start_date)
+          AND (p_end_date IS NULL OR ch.timestamp <= p_end_date)
+        ORDER BY employee_id, number, date_trunc('minute', timestamp), duration, timestamp DESC
+    ),
+    agent_calls AS (
+        SELECT 
+            dc.employee_id,
+            COUNT(*) as count,
+            COALESCE(SUM(dc.duration), 0) as duration,
+            COUNT(*) FILTER (WHERE dc.duration > 0) as connected_count,
+            MAX(dc.timestamp) as last_active
+        FROM deduplicated_calls dc
+        GROUP BY dc.employee_id
+    ),
+    agent_leads AS (
+        SELECT 
+            assigned_to as user_id,
+            COUNT(*) FILTER (WHERE disposition ILIKE ANY(ARRAY['%Sold%', '%Success%', '%Converted%', '%Closed%', '%Deals%'])) as deals_count,
+            COUNT(*) FILTER (WHERE disposition ILIKE ANY(ARRAY['%Callback%', '%Call Back%', '%Follow Up%', '%FollowUp%'])) as follow_ups_count
+        FROM public.customers
+        WHERE (p_org_id IS NULL OR organization_id = p_org_id)
+        GROUP BY assigned_to
+    ),
+    agent_status AS (
+        SELECT DISTINCT ON (employee_id) 
+            employee_id, last_seen, on_call, is_personal
+        FROM public.sync_meta
+        ORDER BY employee_id, last_seen DESC
+    )
+    SELECT json_agg(t) INTO result FROM (
+        SELECT 
+            u.user_id as id, u.user_name as name, u.employee_id, u.profile_pic_url,
+            COALESCE(ac.count, 0) as count,
+            COALESCE(ac.duration, 0) as duration,
+            COALESCE(ac.connected_count, 0) as connected_count,
+            COALESCE(al.deals_count, 0) as deals_count,
+            COALESCE(al.follow_ups_count, 0) as follow_ups_count,
+            ac.last_active, ast.last_seen as last_online,
+            COALESCE(ast.on_call, false) as on_call,
+            COALESCE(ast.is_personal, false) as is_personal
+        FROM public.user_profiles u
+        LEFT JOIN agent_calls ac ON LOWER(u.employee_id) = LOWER(ac.employee_id)
+        LEFT JOIN agent_leads al ON u.user_id = al.user_id
+        LEFT JOIN agent_status ast ON LOWER(u.employee_id) = LOWER(ast.employee_id)
+        WHERE (p_org_id IS NULL OR u.organization_id = p_org_id)
+        AND (p_restricted_user_ids IS NULL OR u.user_id = ANY(p_restricted_user_ids))
+        AND (p_filter_user_id IS NULL OR u.user_id = p_filter_user_id)
+        AND u.approval_status = 'approved'
+        AND u.role IN ('user', 'agent', 'admin', 'super_admin')
+        ORDER BY count DESC
+    ) t;
+
+    RETURN result;
+END;
+$function$;
+
+-- 9. get_dashboard_charts_optimized (DEDUPLICATED)
+CREATE OR REPLACE FUNCTION public.get_dashboard_charts_optimized(
+    p_start_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_end_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_org_id uuid DEFAULT NULL::uuid, 
+    p_filter_user_id uuid DEFAULT NULL::uuid, 
+    p_restricted_user_ids uuid[] DEFAULT NULL::uuid[], 
+    p_filter_employee_id text DEFAULT NULL::text, 
+    p_restricted_employee_ids text[] DEFAULT NULL::text[]
+)
+ RETURNS json
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+DECLARE
+    result json;
+    v_pie_data json;
+    v_hourly_stats json;
+    v_campaign_data json;
+    v_trend_data json;
+    v_heatmap_data json;
+BEGIN
+    -- Base CTE for deduplicated calls
+    CREATE TEMP TABLE deduplicated_calls_temp ON COMMIT DROP AS
+    SELECT DISTINCT ON (employee_id, number, date_trunc('minute', timestamp), duration)
+        *
+    FROM public.call_history ch
+    WHERE (p_start_date IS NULL OR ch.timestamp >= p_start_date)
+      AND (p_end_date IS NULL OR ch.timestamp <= p_end_date)
+      AND ((p_filter_employee_id IS NULL AND p_restricted_employee_ids IS NULL) OR (p_filter_employee_id IS NOT NULL AND LOWER(ch.employee_id) = LOWER(p_filter_employee_id)) OR (p_restricted_employee_ids IS NOT NULL AND LOWER(ch.employee_id) = ANY(SELECT LOWER(unnest(p_restricted_employee_ids)))))
+      AND (p_org_id IS NULL OR EXISTS (SELECT 1 FROM public.user_profiles up WHERE up.employee_id = ch.employee_id AND up.organization_id = p_org_id))
+    ORDER BY employee_id, number, date_trunc('minute', timestamp), duration, timestamp DESC;
+
+    -- 1. Pie Data (Leads Analysis)
+    SELECT json_agg(t) INTO v_pie_data FROM (
+        SELECT COALESCE(disposition, 'Fresh Lead') as name, COUNT(*) as value
+        FROM public.customers
+        WHERE (p_org_id IS NULL OR organization_id = p_org_id)
+        AND (p_start_date IS NULL OR created_at >= p_start_date)
+        AND (p_end_date IS NULL OR created_at <= p_end_date)
+        AND ((p_filter_user_id IS NULL AND p_restricted_user_ids IS NULL) OR (p_filter_user_id IS NOT NULL AND assigned_to = p_filter_user_id) OR (p_restricted_user_ids IS NOT NULL AND assigned_to = ANY(p_restricted_user_ids)))
+        GROUP BY name ORDER BY value DESC LIMIT 5
+    ) t;
+
+    -- 2. Hourly Stats
+    SELECT json_agg(t) INTO v_hourly_stats FROM (
+        SELECT to_char(timestamp AT TIME ZONE 'Asia/Kolkata', 'FMHH AM') as hour_label, 
+               COUNT(*) as total, 
+               COUNT(*) FILTER (WHERE call_type ILIKE '%Outgoing%') as outgoing,
+               COUNT(*) FILTER (WHERE call_type ILIKE '%Incoming%') as incoming,
+               COUNT(*) FILTER (WHERE call_type ILIKE '%Missed%') as missed,
+               SUM(CASE WHEN duration > 0 THEN 1 ELSE 0 END) as connected, 
+               SUM(duration) as talktime
+        FROM deduplicated_calls_temp
+        GROUP BY hour_label ORDER BY MIN(timestamp AT TIME ZONE 'Asia/Kolkata')
+    ) t;
+
+    -- 3. Campaign Performance
+    SELECT json_agg(t) INTO v_campaign_data FROM (
+        SELECT c.name, COUNT(cust.id) as total, COUNT(cust.id) FILTER (WHERE cust.disposition ILIKE ANY(ARRAY['%Sold%', '%Success%', '%Converted%', '%Closed%'])) as success
+        FROM public.campaigns c JOIN public.customers cust ON c.id = cust.campaign_id
+        WHERE (p_org_id IS NULL OR c.organization_id = p_org_id)
+        AND ((p_filter_user_id IS NULL AND p_restricted_user_ids IS NULL) OR (p_filter_user_id IS NOT NULL AND cust.assigned_to = p_filter_user_id) OR (p_restricted_user_ids IS NOT NULL AND cust.assigned_to = ANY(p_restricted_user_ids)))
+        GROUP BY c.name ORDER BY total DESC LIMIT 6
+    ) t;
+
+    -- 4. Monthly Trend
+    SELECT json_agg(t) INTO v_trend_data FROM (
+        SELECT to_char(date_trunc('month', timestamp AT TIME ZONE 'Asia/Kolkata'), 'Mon') as name, 
+               COUNT(*) as dials, 
+               SUM(CASE WHEN duration > 0 THEN 1 ELSE 0 END) as connected, 
+               date_trunc('month', timestamp AT TIME ZONE 'Asia/Kolkata') as month_date
+        FROM public.call_history
+        WHERE timestamp >= date_trunc('month', now()) - interval '5 months'
+        AND ((p_filter_employee_id IS NULL AND p_restricted_employee_ids IS NULL) OR (p_filter_employee_id IS NOT NULL AND LOWER(employee_id) = LOWER(p_filter_employee_id)) OR (p_restricted_employee_ids IS NOT NULL AND LOWER(employee_id) = ANY(SELECT LOWER(unnest(p_restricted_employee_ids)))))
+        AND (p_org_id IS NULL OR EXISTS (SELECT 1 FROM public.user_profiles up WHERE up.employee_id = employee_id AND up.organization_id = p_org_id))
+        GROUP BY name, month_date ORDER BY month_date
+    ) t;
+
+    -- 5. Heatmap Data
+    SELECT json_agg(t) INTO v_heatmap_data FROM (
+        WITH daily_slots AS (
+            SELECT to_char(now() AT TIME ZONE 'Asia/Kolkata' - (i || ' days')::interval, 'YYYY-MM-DD') as full_date,
+                   to_char(now() AT TIME ZONE 'Asia/Kolkata' - (i || ' days')::interval, 'Mon DD') as day_label,
+                   now() AT TIME ZONE 'Asia/Kolkata' - (i || ' days')::interval as ts
+            FROM generate_series(0, 13) i
+        ),
+        call_counts AS (
+            SELECT to_char(timestamp AT TIME ZONE 'Asia/Kolkata', 'YYYY-MM-DD') as full_date,
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 8 AND 9) as "8 AM - 10 AM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 10 AND 11) as "10 AM - 12 PM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 12 AND 13) as "12 PM - 2 PM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 14 AND 15) as "2 PM - 4 PM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 16 AND 17) as "4 PM - 6 PM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 18 AND 19) as "6 PM - 8 PM",
+                   COUNT(*) FILTER (WHERE extract(hour from timestamp AT TIME ZONE 'Asia/Kolkata') BETWEEN 20 AND 21) as "8 PM - 10 PM"
+            FROM deduplicated_calls_temp
+            GROUP BY full_date
+        )
+        SELECT ds.day_label as day, COALESCE(cc."8 AM - 10 AM", 0) as "8 AM - 10 AM", COALESCE(cc."10 AM - 12 PM", 0) as "10 AM - 12 PM", COALESCE(cc."12 PM - 2 PM", 0) as "12 PM - 2 PM", COALESCE(cc."2 PM - 4 PM", 0) as "2 PM - 4 PM", COALESCE(cc."4 PM - 6 PM", 0) as "4 PM - 6 PM", COALESCE(cc."6 PM - 8 PM", 0) as "6 PM - 8 PM", COALESCE(cc."8 PM - 10 PM", 0) as "8 PM - 10 PM"
+        FROM daily_slots ds LEFT JOIN call_counts cc ON ds.full_date = cc.full_date ORDER BY ds.ts ASC
+    ) t;
+
+    SELECT json_build_object('pieData', COALESCE(v_pie_data, '[]'::json), 'hourlyStats', COALESCE(v_hourly_stats, '[]'::json), 'campaignData', COALESCE(v_campaign_data, '[]'::json), 'chartData', COALESCE(v_trend_data, '[]'::json), 'heatmapData', COALESCE(v_heatmap_data, '[]'::json)) INTO result;
+    RETURN result;
+END;
+$function$;
+
+-- 10. get_campaign_analytics
+CREATE OR REPLACE FUNCTION public.get_campaign_analytics(campaign_id_input text)
+ RETURNS json
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    result JSON;
+    target_date DATE;
+BEGIN
+    target_date := (now() AT TIME ZONE 'Asia/Kolkata')::date;
+
+    SELECT json_build_object(
+        'hourly_calls', (
+            SELECT COALESCE(json_agg(t), '[]'::json) FROM (
+                SELECT EXTRACT(HOUR FROM (h.timestamp AT TIME ZONE 'Asia/Kolkata'))::int as hour, COUNT(*) as count
+                FROM call_history h
+                WHERE (h.timestamp AT TIME ZONE 'Asia/Kolkata')::date = target_date
+                  AND EXISTS (SELECT 1 FROM campaigns c WHERE c.id = campaign_id_input AND c.users @> jsonb_build_array(jsonb_build_object('employee_id', h.employee_id)))
+                GROUP BY 1 ORDER BY 1
+            ) t
+        ),
+        'agent_performance', (
+            SELECT COALESCE(json_agg(t), '[]'::json) FROM (
+                SELECT u.user_name as name, u.employee_id, COUNT(h.id) as calls, SUM(COALESCE(h.duration, 0)) as duration
+                FROM call_history h JOIN user_profiles u ON h.employee_id = u.employee_id
+                WHERE (h.timestamp AT TIME ZONE 'Asia/Kolkata')::date = target_date
+                GROUP BY u.user_id, u.user_name, u.employee_id ORDER BY calls DESC
+            ) t
+        )
+    ) INTO result;
+    RETURN result;
+END;
+$function$;
+
+-- 11. get_campaign_stats
+CREATE OR REPLACE FUNCTION public.get_campaign_stats()
+ RETURNS TABLE(campaign_id text, fresh_count bigint, upcoming_count bigint, overdue_count bigint, total_dials bigint, total_duration bigint)
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    RETURN QUERY
+    WITH customer_stats AS (
+        SELECT c.campaign_id,
+            COUNT(*) FILTER (WHERE (c.attempt_count IS NULL OR c.attempt_count = 0) AND c.assigned_to IS NULL) as raw_fresh,
+            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND c.next_called_at >= NOW()) as upcoming,
+            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND (c.next_called_at < NOW() OR c.next_called_at IS NULL)) as overdue
+        FROM customers c GROUP BY c.campaign_id
+    ),
+    log_stats AS (
+        SELECT l.campaign_id, COUNT(*) as dials, SUM(COALESCE(l.duration, 0))::BIGINT as duration
+        FROM call_logs l WHERE l.created_at >= (CURRENT_DATE AT TIME ZONE 'Asia/Kolkata') GROUP BY l.campaign_id
+    )
+    SELECT camp.id::TEXT as campaign_id, COALESCE(cs.raw_fresh, 0) as fresh_count, COALESCE(cs.upcoming, 0) as upcoming_count, COALESCE(cs.overdue, 0) as overdue_count, COALESCE(ls.dials, 0) as total_dials, COALESCE(ls.duration, 0) as total_duration
+    FROM campaigns camp LEFT JOIN customer_stats cs ON camp.id = cs.campaign_id LEFT JOIN log_stats ls ON camp.id = ls.campaign_id;
+END;
+$function$;
+
+-- 12. get_dashboard_stats_advanced (DEDUPLICATED)
+CREATE OR REPLACE FUNCTION public.get_dashboard_stats_advanced(
+    p_start_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_end_date timestamp with time zone DEFAULT NULL::timestamp with time zone, 
+    p_org_id uuid DEFAULT NULL::uuid, 
+    p_filter_user_id uuid DEFAULT NULL::uuid, 
+    p_restricted_user_ids uuid[] DEFAULT NULL::uuid[], 
+    p_filter_employee_id text DEFAULT NULL::text, 
+    p_restricted_employee_ids text[] DEFAULT NULL::text[]
+)
+ RETURNS json
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+    DECLARE
+    result json;
+    v_now timestamptz := now();
+    v_today_start timestamptz := (now() AT TIME ZONE 'Asia/Kolkata')::date AT TIME ZONE 'Asia/Kolkata';
+    v_today_end timestamptz := v_today_start + interval '1 day' - interval '1 second';
+BEGIN
+    WITH 
+    customer_stats AS (
+        SELECT COUNT(*) FILTER (WHERE (p_start_date IS NULL OR created_at >= p_start_date) AND (p_end_date IS NULL OR created_at <= p_end_date)) as total_customers,
+               COUNT(*) FILTER (WHERE (p_start_date IS NULL OR created_at >= p_start_date) AND (p_end_date IS NULL OR created_at <= p_end_date) AND (disposition ILIKE ANY(ARRAY['%Sold%', '%Success%', '%Converted%', '%Closed%']))) as total_converted,
+               COUNT(*) as all_time_records,
+               COUNT(*) FILTER (WHERE disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) as all_time_followups,
+               COUNT(*) FILTER (WHERE disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp') AND (next_called_at < v_now OR next_called_at IS NULL)) as all_time_overdue,
+               COUNT(*) FILTER (WHERE (disposition IS NULL OR disposition = '') AND (attempt_count = 0 OR attempt_count IS NULL)) as fresh_global_count
+        FROM public.customers
+        WHERE (p_org_id IS NULL OR organization_id = p_org_id)
+        AND ((p_filter_user_id IS NULL AND p_restricted_user_ids IS NULL) OR (p_filter_user_id IS NOT NULL AND assigned_to = p_filter_user_id) OR (p_restricted_user_ids IS NOT NULL AND assigned_to = ANY(p_restricted_user_ids)))
+    ),
+    deduplicated_calls AS (
+        SELECT DISTINCT ON (employee_id, number, date_trunc('minute', timestamp), duration)
+            *
+        FROM public.call_history ch
+        WHERE ((p_filter_employee_id IS NULL AND p_restricted_employee_ids IS NULL) OR (p_filter_employee_id IS NOT NULL AND LOWER(ch.employee_id) = LOWER(p_filter_employee_id)) OR (p_restricted_employee_ids IS NOT NULL AND LOWER(ch.employee_id) = ANY(SELECT LOWER(unnest(p_restricted_employee_ids)))))
+        AND (p_org_id IS NULL OR EXISTS (SELECT 1 FROM public.user_profiles up WHERE up.employee_id = ch.employee_id AND up.organization_id = p_org_id))
+        ORDER BY employee_id, number, date_trunc('minute', timestamp), duration, timestamp DESC
+    ),
+    call_stats AS (
+        SELECT COUNT(*) FILTER (WHERE (p_start_date IS NULL OR timestamp >= p_start_date) AND (p_end_date IS NULL OR timestamp <= p_end_date)) as total_dials,
+               COALESCE(SUM(duration) FILTER (WHERE (p_start_date IS NULL OR timestamp >= p_start_date) AND (p_end_date IS NULL OR timestamp <= p_end_date)), 0) as total_talktime,
+               COUNT(*) FILTER (WHERE (p_start_date IS NULL OR timestamp >= p_start_date) AND (p_end_date IS NULL OR timestamp <= p_end_date) AND duration > 0) as total_connections,
+               COUNT(*) FILTER (WHERE timestamp >= v_today_start AND timestamp <= v_today_end) as today_calls,
+               COUNT(*) FILTER (WHERE duration > 0) as all_time_connections
+        FROM deduplicated_calls
+    ),
+    misc_stats AS (
+        SELECT (SELECT COUNT(*) FROM public.campaigns WHERE status = 'active' AND (p_org_id IS NULL OR organization_id = p_org_id)) as active_campaigns,
+               (SELECT COUNT(*) FROM public.user_profiles WHERE approval_status = 'approved' AND (p_org_id IS NULL OR organization_id = p_org_id) AND (p_restricted_user_ids IS NULL OR user_id = ANY(p_restricted_user_ids))) as team_members
+    )
+    SELECT json_build_object('totalCustomers', cs.total_customers, 'totalConverted', cs.total_converted, 'allTimeRecords', cs.all_time_records, 'allTimeFollowups', cs.all_time_followups, 'allTimeOverdue', cs.all_time_overdue, 'freshGlobalCount', cs.fresh_global_count, 'totalDials', cls.total_dials, 'totalTalktime', cls.total_talktime, 'totalConnections', cls.total_connections, 'todayCalls', cls.today_calls, 'allTimeConnections', cls.all_time_connections, 'activeCampaigns', ms.active_campaigns, 'teamCount', ms.team_members) INTO result
+    FROM customer_stats cs, call_stats cls, misc_stats ms;
+    RETURN result;
+END;
+$function$;
+
+-- 13. get_duplicate_leads
+CREATE OR REPLACE FUNCTION public.get_duplicate_leads()
+ RETURNS TABLE(phone_search_hash text, customer_name text, lead_id text, disposition text, assigned_to_name text, stage text, phone_no text, created_at timestamp with time zone)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$
+BEGIN
+    RETURN QUERY
+    WITH all_leads AS (
+        SELECT c.phone_search_hash, c.customer_name::TEXT, c.lead_id::TEXT, c.disposition::TEXT, COALESCE(u.user_name, 'Unassigned')::TEXT as assigned_to_name, 'Live'::TEXT as stage, c.phone_no::TEXT, c.created_at
+        FROM public.customers c LEFT JOIN public.user_profiles u ON (c.assigned_to::TEXT = u.user_id::TEXT OR c.assigned_to::TEXT = u.id::TEXT)
+    ),
+    duplicate_hashes AS (
+        SELECT al.phone_search_hash FROM all_leads al WHERE al.phone_search_hash IS NOT NULL AND al.phone_search_hash != '' GROUP BY al.phone_search_hash HAVING COUNT(*) > 1
+    )
+    SELECT al.phone_search_hash, al.customer_name, al.lead_id, al.disposition, al.assigned_to_name, al.stage, al.phone_no, al.created_at
+    FROM all_leads al JOIN duplicate_hashes dh ON al.phone_search_hash = dh.phone_search_hash ORDER BY al.phone_search_hash, al.created_at DESC;
+END;
+$function$;
+
+-- 14. handle_new_user
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'auth', 'pg_temp'
+AS $function$
+DECLARE
+    user_name_value TEXT;
+    contact_no_value TEXT;
+    employee_id_value TEXT;
+    role_value TEXT;
+    approval_status_value TEXT;
+BEGIN
+    user_name_value := COALESCE(NEW.raw_user_meta_data->>'user_name', NEW.raw_user_meta_data->>'full_name');
+    contact_no_value := NEW.raw_user_meta_data->>'contact_no';
+    employee_id_value := NEW.raw_user_meta_data->>'employee_id';
+    role_value := COALESCE(NEW.raw_user_meta_data->>'role', 'user');
+    approval_status_value := COALESCE(NEW.raw_user_meta_data->>'approval_status', 'pending');
+
+    INSERT INTO public.user_profiles (
+        user_id, email, user_name, contact_no, employee_id, role, approval_status,
+        super_admin, created_at, updated_at
+    ) VALUES (
+        NEW.id, NEW.email, user_name_value, contact_no_value, employee_id_value,
+        role_value, approval_status_value, COALESCE((NEW.raw_user_meta_data->>'super_admin')::BOOLEAN, false), now(), now()
+    );
+    RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE WARNING 'Error in handle_new_user: %', SQLERRM;
+        RETURN NEW;
+END;
+$function$;
+
+-- 15. move_to_closed (Simple)
+CREATE OR REPLACE FUNCTION public.move_to_closed(p_customer_id uuid, p_agent_id uuid, p_notes text, p_final_disposition text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    INSERT INTO closed_deals (customer_id, customer_name, phone_no, campaign_id, agent_id, notes, final_disposition)
+    SELECT id, customer_name, phone_no, campaign_id, p_agent_id, p_notes, p_final_disposition
+    FROM customers WHERE id = p_customer_id;
+    DELETE FROM customers WHERE id = p_customer_id;
+END;
+$function$;
+
+-- 16. move_to_closed (Advanced)
+CREATE OR REPLACE FUNCTION public.move_to_closed(p_customer_id uuid, p_agent_id uuid, p_notes text, p_final_disposition text, p_phone_search_hash text, p_outcome text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    v_customer_data customers%ROWTYPE;
+BEGIN
+    SELECT * INTO v_customer_data FROM customers WHERE id = p_customer_id;
+    IF FOUND THEN
+        INSERT INTO closed_deals (
+            customer_id, customer_name, phone_no, campaign_id, agent_id, closed_at,
+            final_disposition, phone_search_hash, lead_id, expiry_date, customer_details,
+            utilities, status, sub_disposition, last_called_at, last_updated_by,
+            is_connected, attempt_count, last_attempt_at, next_called_at,
+            organization_id, outcome, updated_at
+        ) VALUES (
+            v_customer_data.id, v_customer_data.customer_name, v_customer_data.phone_no,
+            v_customer_data.campaign_id, p_agent_id, NOW(), p_final_disposition,
+            COALESCE(p_phone_search_hash, v_customer_data.phone_search_hash),
+            v_customer_data.lead_id, v_customer_data.expiry_date, v_customer_data.customer_details,
+            v_customer_data.utilities, 'closed', v_customer_data.sub_disposition,
+            v_customer_data.last_called_at, p_agent_id, v_customer_data.is_connected,
+            v_customer_data.attempt_count, v_customer_data.last_attempt_at,
+            v_customer_data.next_called_at, v_customer_data.organization_id, p_outcome, NOW()
+        );
+        DELETE FROM customers WHERE id = p_customer_id;
+    END IF;
+END;
+$function$;
+
+-- 17. recycle_failed_leads
+CREATE OR REPLACE FUNCTION public.recycle_failed_leads()
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    UPDATE customers
+    SET assigned_to = NULL, attempt_count = 0, is_connected = NULL
+    WHERE attempt_count >= 3 AND is_connected = 'uncontactable';
+END;
+$function$;
+
+-- 18. update_call_session_modtime
+CREATE OR REPLACE FUNCTION public.update_call_session_modtime()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$function$;
+
+-- 19. update_updated_at_column
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$function$;

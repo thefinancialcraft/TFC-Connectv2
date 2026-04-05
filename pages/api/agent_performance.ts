@@ -29,6 +29,7 @@ interface AgentDataPoint {
   last_online: string | null;
   on_call: boolean;
   is_personal: boolean;
+  consecutive_failed_stats: string;
 }
 
 interface AgentPerformanceResponse {
@@ -350,24 +351,9 @@ export default async function handler(
         last_active: a.last_active || null,
         last_online: a.last_online || null,
         on_call: !!a.on_call,
-        is_personal: !!a.is_personal
+        is_personal: !!a.is_personal,
+        consecutive_failed_stats: a.consecutive_failed_stats || '0/0s'
       }));
-
-      const employeeIds = agents.map(a => a.employee_id).filter(id => !!id);
-
-      // Fetch Real-time On-Call status
-      if (employeeIds.length > 0) {
-        const { data: syncMeta } = await dbClient.from('sync_meta').select('employee_id, on_call, is_personal').in('employee_id', employeeIds);
-        if (syncMeta) {
-          syncMeta.forEach((meta: any) => {
-            const agent = agents.find(a => a.employee_id === meta.employee_id);
-            if (agent) {
-              agent.on_call = !!meta.on_call;
-              agent.is_personal = !!meta.is_personal;
-            }
-          });
-        }
-      }
 
       const totalDials = agents.reduce((acc, a) => acc + a.count, 0);
       const totalDuration = agents.reduce((acc, a) => acc + a.duration, 0);

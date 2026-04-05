@@ -772,6 +772,18 @@ export default function Activity() {
                                   className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
                                   style={{ fontFamily: "'Roboto', sans-serif" }}
                                 >
+                                  Emp. ID
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
+                                  Emp. Name
+                                </th>
+                                <th
+                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
+                                >
                                   Time
                                 </th>
                                 <th
@@ -825,7 +837,7 @@ export default function Activity() {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {filteredActivities.length === 0 ? (
                            <tr>
-                             <td colSpan={source === 'mobile' ? 6 : 10} className="px-6 py-12 text-center">
+                             <td colSpan={source === 'mobile' ? 8 : 10} className="px-6 py-12 text-center">
                                <div className="flex flex-col items-center justify-center">
                                  <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
                                   <i className="fi fi-rr-search text-2xl text-purple-600"></i>
@@ -854,6 +866,12 @@ export default function Activity() {
                                       key={activity.id || index}
                                       className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
                                     >
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-blue-600 font-bold">
+                                         {activity.employee_id || "N/A"}
+                                      </td>
+                                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-800 font-semibold">
+                                         {activity.user_name || "Unknown"}
+                                      </td>
                                       <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
                                          <div className="flex flex-col">
                                             <span className="font-medium text-gray-800">{callDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>

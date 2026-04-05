@@ -44,7 +44,52 @@ export default async function handler(
 
     const authUserId = userProfile.user_id;
 
-    // Delete from user_profiles first
+    // --- CLEAN UP DEPENDENCIES ---
+    
+    // 1. Unassign from Teams as Leader
+    await supabaseAdmin
+      .from('teams')
+      .update({ leader_id: null })
+      .eq('leader_id', authUserId);
+
+    // 2. Remove from Teams.members (Array cleanup)
+    // We fetch teams where user is a member
+    const { data: userTeams } = await supabaseAdmin
+      .from('teams')
+      .select('id, members')
+      .filter('members', 'cs', `{"${authUserId}"}`);
+
+    if (userTeams && userTeams.length > 0) {
+      for (const t of userTeams) {
+        const filteredMembers = (t.members || []).filter((m: string) => m !== authUserId);
+        await supabaseAdmin.from('teams').update({ members: filteredMembers }).eq('id', t.id);
+      }
+    }
+
+    // 3. Nullify relations in Call Logs (history preservation)
+    await supabaseAdmin
+      .from('call_logs')
+      .update({ agent_id: null, last_updated_by: null })
+      .or(`agent_id.eq.${authUserId},last_updated_by.eq.${authUserId}`);
+
+    // 4. Nullify relations in Customers & Campaigns
+    await supabaseAdmin
+      .from('customers')
+      .update({ last_updated_by: null })
+      .eq('last_updated_by', authUserId);
+      
+    await supabaseAdmin
+      .from('campaigns')
+      .update({ last_updated_by: null })
+      .eq('last_updated_by', authUserId);
+
+    // 5. Clear Call Sessions (active work)
+    await supabaseAdmin
+      .from('call_sessions')
+      .delete()
+      .eq('user_id', authUserId);
+
+    // Finally, Delete from user_profiles
     const { error: profileDeleteError } = await supabaseAdmin
       .from('user_profiles')
       .delete()

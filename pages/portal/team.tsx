@@ -152,6 +152,28 @@ export default function Team() {
     };
   }, [mounted, user, fetchTeams, fetchDependencies, isLevel2User]);
 
+  const handleDeleteTeam = async (teamId: string) => {
+    if (!window.confirm("Are you sure you want to delete this team? This action cannot be undone.")) return;
+    
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from('teams')
+        .delete()
+        .eq('id', teamId);
+        
+      if (error) throw error;
+      
+      // Refresh the list
+      fetchTeams();
+    } catch (err: any) {
+      console.error("Error deleting team:", err);
+      alert("Failed to delete team: " + (err.message || "Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   // Filter teams based on search and permissions
   const filteredTeams = useMemo(() => {
@@ -241,12 +263,22 @@ export default function Team() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {isCreateTeamButtonVisible && (
-                                          <button 
-                                            onClick={() => { setEditingTeam(team); setShowModal(true); }}
-                                            className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:text-[#4b33e8] hover:bg-indigo-50 flex items-center justify-center transition-all"
-                                          >
-                                            <i className="fi fi-rr-edit flex text-sm"></i>
-                                          </button>
+                                          <>
+                                            <button 
+                                              onClick={() => { setEditingTeam(team); setShowModal(true); }}
+                                              className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:text-[#4b33e8] hover:bg-indigo-50 flex items-center justify-center transition-all"
+                                              title="Edit Team"
+                                            >
+                                              <i className="fi fi-rr-edit flex text-sm"></i>
+                                            </button>
+                                            <button 
+                                              onClick={() => handleDeleteTeam(team.id)}
+                                              className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all"
+                                              title="Delete Team"
+                                            >
+                                              <i className="fi fi-rr-trash flex text-sm"></i>
+                                            </button>
+                                          </>
                                         )}
                                         <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${team.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
                                             {team.is_active ? 'Active' : 'Inactive'}

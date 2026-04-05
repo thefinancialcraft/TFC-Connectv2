@@ -91,6 +91,35 @@ export function UserProvider({ children }: UserProviderProps) {
     };
   }, []);
 
+  // Native Presence Heartbeat (Portal-side)
+  useEffect(() => {
+    if (!user || !mounted) return;
+
+    const sendHeartbeat = async () => {
+      try {
+        const { supabase } = await import("../lib/supabase");
+        // We use RPC to update our presence in user_profiles
+        const { error: hbError } = await supabase.rpc('update_user_presence', {
+          p_on_call: false,
+          p_is_personal: false
+        });
+        
+        if (hbError) throw hbError;
+        console.log("💓 [Presence] Portal heartbeat sent successfully.");
+      } catch (err) {
+        console.error("❌ [Presence] Portal heartbeat failed:", err);
+      }
+    };
+
+    // Send immediately on mount/user change
+    sendHeartbeat();
+
+    // Repeat every 30 seconds to stay 'ONLINE'
+    const interval = setInterval(sendHeartbeat, 30000);
+
+    return () => clearInterval(interval);
+  }, [user?.uid, mounted]);
+
   const contextValue = useMemo(() => ({
     user,
     loading,

@@ -137,7 +137,9 @@ export default function TeamManagementModal({
         {/* Body */}
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
           {(() => {
-            const filteredUsers = users.filter((u) => !organizationId || u.organization_id === organizationId);
+            const filteredUsers = users
+              .filter((u) => !organizationId || u.organization_id === organizationId)
+              .sort((a, b) => (a.user_name || "").localeCompare(b.user_name || ""));
             
             return (
               <>

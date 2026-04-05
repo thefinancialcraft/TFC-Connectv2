@@ -228,20 +228,20 @@ export default function AgentPerformanceTab({
         {/* Agent Leaderboard Chart */}
         <div 
           id="agent-leaderboard-print-area"
-          className="lg:col-span-8 bg-white rounded-[24px] p-8 flex flex-col relative"
+          className="lg:col-span-8 bg-white rounded-[24px] p-8 flex flex-col relative h-[550px]"
         >
           {isLoading && (
             <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px] no-print">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"></div>
             </div>
           )}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="font-bold text-[#263238] text-xl">
                 Agent Productivity Leaderboard
               </h3>
-              <p className="text-sm text-gray-400 mt-1">
-                Total dials and total talktime per agent across all active sessions
+              <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">
+                Dials & Talktime per agent
               </p>
             </div>
               <div className="flex items-center gap-3 no-print">
@@ -277,9 +277,10 @@ export default function AgentPerformanceTab({
               </div>
           </div>
 
-          <div className="flex-1" style={{ minHeight: `${Math.max(400, agentData.length * 32)}px`, width: '100%', position: 'relative' }}>
+          <div className="flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-indigo-100 scrollbar-track-transparent no-print-scroll">
+            <div style={{ height: `${Math.max(400, agentData.length * 40)}px`, width: '100%', position: 'relative' }}>
             {mounted && (
-              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+              <ResponsiveContainer width="100%" height="100%">
 
                 <BarChart
                   layout="vertical"
@@ -363,12 +364,12 @@ export default function AgentPerformanceTab({
                 </BarChart>
               </ResponsiveContainer>
             )}
-
+            </div>
           </div>
         </div>
 
         {/* Top Performers Table */}
-        <div className="lg:col-span-4 bg-white rounded-[24px] p-8 flex flex-col relative">
+        <div className="lg:col-span-4 bg-white rounded-[24px] p-8 flex flex-col relative h-[550px]">
           {isLoading && (
             <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px]">
                {/* Minimal spinner or just opacity */}
@@ -385,7 +386,7 @@ export default function AgentPerformanceTab({
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#4b33e8] font-bold text-xs border border-gray-100 group-hover:bg-[#4b33e8] group-hover:text-white transition-all">
-                    {agent.name.charAt(0)}
+                    {(agent.name || "Unknown").charAt(0)}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-[#263238]">
@@ -470,8 +471,10 @@ export default function AgentPerformanceTab({
                           <th className="px-2 py-4 font-bold text-center">Last Active</th>
                           <th className="px-2 py-4 font-bold text-center">Status</th>
                           <th className="px-2 py-4 font-bold text-center">Dials</th>
+                          <th className="px-2 py-4 font-bold text-center">Talk Time</th>
                           <th className="px-2 py-4 font-bold text-center">Connected</th>
                           <th className="px-2 py-4 font-bold text-center">Avg Talk</th>
+                          <th className="px-2 py-4 font-bold text-center">Streak/Gap</th>
                           <th className="px-2 py-4 font-bold text-center">Follow Ups</th>
                           <th className="px-2 py-4 font-bold text-center">Deals</th>
                           <th className="px-5 py-4 font-bold text-right">Last Call</th>
@@ -487,10 +490,12 @@ export default function AgentPerformanceTab({
                                   </div>
                               </td>
                           </tr>
-                      ) : agentData.map((agent, i) => {
+                      ) : [...agentData]
+                          .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+                          .map((agent, i) => {
                           const { status, idleTime, isOnline } = calculateStatus(agent.last_active);
                           const connectRate = agent.count > 0 ? ((agent.connected_count / agent.count) * 100).toFixed(1) : "0.0";
-                          const avgTalkTime = agent.count > 0 ? formatDuration(Math.floor(agent.duration / agent.count)) : "0s";
+                          const avgTalkTime = agent.connected_count > 0 ? formatDuration(Math.floor(agent.duration / agent.connected_count)) : "0s";
                           
                           return (
                               <tr key={agent.id} className="hover:bg-gray-50/50 transition-colors group">
@@ -500,7 +505,7 @@ export default function AgentPerformanceTab({
                                               {agent.profile_pic_url ? (
                                                   <img src={agent.profile_pic_url} alt="" className="w-full h-full object-cover" />
                                               ) : (
-                                                  <span className="text-sm">{agent.name.charAt(0)}</span>
+                                                  <span className="text-sm">{(agent.name || "U").charAt(0)}</span>
                                               )}
                                           </div>
                                           <div className="cursor-pointer">
@@ -562,12 +567,18 @@ export default function AgentPerformanceTab({
                                   <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
                                       {agent.count.toLocaleString()}
                                   </td>
+                                  <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
+                                      {formatDuration(agent.duration || 0)}
+                                  </td>
                                   <td className="px-2 py-5 text-center">
                                       <p className="text-sm font-bold text-[#263238]">{agent.connected_count}</p>
                                       <p className="text-[10px] text-indigo-500 font-bold">{connectRate}% </p>
                                   </td>
                                   <td className="px-2 py-5 text-center text-sm text-gray-600 font-bold">
                                       {avgTalkTime}
+                                  </td>
+                                  <td className="px-2 py-5 text-center text-sm text-amber-600 font-bold">
+                                      {agent.consecutive_failed_stats}
                                   </td>
                                   <td className="px-2 py-5 text-center">
                                       <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100">

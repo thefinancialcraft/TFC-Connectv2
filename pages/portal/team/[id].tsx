@@ -25,6 +25,7 @@ export default function TeamDetails() {
   const [rawLogs, setRawLogs] = useState<any[]>([]);
   const [rawCustomers, setRawCustomers] = useState<any[]>([]);
   const [rawSyncMeta, setRawSyncMeta] = useState<any[]>([]);
+  const [rawCallLogs, setRawCallLogs] = useState<any[]>([]);
   const [rawSessions, setRawSessions] = useState<any[]>([]);
   const [dateFilter, setDateFilter] = useState("today");
 
@@ -121,12 +122,15 @@ export default function TeamDetails() {
       // 2. Fetch Members (Profiles) First to get Employee IDs & Names
       const { data: membersData, error: membersError } = await supabase
         .from('user_profiles')
-        .select('user_id, user_name, employee_id, profile_pic_url')
-        .in('user_id', memberIds);
+        .select('user_id, user_name, employee_id, profile_pic_url, status')
+        .in('user_id', memberIds)
+        .eq('status', 'active');
 
       if (membersError) throw new Error(`Members fetch failed: ${membersError.message}`);
       
-      const validMembers = membersData || [];
+      const validMembers = (membersData || []).sort((a: any, b: any) => 
+        (a.user_name || '').localeCompare(b.user_name || '')
+      );
       setMembers(validMembers);
 
       const employeeIds = validMembers.map(m => m.employee_id).filter(id => !!id);
@@ -162,18 +166,49 @@ export default function TeamDetails() {
         queries.push(Promise.resolve({ data: [] }));
       }
 
+      // 4. Fetch Dial Logs (call_logs) for Ringing Duration
+      if (memberIds.length > 0) {
+        queries.push(
+          supabase.from('call_logs')
+            .select('agent_id, duration, is_connected, created_at')
+            .in('agent_id', memberIds)
+            .gte('created_at', dateFilter !== 'all_time' ? start : '2000-01-01')
+            .lte('created_at', dateFilter !== 'all_time' ? end : '2099-01-01')
+        );
+      } else {
+        queries.push(Promise.resolve({ data: [] }));
+      }
+
       // Execute promises
       const results = await Promise.all(queries);
       const customersRes = results[0];
       const historyRes = results[1];
       const syncMetaRes = results[2];
+      const callLogsRes = results[3];
 
       if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
       if (historyRes.error) throw new Error(`History fetch failed: ${historyRes.error.message}`);
+      if (callLogsRes.error) throw new Error(`Call Logs fetch failed: ${callLogsRes.error.message}`);
 
-      setRawLogs(historyRes.data || []); // Now containing call_history
+      const historyData = historyRes.data || [];
+      const uniqueEntries: any[] = [];
+      const seenKeys = new Set<string>();
+
+      historyData.forEach((item: any) => {
+          const timeStr = new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const dateStr = new Date(item.timestamp).toLocaleDateString();
+          const key = `${item.number}-${item.employee_id}-${dateStr}-${timeStr}-${item.duration}`;
+          
+          if (!seenKeys.has(key)) {
+              uniqueEntries.push(item);
+              seenKeys.add(key);
+          }
+      });
+
+      setRawLogs(uniqueEntries);
       setRawCustomers(customersRes.data || []);
       setRawSyncMeta(syncMetaRes?.data || []);
+      setRawCallLogs(callLogsRes?.data || []);
 
       if (memberIds.length > 0) {
         const { data: sessionData } = await supabase
@@ -291,7 +326,7 @@ export default function TeamDetails() {
         }).length;
         
         const totalDuration = userLogs.reduce((acc, l) => acc + (Number(l.duration) || 0), 0);
-        const avgDurationSec = totalCalls ? Math.floor(totalDuration / totalCalls) : 0;
+        const avgDurationSec = connectedCount ? Math.floor(totalDuration / connectedCount) : 0;
         
         // Deals are NOT available in call_history. We'll leave it as 0 for now.
         // If we want deals, we'd need to fetch legacy call_logs specifically for dispositions.
@@ -344,11 +379,40 @@ export default function TeamDetails() {
         const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 30000); // 30s threshold
         const sessionData = rawSessions.find(s => s.user_id === mId);
 
+        // Streak/Gap Calculation (Consecutive Fails since last success)
+        const sortedLogs = [...rawLogs].filter(l => l.employee_id === member.employee_id).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        const lastSuccessIdx = sortedLogs.map(l => l.duration > 0).lastIndexOf(true);
+        const currentStreak = lastSuccessIdx === -1 ? sortedLogs : sortedLogs.slice(lastSuccessIdx + 1);
+        
+        let streakCount = 0;
+        let avgGapStr = '0s';
+        
+        if (currentStreak.length > 0) {
+          streakCount = currentStreak.length;
+          let totalGap = 0;
+          let gapCounts = 0;
+          
+          for (let i = 1; i < currentStreak.length; i++) {
+            const gap = (new Date(currentStreak[i].timestamp).getTime() - new Date(currentStreak[i-1].timestamp).getTime()) / 1000;
+            if (gap > 0) {
+              totalGap += gap;
+              gapCounts++;
+            }
+          }
+          
+          const avgGapSec = gapCounts > 0 ? Math.round(totalGap / gapCounts) : 0;
+          const mins = Math.floor(avgGapSec / 60);
+          const secs = avgGapSec % 60;
+          avgGapStr = (mins > 0 ? `${mins}m ` : '') + `${secs}s`;
+        }
+
         stats[mId] = {
           totalCalls,
           connected: connectedCount,
           connectedRate: totalCalls ? ((connectedCount / totalCalls) * 100).toFixed(1) : "0.0",
           avgDuration: `${Math.floor(avgDurationSec / 60)}m ${avgDurationSec % 60}s`,
+          totalTalkTime: `${Math.floor(totalDuration / 3600)}h ${Math.floor((totalDuration % 3600) / 60)}m ${totalDuration % 60}s`,
+          streakGap: `${streakCount}/${avgGapStr}`, 
           deals: dealsCount,
           followUps: followUpsCount,
           lastActive,
@@ -745,8 +809,10 @@ export default function TeamDetails() {
                             <th className="px-2 py-3 font-semibold text-center">Last Active</th>
                             <th className="px-2 py-3 font-semibold text-center">Status</th>
                             <th className="px-2 py-3 font-semibold text-center">Calls</th>
+                            <th className="px-2 py-3 font-semibold text-center">Talk Time</th>
                             <th className="px-2 py-3 font-semibold text-center">Connected</th>
                             <th className="px-2 py-3 font-semibold text-center">Avg Talk</th>
+                            <th className="px-2 py-3 font-semibold text-center">Streak/Gap</th>
                             <th className="px-2 py-3 font-semibold text-center">Follow Ups</th>
                             <th className="px-2 py-3 font-semibold text-center">Deals</th>
                             <th className="px-4 py-3 font-semibold text-right">Last Call</th>
@@ -833,12 +899,18 @@ export default function TeamDetails() {
                                         <td className="px-2 py-4 text-center text-sm font-bold text-gray-700">
                                             {mStats.totalCalls}
                                         </td>
+                                        <td className="px-2 py-4 text-center text-sm text-gray-600 font-medium">
+                                            {mStats.totalTalkTime}
+                                        </td>
                                         <td className="px-2 py-4 text-center">
                                             <p className="text-sm font-semibold text-gray-700">{mStats.connected}</p>
                                             <p className="text-[10px] text-gray-400">{mStats.connectedRate}% Rate</p>
                                         </td>
                                         <td className="px-2 py-4 text-center text-sm text-gray-600 font-medium">
                                             {mStats.avgDuration}
+                                        </td>
+                                        <td className="px-2 py-4 text-center text-sm text-amber-600 font-bold">
+                                            {mStats.streakGap}
                                         </td>
                                         <td className="px-2 py-4 text-center">
                                             <span className="px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-bold">

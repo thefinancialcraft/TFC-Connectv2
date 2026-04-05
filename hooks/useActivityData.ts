@@ -339,17 +339,52 @@ export function useActivityData() {
           
           if (error) throw error;
           
-          setMobileActivities(data || []);
+          let finalUniqueData: any[] = [];
+          
+          if (data && data.length > 0) {
+              const empIds = [...new Set(data.map(d => d.employee_id).filter(Boolean))];
+              let profileMap: Record<string, string> = {};
+              
+              if (empIds.length > 0) {
+                  const { data: profiles } = await supabase
+                      .from('user_profiles')
+                      .select('employee_id, user_name')
+                      .in('employee_id', empIds);
+                  profileMap = Object.fromEntries((profiles || []).map(p => [p.employee_id, p.user_name]));
+              }
+
+              const hydratedData = data.map(d => ({
+                  ...d,
+                  user_name: profileMap[d.employee_id] || "Unknown"
+              }));
+
+              // DEDUPLICATION LOGIC: Filter by Number + Timestamp + Duration
+              const seenKeys = new Set<string>();
+              finalUniqueData = hydratedData.filter(item => {
+                  const timestamp = new Date(item.timestamp);
+                  const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const dateStr = timestamp.toLocaleDateString();
+                  const key = `${item.number}-${item.employee_id}-${dateStr}-${timeStr}-${item.duration}`;
+                  
+                  if (!seenKeys.has(key)) {
+                      seenKeys.add(key);
+                      return true;
+                  }
+                  return false;
+              });
+          }
+
+          setMobileActivities(finalUniqueData);
           
           // Update Stats from Mobile History if Source is Mobile
           if (source === 'mobile') {
-              const totalTalkTimeSec = (data || []).reduce((acc, curr) => acc + (curr.duration || 0), 0);
-              const lastCall = (data && data.length > 0) ? new Date(data[0].timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
+              const totalTalkTimeSec = finalUniqueData.reduce((acc: number, curr: any) => acc + (curr.duration || 0), 0);
+              const lastCall = finalUniqueData.length > 0 ? new Date(finalUniqueData[0].timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
               
               setStats({
-                totalDials: data?.length || 0,
+                totalDials: finalUniqueData.length,
                 totalTalkTime: totalTalkTimeSec,
-                contactable: 0, // Not applicable for raw mobile history usually, unless we infer from duration > 0
+                contactable: 0, 
                 uncontactable: 0, 
                 lastCallTime: lastCall,
                 idleFrom: lastCall

@@ -15,6 +15,7 @@ export interface AgentDataPoint {
   last_online: string | null;
   on_call: boolean;
   is_personal: boolean;
+  consecutive_failed_stats: string;
 }
 
 export interface UseAgentPerformanceReturn {
