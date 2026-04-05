@@ -7775,3 +7775,48 @@ Import traces:
 [01:56:14.289] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [01:56:14.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
 [01:56:16.406] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:18.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:20.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:22.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:24.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:26.244] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[01:56:26.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:26.491] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 453ms
+[01:56:28.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:30.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:32.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:34.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:36.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:38.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:40.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:42.487] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:56:42.487] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[01:56:42.487] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:56:42.836] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:42.977] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:56:44.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:46.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:48.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:50.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:52.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:54.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:56.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:56:58.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:00.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:02.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:04.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:06.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:08.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:10.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:12.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:14.278] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:57:14.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:16.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:18.292] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:20.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:22.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:24.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:26.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:28.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:30.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[01:57:32.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
