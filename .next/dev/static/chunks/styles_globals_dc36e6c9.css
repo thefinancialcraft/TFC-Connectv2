@@ -7743,6 +7743,16 @@
     color: var(--color-indigo-500);
   }
 
+  .text-indigo-500\/80 {
+    color: #625fffcc;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .text-indigo-500\/80 {
+      color: color-mix(in oklab, var(--color-indigo-500) 80%, transparent);
+    }
+  }
+
   .text-indigo-600 {
     color: var(--color-indigo-600);
   }

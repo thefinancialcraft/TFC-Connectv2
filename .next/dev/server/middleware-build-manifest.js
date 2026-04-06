@@ -140,7 +140,6 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/turbopack-pages_portal_dashboard_tsx_04b7e2e0._.js"
     ],
     "/portal/followup": [
-      "static/chunks/lib_monitoring_ts_8194ca8b._.js",
       "static/chunks/[root-of-the-server]__4a491433._.js",
       "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
       "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
@@ -152,7 +151,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_82a97d11._.js",
       "static/chunks/pages_portal_followup_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_followup_tsx_b8b562b5._.js"
+      "static/chunks/turbopack-pages_portal_followup_tsx_b73fdf5c._.js"
     ],
     "/portal/login": [
       "static/chunks/lib_1b432ad9._.js",
@@ -199,7 +198,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/turbopack-pages_portal_team_tsx_4b7b7e7c._.js"
     ],
     "/portal/team/[id]": [
-      "static/chunks/[root-of-the-server]__77e8fe3a._.js",
+      "static/chunks/[root-of-the-server]__a8ec3316._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
       "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
@@ -215,7 +214,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_recharts_es6_181c6f1a._.js",
       "static/chunks/node_modules_b4636b6f._.js",
       "static/chunks/pages_portal_team_[id]_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_team_[id]_tsx_f61d5ddf._.js"
+      "static/chunks/turbopack-pages_portal_team_[id]_tsx_588e8478._.js"
     ],
     "/portal/users": [
       "static/chunks/components_UtilitySidebar_tsx_187ae758._.js",

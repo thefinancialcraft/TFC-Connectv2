@@ -12672,3 +12672,1374 @@ Debug info:
 [04:43:26.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
 [04:43:56.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
 [04:43:56.279] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:44:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:44:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:45:56.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:45:56.288] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:46:56.280] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:46:56.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:47:56.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:47:56.288] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:48:13.500] Browser LOG     [AutoReload] Returning after 6 mins. Refreshing lead data.
+[04:48:13.690] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:48:13.690] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:48:13.690] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:48:14.703] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[04:48:14.726] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:14.726] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:48:15.195] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[04:48:15.195] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[04:48:15.195] Browser LOG     [App] Logger and Interceptors initialized.
+[04:48:31.891] Server  LOG     Using date-holidays fallback
+[04:48:31.929] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:48:31.929] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:48:31.929] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:48:31.929] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:48:31.929] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:48:31.929] Browser LOG     🚀 [Bridge] Requesting Device Info
+[04:48:31.929] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:48:31.929] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:48:32.235] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:32.235] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:48:32.235] Browser LOG     🚀 [Bridge] Requesting Device Info
+[04:48:32.235] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[04:48:32.775] Browser LOG     🚀 [Bridge] Requesting Device Info
+[04:48:32.897] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[04:48:33.131] Browser LOG     [Fetch] Found 3 history records via API.
+[04:48:33.471] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[04:48:33.471] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:48:34.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:37.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:37.636] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:48:37.636] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:48:37.636] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:48:37.892] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:41.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:43.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:45.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:47.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:49.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:51.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:53.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:55.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:57.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:58.955] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:48:59.103] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:48:59.103] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:48:59.103] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:48:59.370] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:00.134] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:02.134] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:49:02.134] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:04.132] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:06.114] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:08.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:10.127] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:12.123] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:14.139] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:16.121] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:18.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:20.133] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:22.115] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:24.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:26.125] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:28.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:30.106] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:32.119] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:32.119] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:49:34.119] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:36.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:38.133] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:40.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:42.112] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:44.128] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:46.108] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:48.105] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:50.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:52.133] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:54.115] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:56.115] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:49:58.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:00.109] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:02.123] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:50:02.123] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:04.121] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:06.105] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:08.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:10.132] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:12.115] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:14.131] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:16.108] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:18.109] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:20.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:22.105] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:24.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:26.219] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:28.114] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:30.114] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:32.145] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:50:32.145] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:34.127] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:36.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:38.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:40.106] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:42.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:44.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:46.128] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:48.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:50.127] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:52.127] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:54.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:56.122] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:50:58.105] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:00.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:02.149] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:02.150] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:51:04.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:06.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:08.128] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:10.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:12.123] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:14.106] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:16.121] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:18.132] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:20.116] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:22.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:24.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:26.127] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:28.109] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:30.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:32.121] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:32.121] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:51:34.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:36.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:38.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:40.114] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:42.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:44.109] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:46.106] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:48.119] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:50.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:52.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:54.114] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:56.132] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:51:58.128] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:00.126] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:02.124] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:02.124] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:52:04.121] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:06.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:08.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:10.133] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:12.115] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:14.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:16.143] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:18.125] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:20.120] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:22.104] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:24.118] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:26.134] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:28.130] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:30.147] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:32.129] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:32.129] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:52:34.146] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:35.220] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[04:52:35.220] Browser LOG     📡 [Header] Subscription status for NXUS-001: CLOSED
+[04:52:35.220] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:52:35.220] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:52:35.620] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:37.442] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:39.460] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:40.403] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:52:40.403] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:52:40.450] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[04:52:40.633] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[04:52:40.633] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[04:52:40.633] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[04:52:40.728] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[04:52:40.744] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:40.994] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[04:52:40.999] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:52:41.009] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[04:52:41.214] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 496ms
+[04:52:42.147] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[04:52:42.149] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1698ms
+[04:52:42.653] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:52:42.653] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:42.790] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:52:43.004] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 427ms
+[04:52:44.362] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3648ms
+[04:52:44.948] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:46.634] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:48.613] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:50.610] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:52.608] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:54.624] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:56.623] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:52:58.622] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:00.630] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:02.114] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:53:02.628] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:04.634] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:06.626] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:08.626] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:10.619] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:12.623] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:14.620] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:16.631] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:18.630] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:20.631] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:22.207] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[04:53:22.560] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[04:53:22.560] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[04:53:22.560] Browser LOG     [App] Logger and Interceptors initialized.
+[04:53:23.124] Server  LOG     Using date-holidays fallback
+[04:53:23.132] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:53:23.132] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:53:23.132] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:53:23.132] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:53:23.132] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:53:23.224] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[04:53:23.339] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:53:23.339] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:53:23.339] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:53:23.495] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[04:53:23.548] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[04:53:23.548] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:53:23.548] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:23.706] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[04:53:23.720] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:53:23.725] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[04:53:23.931] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 427ms
+[04:53:23.964] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[04:53:23.964] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 739ms
+[04:53:24.042] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[04:53:24.364] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:53:24.572] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 423ms
+[04:53:25.659] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:25.821] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2316ms
+[04:53:27.485] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:29.488] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:31.501] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:33.485] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:35.499] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:37.495] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:39.495] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:41.478] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:43.475] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:45.479] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:47.484] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:49.484] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:51.498] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:53.247] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:53:53.482] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:55.529] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:58.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:58.937] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:53:58.937] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:53:58.937] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:53:59.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:53:59.492] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:01.492] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:03.487] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:06.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:08.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:10.051] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:10.404] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:54:10.404] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:54:10.404] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:54:10.741] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:12.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:14.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:16.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:18.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:20.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:22.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:24.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:24.288] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:54:26.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:28.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:30.274] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:32.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:34.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:36.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:38.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:40.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:41.933] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:42.253] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:54:42.253] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:54:42.253] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:54:42.582] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:44.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:46.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:48.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:50.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:51.659] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:52.034] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:54:52.035] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:54:52.035] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:54:53.452] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:54:53.703] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:53.782] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:54:53.993] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 413ms
+[04:54:55.503] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:57.504] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:54:59.499] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:55:02.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:55:04.407] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:55:04.408] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:55:04.408] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:55:22.574] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:2103:52)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   {}
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:32.517] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:32.517] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:33.328] Browser LOG     ❌ [Status] Offline Event
+[04:55:38.291] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:38.291] Browser ERROR   {}
+[04:55:38.291] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:38.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:38.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:39.289] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:55:39.289] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:55:41.290] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:41.290] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:44.276] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:55:44.276] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:47.289] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:47.289] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[04:55:47.289] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:47.289] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:49.278] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:55:51.290] Browser LOG     🌐 [Status] Online Event
+[04:55:51.290] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:55:51.290] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:55:51.290] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:55:51.290] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:55:52.275] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[04:55:52.275] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[04:55:52.275] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[04:55:54.276] Browser ERROR   {}
+[04:55:57.285] Browser ERROR   {}
+[04:55:57.285] Browser ERROR   {}
+[04:55:58.284] Browser ERROR   {}
+[04:55:59.283] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:59.283] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:55:59.283] Browser ERROR   {}
+[04:56:00.279] Browser ERROR   {}
+[04:56:02.281] Browser ERROR   {}
+[04:56:06.286] Browser ERROR   {}
+[04:56:08.289] Browser LOG     ❌ [Status] Offline Event
+[04:56:11.278] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:56:11.278] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:56:12.289] Browser LOG     🌐 [Status] Online Event
+[04:56:14.280] Browser ERROR   {}
+[04:56:28.182] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:56:28.285] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[04:56:28.285] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:56:28.285] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:56:28.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:28.401] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 428ms
+[04:56:29.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:29.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:29.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:29.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:29.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:32.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:33.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:33.286] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[04:56:33.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:33.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:33.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:33.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:35.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:36.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:49.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[04:56:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:56:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:56:59.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[04:57:02.548] Server  LOG      ✓ Compiled in 1197ms
+[04:57:29.944] Server  LOG      ✓ Compiled in 195ms
+[04:57:56.279] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:57:56.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:57:59.768] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:58:00.001] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 485ms
+[04:58:12.931] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:58:12.931] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:58:12.931] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:13.445] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:13.641] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:15.491] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:16.586] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[04:58:16.980] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[04:58:16.980] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[04:58:16.980] Browser LOG     [App] Logger and Interceptors initialized.
+[04:58:17.420] Server  LOG     Using date-holidays fallback
+[04:58:17.435] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:58:17.435] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:58:17.435] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:58:17.435] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:17.435] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:58:17.510] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[04:58:17.673] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:58:17.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:17.673] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:58:17.779] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[04:58:17.837] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[04:58:17.837] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:58:17.837] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:17.991] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:58:17.992] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[04:58:18.250] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 472ms
+[04:58:18.335] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[04:58:18.337] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 826ms
+[04:58:18.342] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[04:58:18.398] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[04:58:18.873] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[04:58:19.092] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 428ms
+[04:58:19.984] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:20.528] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2417ms
+[04:58:21.783] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:22.333] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[04:58:22.333] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:58:22.333] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:22.609] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:22.609] Browser ERROR   Error fetching teams: {"code":"","details":"AbortError: signal is aborted without reason\n    at Team.useEffect (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__6e1cf15e._.js:9392:90)\n    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:13856:17)\n    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:886:74)\n    at commitHookEffectListUnmount (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7052:166)\n    at commitHookPassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7065:60)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8236:46)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)","hint":"","message":"AbortError: signal is aborted without reason"}
+[04:58:24.564] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:25.520] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[04:58:25.520] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:58:25.520] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:58:25.520] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:25.782] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:26.123] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:58:26.123] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:58:26.123] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:58:26.123] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[04:58:27.746] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:29.760] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:31.758] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:33.773] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:35.754] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:39.178] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:39.331] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:58:39.331] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[04:58:39.331] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:58:39.331] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:58:39.331] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:58:39.635] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:41.780] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:44.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:47.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:48.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:58:49.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:51.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:53.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:55.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:57.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:58:59.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:01.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:03.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:05.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:07.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:09.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:10.332] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:59:11.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:13.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:15.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:17.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:18.280] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:59:19.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:21.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:23.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:25.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:27.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:29.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:31.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:33.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:35.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:37.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:39.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:40.301] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[04:59:41.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:43.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[04:59:46.471] Server  LOG      ✓ Compiled in 316ms
+[04:59:48.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:59:56.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:10.286] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:00:18.277] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:00:27.725] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:00:27.726] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:00:27.726] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:00:27.726] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:00:27.726] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:00:28.209] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:29.759] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:31.758] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:33.753] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:35.763] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:37.752] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:39.757] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:41.771] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:43.754] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:45.760] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:47.574] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:00:47.773] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:49.047] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:00:49.047] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:00:49.059] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[05:00:49.210] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:00:49.326] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:49.392] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[05:00:49.584] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:00:49.635] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[05:00:49.643] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[05:00:49.806] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 443ms
+[05:00:49.886] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[05:00:49.886] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 828ms
+[05:00:50.279] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:00:50.545] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 516ms
+[05:00:51.420] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:51.916] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2520ms
+[05:00:53.292] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:55.257] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:00:57.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:00.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:02.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:04.372] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:06.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:07.637] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:07.904] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:01:07.904] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:01:07.904] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:01:09.269] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:12.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:14.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:16.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:18.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:01:18.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:20.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:22.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:24.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:26.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:28.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:30.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:32.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:34.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:36.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:38.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:40.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:42.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:44.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:46.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:48.284] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:01:48.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:50.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:50.994] Server  LOG      ✓ Compiled in 199ms
+[05:01:52.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:54.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:56.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:01:58.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:00.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:02.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:04.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:05.374] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:02:05.374] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:02:05.374] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:05.800] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:07.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:09.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:12.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:14.209] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:14.532] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:02:14.532] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:02:14.532] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:14.956] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:15.272] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:15.498] Server  LOG      ✓ Compiled in 310ms
+[05:02:16.275] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:02:16.483] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 424ms
+[05:02:17.370] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:17.654] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:02:19.258] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:21.256] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:23.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:25.269] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:27.294] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:29.313] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:30.800] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:02:30.800] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:31.058] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:33.388] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:35.080] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:37.022] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:39.244] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:41.045] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:43.028] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:45.893] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:46.499] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:02:46.499] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:02:46.499] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:46.766] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:47.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:48.754] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:02:49.474] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:02:49.474] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:02:49.474] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:49.787] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:52.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:54.103] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:55.282] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:02:55.282] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:02:55.282] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:02:57.067] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:57.067] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:02:58.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:00.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:02.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:04.274] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:06.028] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:03:06.028] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:03:06.028] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:03:06.339] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:07.039] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:08.385] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:03:08.385] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:03:08.617] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:10.649] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:03:10.649] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:03:10.649] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:03:10.649] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:03:10.649] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:11.129] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:03:11.129] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:03:11.129] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:03:11.129] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:03:12.905] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:14.582] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:03:14.582] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:03:14.582] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:03:14.582] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:03:14.582] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:03:14.869] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:18.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:03:18.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:20.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:22.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:24.274] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:26.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:28.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:30.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:32.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:34.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:36.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:38.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:40.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:42.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:44.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:46.328] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:03:46.328] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:48.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:48.284] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:03:50.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:52.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:54.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:56.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:03:58.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:00.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:02.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:04.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:06.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:08.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:10.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:12.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:14.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:16.289] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:04:20.399] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:04:20.399] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:04:20.399] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:04:20.399] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:04:20.399] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:04:20.716] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:20.716] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:04:22.297] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:04:22.297] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:04:22.614] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:23.694] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:04:23.694] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:04:23.971] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:26.094] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:27.922] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:29.938] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:31.186] Server  LOG      ✓ Compiled in 1467ms
+[05:04:31.923] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:33.920] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:35.918] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:38.063] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:39.930] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:41.945] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:43.960] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:45.941] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:47.590] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:04:47.923] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:49.934] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:51.934] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:53.916] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:55.934] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:57.930] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:04:59.925] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:01.924] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:03.923] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:05.922] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:07.919] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:09.950] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:11.916] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:14.031] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:15.945] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:17.575] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:05:17.925] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:19.940] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:21.939] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:23.971] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:25.933] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:27.917] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:29.931] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:31.911] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:33.916] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:35.941] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:37.963] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:39.938] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:41.918] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:43.917] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:45.932] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:47.600] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:05:47.930] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:49.945] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:51.912] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:53.991] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:55.917] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:57.931] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:05:59.919] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:01.933] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:03.929] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:05.947] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:07.909] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:09.987] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:11.932] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:13.922] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:15.936] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:17.584] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:06:17.982] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:19.948] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:21.914] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:23.944] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:25.927] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:27.923] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:29.924] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:31.936] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:34.981] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:35.140] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:06:35.140] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:06:35.140] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:06:35.452] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:35.919] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:36.646] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:06:36.646] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:06:36.914] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:38.878] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:39.146] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:06:39.146] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:06:39.146] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:06:39.146] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:06:39.654] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:06:39.656] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:06:39.656] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:06:39.656] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:06:41.379] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:43.376] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:45.441] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:47.371] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:47.588] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:06:49.404] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:50.567] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:06:51.436] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:53.397] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:55.381] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:58.365] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[05:06:58.387] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:06:58.963] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[05:06:58.964] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[05:06:58.964] Browser LOG     [App] Logger and Interceptors initialized.
+[05:06:59.459] Server  LOG     Using date-holidays fallback
+[05:06:59.592] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:06:59.592] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:06:59.592] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:06:59.592] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:06:59.592] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:06:59.592] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:06:59.592] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:06:59.592] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:06:59.592] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:06:59.758] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[05:06:59.758] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:06:59.992] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:00.483] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:00.483] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:00.483] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:00.483] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:00.597] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[05:07:01.837] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:03.497] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[05:07:03.497] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:07:03.497] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:03.506] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[05:07:03.806] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:03.806] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:03.877] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[05:07:04.129] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[05:07:04.135] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:07:04.434] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[05:07:04.435] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 929ms
+[05:07:04.441] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[05:07:04.448] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 566ms
+[05:07:04.894] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:07:05.102] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 420ms
+[05:07:05.971] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:06.523] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2304ms
+[05:07:07.717] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:09.750] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:11.114] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:07:11.114] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:11.401] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:13.363] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:13.779] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:07:13.779] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:13.779] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:13.779] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:14.011] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:14.244] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:14.244] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:14.245] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:14.245] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:07:16.012] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:18.442] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:07:18.442] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:07:18.442] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:18.442] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:18.442] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:18.628] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:21.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:23.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:23.634] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:07:23.634] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:07:23.634] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:23.634] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:23.634] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:23.885] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:27.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:29.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:31.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:07:31.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:31.695] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:07:31.695] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:07:31.695] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:31.695] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:31.695] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:31.980] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:35.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:37.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:39.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:41.066] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:41.247] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:07:41.247] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:07:41.247] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:41.247] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:07:41.247] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:07:41.575] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:42.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:44.217] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:46.012] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:48.013] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:50.044] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:52.008] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:54.055] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:56.004] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:57.998] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:07:59.686] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:08:00.019] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:02.036] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:04.303] Server  LOG      ✓ Compiled in 592ms
+[05:08:04.352] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:04.352] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:08:04.352] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:08:06.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:07.775] Browser LOG     ✅ [Header] Mark as seen success via API
+[05:08:07.775] Browser LOG     ✅ [Header] Mark as seen success via API
+[05:08:08.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:10.002] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:13.030] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:13.186] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:08:13.186] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:08:13.186] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:08:13.186] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:08:13.186] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:08:13.455] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:14.019] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:16.133] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:18.064] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:20.013] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:22.010] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:24.023] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:26.042] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:28.155] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:29.688] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:08:30.020] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:31.999] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:33.995] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:35.998] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:38.010] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:40.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:42.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:43.191] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:08:44.007] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:46.003] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:48.020] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:50.016] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:51.996] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:54.025] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:56.060] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:58.009] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:08:59.688] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:09:00.024] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:02.020] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:04.020] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:06.017] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:07.995] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:10.015] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:11.998] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:13.178] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:14.095] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:16.010] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:18.021] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:20.002] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:22.020] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:24.033] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:26.002] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:26.581] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:27.998] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:29.695] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:09:29.993] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:30.757] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[05:09:31.170] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[05:09:31.170] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[05:09:31.170] Browser LOG     [App] Logger and Interceptors initialized.
+[05:09:31.550] Server  LOG     Using date-holidays fallback
+[05:09:31.694] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:09:31.694] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:09:31.694] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:09:31.694] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:09:31.694] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:09:31.694] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:09:31.694] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:31.694] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:31.694] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:09:31.976] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:09:31.976] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:31.976] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[05:09:32.290] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:09:32.290] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:09:32.290] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:09:32.290] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:09:32.620] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[05:09:33.926] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:37.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:39.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:41.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:43.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:45.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:47.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:49.274] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:51.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:53.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:55.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:57.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:57.458] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:09:57.458] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:09:57.458] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:57.458] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:09:57.458] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:09:57.733] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:09:59.870] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[05:09:59.870] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:09:59.870] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:09:59.890] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[05:10:00.197] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[05:10:00.206] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:10:00.206] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:00.435] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[05:10:00.442] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:10:00.447] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[05:10:00.658] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 457ms
+[05:10:00.688] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[05:10:00.688] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 798ms
+[05:10:01.099] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[05:10:01.312] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 421ms
+[05:10:02.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:10:02.197] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:02.524] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2320ms
+[05:10:04.111] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:06.096] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:08.091] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:11.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:13.054] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:13.346] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:10:13.346] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:10:13.346] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:10:13.768] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:14.169] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:14.623] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:10:14.623] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:10:14.868] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:14.868] Browser ERROR   Error fetching teams: {"code":"","details":"","hint":"","message":"AbortError: The user aborted a request."}
+[05:10:16.853] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:17.255] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[05:10:17.255] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:17.255] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:17.255] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:10:17.495] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:17.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:10:17.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:10:17.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:10:17.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:10:20.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:22.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:23.762] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:23.762] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:10:23.762] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:10:23.762] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:23.762] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:23.762] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:10:26.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:28.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:30.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:30.686] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:10:30.686] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:10:30.686] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:30.686] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:10:30.686] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:10:31.002] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:31.552] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:31.819] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:10:33.484] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:35.530] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:37.494] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:39.695] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:41.475] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:43.490] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:45.486] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:47.496] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:49.495] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:51.480] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:53.498] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:55.479] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:57.493] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:10:59.471] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:00.706] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:01.505] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:01.821] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:11:03.488] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:05.499] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:07.500] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:09.555] Server  LOG      ✓ Compiled in 454ms
+[05:11:09.560] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:09.560] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:09.560] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:11.530] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:13.527] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:15.476] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:17.488] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:19.505] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:21.519] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:23.532] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:26.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:28.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:30.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:32.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:33.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:11:34.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:35.206] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:11:35.206] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:11:35.206] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:35.206] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:35.206] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:11:35.471] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:38.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:40.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:42.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:44.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:46.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:47.627] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:47.782] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:11:47.782] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:11:47.782] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:47.782] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:11:47.782] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:11:49.493] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:52.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:54.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:56.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:11:58.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:00.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:02.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:03.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:12:04.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:06.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:08.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:10.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:12.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:12.653] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:12:12.653] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:12:12.653] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:12:12.653] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:12:12.653] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:12:12.953] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:13.479] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:15.530] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:17.495] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:19.563] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:21.524] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:21.705] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:12:21.705] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:12:21.795] Server  LOG      ✓ Compiled in 373ms
+[05:12:22.359] Browser ERROR   Fatal Error in fetchTeamData: {}
+[05:12:23.493] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:25.484] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:27.503] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:29.484] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:32.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:33.278] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:12:34.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:36.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:38.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:40.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:42.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:44.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:46.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:48.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:50.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:52.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:53.280] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:12:53.280] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:12:53.280] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:12:53.280] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:12:53.280] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:12:53.280] Browser ERROR   Fatal Error in fetchTeamData: {}
+[05:12:54.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:56.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:12:58.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:00.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:02.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:03.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:13:04.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:06.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:08.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:09.194] Server  LOG      ✓ Compiled in 250ms
+[05:13:09.286] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:13:09.286] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:13:09.286] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:13:09.286] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:13:09.286] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:13:09.286] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[05:13:10.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:12.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:14.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:16.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:18.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:20.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:22.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:24.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:26.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:28.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:30.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:30.835] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:13:30.835] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[05:13:30.835] Browser LOG     Effect triggered: Fetching team data for ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:13:30.835] Browser LOG     Starting team data fetch for: ebd93fd2-2c93-4acc-ad87-f12a2751e397
+[05:13:30.835] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:13:31.142] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:31.508] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:31.773] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:13:33.476] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:36.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:38.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:40.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:42.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:42.280] Browser LOG     🔍 Call Status Debug: {"debugForce":false,"displayCallId":"97e8a547-3308-4c81-aac6-5dd36b61e428","isCallingActive":false,"routerPath":"/portal/team/[id]","swipeXCurrent":0}
+[05:13:43.639] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:45.477] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[05:13:47.508] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0

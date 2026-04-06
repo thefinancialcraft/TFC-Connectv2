@@ -11,6 +11,7 @@
   "/api/dashboard_charts": "pages/api/dashboard_charts.js",
   "/api/dashboard_overview": "pages/api/dashboard_overview.js",
   "/api/google/fetch-holidays": "pages/api/google/fetch-holidays.js",
+  "/api/notifications/mark-as-seen": "pages/api/notifications/mark-as-seen.js",
   "/portal/activity": "pages/portal/activity.js",
   "/portal/campaign": "pages/portal/campaign.js",
   "/portal/campaign/[id]": "pages/portal/campaign/[id].js",

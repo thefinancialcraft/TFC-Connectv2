@@ -470,13 +470,11 @@ export default function AgentPerformanceTab({
                           <th className="px-5 py-4 font-bold">Agent</th>
                           <th className="px-2 py-4 font-bold text-center">Last Active</th>
                           <th className="px-2 py-4 font-bold text-center">Status</th>
-                          <th className="px-2 py-4 font-bold text-center">Dials</th>
+                          <th className="px-2 py-4 font-bold text-center text-[#4b33e8]">Follow Ups</th>
                           <th className="px-2 py-4 font-bold text-center">Talk Time</th>
                           <th className="px-2 py-4 font-bold text-center">Connected</th>
                           <th className="px-2 py-4 font-bold text-center">Avg Talk</th>
                           <th className="px-2 py-4 font-bold text-center">Streak/Gap</th>
-                          <th className="px-2 py-4 font-bold text-center">Follow Ups</th>
-                          <th className="px-2 py-4 font-bold text-center">Deals</th>
                           <th className="px-5 py-4 font-bold text-right">Last Call</th>
                       </tr>
                   </thead>
@@ -564,8 +562,10 @@ export default function AgentPerformanceTab({
                                           </div>
                                       )}
                                   </td>
-                                  <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
-                                      {agent.count.toLocaleString()}
+                                  <td className="px-2 py-5 text-center">
+                                      <span className="px-2 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100/50">
+                                          {agent.count.toLocaleString()} CALLS
+                                      </span>
                                   </td>
                                   <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
                                       {formatDuration(agent.duration || 0)}
@@ -579,18 +579,6 @@ export default function AgentPerformanceTab({
                                   </td>
                                   <td className="px-2 py-5 text-center text-sm text-amber-600 font-bold">
                                       {agent.consecutive_failed_stats}
-                                  </td>
-                                  <td className="px-2 py-5 text-center">
-                                      <span className="px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100">
-                                          {agent.follow_ups_count} PENDING
-                                      </span>
-                                  </td>
-                                  <td className="px-2 py-5 text-center">
-                                      {agent.deals_count > 0 ? (
-                                          <span className="inline-flex items-center gap-1 text-emerald-600 font-bold text-sm">
-                                              <i className="fi flex fi-rr-trophy text-xs"></i> {agent.deals_count}
-                                          </span>
-                                      ) : <span className="text-gray-300 font-bold">-</span>}
                                   </td>
                                   <td className="px-5 py-5 text-right">
                                       <p className="text-sm font-bold text-[#263238]">{formatTime(agent.last_active)}</p>

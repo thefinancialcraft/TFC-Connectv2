@@ -99,7 +99,7 @@ export default function TeamDetails() {
       // 2. Fetch Members (Profiles) First to get Employee IDs & Names
       const { data: membersData, error: membersError } = await supabase
         .from('user_profiles')
-        .select('user_id, user_name, employee_id, profile_pic_url, status')
+        .select('user_id, user_name, employee_id, profile_pic_url, status, last_online')
         .in('user_id', memberIds)
         .eq('status', 'active');
 
@@ -136,7 +136,7 @@ export default function TeamDetails() {
       if (employeeIds.length > 0) {
         queries.push(
             supabase.from('sync_meta')
-            .select('employee_id, on_call, is_personal')
+            .select('employee_id, on_call, is_personal, last_seen')
             .in('employee_id', employeeIds)
         );
       } else {
@@ -393,7 +393,7 @@ export default function TeamDetails() {
           deals: dealsCount,
           followUps: followUpsCount,
           lastActive,
-          lastOnline: sessionData?.last_accessed_at || null,
+          lastOnline: member.last_online || syncData?.last_seen || sessionData?.last_accessed_at || null,
           idleTime: idleTimeStr,
           idleMins,
           onCall: !!syncData?.on_call,
@@ -781,18 +781,16 @@ export default function TeamDetails() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50/50 text-xs text-gray-500 uppercase tracking-wider">
-                            <th className="px-4 py-3 font-semibold">Agent</th>
-                            <th className="px-2 py-3 font-semibold text-center">Last Active</th>
-                            <th className="px-2 py-3 font-semibold text-center">Status</th>
-                            <th className="px-2 py-3 font-semibold text-center">Calls</th>
-                            <th className="px-2 py-3 font-semibold text-center">Talk Time</th>
-                            <th className="px-2 py-3 font-semibold text-center">Connected</th>
-                            <th className="px-2 py-3 font-semibold text-center">Avg Talk</th>
-                            <th className="px-2 py-3 font-semibold text-center">Streak/Gap</th>
-                            <th className="px-2 py-3 font-semibold text-center">Follow Ups</th>
-                            <th className="px-2 py-3 font-semibold text-center">Deals</th>
-                            <th className="px-4 py-3 font-semibold text-right">Last Call</th>
+                            <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest">
+                                <th className="px-4 py-3 font-bold">Agent</th>
+                                <th className="px-2 py-3 font-bold text-center">Last Active</th>
+                                <th className="px-2 py-3 font-bold text-center">Status</th>
+                                <th className="px-2 py-3 font-bold text-center text-indigo-500/80">Follow Ups</th>
+                                <th className="px-2 py-3 font-bold text-center">Talk Time</th>
+                                <th className="px-2 py-3 font-bold text-center">Connected</th>
+                                <th className="px-2 py-3 font-bold text-center">Avg Talk</th>
+                                <th className="px-2 py-3 font-bold text-center">Streak/Gap</th>
+                                <th className="px-4 py-3 font-bold text-right">Last Call</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -873,38 +871,28 @@ export default function TeamDetails() {
                                               </div>
                                             )}
                                         </td>
-                                        <td className="px-2 py-4 text-center text-sm font-bold text-gray-700">
-                                            {mStats.totalCalls}
+                                        <td className="px-2 py-4 text-center">
+                                            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 text-[10px] font-bold border border-gray-200">
+                                                {mStats.totalCalls} CALLS
+                                            </span>
                                         </td>
-                                        <td className="px-2 py-4 text-center text-sm text-gray-600 font-medium">
+                                        <td className="px-2 py-4 text-center text-xs text-gray-600 font-bold">
                                             {mStats.totalTalkTime}
                                         </td>
                                         <td className="px-2 py-4 text-center">
-                                            <p className="text-sm font-semibold text-gray-700">{mStats.connected}</p>
-                                            <p className="text-[10px] text-gray-400">{mStats.connectedRate}% Rate</p>
+                                            <p className="text-xs font-bold text-gray-800">{mStats.connected}</p>
+                                            <p className="text-[9px] text-indigo-500 font-bold">{mStats.connectedRate}%</p>
                                         </td>
-                                        <td className="px-2 py-4 text-center text-sm text-gray-600 font-medium">
+                                        <td className="px-2 py-4 text-center text-xs text-gray-600 font-bold">
                                             {mStats.avgDuration}
                                         </td>
-                                        <td className="px-2 py-4 text-center text-sm text-amber-600 font-bold">
+                                        <td className="px-2 py-4 text-center text-xs text-amber-600 font-bold">
                                             {mStats.streakGap}
                                         </td>
-                                        <td className="px-2 py-4 text-center">
-                                            <span className="px-2 py-1 rounded-md bg-purple-50 text-purple-700 text-xs font-bold">
-                                                {mStats.followUps} Pending
-                                            </span>
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            {mStats.deals > 0 ? (
-                                                <span className="flex items-center justify-center gap-1 text-green-600 font-bold text-sm">
-                                                    <i className="fi flex fi-rr-trophy text-xs"></i> {mStats.deals}
-                                                </span>
-                                            ) : <span className="text-gray-400 text-sm">-</span>}
-                                        </td>
-                                        <td className="px-4 py-4 text-right text-sm text-gray-500">
-                                            {formatTime(mStats.lastActive)}
-                                            <p className="text-[10px] text-gray-400">
-                                                 {mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : ''}
+                                        <td className="px-4 py-4 text-right">
+                                            <p className="text-xs font-bold text-gray-800">{formatTime(mStats.lastActive)}</p>
+                                            <p className="text-[9px] text-gray-400 font-medium">
+                                                {mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : 'N/A'}
                                             </p>
                                         </td>
                                     </tr>

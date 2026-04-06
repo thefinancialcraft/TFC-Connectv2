@@ -462,34 +462,6 @@ function triggerUpdate(msg) {
     }
 }
 }),
-"[project]/lib/supabase.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "supabase",
-    ()=>supabase,
-    "supabaseAdmin",
-    ()=>supabaseAdmin
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [client] (ecmascript) <locals>");
-;
-const supabaseUrl = ("TURBOPACK compile-time value", "https://qcglmkmhqvmkugaqvqih.supabase.co");
-const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjZ2xta21ocXZta3VnYXF2cWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTA5MTUsImV4cCI6MjA4MjA2NjkxNX0.XRbQNB4sbRgSppMH76ED7OruPYHJgI-xOMLQM7ZT6Lc");
-const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
-if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-;
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
-const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-        autoRefreshToken: false,
-        persistSession: false
-    }
-}) : null;
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
 "[project]/components/AppLogo.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -1360,6 +1332,34 @@ const __TURBOPACK__default__export__ = Sidebar;
 var _c, _c1;
 __turbopack_context__.k.register(_c, "Sidebar$memo");
 __turbopack_context__.k.register(_c1, "Sidebar");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/supabase.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "supabase",
+    ()=>supabase,
+    "supabaseAdmin",
+    ()=>supabaseAdmin
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [client] (ecmascript) <locals>");
+;
+const supabaseUrl = ("TURBOPACK compile-time value", "https://qcglmkmhqvmkugaqvqih.supabase.co");
+const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjZ2xta21ocXZta3VnYXF2cWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTA5MTUsImV4cCI6MjA4MjA2NjkxNX0.XRbQNB4sbRgSppMH76ED7OruPYHJgI-xOMLQM7ZT6Lc");
+const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
+if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+;
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
+const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false
+    }
+}) : null;
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -8574,380 +8574,162 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/phoneUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/lib/dateUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.s([
-    "computePhoneHash",
-    ()=>computePhoneHash,
-    "decryptPhone",
-    ()=>decryptPhone,
-    "encryptPhone",
-    ()=>encryptPhone,
-    "formatMaskedPhone",
-    ()=>formatMaskedPhone
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$crypto$2d$js$2f$sha256$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/crypto-js/sha256.js [client] (ecmascript)");
-;
 /**
- * Utility for phone number encryption and decryption
- * Uses a simple XOR + Base64 scheme with a prefix for identification.
- * This allows both encrypted and plain text numbers to coexist.
- */ const SECRET_KEY = ("TURBOPACK compile-time value", "TfcV2_Secure_9Xk2Lp5Nm8Qj4Rs7Vw1Zy3Bd6G") || "TFC_CONNECT_SECURE_PHONE_VAULT";
-const computePhoneHash = (phone)=>{
-    if (!phone) return null;
-    // Normalize phone number if needed (e.g. remove spaces, dashes)
-    // For now, we assume the input is the raw phone string as user types it.
-    // We should probably strip common non-digit characters to make search more robust.
-    const normalized = phone.replace(/[^0-9]/g, '');
-    if (!normalized) return null;
-    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$crypto$2d$js$2f$sha256$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(normalized).toString();
-};
-const encryptPhone = (phone)=>{
-    if (!phone) return "";
-    // Safety check: Don't encrypt if already encrypted
-    if (phone.startsWith("__enc__")) return phone;
-    try {
-        // Simple symmetric XOR cipher
-        const encrypted = phone.split('').map((char, i)=>String.fromCharCode(char.charCodeAt(0) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length))).join('');
-        // Convert to Base64 for DB storage
-        return `__enc__${btoa(encrypted)}`;
-    } catch (e) {
-        console.error("Shield Encryption Failed:", e);
-        return phone; // Fallback to plain text
-    }
-};
-const decryptPhone = (phone)=>{
-    if (!phone) return "";
-    // If it doesn't have our prefix, it's plain text (legacy data)
-    if (!phone.startsWith("__enc__")) return phone;
-    try {
-        const base64Data = phone.substring(7); // Remove "__enc__"
-        const encrypted = atob(base64Data);
-        const decrypted = encrypted.split('').map((char, i)=>String.fromCharCode(char.charCodeAt(0) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length))).join('');
-        return decrypted;
-    } catch (e) {
-        console.warn("Shield Decryption Failed (possible corrupted data):", e);
-        return phone; // Return as-is
-    }
-};
-const formatMaskedPhone = (phone)=>{
-    const realPhone = decryptPhone(phone);
-    if (!realPhone) return "—";
-    if (realPhone.length < 4) return realPhone;
-    // Show first 2 and last 2, mask the middle
-    return realPhone.substring(0, 2) + "******" + realPhone.substring(realPhone.length - 2);
-};
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useFollowUpLeads.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useFollowUpLeads",
-    ()=>useFollowUpLeads
+ * Shared date range utilities for dashboard APIs
+ * All calculations are standardized to Asia/Kolkata (IST)
+ */ __turbopack_context__.s([
+    "calculateMonthsToTarget",
+    ()=>calculateMonthsToTarget,
+    "calculateNewExpiryDate",
+    ()=>calculateNewExpiryDate,
+    "formatDate",
+    ()=>formatDate,
+    "getISTDateRange",
+    ()=>getISTDateRange
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/phoneUtils.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-;
-;
-;
-function useFollowUpLeads() {
-    _s();
-    const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
-    const [leads, setLeads] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const fetchLeads = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useFollowUpLeads.useCallback[fetchLeads]": async (isBackground = false)=>{
-            if (!mounted || !user) return;
-            // Abort previous request
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            abortControllerRef.current = new AbortController();
-            try {
-                if (!isBackground) setLoading(true);
-                setError("");
-                const now = new Date();
-                // Fetch customers first (Joins disabled due to missing FKs on campaign_id/assigned_to)
-                let query = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').select('*').in('disposition', [
-                    'Callback',
-                    'Call Back',
-                    'Follow Up',
-                    'FollowUp'
-                ]).order('next_called_at', {
-                    ascending: true
-                }).abortSignal(abortControllerRef.current.signal);
-                // Apply Security Levels
-                if (user.isClient) {
-                    // Level 1: Client Agent (Own leads only)
-                    if (user.designation === 'agent' || !user.designation) {
-                        if (user.uid) {
-                            query = query.eq('assigned_to', user.uid);
-                        }
-                    } else if (user.designation === 'team_leader') {
-                        let teamMemberIds = [
-                            user.uid
-                        ];
-                        if (user.uid) {
-                            const { data: teamData } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('teams').select('members').eq('leader_id', user.uid).eq('is_active', true);
-                            if (teamData) {
-                                teamData.forEach({
-                                    "useFollowUpLeads.useCallback[fetchLeads]": (team)=>{
-                                        // Parse members JSONB consistent with other pages
-                                        if (Array.isArray(team.members)) {
-                                            team.members.forEach({
-                                                "useFollowUpLeads.useCallback[fetchLeads]": (m)=>{
-                                                    if (typeof m === 'string') teamMemberIds.push(m);
-                                                }
-                                            }["useFollowUpLeads.useCallback[fetchLeads]"]);
-                                        } else if (typeof team.members === 'string') {
-                                            try {
-                                                const parsed = JSON.parse(team.members);
-                                                if (Array.isArray(parsed)) parsed.forEach({
-                                                    "useFollowUpLeads.useCallback[fetchLeads]": (id)=>teamMemberIds.push(String(id))
-                                                }["useFollowUpLeads.useCallback[fetchLeads]"]);
-                                            } catch (e) {}
-                                        }
-                                    }
-                                }["useFollowUpLeads.useCallback[fetchLeads]"]);
-                            }
-                        }
-                        teamMemberIds = [
-                            ...new Set(teamMemberIds)
-                        ]; // Unique keys
-                        if (teamMemberIds.length > 0) {
-                            query = query.in('assigned_to', teamMemberIds);
-                        } else {
-                            query = query.eq('assigned_to', user.uid);
-                        }
-                    } else if ([
-                        'ceo',
-                        'developer'
-                    ].includes(user.designation || '')) {
-                        if (user.organization_id) {
-                            query = query.eq('organization_id', user.organization_id);
-                        } else {
-                            // Fail secure
-                            query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-                        }
-                    }
-                }
-                // Level 4: Internal Staff (!isClient) gets explicit Global Access (no filters applied)
-                const { data: customerData, error: customerError } = await query;
-                if (customerError) {
-                    if (customerError.name === 'AbortError') return;
-                    throw customerError;
-                }
-                if (customerData) {
-                    // Parallel fetch related data (Manual Join Pattern)
-                    const campaignIds = [
-                        ...new Set(customerData.map({
-                            "useFollowUpLeads.useCallback[fetchLeads]": (c)=>c.campaign_id
-                        }["useFollowUpLeads.useCallback[fetchLeads]"]).filter(Boolean))
-                    ];
-                    const orgIds = [
-                        ...new Set(customerData.map({
-                            "useFollowUpLeads.useCallback[fetchLeads]": (c)=>c.organization_id
-                        }["useFollowUpLeads.useCallback[fetchLeads]"]).filter(Boolean))
-                    ];
-                    const userIds = [
-                        ...new Set(customerData.map({
-                            "useFollowUpLeads.useCallback[fetchLeads]": (c)=>c.assigned_to
-                        }["useFollowUpLeads.useCallback[fetchLeads]"]).filter(Boolean))
-                    ];
-                    const [campaignsResult, orgsResult, usersResult] = await Promise.all([
-                        campaignIds.length > 0 ? __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('campaigns').select('id, name').in('id', campaignIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({
-                            data: []
-                        }),
-                        orgIds.length > 0 ? __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('organizations').select('id, company_name').in('id', orgIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({
-                            data: []
-                        }),
-                        userIds.length > 0 ? __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('user_id, user_name').in('user_id', userIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({
-                            data: []
-                        })
-                    ]);
-                    // Create Lookup Maps
-                    const campaignMap = Object.fromEntries(campaignsResult.data?.map({
-                        "useFollowUpLeads.useCallback[fetchLeads].campaignMap": (c)=>[
-                                c.id,
-                                c.name
-                            ]
-                    }["useFollowUpLeads.useCallback[fetchLeads].campaignMap"]) || []);
-                    const orgMap = Object.fromEntries(orgsResult.data?.map({
-                        "useFollowUpLeads.useCallback[fetchLeads].orgMap": (o)=>[
-                                o.id,
-                                o.company_name
-                            ]
-                    }["useFollowUpLeads.useCallback[fetchLeads].orgMap"]) || []);
-                    const userMap = Object.fromEntries(usersResult.data?.map({
-                        "useFollowUpLeads.useCallback[fetchLeads].userMap": (u)=>[
-                                u.user_id,
-                                u.user_name
-                            ]
-                    }["useFollowUpLeads.useCallback[fetchLeads].userMap"]) || []);
-                    const enrichedLeads = customerData.map({
-                        "useFollowUpLeads.useCallback[fetchLeads].enrichedLeads": (lead)=>{
-                            let isOverdue = false;
-                            let isUpcoming = false;
-                            if (lead.next_called_at) {
-                                const nextCallDate = new Date(lead.next_called_at);
-                                if (nextCallDate < now) {
-                                    isOverdue = true;
-                                } else {
-                                    isUpcoming = true;
-                                }
-                            } else {
-                                isOverdue = true;
-                            }
-                            return {
-                                ...lead,
-                                phone_no: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["decryptPhone"])(lead.phone_no),
-                                isOverdue,
-                                isUpcoming,
-                                campaign_name: campaignMap[lead.campaign_id] || 'Unknown Campaign',
-                                organization_name: orgMap[lead.organization_id] || '—',
-                                assigned_name: userMap[lead.assigned_to] || 'Unassigned',
-                                status_label: isOverdue ? 'Overdue' : 'Upcoming'
-                            };
-                        }
-                    }["useFollowUpLeads.useCallback[fetchLeads].enrichedLeads"]);
-                    setLeads(enrichedLeads);
-                } else {
-                    setLeads([]);
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error("Error fetching follow-up leads:", err);
-                    setError("Failed to load follow-up schedule");
-                }
-            } finally{
-                if (!isBackground) setLoading(false);
-            }
-        }
-    }["useFollowUpLeads.useCallback[fetchLeads]"], [
-        user,
-        mounted
-    ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useFollowUpLeads.useEffect": ()=>{
-            let interval;
-            if (mounted && user) {
-                fetchLeads();
-                interval = setInterval({
-                    "useFollowUpLeads.useEffect": ()=>{
-                        fetchLeads(true);
-                    }
-                }["useFollowUpLeads.useEffect"], 60000);
-            }
-            return ({
-                "useFollowUpLeads.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                    if (interval) clearInterval(interval);
-                }
-            })["useFollowUpLeads.useEffect"];
-        }
-    }["useFollowUpLeads.useEffect"], [
-        fetchLeads,
-        mounted,
-        user
-    ]);
-    const stats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
-        "useFollowUpLeads.useMemo[stats]": ()=>{
-            return leads.reduce({
-                "useFollowUpLeads.useMemo[stats]": (acc, lead)=>{
-                    acc.total++;
-                    if (lead.isOverdue) acc.overdue++;
-                    if (lead.isUpcoming) acc.upcoming++;
-                    return acc;
-                }
-            }["useFollowUpLeads.useMemo[stats]"], {
-                total: 0,
-                overdue: 0,
-                upcoming: 0
-            });
-        }
-    }["useFollowUpLeads.useMemo[stats]"], [
-        leads
-    ]);
-    const filteredLeads = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
-        "useFollowUpLeads.useMemo[filteredLeads]": ()=>{
-            const query = searchQuery.toLowerCase();
-            if (!query) return leads;
-            return leads.filter({
-                "useFollowUpLeads.useMemo[filteredLeads]": (lead)=>lead.customer_name?.toLowerCase().includes(query) || lead.phone_no?.includes(query) || lead.disposition?.toLowerCase().includes(query) || lead.campaign_name?.toLowerCase().includes(query) || lead.organization_name?.toLowerCase().includes(query) || lead.assigned_name?.toLowerCase().includes(query)
-            }["useFollowUpLeads.useMemo[filteredLeads]"]);
-        }
-    }["useFollowUpLeads.useMemo[filteredLeads]"], [
-        leads,
-        searchQuery
-    ]);
-    const formatDate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useFollowUpLeads.useCallback[formatDate]": (dateStr)=>{
-            if (!dateStr) return '—';
-            try {
-                const date = new Date(dateStr);
-                if (isNaN(date.getTime())) return '—';
-                return date.toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
+function getISTDateRange(filter) {
+    const now = new Date();
+    // Get date string in YYYY-MM-DD for IST
+    const istDateString = now.toLocaleDateString("en-CA", {
+        timeZone: "Asia/Kolkata"
+    });
+    // Midnight IST in ISO format
+    const todayStart = new Date(`${istDateString}T00:00:00+05:30`).toISOString();
+    // End of day IST in ISO format
+    const todayEnd = new Date(`${istDateString}T23:59:59+05:30`).toISOString();
+    let start = todayStart;
+    let end = todayEnd;
+    switch(filter){
+        case "yesterday":
+            {
+                const yesterday = new Date(`${istDateString}T00:00:00+05:30`);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yStr = yesterday.toLocaleDateString("en-CA", {
+                    timeZone: "Asia/Kolkata"
                 });
-            } catch (e) {
-                return '—';
+                start = new Date(`${yStr}T00:00:00+05:30`).toISOString();
+                end = new Date(`${yStr}T23:59:59+05:30`).toISOString();
+                break;
             }
-        }
-    }["useFollowUpLeads.useCallback[formatDate]"], []);
+        case "this_week":
+            {
+                const d = new Date(`${istDateString}T00:00:00+05:30`);
+                const day = d.getDay();
+                const diff = day === 0 ? -6 : 1 - day; // Monday
+                d.setDate(d.getDate() + diff);
+                const monStr = d.toLocaleDateString("en-CA", {
+                    timeZone: "Asia/Kolkata"
+                });
+                start = new Date(`${monStr}T00:00:00+05:30`).toISOString();
+                break;
+            }
+        case "last_7_days":
+            {
+                const d = new Date(now);
+                d.setDate(d.getDate() - 7);
+                start = d.toISOString();
+                break;
+            }
+        case "this_month":
+            {
+                const parts = istDateString.split("-");
+                start = new Date(`${parts[0]}-${parts[1]}-01T00:00:00+05:30`).toISOString();
+                break;
+            }
+        case "last_month":
+            {
+                const parts = istDateString.split("-");
+                let year = parseInt(parts[0]);
+                let month = parseInt(parts[1]) - 1;
+                if (month === 0) {
+                    month = 12;
+                    year--;
+                }
+                const prevMonthStr = month.toString().padStart(2, '0');
+                start = new Date(`${year}-${prevMonthStr}-01T00:00:00+05:30`).toISOString();
+                const lastDay = new Date(year, month, 0).getDate();
+                end = new Date(`${year}-${prevMonthStr}-${lastDay}T23:59:59+05:30`).toISOString();
+                break;
+            }
+        case "this_year":
+            const yStr = istDateString.split("-")[0];
+            start = new Date(`${yStr}-01-01T00:00:00+05:30`).toISOString();
+            break;
+        case "multi_year":
+            const yearInt = parseInt(istDateString.split("-")[0]);
+            start = new Date(`${yearInt - 3}-01-01T00:00:00+05:30`).toISOString();
+            break;
+        case "all_time":
+            start = "2020-01-01T00:00:00.000Z";
+            break;
+    }
     return {
-        leads,
-        filteredLeads,
-        loading,
-        error,
-        searchQuery,
-        setSearchQuery,
-        stats,
-        fetchLeads,
-        formatDate
+        start,
+        end
     };
 }
-_s(useFollowUpLeads, "FcLmeoeRvvk/VmIaJKef+ATgEeg=", false, function() {
-    return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
-    ];
-});
+function formatDate(date) {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
+}
+function calculateNewExpiryDate(currentExpiry, monthsToAdd) {
+    const baseDate = currentExpiry ? new Date(currentExpiry) : new Date();
+    if (isNaN(baseDate.getTime())) return new Date().toISOString().split('T')[0];
+    const newDate = new Date(baseDate);
+    newDate.setMonth(newDate.getMonth() + monthsToAdd);
+    return newDate.toISOString().split('T')[0];
+}
+function calculateMonthsToTarget(year, month) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-11
+    const targetYear = typeof year === 'string' ? parseInt(year) : year;
+    const targetMonth = typeof month === 'string' ? parseInt(month) : month;
+    if (isNaN(targetYear) || isNaN(targetMonth)) return 0;
+    // Note: targetMonth expected as 1-12 from UI select, convert to 0-11
+    return (targetYear - currentYear) * 12 + (targetMonth - 1 - currentMonth);
+}
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/pages/portal/followup.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/pages/portal/team/[id].tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "default",
-    ()=>FollowUp
+    ()=>TeamDetails
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$head$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/head.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useFollowUpLeads$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useFollowUpLeads.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/phoneUtils.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$PieChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/PieChart.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$polar$2f$Pie$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/polar/Pie.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Cell$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/Cell.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/BarChart.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/Bar.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$AreaChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/AreaChart.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/Area.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/XAxis.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/YAxis.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/CartesianGrid.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/Tooltip.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/Legend.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/ResponsiveContainer.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dateUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dateUtils.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
@@ -8956,3007 +8738,2066 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
-function FollowUp() {
+;
+function TeamDetails() {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const { user } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
-    const { loading, error, filteredLeads, searchQuery, setSearchQuery, stats, fetchLeads, formatDate } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useFollowUpLeads$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useFollowUpLeads"])();
-    const [viewMode, setViewMode] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('table');
-    const [currentMonth, setCurrentMonth] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(new Date());
-    const [selectedDate, setSelectedDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [selectedHour, setSelectedHour] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [pipelines, setPipelines] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [showConfig, setShowConfig] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [editingPipelineId, setEditingPipelineId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [showMenuId, setShowMenuId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [newPipeline, setNewPipeline] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        name: '',
-        dispositions: [],
-        sub_dispositions: [],
-        outcomes: []
-    });
-    const [userOutcomes, setUserOutcomes] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    // Fetch user outcomes when config opens
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "FollowUp.useEffect": ()=>{
-            if (showConfig && user?.uid) {
-                __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_outcomes').select('*').eq('user_id', user.uid).then({
-                    "FollowUp.useEffect": ({ data })=>setUserOutcomes(data || [])
-                }["FollowUp.useEffect"]);
+    const { id } = router.query;
+    const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    // RAW Data States - Used as base for derived useMemo values
+    const [team, setTeam] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [members, setMembers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rawLogs, setRawLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rawCustomers, setRawCustomers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rawSyncMeta, setRawSyncMeta] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rawCallLogs, setRawCallLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rawSessions, setRawSessions] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [dateFilter, setDateFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("today");
+    // Recharts Constants
+    const COLORS = [
+        '#4b33e8',
+        '#10b981',
+        '#f59e0b',
+        '#ef4444',
+        '#8b5cf6',
+        '#6366f1'
+    ];
+    // Abort Controllers for request safety
+    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    /**
+   * Safe Date Range Generation (Standardized to IST)
+   */ const getDateRange = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "TeamDetails.useCallback[getDateRange]": (filter)=>{
+            return (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dateUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getISTDateRange"])(filter);
+        }
+    }["TeamDetails.useCallback[getDateRange]"], []);
+    /**
+   * Main Data Fetcher with granular error handling
+   */ const fetchTeamData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "TeamDetails.useCallback[fetchTeamData]": async ()=>{
+            if (!id || Array.isArray(id)) {
+                setLoading(false);
+                return;
+            }
+            try {
+                setLoading(true);
+                setError(null);
+                console.log("Starting team data fetch for:", id);
+                // 1. Fetch Team Details
+                const { data: teamData, error: teamError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('teams').select(`
+          id, 
+          name, 
+          is_active, 
+          members, 
+          leader_id, 
+          organization:organizations(company_name), 
+          leader:user_profiles!leader_id(user_name)
+        `).eq('id', id).maybeSingle();
+                if (teamError) {
+                    console.error("Team Query Error:", teamError);
+                    throw new Error(`Failed to fetch team details: ${teamError.message}`);
+                }
+                if (!teamData) {
+                    console.warn("No team found for ID:", id);
+                    setError("Team not found or access denied.");
+                    setLoading(false);
+                    return;
+                }
+                setTeam(teamData);
+                const memberIds = Array.isArray(teamData.members) ? teamData.members : [];
+                if (memberIds.length === 0) {
+                    setMembers([]);
+                    setRawLogs([]);
+                    setRawCustomers([]);
+                    setLoading(false);
+                    return;
+                }
+                // 2. Fetch Members (Profiles) First to get Employee IDs & Names
+                const { data: membersData, error: membersError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('user_id, user_name, employee_id, profile_pic_url, status, last_online').in('user_id', memberIds).eq('status', 'active');
+                if (membersError) throw new Error(`Members fetch failed: ${membersError.message}`);
+                const validMembers = (membersData || []).sort({
+                    "TeamDetails.useCallback[fetchTeamData].validMembers": (a, b)=>(a.user_name || '').localeCompare(b.user_name || '')
+                }["TeamDetails.useCallback[fetchTeamData].validMembers"]);
+                setMembers(validMembers);
+                const employeeIds = validMembers.map({
+                    "TeamDetails.useCallback[fetchTeamData].employeeIds": (m)=>m.employee_id
+                }["TeamDetails.useCallback[fetchTeamData].employeeIds"]).filter({
+                    "TeamDetails.useCallback[fetchTeamData].employeeIds": (id)=>!!id
+                }["TeamDetails.useCallback[fetchTeamData].employeeIds"]);
+                // 3. Fetch History (using employee IDs) & Customers (using user IDs)
+                const { start, end } = getDateRange(dateFilter);
+                const queries = [
+                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').select('assigned_to, next_called_at, created_at, customer_details, disposition').in('assigned_to', memberIds)
+                ];
+                // Only fetch history if we have employee IDs
+                if (employeeIds.length > 0) {
+                    queries.push(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_history').select('employee_id, duration, call_type, timestamp, device_id, number, name') // Added extra fields for potential future use or debugging
+                    .in('employee_id', employeeIds).gte('timestamp', dateFilter !== 'all_time' ? start : '2000-01-01').lte('timestamp', dateFilter !== 'all_time' ? end : '2099-01-01'));
+                } else {
+                    queries.push(Promise.resolve({
+                        data: []
+                    })); // Empty history if no employee IDs
+                }
+                // Fetch Sync Meta
+                if (employeeIds.length > 0) {
+                    queries.push(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').select('employee_id, on_call, is_personal, last_seen').in('employee_id', employeeIds));
+                } else {
+                    queries.push(Promise.resolve({
+                        data: []
+                    }));
+                }
+                // 4. Fetch Dial Logs (call_logs) for Ringing Duration
+                if (memberIds.length > 0) {
+                    queries.push(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_logs').select('agent_id, duration, is_connected, created_at').in('agent_id', memberIds).gte('created_at', dateFilter !== 'all_time' ? start : '2000-01-01').lte('created_at', dateFilter !== 'all_time' ? end : '2099-01-01'));
+                } else {
+                    queries.push(Promise.resolve({
+                        data: []
+                    }));
+                }
+                // Execute promises
+                const results = await Promise.all(queries);
+                const customersRes = results[0];
+                const historyRes = results[1];
+                const syncMetaRes = results[2];
+                const callLogsRes = results[3];
+                if (customersRes.error) throw new Error(`Customers fetch failed: ${customersRes.error.message}`);
+                if (historyRes.error) throw new Error(`History fetch failed: ${historyRes.error.message}`);
+                if (callLogsRes.error) throw new Error(`Call Logs fetch failed: ${callLogsRes.error.message}`);
+                const historyData = historyRes.data || [];
+                const uniqueEntries = [];
+                const seenKeys = new Set();
+                historyData.forEach({
+                    "TeamDetails.useCallback[fetchTeamData]": (item)=>{
+                        const timeStr = new Date(item.timestamp).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        const dateStr = new Date(item.timestamp).toLocaleDateString();
+                        const key = `${item.number}-${item.employee_id}-${dateStr}-${timeStr}-${item.duration}`;
+                        if (!seenKeys.has(key)) {
+                            uniqueEntries.push(item);
+                            seenKeys.add(key);
+                        }
+                    }
+                }["TeamDetails.useCallback[fetchTeamData]"]);
+                setRawLogs(uniqueEntries);
+                setRawCustomers(customersRes.data || []);
+                setRawSyncMeta(syncMetaRes?.data || []);
+                setRawCallLogs(callLogsRes?.data || []);
+                if (memberIds.length > 0) {
+                    const { data: sessionData } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_sessions').select('user_id, last_accessed_at').in('user_id', memberIds).order('last_accessed_at', {
+                        ascending: false
+                    });
+                    // Group sessions to find the latest one per member
+                    const latestSessions = [];
+                    const seenUsers = new Set();
+                    (sessionData || []).forEach({
+                        "TeamDetails.useCallback[fetchTeamData]": (s)=>{
+                            if (!seenUsers.has(s.user_id)) {
+                                latestSessions.push(s);
+                                seenUsers.add(s.user_id);
+                            }
+                        }
+                    }["TeamDetails.useCallback[fetchTeamData]"]);
+                    setRawSessions(latestSessions);
+                }
+            } catch (err) {
+                console.error("Fatal Error in fetchTeamData:", err);
+                setError(err.message || "Failed to load team analytics. Please try again.");
+            } finally{
+                setLoading(false);
             }
         }
-    }["FollowUp.useEffect"], [
-        showConfig,
-        user?.uid
+    }["TeamDetails.useCallback[fetchTeamData]"], [
+        id,
+        dateFilter,
+        getDateRange
     ]);
-    const toggleSelection = (list, item)=>{
-        return list.includes(item) ? list.filter((i)=>i !== item) : [
-            ...list,
-            item
-        ];
-    };
-    const dispositionHierarchy = {
-        "Not Intrested": [],
-        "Language barrier": [],
-        "DND": [],
-        "Wrong NO": [],
-        "Ported / Expired": [],
-        "Not Contactable": [
-            "busy",
-            "Switch off",
-            "Ring",
-            "not reacable",
-            "others"
-        ],
-        "Call Back": [
-            "Interested",
-            "Follow up",
-            "Not Connected"
-        ],
-        "Deal Done": []
-    };
-    const addPipeline = ()=>{
-        if (!newPipeline.name) return;
-        if (editingPipelineId) {
-            // Update existing
-            setPipelines(pipelines.map((p)=>p.id === editingPipelineId ? {
-                    ...p,
-                    name: newPipeline.name,
-                    filters: {
-                        dispositions: newPipeline.dispositions,
-                        sub_dispositions: newPipeline.sub_dispositions,
-                        outcomes: newPipeline.outcomes
-                    }
-                } : p));
-            setEditingPipelineId(null);
-        } else {
-            // Add new
-            const id = Date.now().toString();
-            setPipelines([
-                ...pipelines,
-                {
-                    id,
-                    name: newPipeline.name,
-                    filters: {
-                        dispositions: newPipeline.dispositions,
-                        sub_dispositions: newPipeline.sub_dispositions,
-                        outcomes: newPipeline.outcomes
-                    }
-                }
-            ]);
-        }
-        setNewPipeline({
-            name: '',
-            dispositions: [],
-            sub_dispositions: [],
-            outcomes: []
-        });
-        setShowConfig(false);
-    };
-    const removePipeline = (id)=>{
-        setPipelines(pipelines.filter((p)=>p.id !== id));
-        setShowMenuId(null);
-    };
-    const startEdit = (p)=>{
-        setNewPipeline({
-            name: p.name,
-            dispositions: p.filters.dispositions,
-            sub_dispositions: p.filters.sub_dispositions,
-            outcomes: p.filters.outcomes || []
-        });
-        setEditingPipelineId(p.id);
-        setShowConfig(true);
-        setShowMenuId(null);
-    };
-    // --- PERSISTENCE LOGIC ---
-    // 1. Fetch settings on mount
+    // Request cancellation on unmount/re-fetch
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "FollowUp.useEffect": ()=>{
-            if (!user?.uid) return;
-            const fetchSettings = {
-                "FollowUp.useEffect.fetchSettings": async ()=>{
-                    const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_kanban_settings').select('*').eq('user_id', user.uid).single();
-                    if (data) {
-                        if (data.view_mode) setViewMode(data.view_mode);
-                        if (data.pipelines) setPipelines(data.pipelines);
-                    } else if (error && error.code === 'PGRST116') {
-                        // No settings found, create initial
-                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_kanban_settings').insert({
-                            user_id: user.uid,
-                            view_mode: 'table',
-                            pipelines: [
-                                {
-                                    id: '1',
-                                    name: 'Interested',
-                                    filters: {
-                                        dispositions: [
-                                            'Call Back'
-                                        ],
-                                        sub_dispositions: [
-                                            'intrested'
-                                        ],
-                                        outcomes: []
-                                    }
-                                },
-                                {
-                                    id: '2',
-                                    name: 'Follow Up',
-                                    filters: {
-                                        dispositions: [
-                                            'Call Back'
-                                        ],
-                                        sub_dispositions: [
-                                            'follow up'
-                                        ],
-                                        outcomes: []
-                                    }
-                                }
-                            ]
-                        });
-                    }
-                }
-            }["FollowUp.useEffect.fetchSettings"];
-            fetchSettings();
-        }
-    }["FollowUp.useEffect"], [
-        user?.uid
-    ]);
-    // 2. Save settings when viewMode or pipelines change
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "FollowUp.useEffect": ()=>{
-            if (!user?.uid) return;
-            const saveSettings = {
-                "FollowUp.useEffect.saveSettings": async ()=>{
-                    await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_kanban_settings').upsert({
-                        user_id: user.uid,
-                        view_mode: viewMode,
-                        pipelines: pipelines,
-                        updated_at: new Date().toISOString()
-                    });
-                }
-            }["FollowUp.useEffect.saveSettings"];
-            // Use a small delay/debounce or just sync (since this is low frequency)
-            const timeout = setTimeout(saveSettings, 1000);
+        "TeamDetails.useEffect": ()=>{
+            if (router.isReady && id && mounted && user) {
+                console.log("Effect triggered: Fetching team data for", id);
+                fetchTeamData();
+            }
             return ({
-                "FollowUp.useEffect": ()=>clearTimeout(timeout)
-            })["FollowUp.useEffect"];
+                "TeamDetails.useEffect": ()=>{
+                    if (abortControllerRef.current) abortControllerRef.current.abort();
+                }
+            })["TeamDetails.useEffect"];
         }
-    }["FollowUp.useEffect"], [
-        viewMode,
-        pipelines,
-        user?.uid
+    }["TeamDetails.useEffect"], [
+        router.isReady,
+        id,
+        mounted,
+        user,
+        fetchTeamData
     ]);
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl",
-            children: [
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "mb-8",
+    // Auto-refresh every 30 seconds
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "TeamDetails.useEffect": ()=>{
+            let interval;
+            if (router.isReady && id && mounted && user) {
+                interval = setInterval({
+                    "TeamDetails.useEffect": ()=>{
+                        fetchTeamData();
+                    }
+                }["TeamDetails.useEffect"], 30000); // 30 seconds
+            }
+            return ({
+                "TeamDetails.useEffect": ()=>{
+                    if (interval) clearInterval(interval);
+                }
+            })["TeamDetails.useEffect"];
+        }
+    }["TeamDetails.useEffect"], [
+        router.isReady,
+        id,
+        mounted,
+        user,
+        fetchTeamData
+    ]);
+    // Helper to handle Supabase joins that might return arrays
+    const getSingle = (val)=>Array.isArray(val) ? val[0] : val;
+    /**
+   * Derived Computations (Memoized)
+   * Eliminates O(N*M) filtering inside the render loop
+   */ const processedData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "TeamDetails.useMemo[processedData]": ()=>{
+            const emptyStats = {};
+            if (!members.length) return {
+                memberStats: emptyStats,
+                summary: {
+                    totalCalls: 0,
+                    deals: 0,
+                    revenue: 0,
+                    avgConnectRate: 0
+                },
+                charts: {
+                    outcome: [],
+                    hourly: [],
+                    dailyTrend: [],
+                    disposition: []
+                },
+                topAgents: []
+            };
+            try {
+                const now = new Date();
+                const stats = {};
+                // 1. Build Lookup Maps for efficiency
+                const logsByAgent = {};
+                const customersByAgent = {};
+                const employeeIdToUserId = {};
+                members.forEach({
+                    "TeamDetails.useMemo[processedData]": (m)=>{
+                        logsByAgent[m.user_id] = [];
+                        customersByAgent[m.user_id] = [];
+                        if (m.employee_id) employeeIdToUserId[m.employee_id] = m.user_id;
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                // Distribute logs (history) to agents via employeeID -> userID mapping
+                rawLogs.forEach({
+                    "TeamDetails.useMemo[processedData]": (l)=>{
+                        // l is now from call_history: { employee_id, ... }
+                        if (l.employee_id && employeeIdToUserId[l.employee_id]) {
+                            const uId = employeeIdToUserId[l.employee_id];
+                            logsByAgent[uId].push(l);
+                        }
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                rawCustomers.forEach({
+                    "TeamDetails.useMemo[processedData]": (c)=>{
+                        if (customersByAgent[c.assigned_to]) customersByAgent[c.assigned_to].push(c);
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                let totalCallsAll = 0;
+                let totalConnectedAll = 0;
+                let totalDealsAll = 0;
+                let totalRevenueSum = 0;
+                // 2. Process Member Stats
+                members.forEach({
+                    "TeamDetails.useMemo[processedData]": (member)=>{
+                        const mId = member.user_id;
+                        const userLogs = logsByAgent[mId] || []; // These are call_history items
+                        const userCustomers = customersByAgent[mId] || [];
+                        const totalCalls = userLogs.length;
+                        // Connected logic for call_history
+                        const connectedCount = userLogs.filter({
+                            "TeamDetails.useMemo[processedData]": (l)=>{
+                                const type = (l.call_type || '').toLowerCase();
+                                const duration = Number(l.duration) || 0;
+                                return (type.includes('outgoing') || type.includes('incoming')) && duration > 0;
+                            }
+                        }["TeamDetails.useMemo[processedData]"]).length;
+                        const totalDuration = userLogs.reduce({
+                            "TeamDetails.useMemo[processedData].totalDuration": (acc, l)=>acc + (Number(l.duration) || 0)
+                        }["TeamDetails.useMemo[processedData].totalDuration"], 0);
+                        const avgDurationSec = connectedCount ? Math.floor(totalDuration / connectedCount) : 0;
+                        // Deals are NOT available in call_history. We'll leave it as 0 for now.
+                        // If we want deals, we'd need to fetch legacy call_logs specifically for dispositions.
+                        const dealsCount = 0;
+                        // Calculate revenue - Try to find premium in associated customer_details
+                        const revenue = userCustomers.reduce({
+                            "TeamDetails.useMemo[processedData].revenue": (acc, c)=>{
+                                let pVal = 0;
+                                try {
+                                    const details = typeof c.customer_details === 'string' ? JSON.parse(c.customer_details) : c.customer_details;
+                                    if (details) {
+                                        // Look for "Premium" or similar keys
+                                        const premiumKey = Object.keys(details).find({
+                                            "TeamDetails.useMemo[processedData].revenue.premiumKey": (k)=>k.toLowerCase().includes('premium')
+                                        }["TeamDetails.useMemo[processedData].revenue.premiumKey"]);
+                                        if (premiumKey) pVal = Number(details[premiumKey]) || 0;
+                                    }
+                                } catch (e) {}
+                                return acc + pVal;
+                            }
+                        }["TeamDetails.useMemo[processedData].revenue"], 0);
+                        const followUpsCount = userCustomers.filter({
+                            "TeamDetails.useMemo[processedData]": (c)=>c.next_called_at && new Date(c.next_called_at) > now
+                        }["TeamDetails.useMemo[processedData]"]).length;
+                        let lastActive = null;
+                        let idleMins = -1;
+                        let idleTimeStr = "N/A";
+                        if (userLogs.length > 0) {
+                            // call_history uses 'timestamp'
+                            const recentLog = userLogs.reduce({
+                                "TeamDetails.useMemo[processedData].recentLog": (prev, curr)=>new Date(curr.timestamp).getTime() > new Date(prev.timestamp).getTime() ? curr : prev
+                            }["TeamDetails.useMemo[processedData].recentLog"]);
+                            lastActive = recentLog.timestamp;
+                            const diffMs = now.getTime() - new Date(recentLog.timestamp).getTime();
+                            const diffSec = Math.floor(diffMs / 1000);
+                            if (diffSec < 60) {
+                                idleTimeStr = `${diffSec}s`;
+                            } else if (diffSec < 3600) {
+                                idleTimeStr = `${Math.floor(diffSec / 60)}m`;
+                            } else {
+                                const h = Math.floor(diffSec / 3600);
+                                const m = Math.floor(diffSec % 3600 / 60);
+                                idleTimeStr = `${h}h ${m}m`;
+                            }
+                            idleMins = Math.floor(diffSec / 60);
+                        }
+                        const syncData = rawSyncMeta.find({
+                            "TeamDetails.useMemo[processedData].syncData": (s)=>s.employee_id === member.employee_id
+                        }["TeamDetails.useMemo[processedData].syncData"]);
+                        const isActuallyOnline = lastActive && now.getTime() - new Date(lastActive).getTime() < 30000; // 30s threshold
+                        const sessionData = rawSessions.find({
+                            "TeamDetails.useMemo[processedData].sessionData": (s)=>s.user_id === mId
+                        }["TeamDetails.useMemo[processedData].sessionData"]);
+                        // Streak/Gap Calculation (Consecutive Fails since last success)
+                        const sortedLogs = [
+                            ...rawLogs
+                        ].filter({
+                            "TeamDetails.useMemo[processedData].sortedLogs": (l)=>l.employee_id === member.employee_id
+                        }["TeamDetails.useMemo[processedData].sortedLogs"]).sort({
+                            "TeamDetails.useMemo[processedData].sortedLogs": (a, b)=>new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+                        }["TeamDetails.useMemo[processedData].sortedLogs"]);
+                        const lastSuccessIdx = sortedLogs.map({
+                            "TeamDetails.useMemo[processedData].lastSuccessIdx": (l)=>l.duration > 0
+                        }["TeamDetails.useMemo[processedData].lastSuccessIdx"]).lastIndexOf(true);
+                        const currentStreak = lastSuccessIdx === -1 ? sortedLogs : sortedLogs.slice(lastSuccessIdx + 1);
+                        let streakCount = 0;
+                        let avgGapStr = '0s';
+                        if (currentStreak.length > 0) {
+                            streakCount = currentStreak.length;
+                            let totalGap = 0;
+                            let gapCounts = 0;
+                            for(let i = 1; i < currentStreak.length; i++){
+                                const gap = (new Date(currentStreak[i].timestamp).getTime() - new Date(currentStreak[i - 1].timestamp).getTime()) / 1000;
+                                if (gap > 0) {
+                                    totalGap += gap;
+                                    gapCounts++;
+                                }
+                            }
+                            const avgGapSec = gapCounts > 0 ? Math.round(totalGap / gapCounts) : 0;
+                            const mins = Math.floor(avgGapSec / 60);
+                            const secs = avgGapSec % 60;
+                            avgGapStr = (mins > 0 ? `${mins}m ` : '') + `${secs}s`;
+                        }
+                        stats[mId] = {
+                            totalCalls,
+                            connected: connectedCount,
+                            connectedRate: totalCalls ? (connectedCount / totalCalls * 100).toFixed(1) : "0.0",
+                            avgDuration: `${Math.floor(avgDurationSec / 60)}m ${avgDurationSec % 60}s`,
+                            totalTalkTime: `${Math.floor(totalDuration / 3600)}h ${Math.floor(totalDuration % 3600 / 60)}m ${totalDuration % 60}s`,
+                            streakGap: `${streakCount}/${avgGapStr}`,
+                            deals: dealsCount,
+                            followUps: followUpsCount,
+                            lastActive,
+                            lastOnline: member.last_online || syncData?.last_seen || sessionData?.last_accessed_at || null,
+                            idleTime: idleTimeStr,
+                            idleMins,
+                            onCall: !!syncData?.on_call,
+                            isPersonal: !!syncData?.is_personal,
+                            status: syncData?.on_call ? syncData.is_personal ? 'Personal Call' : 'On Call' : isActuallyOnline ? 'Online' : 'Idle'
+                        };
+                        totalCallsAll += totalCalls;
+                        totalConnectedAll += connectedCount;
+                        totalDealsAll += dealsCount;
+                        totalRevenueSum += revenue;
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                // 3. Chart Data Generation
+                const outcomeCounts = {};
+                rawLogs.forEach({
+                    "TeamDetails.useMemo[processedData]": (l)=>{
+                        // Map call_type to Outcome Status
+                        // Incoming, Outgoing, Missed, Rejected
+                        const type = (l.call_type || 'Unknown').toLowerCase();
+                        let status = 'Unknown';
+                        if (type.includes('outgoing')) status = 'Outgoing';
+                        else if (type.includes('incoming')) status = 'Incoming';
+                        else if (type.includes('missed')) status = 'Missed';
+                        else if (type.includes('reject')) status = 'Rejected';
+                        outcomeCounts[status] = (outcomeCounts[status] || 0) + 1;
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                const outcomeData = Object.entries(outcomeCounts).map({
+                    "TeamDetails.useMemo[processedData].outcomeData": ([name, value])=>({
+                            name,
+                            value
+                        })
+                }["TeamDetails.useMemo[processedData].outcomeData"]);
+                const hourLabels = [];
+                for(let i = 8; i <= 20; i += 2){
+                    hourLabels.push(`${i > 12 ? i - 12 : i}${i >= 12 ? 'pm' : 'am'} - ${i + 2 > 12 ? i + 2 - 12 : i + 2}${i + 2 >= 12 ? 'pm' : 'am'}`);
+                }
+                const hourlyMap = Object.fromEntries(hourLabels.map({
+                    "TeamDetails.useMemo[processedData].hourlyMap": (l)=>[
+                            l,
+                            0
+                        ]
+                }["TeamDetails.useMemo[processedData].hourlyMap"]));
+                rawLogs.forEach({
+                    "TeamDetails.useMemo[processedData]": (l)=>{
+                        const h = new Date(l.timestamp).getHours(); // Use timestamp
+                        for(let i = 8; i <= 20; i += 2){
+                            if (h >= i && h < i + 2) {
+                                hourlyMap[hourLabels[(i - 8) / 2]]++;
+                                break;
+                            }
+                        }
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                const hourlyData = hourLabels.map({
+                    "TeamDetails.useMemo[processedData].hourlyData": (name)=>({
+                            name,
+                            count: hourlyMap[name]
+                        })
+                }["TeamDetails.useMemo[processedData].hourlyData"]);
+                // Disposition Data (From customers, assumes customers have disposition) - this remains valid
+                const dispCounts = {};
+                rawCustomers.forEach({
+                    "TeamDetails.useMemo[processedData]": (c)=>{
+                        const d = c.disposition || 'Fresh';
+                        dispCounts[d] = (dispCounts[d] || 0) + 1;
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                const dispositionData = Object.entries(dispCounts).map({
+                    "TeamDetails.useMemo[processedData].dispositionData": ([name, count])=>({
+                            name,
+                            count
+                        })
+                }["TeamDetails.useMemo[processedData].dispositionData"]).sort({
+                    "TeamDetails.useMemo[processedData].dispositionData": (a, b)=>b.count - a.count
+                }["TeamDetails.useMemo[processedData].dispositionData"]).slice(0, 5);
+                const dailyMap = {};
+                rawLogs.forEach({
+                    "TeamDetails.useMemo[processedData]": (l)=>{
+                        const d = new Date(l.timestamp); // Use timestamp
+                        const dateStr = d.toLocaleDateString(undefined, {
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                        const dayStartTs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                        if (!dailyMap[dateStr]) {
+                            dailyMap[dateStr] = {
+                                ts: dayStartTs,
+                                label: dateStr,
+                                count: 0
+                            };
+                        }
+                        dailyMap[dateStr].count++;
+                    }
+                }["TeamDetails.useMemo[processedData]"]);
+                const dailyTrendData = Object.values(dailyMap).sort({
+                    "TeamDetails.useMemo[processedData].dailyTrendData": (a, b)=>a.ts - b.ts
+                }["TeamDetails.useMemo[processedData].dailyTrendData"]).map({
+                    "TeamDetails.useMemo[processedData].dailyTrendData": (item)=>({
+                            name: item.label,
+                            count: item.count
+                        })
+                }["TeamDetails.useMemo[processedData].dailyTrendData"]);
+                const topAgents = members.map({
+                    "TeamDetails.useMemo[processedData].topAgents": (m)=>({
+                            name: m.user_name || 'Unknown',
+                            connected: stats[m.user_id]?.connected || 0,
+                            profilePic: m.profile_pic_url
+                        })
+                }["TeamDetails.useMemo[processedData].topAgents"]).sort({
+                    "TeamDetails.useMemo[processedData].topAgents": (a, b)=>b.connected - a.connected
+                }["TeamDetails.useMemo[processedData].topAgents"]).slice(0, 3);
+                return {
+                    memberStats: stats,
+                    summary: {
+                        totalCalls: totalCallsAll,
+                        deals: totalDealsAll,
+                        revenue: totalRevenueSum,
+                        avgConnectRate: totalCallsAll ? (totalConnectedAll / totalCallsAll * 100).toFixed(1) : "0.0"
+                    },
+                    charts: {
+                        outcome: outcomeData,
+                        hourly: hourlyData,
+                        dailyTrend: dailyTrendData,
+                        disposition: dispositionData
+                    },
+                    topAgents
+                };
+            } catch (e) {
+                console.error("Error in processedData calculation:", e);
+                return {
+                    memberStats: emptyStats,
+                    summary: {
+                        totalCalls: 0,
+                        deals: 0,
+                        revenue: 0,
+                        avgConnectRate: 0
+                    },
+                    charts: {
+                        outcome: [],
+                        hourly: [],
+                        dailyTrend: [],
+                        disposition: []
+                    },
+                    topAgents: []
+                };
+            }
+        }
+    }["TeamDetails.useMemo[processedData]"], [
+        members,
+        rawLogs,
+        rawCustomers,
+        rawSyncMeta,
+        rawSessions
+    ]);
+    const formatTime = (dateStr)=>{
+        if (!dateStr) return "Never";
+        const d = new Date(dateStr);
+        return d.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+    if (loading && !team || loading && members.length === 0 && team) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex h-[80vh] items-center justify-center",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex flex-col items-center gap-4",
                     children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                            className: "text-xl sm:text-2xl md:text-3xl font-bold",
-                            style: {
-                                color: "#263238",
-                                fontFamily: "'Poppins', sans-serif"
-                            },
-                            children: "Follow Up Scheduler"
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "animate-spin rounded-full h-12 w-12 border-4 border-[#4b33e8] border-t-transparent"
                         }, void 0, false, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 175,
-                            columnNumber: 15
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 514,
+                            columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-sm text-gray-500 mt-1",
-                            style: {
-                                fontFamily: "'Roboto', sans-serif"
-                            },
-                            children: "Manage upcoming calls and overdue tasks spanning all your campaigns."
+                            className: "text-sm font-medium text-gray-400",
+                            children: "Loading team analytics..."
                         }, void 0, false, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 178,
-                            columnNumber: 15
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 174,
-                    columnNumber: 13
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-8",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md h-40",
-                            style: {
-                                backgroundColor: "white"
-                            },
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0",
-                                    style: {
-                                        background: "radial-gradient(circle at top right, rgba(75, 51, 232, 0.08), transparent 60%)"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 190,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-indigo-100/30 blur-2xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 197,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-indigo-200/20 blur-xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 198,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-indigo-300/15 blur-lg"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 199,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -right-2 -bottom-2 opacity-5",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-calendar-clock text-5xl sm:text-6xl",
-                                        style: {
-                                            color: "#4b33e8"
-                                        }
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 201,
-                                        columnNumber: 21
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 200,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0 opacity-[0.03]",
-                                    style: {
-                                        backgroundImage: "radial-gradient(circle, #4b33e8 1px, transparent 1px)",
-                                        backgroundSize: "20px 20px"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 206,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "relative flex flex-col h-full z-10",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-start justify-between mb-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm font-medium",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Total Follow Ups"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 216,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl",
-                                                    style: {
-                                                        backgroundColor: "transparent"
-                                                    },
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi flex fi-rr-calendar-clock text-lg sm:text-xl",
-                                                        style: {
-                                                            color: "#4b33e8"
-                                                        }
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 231,
-                                                        columnNumber: 25
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 225,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 215,
-                                            columnNumber: 21
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "mt-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-3xl sm:text-4xl font-semibold",
-                                                    style: {
-                                                        color: "#263238",
-                                                        fontFamily: "'Poppins', sans-serif"
-                                                    },
-                                                    children: stats.total
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 238,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm mt-1",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Active Callbacks"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 247,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 237,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 214,
-                                    columnNumber: 19
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 186,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md h-40",
-                            style: {
-                                backgroundColor: "white"
-                            },
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0",
-                                    style: {
-                                        background: "radial-gradient(circle at top right, rgba(239, 68, 68, 0.08), transparent 60%)"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 265,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-red-100/30 blur-2xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 272,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-red-200/20 blur-xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 273,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-red-300/15 blur-lg"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 274,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -right-2 -bottom-2 opacity-5",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-time-past text-5xl sm:text-6xl",
-                                        style: {
-                                            color: "#ef4444"
-                                        }
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 276,
-                                        columnNumber: 21
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 275,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0 opacity-[0.03]",
-                                    style: {
-                                        backgroundImage: "radial-gradient(circle, #ef4444 1px, transparent 1px)",
-                                        backgroundSize: "20px 20px"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 281,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "relative flex flex-col h-full z-10",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-start justify-between mb-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm font-medium",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Overdue"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 291,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl",
-                                                    style: {
-                                                        backgroundColor: "transparent"
-                                                    },
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi flex fi-rr-time-past text-lg sm:text-xl",
-                                                        style: {
-                                                            color: "#ef4444"
-                                                        }
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 306,
-                                                        columnNumber: 25
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 300,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 290,
-                                            columnNumber: 21
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "mt-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-3xl sm:text-4xl font-semibold",
-                                                    style: {
-                                                        color: "#263238",
-                                                        fontFamily: "'Poppins', sans-serif"
-                                                    },
-                                                    children: stats.overdue
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 313,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm mt-1",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Action Required"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 322,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 312,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 289,
-                                    columnNumber: 19
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 261,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md h-40",
-                            style: {
-                                backgroundColor: "white"
-                            },
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0",
-                                    style: {
-                                        background: "radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 60%)"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 340,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-blue-100/30 blur-2xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 347,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-blue-200/20 blur-xl"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 348,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-blue-300/15 blur-lg"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 349,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute -right-2 -bottom-2 opacity-5",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-calendar-lines text-5xl sm:text-6xl",
-                                        style: {
-                                            color: "#3b82f6"
-                                        }
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 351,
-                                        columnNumber: 21
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 350,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute inset-0 opacity-[0.03]",
-                                    style: {
-                                        backgroundImage: "radial-gradient(circle, #3b82f6 1px, transparent 1px)",
-                                        backgroundSize: "20px 20px"
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 356,
-                                    columnNumber: 19
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "relative flex flex-col h-full z-10",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-start justify-between mb-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm font-medium",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Upcoming"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 366,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl",
-                                                    style: {
-                                                        backgroundColor: "transparent"
-                                                    },
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi flex fi-rr-calendar-lines text-lg sm:text-xl",
-                                                        style: {
-                                                            color: "#3b82f6"
-                                                        }
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 381,
-                                                        columnNumber: 25
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 375,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 365,
-                                            columnNumber: 21
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "mt-auto",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-3xl sm:text-4xl font-semibold",
-                                                    style: {
-                                                        color: "#263238",
-                                                        fontFamily: "'Poppins', sans-serif"
-                                                    },
-                                                    children: stats.upcoming
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 388,
-                                                    columnNumber: 23
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-xs sm:text-sm mt-1",
-                                                    style: {
-                                                        color: "#787E9D",
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Scheduled for Later"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 397,
-                                                    columnNumber: 23
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 387,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 364,
-                                    columnNumber: 19
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 336,
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 515,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
-                    fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 184,
+                    fileName: "[project]/pages/portal/team/[id].tsx",
+                    lineNumber: 513,
                     columnNumber: 13
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm",
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/pages/portal/team/[id].tsx",
+                lineNumber: 512,
+                columnNumber: 9
+            }, this)
+        }, void 0, false);
+    }
+    if (error || !team) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex h-[80vh] items-center justify-center",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex flex-col items-center gap-6 max-w-md text-center px-6",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "mb-4 sm:hidden",
+                            className: "w-20 h-20 rounded-full bg-red-50 flex items-center justify-center text-red-500 text-3xl",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                className: "fi fi-rr-exclamation"
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                lineNumber: 528,
+                                columnNumber: 21
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 527,
+                            columnNumber: 17
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                    className: "text-lg font-bold mb-1",
-                                    style: {
-                                        color: "rgb(38, 50, 56)",
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
-                                    children: "Scheduled Leads"
+                                    className: "text-xl font-bold text-gray-800 mb-2",
+                                    children: error || "Team Not Found"
                                 }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 416,
-                                    columnNumber: 21
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 531,
+                                    columnNumber: 20
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-xs",
-                                    style: {
-                                        color: "rgb(120, 126, 157)",
-                                        fontFamily: "'Roboto', sans-serif"
-                                    },
-                                    children: "Manage upcoming and overdue calls"
+                                    className: "text-gray-500 text-sm",
+                                    children: error ? "There was a problem loading the data." : "The requested team could not be found or you don't have permission to view it."
                                 }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 419,
-                                    columnNumber: 21
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 532,
+                                    columnNumber: 20
                                 }, this)
                             ]
                         }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 415,
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 530,
                             columnNumber: 17
                         }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>router.push('/team'),
+                            className: "px-6 py-2 bg-[#4b33e8] text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-100",
+                            children: "Back to Teams"
+                        }, void 0, false, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 536,
+                            columnNumber: 17
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/pages/portal/team/[id].tsx",
+                    lineNumber: 526,
+                    columnNumber: 13
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/pages/portal/team/[id].tsx",
+                lineNumber: 525,
+                columnNumber: 9
+            }, this)
+        }, void 0, false);
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$head$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("title", {
+                    children: [
+                        team?.name || 'Team Details',
+                        " • TFC Nexus"
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/pages/portal/team/[id].tsx",
+                    lineNumber: 551,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/pages/portal/team/[id].tsx",
+                lineNumber: 550,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex-1 flex flex-col w-full min-w-0 font-poppins",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl",
+                    children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "mb-4 sm:hidden space-y-3",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex items-center gap-2",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex-1 relative",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 428,
-                                                    columnNumber: 29
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                    placeholder: "Search leads...",
-                                                    className: "w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent",
-                                                    type: "text",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    value: searchQuery,
-                                                    onChange: (e)=>setSearchQuery(e.target.value)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 429,
-                                                    columnNumber: 29
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 427,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>setShowConfig(!showConfig),
-                                            className: `h-9 w-9 border border-gray-300 rounded-lg transition-colors flex items-center justify-center flex-shrink-0 ${showConfig ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white text-gray-600'}`,
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: "fi flex fi-rr-settings-sliders text-sm"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 442,
-                                                columnNumber: 29
-                                            }, this)
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 438,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>fetchLeads(),
-                                            disabled: loading,
-                                            className: "h-9 w-9 border border-gray-300 rounded-lg bg-white flex items-center justify-center flex-shrink-0",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: `fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 449,
-                                                columnNumber: 29
-                                            }, this)
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 444,
-                                            columnNumber: 25
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 426,
-                                    columnNumber: 22
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex bg-gray-100 rounded-lg p-1",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>setViewMode('table'),
-                                            className: `flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`,
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-apps-sort"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 458,
-                                                    columnNumber: 29
-                                                }, this),
-                                                "Table"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 454,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>setViewMode('kanban'),
-                                            className: `flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`,
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-layout-fluid flex"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 465,
-                                                    columnNumber: 29
-                                                }, this),
-                                                "Kanban"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 461,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>setViewMode('calendar'),
-                                            className: `flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`,
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-calendar"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 472,
-                                                    columnNumber: 29
-                                                }, this),
-                                                "Calendar"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 468,
-                                            columnNumber: 25
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 453,
-                                    columnNumber: 22
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 425,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "hidden sm:flex sm:items-center sm:justify-between mb-6",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                            className: "text-xl font-bold mb-1",
-                                            style: {
-                                                color: "rgb(38, 50, 56)",
-                                                fontFamily: "'Poppins', sans-serif"
-                                            },
-                                            children: "Scheduled Leads"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 481,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                            className: "text-sm",
-                                            style: {
-                                                color: "rgb(120, 126, 157)",
-                                                fontFamily: "'Roboto', sans-serif"
-                                            },
-                                            children: "Manage upcoming and overdue calls"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 484,
-                                            columnNumber: 25
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 480,
-                                    columnNumber: 21
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex items-center gap-3",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex bg-gray-100 rounded-lg p-1 mr-2",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>setViewMode('table'),
-                                                    className: `px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`,
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-apps-sort mr-2"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 494,
-                                                            columnNumber: 33
-                                                        }, this),
-                                                        "Table"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 490,
-                                                    columnNumber: 29
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>setViewMode('kanban'),
-                                                    className: `px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'kanban' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`,
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-layout-fluid flex mr-2"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 501,
-                                                            columnNumber: 33
-                                                        }, this),
-                                                        "Kanban"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 497,
-                                                    columnNumber: 29
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>setViewMode('calendar'),
-                                                    className: `px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`,
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-calendar mr-2"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 508,
-                                                            columnNumber: 33
-                                                        }, this),
-                                                        "Calendar"
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 504,
-                                                    columnNumber: 29
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 489,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "relative w-64",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 514,
-                                                    columnNumber: 29
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                    placeholder: "Search leads...",
-                                                    className: "w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all",
-                                                    type: "text",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    value: searchQuery,
-                                                    onChange: (e)=>setSearchQuery(e.target.value)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 515,
-                                                    columnNumber: 29
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 513,
-                                            columnNumber: 25
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>setShowConfig(!showConfig),
-                                            className: `h-10 px-3 border border-gray-300 rounded-lg transition-colors flex items-center justify-center ${showConfig ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white hover:bg-gray-50 text-gray-600'}`,
-                                            title: "Kanban Settings",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: "fi flex fi-rr-settings-sliders text-sm"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 530,
-                                                columnNumber: 29
-                                            }, this)
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 525,
-                                            columnNumber: 26
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>fetchLeads(),
-                                            disabled: loading,
-                                            className: `h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center ${loading ? 'opacity-50 cursor-not-allowed' : ''}`,
-                                            title: "Refresh Data",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: `fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 538,
-                                                columnNumber: 29
-                                            }, this)
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 532,
-                                            columnNumber: 25
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 488,
-                                    columnNumber: 21
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 479,
-                            columnNumber: 17
-                        }, this),
-                        showConfig && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl relative",
+                            className: "mb-6",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>setShowConfig(false),
-                                    className: "absolute top-4 right-4 text-gray-400 hover:text-gray-600",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi fi-rr-cross-small"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 547,
-                                        columnNumber: 30
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 546,
-                                    columnNumber: 25
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-sm font-bold text-indigo-900 mb-4 flex items-center gap-2",
+                                    onClick: ()=>router.push('/team'),
+                                    className: "flex items-center gap-2 text-sm text-gray-500 hover:text-[#4b33e8] mb-4 transition-colors",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: "fi fi-rr-settings text-indigo-600"
+                                            className: "fi flex fi-rr-arrow-left"
                                         }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 550,
-                                            columnNumber: 29
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 563,
+                                            columnNumber: 21
                                         }, this),
-                                        "Configure Kanban Pipelines"
+                                        " Back to Teams"
                                     ]
                                 }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 549,
-                                    columnNumber: 25
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 559,
+                                    columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex flex-col gap-4 mb-4",
+                                    className: "flex flex-col md:flex-row md:items-end justify-between gap-4",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "w-full",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[10px] font-bold text-indigo-900 uppercase tracking-wider mb-1",
-                                                    children: editingPipelineId ? 'Update Pipeline Name' : 'Pipeline Name'
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 556,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                    className: "w-full px-3 text-gray-800 py-2 text-sm border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500",
-                                                    placeholder: "e.g. Interested & Language",
-                                                    value: newPipeline.name,
-                                                    onChange: (e)=>setNewPipeline({
-                                                            ...newPipeline,
-                                                            name: e.target.value
-                                                        })
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 559,
-                                                    columnNumber: 33
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 555,
-                                            columnNumber: 29
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "grid grid-cols-1 md:grid-cols-2 gap-4",
+                                            className: "text-left",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "p-3 bg-white border border-indigo-100 rounded-lg",
+                                                    className: "flex items-center gap-3 mb-2",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                            className: "block text-[10px] font-bold text-indigo-900 uppercase tracking-wider mb-2",
-                                                            children: "Dispositions (Multiple)"
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                                            className: "text-2xl font-bold text-gray-800",
+                                                            style: {
+                                                                fontFamily: "'Poppins', sans-serif"
+                                                            },
+                                                            children: team?.name || 'Loading Team...'
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
                                                             lineNumber: 569,
-                                                            columnNumber: 37
+                                                            columnNumber: 28
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-wrap gap-1.5 max-h-32 overflow-y-auto",
-                                                            children: Object.keys(dispositionHierarchy).map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>setNewPipeline({
-                                                                            ...newPipeline,
-                                                                            dispositions: toggleSelection(newPipeline.dispositions, d)
-                                                                        }),
-                                                                    className: `px-2 py-1 rounded text-[10px] font-bold transition-all border ${newPipeline.dispositions.includes(d) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'}`,
-                                                                    children: d
-                                                                }, d, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 572,
-                                                                    columnNumber: 45
-                                                                }, this))
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: `px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${team?.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`,
+                                                            children: team?.is_active ? 'Active' : 'Inactive'
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 570,
-                                                            columnNumber: 37
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 572,
+                                                            columnNumber: 28
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
                                                     lineNumber: 568,
-                                                    columnNumber: 33
+                                                    columnNumber: 25
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "p-3 bg-white border border-indigo-100 rounded-lg",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                            className: "block text-[10px] font-bold text-indigo-900 uppercase tracking-wider mb-2",
-                                                            children: "Sub-Dispositions (Multiple)"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 584,
-                                                            columnNumber: 37
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-wrap gap-1.5 max-h-32 overflow-y-auto",
-                                                            children: Array.from(new Set(newPipeline.dispositions.flatMap((d)=>dispositionHierarchy[d] || []))).length > 0 ? Array.from(new Set(newPipeline.dispositions.flatMap((d)=>dispositionHierarchy[d] || []))).map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>setNewPipeline({
-                                                                            ...newPipeline,
-                                                                            sub_dispositions: toggleSelection(newPipeline.sub_dispositions, s)
-                                                                        }),
-                                                                    className: `px-2 py-1 rounded text-[10px] font-bold transition-all border ${newPipeline.sub_dispositions.includes(s) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'}`,
-                                                                    children: s
-                                                                }, s, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 589,
-                                                                    columnNumber: 49
-                                                                }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-[10px] text-gray-400 italic",
-                                                                children: "Select disposition first"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 598,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 585,
-                                                            columnNumber: 37
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 583,
-                                                    columnNumber: 33
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 567,
-                                            columnNumber: 29
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "p-3 bg-white border border-indigo-100 rounded-lg",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[10px] font-bold text-indigo-900 uppercase tracking-wider mb-2",
-                                                    children: "Outcomes (Multiple)"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 605,
-                                                    columnNumber: 33
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex flex-wrap gap-1.5 max-h-32 overflow-y-auto custom-scrollbar",
-                                                    children: [
-                                                        newPipeline.sub_dispositions.length > 0 ? userOutcomes && userOutcomes.length > 0 ? userOutcomes.filter((out)=>newPipeline.sub_dispositions.includes(out.parent_category)).map((out)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>setNewPipeline({
-                                                                        ...newPipeline,
-                                                                        outcomes: toggleSelection(newPipeline.outcomes || [], out.outcome_label)
-                                                                    }),
-                                                                className: `px-2 py-1 rounded text-[10px] font-bold transition-all border ${newPipeline.outcomes?.includes(out.outcome_label) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'}`,
-                                                                children: [
-                                                                    out.outcome_label,
-                                                                    " ",
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "opacity-60 text-[9px] lowercase",
-                                                                        children: [
-                                                                            "(",
-                                                                            out.parent_category,
-                                                                            ")"
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 617,
-                                                                        columnNumber: 73
-                                                                    }, this)
-                                                                ]
-                                                            }, out.id, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 612,
-                                                                columnNumber: 49
-                                                            }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[10px] text-gray-400 italic",
-                                                            children: "No custom outcomes found. Add them from the calling page."
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 621,
-                                                            columnNumber: 45
-                                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[10px] text-gray-400 italic",
-                                                            children: "Select sub-disposition first to view outcomes"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 624,
-                                                            columnNumber: 41
-                                                        }, this),
-                                                        newPipeline.sub_dispositions.length > 0 && userOutcomes.filter((out)=>newPipeline.sub_dispositions.includes(out.parent_category)).length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[10px] text-gray-400 italic w-full",
-                                                            children: "No outcomes found for selected sub-dispositions."
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 628,
-                                                            columnNumber: 42
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 606,
-                                                    columnNumber: 33
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 604,
-                                            columnNumber: 29
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex justify-end",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: addPipeline,
-                                                    className: "h-10 px-6 bg-indigo-600 text-white rounded-lg text-[11px] font-bold hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-gray-500 text-sm flex items-center gap-2",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: editingPipelineId ? "fi fi-rr-check" : "fi fi-rr-plus"
+                                                            className: "fi flex fi-rr-building"
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 638,
-                                                            columnNumber: 37
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 577,
+                                                            columnNumber: 29
                                                         }, this),
-                                                        editingPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+                                                        " ",
+                                                        getSingle(team?.organization)?.company_name || 'No Organization',
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "w-1 h-1 rounded-full bg-gray-300"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 578,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: [
+                                                                "Leader: ",
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "font-semibold text-gray-700",
+                                                                    children: getSingle(team?.leader)?.user_name || 'N/A'
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 579,
+                                                                    columnNumber: 43
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 579,
+                                                            columnNumber: 29
+                                                        }, this)
                                                     ]
                                                 }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 634,
-                                                    columnNumber: 33
-                                                }, this),
-                                                editingPipelineId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>{
-                                                        setEditingPipelineId(null);
-                                                        setNewPipeline({
-                                                            name: '',
-                                                            dispositions: [],
-                                                            sub_dispositions: [],
-                                                            outcomes: []
-                                                        });
-                                                        setShowConfig(false);
-                                                    },
-                                                    className: "h-10 px-4 text-gray-500 text-[11px] font-bold hover:text-gray-700",
-                                                    children: "Cancel"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 642,
-                                                    columnNumber: 37
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 576,
+                                                    columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 633,
-                                            columnNumber: 29
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 567,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-3",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: dateFilter,
+                                                    onChange: (e)=>setDateFilter(e.target.value),
+                                                    className: "bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]/20 font-medium cursor-pointer",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "today",
+                                                            children: "Today"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 589,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "yesterday",
+                                                            children: "Yesterday"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 590,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "this_week",
+                                                            children: "This Week"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 591,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "this_month",
+                                                            children: "This Month"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 592,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "all_time",
+                                                            children: "All Time"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 593,
+                                                            columnNumber: 29
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 584,
+                                                    columnNumber: 25
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    className: "bg-[#4b33e8] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:shadow-xl transition-all",
+                                                    children: "Download Report"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 595,
+                                                    columnNumber: 25
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 583,
+                                            columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 554,
-                                    columnNumber: 25
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex flex-wrap gap-2",
-                                    children: pipelines.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-center gap-2 px-3 py-1.5 bg-white border border-indigo-100 rounded-full text-xs font-medium text-indigo-700 shadow-sm",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: p.name
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 659,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[10px] opacity-40 px-1 bg-indigo-50 rounded",
-                                                    children: [
-                                                        p.filters.dispositions.length > 0 ? p.filters.dispositions.join(', ') : 'Any',
-                                                        p.filters.sub_dispositions.length > 0 ? ` > ${p.filters.sub_dispositions.join(', ')}` : '',
-                                                        p.filters.outcomes && p.filters.outcomes.length > 0 ? ` [${p.filters.outcomes.join(', ')}]` : ''
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 660,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                    onClick: ()=>removePipeline(p.id),
-                                                    className: "hover:text-red-500 transition-colors",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi fi-rr-cross-circle"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 666,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 665,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, p.id, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 658,
-                                            columnNumber: 33
-                                        }, this))
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 656,
-                                    columnNumber: 25
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 566,
+                                    columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 545,
-                            columnNumber: 21
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 558,
+                            columnNumber: 13
                         }, this),
-                        error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center gap-3",
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "grid grid-cols-2 md:grid-cols-5 gap-4 mb-8",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                    className: "fi fi-rr-info"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 676,
-                                    columnNumber: 25
-                                }, this),
-                                error
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 675,
-                            columnNumber: 21
-                        }, this),
-                        loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex flex-col items-center justify-center py-20",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-[#4b33e8] mb-4"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 683,
-                                    columnNumber: 25
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-xs text-gray-400 font-bold",
-                                    children: "Syncing schedule..."
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 684,
-                                    columnNumber: 25
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 682,
-                            columnNumber: 21
-                        }, this) : filteredLeads.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex flex-col items-center justify-center py-16 text-center",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi fi-rr-calendar-check text-2xl text-gray-300"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 689,
-                                        columnNumber: 29
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 688,
-                                    columnNumber: 25
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-gray-500 font-bold text-sm mb-1",
-                                    children: "All Caught Up!"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 691,
-                                    columnNumber: 25
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-xs text-gray-400",
-                                    children: "You have no pending follow-up calls matching your criteria."
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 692,
-                                    columnNumber: 25
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 687,
-                            columnNumber: 21
-                        }, this) : viewMode === 'table' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "overflow-x-auto -mx-2 sm:mx-0",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
-                                className: "w-full text-left",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-                                            className: "border-b border-gray-50",
+                                {
+                                    label: 'Total Members',
+                                    value: members.length,
+                                    icon: 'fi-rr-users-alt',
+                                    color: 'text-blue-600',
+                                    bg: 'bg-blue-50'
+                                },
+                                {
+                                    label: 'Total Calls',
+                                    value: processedData.summary.totalCalls,
+                                    icon: 'fi-rr-phone-call',
+                                    color: 'text-indigo-600',
+                                    bg: 'bg-indigo-50'
+                                },
+                                {
+                                    label: 'Deals Closed',
+                                    value: processedData.summary.deals,
+                                    icon: 'fi-rr-trophy',
+                                    color: 'text-yellow-600',
+                                    bg: 'bg-yellow-50'
+                                },
+                                {
+                                    label: 'Revenue',
+                                    value: `₹${processedData.summary.revenue.toLocaleString()}`,
+                                    icon: 'fi-rr-dollar',
+                                    color: 'text-emerald-600',
+                                    bg: 'bg-emerald-50'
+                                },
+                                {
+                                    label: 'Avg Connect Rate',
+                                    value: `${processedData.summary.avgConnectRate}%`,
+                                    icon: 'fi-rr-chart-histogram',
+                                    color: 'text-purple-600',
+                                    bg: 'bg-purple-50'
+                                }
+                            ].map((stat, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 text-left",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: `w-12 h-12 rounded-xl flex items-center justify-center text-xl ${stat.bg} ${stat.color}`,
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: `fi ${stat.icon}`
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 613,
+                                                columnNumber: 29
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 612,
+                                            columnNumber: 25
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 w-10",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center justify-center",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                            className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer",
-                                                            type: "checkbox"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 702,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 701,
-                                                        columnNumber: 41
-                                                    }, this)
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xs text-gray-500 font-medium uppercase tracking-wide",
+                                                    children: stat.label
                                                 }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 700,
-                                                    columnNumber: 37
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 616,
+                                                    columnNumber: 29
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Customer Name"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xl font-bold text-gray-800",
+                                                    children: stat.value
                                                 }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 705,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Contact Info"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 706,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center",
-                                                    children: "Status"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 707,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Disposition"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 708,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Organization"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 709,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Campaign"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 710,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Scheduled Time"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 711,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest",
-                                                    children: "Assigned To"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 712,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                    className: "px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right",
-                                                    children: "Action"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 713,
-                                                    columnNumber: 37
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 617,
+                                                    columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 699,
-                                            columnNumber: 33
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 615,
+                                            columnNumber: 25
                                         }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 698,
-                                        columnNumber: 29
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
-                                        className: "divide-y divide-gray-50",
-                                        children: filteredLeads.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-                                                className: "group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0",
-                                                onClick: ()=>router.push(`/campaign/${lead.campaign_id}/${lead.id}`),
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        onClick: (e)=>e.stopPropagation(),
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex items-center justify-center",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer",
-                                                                type: "checkbox"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 721,
-                                                                columnNumber: 49
-                                                            }, this)
+                                    ]
+                                }, i, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 611,
+                                    columnNumber: 21
+                                }, this))
+                        }, void 0, false, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 603,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col text-left",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-gray-800 font-bold mb-4",
+                                            children: "Call Outcomes"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 627,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex-1 min-h-[250px]",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$client$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
+                                                width: "100%",
+                                                height: "100%",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$PieChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["PieChart"], {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$polar$2f$Pie$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Pie"], {
+                                                            data: processedData.charts.outcome,
+                                                            cx: "50%",
+                                                            cy: "50%",
+                                                            innerRadius: 60,
+                                                            outerRadius: 80,
+                                                            fill: "#8884d8",
+                                                            paddingAngle: 5,
+                                                            dataKey: "value",
+                                                            children: processedData.charts.outcome.map((entry, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Cell$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Cell"], {
+                                                                    fill: COLORS[index % COLORS.length]
+                                                                }, `cell-${index}`, false, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 642,
+                                                                    columnNumber: 41
+                                                                }, this))
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 720,
-                                                            columnNumber: 45
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 631,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {}, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 645,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Legend"], {}, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 646,
+                                                            columnNumber: 33
                                                         }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 719,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex items-center gap-3",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-indigo-100 uppercase",
-                                                                    children: lead.customer_name?.charAt(0) || 'C'
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 726,
-                                                                    columnNumber: 49
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-xs font-medium text-gray-800",
-                                                                    style: {
-                                                                        fontFamily: "'Poppins', sans-serif",
-                                                                        color: "rgb(38, 50, 56)"
-                                                                    },
-                                                                    children: lead.customer_name || 'Anonymous'
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 729,
-                                                                    columnNumber: 49
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 725,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 724,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-col",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-xs font-medium text-gray-700 leading-none mb-1",
-                                                                    children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 736,
-                                                                    columnNumber: 49
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[9px] text-gray-400 font-medium uppercase tracking-tighter",
-                                                                    children: "Verified Lead"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 737,
-                                                                    columnNumber: 49
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 735,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 734,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4 text-center",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex justify-center",
-                                                            children: lead.isOverdue ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-100",
-                                                                children: "Overdue"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 743,
-                                                                columnNumber: 53
-                                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 bg-blue-50 text-blue-600 border border-blue-100",
-                                                                children: "Upcoming"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 747,
-                                                                columnNumber: 53
-                                                            }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 630,
+                                                    columnNumber: 29
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 629,
+                                                columnNumber: 25
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 628,
+                                            columnNumber: 21
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 626,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2 text-left",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-gray-800 font-bold mb-4",
+                                            children: "Hourly Activity"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 654,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex-1 min-h-[250px]",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$client$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
+                                                width: "100%",
+                                                height: "100%",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["BarChart"], {
+                                                    data: processedData.charts.hourly,
+                                                    margin: {
+                                                        top: 5,
+                                                        right: 30,
+                                                        left: 20,
+                                                        bottom: 5
+                                                    },
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$client$5d$__$28$ecmascript$29$__["CartesianGrid"], {
+                                                            strokeDasharray: "3 3",
+                                                            vertical: false
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 741,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 740,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-[11px] font-bold text-indigo-600 uppercase tracking-tight",
-                                                            children: lead.disposition || 'Call Back'
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 666,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
+                                                            dataKey: "name",
+                                                            axisLine: false,
+                                                            tickLine: false,
+                                                            tick: {
+                                                                fontSize: 12,
+                                                                fill: '#9ca3af'
+                                                            }
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 754,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 753,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex items-center gap-2",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi flex fi-rr-building text-[#4b33e8] text-xs"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 760,
-                                                                    columnNumber: 49
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[12px] font-medium text-gray-700",
-                                                                    style: {
-                                                                        fontFamily: "'Roboto', sans-serif"
-                                                                    },
-                                                                    children: lead.organization_name
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 761,
-                                                                    columnNumber: 49
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 759,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 758,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wide",
-                                                            children: lead.campaign_name
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 667,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
+                                                            axisLine: false,
+                                                            tickLine: false,
+                                                            tick: {
+                                                                fontSize: 12,
+                                                                fill: '#9ca3af'
+                                                            }
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 767,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 766,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-col",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: `text-xs font-medium leading-none mb-1 ${lead.isOverdue ? 'text-red-500' : 'text-gray-700'}`,
-                                                                    children: formatDate(lead.next_called_at)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 773,
-                                                                    columnNumber: 49
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[9px] text-gray-400 font-medium uppercase tracking-tighter",
-                                                                    children: "Scheduled"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 776,
-                                                                    columnNumber: 49
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 772,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 771,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-xs font-medium text-gray-600",
-                                                            children: lead.assigned_name || 'Unassigned'
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 668,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
+                                                            cursor: {
+                                                                fill: '#f3f4f6'
+                                                            },
+                                                            contentStyle: {
+                                                                borderRadius: '12px',
+                                                                border: 'none',
+                                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                            }
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 780,
-                                                            columnNumber: 45
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 669,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Bar"], {
+                                                            dataKey: "count",
+                                                            fill: "#4b33e8",
+                                                            radius: [
+                                                                4,
+                                                                4,
+                                                                0,
+                                                                0
+                                                            ],
+                                                            barSize: 40
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 670,
+                                                            columnNumber: 33
                                                         }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 779,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                        className: "px-4 py-4 text-right",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex items-center justify-end gap-2",
-                                                            onClick: (e)=>e.stopPropagation(),
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>router.push(`/campaign/${lead.campaign_id}/${lead.id}`),
-                                                                className: "inline-flex items-center gap-2 px-4 py-1.5 bg-[#4b33e8] text-white rounded-lg text-[10px] font-bold shadow-md hover:bg-[#3f2bc2] transition-colors",
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 657,
+                                                    columnNumber: 29
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 656,
+                                                columnNumber: 25
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 655,
+                                            columnNumber: 21
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 653,
+                                    columnNumber: 17
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 624,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:col-span-2 text-left",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-gray-800 font-bold mb-4",
+                                            children: "Daily Call Trend"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 681,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex-1 min-h-[250px]",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$client$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
+                                                width: "100%",
+                                                height: "100%",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$AreaChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["AreaChart"], {
+                                                    data: processedData.charts.dailyTrend,
+                                                    margin: {
+                                                        top: 10,
+                                                        right: 30,
+                                                        left: 0,
+                                                        bottom: 0
+                                                    },
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("defs", {
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("linearGradient", {
+                                                                id: "colorCalls",
+                                                                x1: "0",
+                                                                y1: "0",
+                                                                x2: "0",
+                                                                y2: "1",
                                                                 children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-phone-call text-xs"
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("stop", {
+                                                                        offset: "5%",
+                                                                        stopColor: "#4b33e8",
+                                                                        stopOpacity: 0.8
                                                                     }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 790,
-                                                                        columnNumber: 53
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 695,
+                                                                        columnNumber: 41
                                                                     }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        children: "Call"
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("stop", {
+                                                                        offset: "95%",
+                                                                        stopColor: "#4b33e8",
+                                                                        stopOpacity: 0
                                                                     }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 791,
-                                                                        columnNumber: 53
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 696,
+                                                                        columnNumber: 41
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 786,
-                                                                columnNumber: 49
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 694,
+                                                                columnNumber: 37
                                                             }, this)
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 785,
-                                                            columnNumber: 45
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 693,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
+                                                            dataKey: "name",
+                                                            axisLine: false,
+                                                            tickLine: false,
+                                                            tick: {
+                                                                fontSize: 12,
+                                                                fill: '#9ca3af'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 699,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
+                                                            axisLine: false,
+                                                            tickLine: false,
+                                                            tick: {
+                                                                fontSize: 12,
+                                                                fill: '#9ca3af'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 700,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$client$5d$__$28$ecmascript$29$__["CartesianGrid"], {
+                                                            strokeDasharray: "3 3",
+                                                            vertical: false
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 701,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
+                                                            cursor: {
+                                                                fill: 'transparent'
+                                                            },
+                                                            contentStyle: {
+                                                                borderRadius: '12px',
+                                                                border: 'none',
+                                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 702,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Area"], {
+                                                            type: "monotone",
+                                                            dataKey: "count",
+                                                            stroke: "#4b33e8",
+                                                            fillOpacity: 1,
+                                                            fill: "url(#colorCalls)"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 703,
+                                                            columnNumber: 33
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 684,
+                                                    columnNumber: 29
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 683,
+                                                columnNumber: 25
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 682,
+                                            columnNumber: 21
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 680,
+                                    columnNumber: 18
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col text-left",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "text-gray-800 font-bold mb-4",
+                                            children: "Lead Status"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 711,
+                                            columnNumber: 21
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex-1 min-h-[250px]",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$client$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
+                                                width: "100%",
+                                                height: "100%",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["BarChart"], {
+                                                    layout: "vertical",
+                                                    data: processedData.charts.disposition,
+                                                    margin: {
+                                                        top: 5,
+                                                        right: 30,
+                                                        left: 40,
+                                                        bottom: 5
+                                                    },
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$client$5d$__$28$ecmascript$29$__["CartesianGrid"], {
+                                                            strokeDasharray: "3 3",
+                                                            horizontal: true,
+                                                            vertical: false
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 724,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
+                                                            type: "number",
+                                                            hide: true
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 725,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
+                                                            dataKey: "name",
+                                                            type: "category",
+                                                            width: 80,
+                                                            axisLine: false,
+                                                            tickLine: false,
+                                                            tick: {
+                                                                fontSize: 11,
+                                                                fill: '#4b5563'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 726,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
+                                                            cursor: {
+                                                                fill: '#f3f4f6'
+                                                            },
+                                                            contentStyle: {
+                                                                borderRadius: '12px',
+                                                                border: 'none',
+                                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                            }
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 727,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Bar"], {
+                                                            dataKey: "count",
+                                                            fill: "#10b981",
+                                                            radius: [
+                                                                0,
+                                                                4,
+                                                                4,
+                                                                0
+                                                            ],
+                                                            barSize: 20
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 728,
+                                                            columnNumber: 33
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 714,
+                                                    columnNumber: 29
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 713,
+                                                columnNumber: 25
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 712,
+                                            columnNumber: 22
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 710,
+                                    columnNumber: 17
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 678,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "mb-8 text-left",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                    className: "text-gray-800 font-bold mb-4 text-lg",
+                                    children: "Top Performers"
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 737,
+                                    columnNumber: 16
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 sm:grid-cols-3 gap-4",
+                                    children: [
+                                        processedData.topAgents.map((agent, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: `absolute top-0 right-0 p-2 font-bold text-6xl text-gray-100 -z-0 pointer-events-none select-none`,
+                                                        children: [
+                                                            "#",
+                                                            i + 1
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                        lineNumber: 741,
+                                                        columnNumber: 27
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "w-14 h-14 rounded-full border-2 border-[#4b33e8]/20 p-0.5 z-10 bg-white flex items-center justify-center overflow-hidden",
+                                                        children: agent.profilePic ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                            src: agent.profilePic,
+                                                            className: "w-full h-full rounded-full object-cover",
+                                                            alt: agent.name
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 746,
+                                                            columnNumber: 33
+                                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                            className: "fi flex fi-rr-user text-2xl text-gray-400"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 748,
+                                                            columnNumber: 33
                                                         }, this)
                                                     }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 784,
-                                                        columnNumber: 41
+                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                        lineNumber: 744,
+                                                        columnNumber: 27
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "z-10",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "font-bold text-gray-800",
+                                                                children: agent.name
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 752,
+                                                                columnNumber: 31
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "text-sm text-gray-500",
+                                                                children: [
+                                                                    agent.connected,
+                                                                    " Connected Calls"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 753,
+                                                                columnNumber: 31
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                        lineNumber: 751,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
-                                            }, lead.id, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 718,
-                                                columnNumber: 37
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 716,
-                                        columnNumber: 29
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 696,
-                                columnNumber: 25
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 695,
-                            columnNumber: 21
-                        }, this) : viewMode === 'kanban' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide min-h-[500px] snap-x",
-                            children: pipelines.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl py-20 text-gray-400",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi fi-rr-plus text-3xl mb-2"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 804,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm font-bold",
-                                        children: "No pipelines configured."
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 805,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-xs",
-                                        children: "Click the gear icon to add pipelines."
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 806,
-                                        columnNumber: 33
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 803,
-                                columnNumber: 29
-                            }, this) : pipelines.map((pipeline)=>{
-                                const leadsInPipeline = filteredLeads.filter((l)=>{
-                                    const matchDisp = pipeline.filters.dispositions.length === 0 || pipeline.filters.dispositions.includes(l.disposition);
-                                    const matchSub = pipeline.filters.sub_dispositions.length === 0 || l.sub_disposition && pipeline.filters.sub_dispositions.includes(l.sub_disposition);
-                                    const matchOutcome = !pipeline.filters.outcomes || pipeline.filters.outcomes.length === 0 || l.outcome && pipeline.filters.outcomes.includes(l.outcome);
-                                    return matchDisp && matchSub && matchOutcome;
-                                });
-                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex-shrink-0 w-[280px] sm:w-80 bg-gray-50/50 rounded-2xl p-3 border border-gray-100 flex flex-col h-full max-h-[700px] snap-center",
+                                            }, i, true, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 740,
+                                                columnNumber: 23
+                                            }, this)),
+                                        processedData.topAgents.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-gray-400 text-sm col-span-3",
+                                            children: "No data available for leaderboard."
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 757,
+                                            columnNumber: 60
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 738,
+                                    columnNumber: 16
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 736,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden text-left",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "px-6 py-4 border-b border-gray-100 flex justify-between items-center",
                                     children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "font-bold text-gray-800 text-lg",
+                                            children: "Member Performance"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 764,
+                                            columnNumber: 21
+                                        }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-center justify-between mb-4 px-1",
+                                            className: "flex items-center gap-4",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex items-center gap-2",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>fetchTeamData(),
+                                                    disabled: loading,
+                                                    className: "group flex items-center gap-2 px-2.5 py-1 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all border border-indigo-100",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: "text-sm font-bold text-slate-800 uppercase tracking-tighter",
-                                                            children: pipeline.name
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                            className: `fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 822,
-                                                            columnNumber: 49
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 771,
+                                                            columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "flex items-center justify-center w-5 h-5 rounded-full bg-white border border-gray-200 text-[10px] font-black text-indigo-600 shadow-sm",
-                                                            children: leadsInPipeline.length
+                                                            children: "Refresh"
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 823,
-                                                            columnNumber: 49
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 772,
+                                                            columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 821,
-                                                    columnNumber: 45
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 766,
+                                                    columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative",
+                                                    className: "flex gap-2 text-xs font-medium",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>setShowMenuId(showMenuId === pipeline.id ? null : pipeline.id),
-                                                            className: `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${showMenuId === pipeline.id ? 'bg-indigo-100 text-indigo-600' : 'text-gray-300 hover:text-indigo-600'}`,
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-menu-dots-vertical"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 832,
-                                                                columnNumber: 53
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 828,
-                                                            columnNumber: 49
-                                                        }, this),
-                                                        showMenuId === pipeline.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-[100] animate-in fade-in zoom-in duration-200",
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-md",
                                                             children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>startEdit(pipeline),
-                                                                    className: "w-full px-3 py-2 text-left text-[11px] font-bold text-slate-700 hover:bg-indigo-50 flex items-center gap-2 transition-colors",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-edit text-indigo-500"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 841,
-                                                                            columnNumber: 61
-                                                                        }, this),
-                                                                        "Edit Pipeline"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 837,
-                                                                    columnNumber: 57
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "h-px bg-gray-50 my-1"
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "w-2 h-2 rounded-full bg-green-500"
                                                                 }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 844,
-                                                                    columnNumber: 57
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 775,
+                                                                    columnNumber: 121
                                                                 }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    onClick: ()=>removePipeline(pipeline.id),
-                                                                    className: "w-full px-3 py-2 text-left text-[11px] font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-trash"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 849,
-                                                                            columnNumber: 61
-                                                                        }, this),
-                                                                        "Delete"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 845,
-                                                                    columnNumber: 57
-                                                                }, this)
+                                                                " Online"
                                                             ]
                                                         }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 836,
-                                                            columnNumber: 53
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 775,
+                                                            columnNumber: 29
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "flex items-center gap-1.5 px-2 py-1 bg-gray-50 text-gray-500 rounded-md",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "w-2 h-2 rounded-full bg-gray-400"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 776,
+                                                                    columnNumber: 119
+                                                                }, this),
+                                                                " Idle"
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 776,
+                                                            columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 827,
-                                                    columnNumber: 45
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 774,
+                                                    columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 820,
-                                            columnNumber: 41
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar",
-                                            children: leadsInPipeline.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex flex-col items-center justify-center py-10 opacity-30",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi fi-rr-box-open text-2xl mb-2"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 860,
-                                                        columnNumber: 54
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: "text-[10px] uppercase font-bold tracking-widest",
-                                                        children: "No leads"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 861,
-                                                        columnNumber: 54
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 859,
-                                                columnNumber: 49
-                                            }, this) : leadsInPipeline.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    onClick: ()=>router.push(`/campaign/${lead.campaign_id}/${lead.id}`),
-                                                    className: "bg-white p-2.5 rounded-xl shadow-sm border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group animate-fade-in relative overflow-hidden",
+                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                            lineNumber: 765,
+                                            columnNumber: 21
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 763,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "overflow-x-auto",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
+                                        className: "w-full text-left border-collapse",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                    className: "bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest",
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: `absolute left-0 top-0 bottom-0 w-1 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500 opacity-20'}`
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-4 py-3 font-bold",
+                                                            children: "Agent"
                                                         }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 871,
-                                                            columnNumber: 57
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 785,
+                                                            columnNumber: 33
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex items-start justify-between mb-1 ml-1",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "flex items-center gap-2",
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Last Active"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 786,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Status"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 787,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center text-indigo-500/80",
+                                                            children: "Follow Ups"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 788,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Talk Time"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 789,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Connected"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 790,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Avg Talk"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 791,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center",
+                                                            children: "Streak/Gap"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 792,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                            className: "px-4 py-3 font-bold text-right",
+                                                            children: "Last Call"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 793,
+                                                            columnNumber: 33
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 784,
+                                                    columnNumber: 29
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 783,
+                                                columnNumber: 25
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
+                                                className: "divide-y divide-gray-50",
+                                                children: members.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                        colSpan: 9,
+                                                        className: "px-6 py-8 text-center text-gray-500 text-sm",
+                                                        children: "No members in this team"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                        lineNumber: 799,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                    lineNumber: 798,
+                                                    columnNumber: 33
+                                                }, this) : members.map((member)=>{
+                                                    const mId = member.user_id;
+                                                    const statsMap = processedData.memberStats;
+                                                    const mStats = statsMap[mId] || {
+                                                        totalCalls: 0,
+                                                        connected: 0,
+                                                        connectedRate: 0,
+                                                        avgDuration: '0m 0s',
+                                                        deals: 0,
+                                                        followUps: 0,
+                                                        lastActive: null,
+                                                        idleTime: 'N/A',
+                                                        status: 'Idle'
+                                                    };
+                                                    const isOnline = mStats.status === 'Online';
+                                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                                        className: "hover:bg-gray-50/80 transition-colors group",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-4 py-4",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-3",
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 text-[10px] font-bold",
-                                                                            children: lead.customer_name?.charAt(0) || 'C'
+                                                                            className: "w-10 h-10 rounded-full bg-gray-100 border border-white shadow-sm overflow-hidden flex items-center justify-center text-gray-500 font-bold text-xs",
+                                                                            children: member.profile_pic_url ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                                                src: member.profile_pic_url,
+                                                                                alt: "",
+                                                                                className: "w-full h-full object-cover"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                lineNumber: 813,
+                                                                                columnNumber: 57
+                                                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                                className: "fi flex fi-rr-user text-lg text-gray-400"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                lineNumber: 815,
+                                                                                columnNumber: 57
+                                                                            }, this)
                                                                         }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 875,
-                                                                            columnNumber: 65
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 811,
+                                                                            columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "flex flex-col",
                                                                             children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                                    className: "text-[14px] font-bold text-slate-800 leading-tight truncate max-w-[160px]",
-                                                                                    children: lead.customer_name || 'Anonymous'
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                    className: "text-sm font-semibold text-gray-800",
+                                                                                    children: member.user_name || 'Unknown'
                                                                                 }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 879,
-                                                                                    columnNumber: 69
+                                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                    lineNumber: 819,
+                                                                                    columnNumber: 53
                                                                                 }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                    className: "flex items-center gap-1 text-gray-400",
-                                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                        className: "text-[10px] font-medium tracking-tight mb-0.5",
-                                                                                        children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
-                                                                                    }, void 0, false, {
-                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                        lineNumber: 883,
-                                                                                        columnNumber: 73
-                                                                                    }, this)
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 882,
-                                                                                    columnNumber: 69
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                    className: "text-xs text-gray-400",
+                                                                                    children: [
+                                                                                        "ID: ",
+                                                                                        member.employee_id || '--'
+                                                                                    ]
+                                                                                }, void 0, true, {
+                                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                    lineNumber: 820,
+                                                                                    columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 878,
-                                                                            columnNumber: 65
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 818,
+                                                                            columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 874,
-                                                                    columnNumber: 61
-                                                                }, this),
-                                                                lead.isOverdue && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-time-past text-red-500 text-[10px] animate-pulse"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 887,
-                                                                    columnNumber: 80
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 810,
+                                                                    columnNumber: 45
                                                                 }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 873,
-                                                            columnNumber: 57
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-wrap gap-1 mb-1.5 ml-1",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 text-[8px] font-bold uppercase",
-                                                                    children: lead.campaign_name
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 891,
-                                                                    columnNumber: 61
-                                                                }, this),
-                                                                lead.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[8px] font-bold lowercase italic",
-                                                                    children: lead.sub_disposition
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 895,
-                                                                    columnNumber: 65
-                                                                }, this),
-                                                                lead.outcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[8px] font-bold uppercase tracking-tight",
-                                                                    children: lead.outcome
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 900,
-                                                                    columnNumber: 65
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 890,
-                                                            columnNumber: 57
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "pt-1.5 border-t border-gray-50 flex items-center justify-between ml-1",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: `text-[9px] font-bold ${lead.isOverdue ? 'text-red-500' : 'text-gray-400'}`,
-                                                                    children: formatDate(lead.next_called_at)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 907,
-                                                                    columnNumber: 61
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                    className: "w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-indigo-100 shadow-sm",
-                                                                    onClick: (e)=>{
-                                                                        e.stopPropagation();
-                                                                        router.push(`/campaign/${lead.campaign_id}/${lead.id}`);
-                                                                    },
-                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-phone-call text-[8px]"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 917,
-                                                                        columnNumber: 65
-                                                                    }, this)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 910,
-                                                                    columnNumber: 61
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 906,
-                                                            columnNumber: 57
-                                                        }, this)
-                                                    ]
-                                                }, lead.id, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 865,
-                                                    columnNumber: 53
-                                                }, this))
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 857,
-                                            columnNumber: 41
-                                        }, this)
-                                    ]
-                                }, pipeline.id, true, {
-                                    fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 819,
-                                    columnNumber: 37
-                                }, this);
-                            })
-                        }, void 0, false, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 801,
-                            columnNumber: 21
-                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-white p-4 rounded-xl border border-gray-200",
-                            children: !selectedDate ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center justify-between mb-6",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                                className: "text-lg font-bold text-gray-800",
-                                                children: currentMonth.toLocaleString('default', {
-                                                    month: 'long',
-                                                    year: 'numeric'
-                                                })
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 935,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-3",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)),
-                                                        className: "w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-angle-left text-sm mt-1"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 943,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 939,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setCurrentMonth(new Date()),
-                                                        className: "px-4 py-1.5 text-xs font-bold bg-[#EEF2FF] text-[#4F46E5] rounded-lg hover:bg-indigo-100 transition-colors",
-                                                        children: "Today"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 945,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)),
-                                                        className: "w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-angle-right text-sm mt-1"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 955,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 951,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 938,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 934,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "grid grid-cols-7 mb-2 text-center",
-                                        children: [
-                                            'Sun',
-                                            'Mon',
-                                            'Tue',
-                                            'Wed',
-                                            'Thu',
-                                            'Fri',
-                                            'Sat'
-                                        ].map((day)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "text-xs font-bold text-gray-400 uppercase py-2",
-                                                children: day
-                                            }, day, false, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 963,
-                                                columnNumber: 41
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 961,
-                                        columnNumber: 33
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "grid grid-cols-7 gap-2",
-                                        children: [
-                                            Array.from({
-                                                length: new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay()
-                                            }).map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "min-h-[120px] bg-gray-50/30 rounded-lg"
-                                                }, `empty-${i}`, false, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 973,
-                                                    columnNumber: 41
-                                                }, this)),
-                                            Array.from({
-                                                length: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate()
-                                            }).map((_, i)=>{
-                                                const day = i + 1;
-                                                const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                                                const isToday = new Date().toDateString() === new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).toDateString();
-                                                const dayLeads = filteredLeads.filter((l)=>{
-                                                    if (!l.next_called_at) return false;
-                                                    const leadDate = new Date(l.next_called_at);
-                                                    return leadDate.getDate() === day && leadDate.getMonth() === currentMonth.getMonth() && leadDate.getFullYear() === currentMonth.getFullYear();
-                                                });
-                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    onClick: ()=>setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)),
-                                                    className: `min-h-[120px] p-2 rounded-lg border cursor-pointer hover:shadow-md ${isToday ? 'border-indigo-500 bg-indigo-50/10' : 'border-gray-100 bg-white hover:border-indigo-200'} transition-all relative group`,
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex justify-between items-start mb-2",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: `text-sm font-bold ${isToday ? 'bg-indigo-600 text-white w-6 h-6 flex items-center justify-center rounded-full' : 'text-gray-700'}`,
-                                                                    children: day
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 995,
-                                                                    columnNumber: 53
-                                                                }, this),
-                                                                dayLeads.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 rounded-full",
-                                                                    children: dayLeads.length
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 999,
-                                                                    columnNumber: 57
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 994,
-                                                            columnNumber: 49
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1",
-                                                            children: [
-                                                                dayLeads.slice(0, 3).map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: `px-2 py-1 rounded text-[9px] font-bold truncate ${lead.isOverdue ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`,
-                                                                        title: `${lead.customer_name} - ${lead.campaign_name}`,
-                                                                        children: lead.customer_name || 'Anonymous'
-                                                                    }, lead.id, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1007,
-                                                                        columnNumber: 57
-                                                                    }, this)),
-                                                                dayLeads.length > 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "text-[9px] text-gray-400 font-medium pl-1",
-                                                                    children: [
-                                                                        "+",
-                                                                        dayLeads.length - 3,
-                                                                        " more"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1016,
-                                                                    columnNumber: 57
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1005,
-                                                            columnNumber: 49
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute inset-x-0 bottom-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity flex justify-center pointer-events-none",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: "text-[9px] font-bold text-gray-400 bg-white/90 px-2 py-0.5 rounded-full shadow-sm border border-gray-100",
-                                                                children: "View Day"
                                                             }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1024,
-                                                                columnNumber: 53
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1023,
-                                                            columnNumber: 49
-                                                        }, this)
-                                                    ]
-                                                }, day, true, {
-                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 989,
-                                                    columnNumber: 45
-                                                }, this);
-                                            })
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 970,
-                                        columnNumber: 33
-                                    }, this)
-                                ]
-                            }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "animate-fade-in",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center justify-between mb-6 pb-4 border-b border-gray-100",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-3",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setSelectedDate(null),
-                                                        className: "p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-arrow-small-left text-xl"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1040,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1036,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                                                className: "text-xl font-bold text-gray-800 leading-tight",
-                                                                children: selectedDate.toLocaleDateString('default', {
-                                                                    weekday: 'long',
-                                                                    day: 'numeric',
-                                                                    month: 'long'
-                                                                })
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1043,
-                                                                columnNumber: 45
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 809,
+                                                                columnNumber: 41
                                                             }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-xs text-gray-500 font-medium",
-                                                                children: "Hourly Schedule"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1046,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1042,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1035,
-                                                columnNumber: 37
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        className: "px-3 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg shadow-sm",
-                                                        children: "Day View"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1050,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setSelectedDate(null),
-                                                        className: "px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50",
-                                                        children: "Month View"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1053,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1049,
-                                                columnNumber: 37
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1034,
-                                        columnNumber: 33
-                                    }, this),
-                                    !selectedHour ? /* Hourly Slots Grid */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-1",
-                                        children: Array.from({
-                                            length: 16
-                                        }).map((_, i)=>{
-                                            const hour = i + 8;
-                                            const timeLabel = new Date(0, 0, 0, hour).toLocaleTimeString('en-US', {
-                                                hour: 'numeric',
-                                                minute: '2-digit'
-                                            });
-                                            // Filter leads for this hour
-                                            const slotLeads = filteredLeads.filter((l)=>{
-                                                if (!l.next_called_at) return false;
-                                                const d = new Date(l.next_called_at);
-                                                return d.getDate() === selectedDate.getDate() && d.getMonth() === selectedDate.getMonth() && d.getHours() === hour;
-                                            });
-                                            const isCurrentHour = new Date().getHours() === hour && new Date().toDateString() === selectedDate.toDateString();
-                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                onClick: ()=>setSelectedHour(hour),
-                                                className: `flex flex-col h-full min-h-[140px] rounded-2xl border ${isCurrentHour ? 'border-indigo-500 ring-2 ring-indigo-100 bg-indigo-50/20' : 'border-gray-200 bg-white hover:border-indigo-300'} transition-all p-3 relative group hover:shadow-md cursor-pointer`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex justify-between items-center mb-3 pb-2 border-b border-gray-100",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: `text-sm font-bold ${isCurrentHour ? 'text-indigo-700' : 'text-gray-700'}`,
-                                                                children: timeLabel
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1087,
-                                                                columnNumber: 57
-                                                            }, this),
-                                                            slotLeads.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${isCurrentHour ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'}`,
-                                                                children: [
-                                                                    slotLeads.length,
-                                                                    " Calls"
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1089,
-                                                                columnNumber: 61
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1086,
-                                                        columnNumber: 53
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `flex-1 space-y-2 custom-scrollbar max-h-[200px] ${slotLeads.length > 0 ? 'overflow-y-auto' : 'overflow-hidden flex items-center justify-center'}`,
-                                                        children: slotLeads.length > 0 ? slotLeads.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                onClick: (e)=>{
-                                                                    e.stopPropagation();
-                                                                    router.push(`/campaign/${lead.campaign_id}/${lead.id}`);
-                                                                },
-                                                                className: "flex items-start gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100 hover:bg-indigo-50 hover:border-indigo-200 transition-colors",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: `w-1 h-8 rounded-full flex-shrink-0 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500'}`
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1103,
-                                                                        columnNumber: 69
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex-1 min-w-0",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center",
+                                                                children: mStats.lastOnline ? (()=>{
+                                                                    const diff = Date.now() - new Date(mStats.lastOnline).getTime();
+                                                                    const diffMins = diff / 60000;
+                                                                    let dotColor = "bg-gray-400";
+                                                                    let textColor = "text-gray-500";
+                                                                    let bgColor = "bg-gray-50";
+                                                                    let borderColor = "border-gray-100";
+                                                                    let statusText = "Offline";
+                                                                    if (diffMins <= 1) {
+                                                                        dotColor = "bg-green-500 animate-pulse";
+                                                                        textColor = "text-green-700";
+                                                                        bgColor = "bg-green-50";
+                                                                        borderColor = "border-green-100";
+                                                                        statusText = "Online";
+                                                                    } else if (diffMins <= 3) {
+                                                                        dotColor = "bg-orange-500";
+                                                                        textColor = "text-orange-700";
+                                                                        bgColor = "bg-orange-50";
+                                                                        borderColor = "border-orange-100";
+                                                                        statusText = "Away";
+                                                                    }
+                                                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "flex flex-col items-center gap-1",
                                                                         children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                                className: "text-xs font-medium text-gray-800 truncate",
-                                                                                title: lead.customer_name,
-                                                                                children: lead.customer_name || 'Anonymous'
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1105,
-                                                                                columnNumber: 73
-                                                                            }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                                className: "text-[9px] text-gray-500 truncate",
-                                                                                children: lead.campaign_name
+                                                                                className: "text-[10px] font-bold text-gray-500",
+                                                                                children: formatTime(mStats.lastOnline)
                                                                             }, void 0, false, {
-                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1106,
-                                                                                columnNumber: 73
+                                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                lineNumber: 850,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: `inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] uppercase font-bold border ${bgColor} ${textColor} ${borderColor}`,
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: `w-1 h-1 rounded-full ${dotColor}`
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                        lineNumber: 852,
+                                                                                        columnNumber: 61
+                                                                                    }, this),
+                                                                                    statusText
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                lineNumber: 851,
+                                                                                columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1104,
-                                                                        columnNumber: 69
-                                                                    }, this),
-                                                                    lead.isOverdue && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-time-past text-red-500 text-[10px]"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1108,
-                                                                        columnNumber: 88
-                                                                    }, this)
-                                                                ]
-                                                            }, lead.id, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1098,
-                                                                columnNumber: 65
-                                                            }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "h-full flex flex-col items-center justify-center opacity-30 mt-2",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-minus-circle text-2xl text-gray-300 mb-1"
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 849,
+                                                                        columnNumber: 53
+                                                                    }, this);
+                                                                })() : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "text-gray-300",
+                                                                    children: "-"
                                                                 }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1113,
-                                                                    columnNumber: 65
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[10px] font-medium text-gray-400",
-                                                                    children: "Free Slot"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1114,
-                                                                    columnNumber: 65
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 858,
+                                                                    columnNumber: 49
                                                                 }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1112,
-                                                            columnNumber: 61
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1095,
-                                                        columnNumber: 53
-                                                    }, this)
-                                                ]
-                                            }, hour, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1081,
-                                                columnNumber: 49
-                                            }, this);
-                                        })
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1064,
-                                        columnNumber: 37
-                                    }, this) : /* Timeline View for Selected Hour */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "animate-fade-in",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-3 mb-6",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>setSelectedHour(null),
-                                                        className: "w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-arrow-small-left text-xl"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1130,
-                                                            columnNumber: 49
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1126,
-                                                        columnNumber: 46
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                                className: "text-lg font-bold text-gray-800",
-                                                                children: [
-                                                                    new Date(0, 0, 0, selectedHour).toLocaleTimeString('en-US', {
-                                                                        hour: 'numeric',
-                                                                        minute: '2-digit'
-                                                                    }),
-                                                                    " - ",
-                                                                    new Date(0, 0, 0, selectedHour + 1).toLocaleTimeString('en-US', {
-                                                                        hour: 'numeric',
-                                                                        minute: '2-digit'
-                                                                    })
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1133,
-                                                                columnNumber: 49
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-xs text-gray-500",
-                                                                children: "Timeline view"
                                                             }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1136,
-                                                                columnNumber: 49
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1132,
-                                                        columnNumber: 45
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1125,
-                                                columnNumber: 41
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "relative pl-4 space-y-8 py-4",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "absolute left-[85px] top-0 bottom-0 w-px bg-gray-200"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1142,
-                                                        columnNumber: 45
-                                                    }, this),
-                                                    (()=>{
-                                                        const hourLeads = filteredLeads.filter((l)=>{
-                                                            if (!l.next_called_at) return false;
-                                                            const d = new Date(l.next_called_at);
-                                                            return d.getDate() === selectedDate.getDate() && d.getMonth() === selectedDate.getMonth() && d.getHours() === selectedHour;
-                                                        });
-                                                        // Group by minute
-                                                        const groupedByMinute = {};
-                                                        hourLeads.forEach((l)=>{
-                                                            const d = new Date(l.next_called_at);
-                                                            const timeKey = d.toLocaleTimeString('en-US', {
-                                                                hour: 'numeric',
-                                                                minute: '2-digit',
-                                                                hour12: false
-                                                            }); // Use 24h for sorting ease or just minute str
-                                                            // Let's use formatted 12h string for Key 
-                                                            const displayTime = d.toLocaleTimeString('en-US', {
-                                                                hour: 'numeric',
-                                                                minute: '2-digit'
-                                                            });
-                                                            if (!groupedByMinute[displayTime]) groupedByMinute[displayTime] = [];
-                                                            groupedByMinute[displayTime].push(l);
-                                                        });
-                                                        // If no leads
-                                                        if (Object.keys(groupedByMinute).length === 0) {
-                                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex flex-col items-center justify-center py-20 opacity-50",
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 824,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center",
+                                                                children: mStats.onCall ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${mStats.isPersonal ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`,
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                            className: `fi flex ${mStats.isPersonal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 864,
+                                                                            columnNumber: 51
+                                                                        }, this),
+                                                                        mStats.isPersonal ? 'Personal Call' : 'On Call'
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 863,
+                                                                    columnNumber: 47
+                                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`,
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 869,
+                                                                            columnNumber: 51
+                                                                        }, this),
+                                                                        isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 868,
+                                                                    columnNumber: 47
+                                                                }, this)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 861,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "px-2 py-1 rounded-lg bg-gray-100 text-gray-600 text-[10px] font-bold border border-gray-200",
+                                                                    children: [
+                                                                        mStats.totalCalls,
+                                                                        " CALLS"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 875,
+                                                                    columnNumber: 45
+                                                                }, this)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 874,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center text-xs text-gray-600 font-bold",
+                                                                children: mStats.totalTalkTime
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 879,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center",
                                                                 children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-time-forward text-4xl text-indigo-200 mb-3"
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                        className: "text-xs font-bold text-gray-800",
+                                                                        children: mStats.connected
                                                                     }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1168,
-                                                                        columnNumber: 61
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 883,
+                                                                        columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                        className: "text-gray-400 font-medium",
-                                                                        children: "No calls scheduled for this hour"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1169,
-                                                                        columnNumber: 61
+                                                                        className: "text-[9px] text-indigo-500 font-bold",
+                                                                        children: [
+                                                                            mStats.connectedRate,
+                                                                            "%"
+                                                                        ]
+                                                                    }, void 0, true, {
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 884,
+                                                                        columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1167,
-                                                                columnNumber: 57
-                                                            }, this);
-                                                        }
-                                                        // Sort keys by time (simple since we are within same hour)
-                                                        const sortedTimes = Object.keys(groupedByMinute).sort();
-                                                        return sortedTimes.map((time)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex group relative",
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 882,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center text-xs text-gray-600 font-bold",
+                                                                children: mStats.avgDuration
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 886,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center text-xs text-amber-600 font-bold",
+                                                                children: mStats.streakGap
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 889,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                className: "px-4 py-4 text-right",
                                                                 children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "w-[70px] flex-shrink-0 text-right pr-6 pt-2",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-sm font-bold text-gray-600 font-mono",
-                                                                            children: time
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1181,
-                                                                            columnNumber: 61
-                                                                        }, this)
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                        className: "text-xs font-bold text-gray-800",
+                                                                        children: formatTime(mStats.lastActive)
                                                                     }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1180,
-                                                                        columnNumber: 57
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 893,
+                                                                        columnNumber: 45
                                                                     }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "absolute left-[80.5px] top-3 w-2.5 h-2.5 rounded-full bg-white border-2 border-indigo-500 z-10"
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                        className: "text-[9px] text-gray-400 font-medium",
+                                                                        children: mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : 'N/A'
                                                                     }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1185,
-                                                                        columnNumber: 57
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex-1 pl-6 pt-2 min-w-0",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex items-center gap-2 mb-1",
-                                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full",
-                                                                                    children: [
-                                                                                        groupedByMinute[time].length,
-                                                                                        " Contact",
-                                                                                        groupedByMinute[time].length > 1 ? 's' : ''
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 1190,
-                                                                                    columnNumber: 65
-                                                                                }, this)
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1189,
-                                                                                columnNumber: 61
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "flex gap-4 overflow-x-auto pb-4 custom-scrollbar",
-                                                                                children: groupedByMinute[time].map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                        onClick: ()=>router.push(`/campaign/${lead.campaign_id}/${lead.id}`),
-                                                                                        className: "min-w-[250px] bg-white p-3 rounded-xl border border-gray-200 hover:border-indigo-400 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-2",
-                                                                                        children: [
-                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                                className: "flex items-center gap-2 border-b border-gray-50 pb-2",
-                                                                                                children: [
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                                        className: `w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${lead.isOverdue ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`,
-                                                                                                        children: lead.customer_name?.charAt(0)
-                                                                                                    }, void 0, false, {
-                                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1202,
-                                                                                                        columnNumber: 78
-                                                                                                    }, this),
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                                        className: "flex-1 min-w-0",
-                                                                                                        children: [
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                                                                className: "text-sm font-bold text-gray-800 truncate",
-                                                                                                                children: lead.customer_name || 'Anonymous'
-                                                                                                            }, void 0, false, {
-                                                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1206,
-                                                                                                                columnNumber: 82
-                                                                                                            }, this),
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                                                className: "text-[10px] text-gray-500",
-                                                                                                                children: lead.campaign_name
-                                                                                                            }, void 0, false, {
-                                                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1207,
-                                                                                                                columnNumber: 82
-                                                                                                            }, this)
-                                                                                                        ]
-                                                                                                    }, void 0, true, {
-                                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1205,
-                                                                                                        columnNumber: 78
-                                                                                                    }, this)
-                                                                                                ]
-                                                                                            }, void 0, true, {
-                                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                lineNumber: 1201,
-                                                                                                columnNumber: 73
-                                                                                            }, this),
-                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                                className: "flex items-center justify-between",
-                                                                                                children: [
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                                        className: "text-[10px] font-medium text-gray-500 flex items-center gap-1",
-                                                                                                        children: [
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                                                                className: "fi fi-rr-smartphone"
-                                                                                                            }, void 0, false, {
-                                                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1212,
-                                                                                                                columnNumber: 81
-                                                                                                            }, this),
-                                                                                                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
-                                                                                                        ]
-                                                                                                    }, void 0, true, {
-                                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1211,
-                                                                                                        columnNumber: 77
-                                                                                                    }, this),
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                                                        className: "w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400",
-                                                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                                                            className: "fi fi-rr-arrow-right text-[10px]"
-                                                                                                        }, void 0, false, {
-                                                                                                            fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                            lineNumber: 1216,
-                                                                                                            columnNumber: 81
-                                                                                                        }, this)
-                                                                                                    }, void 0, false, {
-                                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1215,
-                                                                                                        columnNumber: 77
-                                                                                                    }, this)
-                                                                                                ]
-                                                                                            }, void 0, true, {
-                                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                lineNumber: 1210,
-                                                                                                columnNumber: 73
-                                                                                            }, this)
-                                                                                        ]
-                                                                                    }, lead.id, true, {
-                                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                                        lineNumber: 1196,
-                                                                                        columnNumber: 69
-                                                                                    }, this))
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1194,
-                                                                                columnNumber: 61
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1188,
-                                                                        columnNumber: 57
+                                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                        lineNumber: 894,
+                                                                        columnNumber: 45
                                                                     }, this)
                                                                 ]
-                                                            }, time, true, {
-                                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1178,
-                                                                columnNumber: 53
-                                                            }, this));
-                                                    })()
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1140,
-                                                columnNumber: 41
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 892,
+                                                                columnNumber: 41
+                                                            }, this)
+                                                        ]
+                                                    }, member.user_id, true, {
+                                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                                        lineNumber: 808,
+                                                        columnNumber: 37
+                                                    }, this);
+                                                })
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                lineNumber: 796,
+                                                columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
-                                        fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1124,
-                                        columnNumber: 37
+                                        fileName: "[project]/pages/portal/team/[id].tsx",
+                                        lineNumber: 782,
+                                        columnNumber: 21
                                     }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 1032,
-                                columnNumber: 29
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 930,
-                            columnNumber: 21
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                    lineNumber: 781,
+                                    columnNumber: 17
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/pages/portal/team/[id].tsx",
+                            lineNumber: 762,
+                            columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
-                    fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 412,
-                    columnNumber: 13
+                    fileName: "[project]/pages/portal/team/[id].tsx",
+                    lineNumber: 555,
+                    columnNumber: 11
                 }, this)
-            ]
-        }, void 0, true, {
-            fileName: "[project]/pages/portal/followup.tsx",
-            lineNumber: 171,
-            columnNumber: 11
-        }, this)
-    }, void 0, false);
+            }, void 0, false, {
+                fileName: "[project]/pages/portal/team/[id].tsx",
+                lineNumber: 554,
+                columnNumber: 7
+            }, this)
+        ]
+    }, void 0, true);
 }
-_s(FollowUp, "LIzLxclGq2THCrKwR5gGceEyqPM=", false, function() {
+_s(TeamDetails, "SxVvyVj0cWto6MaVMiSLhNFjv+Y=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useFollowUpLeads$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useFollowUpLeads"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
     ];
 });
-_c = FollowUp;
+_c = TeamDetails;
 var _c;
-__turbopack_context__.k.register(_c, "FollowUp");
+__turbopack_context__.k.register(_c, "TeamDetails");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/followup.tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/team/[id].tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
 
-const PAGE_PATH = "/portal/followup";
+const PAGE_PATH = "/portal/team/[id]";
 (window.__NEXT_P = window.__NEXT_P || []).push([
     PAGE_PATH,
     ()=>{
-        return __turbopack_context__.r("[project]/pages/portal/followup.tsx [client] (ecmascript)");
+        return __turbopack_context__.r("[project]/pages/portal/team/[id].tsx [client] (ecmascript)");
     }
 ]);
 // @ts-expect-error module.hot exists
@@ -11969,11 +10810,11 @@ if (module.hot) {
     });
 }
 }),
-"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/portal/followup.tsx\" }", ((__turbopack_context__) => {
+"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/portal/team/[id].tsx\" }", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/followup.tsx [client] (ecmascript)\" } [client] (ecmascript)");
+__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/team/[id].tsx [client] (ecmascript)\" } [client] (ecmascript)");
 }),
 ]);
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__4a491433._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__a8ec3316._.js.map
