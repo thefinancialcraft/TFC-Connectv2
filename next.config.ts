@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
       { source: '/suspended', destination: '/portal/suspended' },
       { source: '/hold', destination: '/portal/hold' },
       { source: '/profile-completion', destination: '/portal/profile-completion' },
+      { source: '/call-sessions', destination: '/portal/call-sessions' },
     ];
   },
 };

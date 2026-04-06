@@ -158,6 +158,9 @@ const Sidebar = memo(function Sidebar({
         return ['/dashboard', '/campaign', '/activity', '/followup', '/team', '/customer'].includes(path);
       }
 
+      // 4. NXUS-001 Exclusive Check
+      if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
+
       return false;
     });
 

@@ -707,6 +707,12 @@ const NAV_ITEMS = [
         path: "/team",
         icon: "fi-rr-users-alt",
         adminOnly: false
+    },
+    {
+        name: "Call Sessions",
+        path: "/call-sessions",
+        icon: "fi-rr-headset",
+        adminOnly: true
     }
 ];
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {

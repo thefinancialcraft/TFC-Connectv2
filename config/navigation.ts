@@ -55,4 +55,10 @@ export const NAV_ITEMS: NavItemType[] = [
     icon: "fi-rr-users-alt",
     adminOnly: false,
   },
+  {
+    name: "Call Sessions",
+    path: "/call-sessions",
+    icon: "fi-rr-headset",
+    adminOnly: true,
+  },
 ];

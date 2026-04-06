@@ -1152,6 +1152,7 @@ export default function CallingPage() {
                             user_id: user.uid,
                             campaign_id: targetCampaignId,
                             customer_id: nextLeadId,
+                            organization_id: campData?.organization_id,
                             status: 'assigned',
                             is_manual: false, // STANDARD CRM WORKFLOW
                             manual_campaign_id: null,
@@ -2611,6 +2612,7 @@ Campaign: ${campaign?.name || campaignId}
                             user_id: user.uid,
                             campaign_id: effectiveCampaignId,
                             customer_id: nextLeadId,
+                            organization_id: campaign?.organization_id,
                             status: 'assigned',
                             is_manual: false,
                             manual_campaign_id: null,

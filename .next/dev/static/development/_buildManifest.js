@@ -1,21 +1,12 @@
 self.__BUILD_MANIFEST = {
-  "/": [
-    "static/chunks/pages/index.js"
-  ],
   "/_error": [
     "static/chunks/pages/_error.js"
   ],
   "/portal/activity": [
     "static/chunks/pages/portal/activity.js"
   ],
-  "/portal/campaign": [
-    "static/chunks/pages/portal/campaign.js"
-  ],
-  "/portal/campaign/[id]": [
-    "static/chunks/pages/portal/campaign/[id].js"
-  ],
-  "/portal/campaign/[id]/[customerId]": [
-    "static/chunks/pages/portal/campaign/[id]/[customerId].js"
+  "/portal/call-sessions": [
+    "static/chunks/pages/portal/call-sessions.js"
   ],
   "/portal/customer": [
     "static/chunks/pages/portal/customer.js"
@@ -23,23 +14,11 @@ self.__BUILD_MANIFEST = {
   "/portal/dashboard": [
     "static/chunks/pages/portal/dashboard.js"
   ],
-  "/portal/followup": [
-    "static/chunks/pages/portal/followup.js"
-  ],
-  "/portal/login": [
-    "static/chunks/pages/portal/login.js"
-  ],
   "/portal/organization": [
     "static/chunks/pages/portal/organization.js"
   ],
   "/portal/team": [
     "static/chunks/pages/portal/team.js"
-  ],
-  "/portal/team/[id]": [
-    "static/chunks/pages/portal/team/[id].js"
-  ],
-  "/portal/users": [
-    "static/chunks/pages/portal/users.js"
   ],
   "__rewrites": {
     "afterFiles": [
@@ -122,6 +101,10 @@ self.__BUILD_MANIFEST = {
       {
         "source": "/profile-completion",
         "destination": "/portal/profile-completion"
+      },
+      {
+        "source": "/call-sessions",
+        "destination": "/portal/call-sessions"
       }
     ],
     "beforeFiles": [],
@@ -181,6 +164,7 @@ self.__BUILD_MANIFEST = {
     "/leadership",
     "/portal/activity",
     "/portal/auth/callback",
+    "/portal/call-sessions",
     "/portal/campaign",
     "/portal/campaign/[id]",
     "/portal/campaign/[id]/[customerId]",

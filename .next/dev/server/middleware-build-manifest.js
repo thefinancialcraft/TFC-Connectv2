@@ -1,20 +1,5 @@
 globalThis.__BUILD_MANIFEST = {
   "pages": {
-    "/": [
-      "static/chunks/lib_monitoring_ts_1f754663._.js",
-      "static/chunks/[root-of-the-server]__f1a0543e._.js",
-      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_e5450561._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_91d41a81._.js",
-      "static/chunks/pages_index_2da965e7._.js",
-      "static/chunks/turbopack-pages_index_30705857._.js"
-    ],
     "/_app": [
       "static/chunks/lib_830a4143._.js",
       "static/chunks/[root-of-the-server]__112a413a._.js",
@@ -57,55 +42,18 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/pages_portal_activity_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_activity_tsx_fb1a3744._.js"
     ],
-    "/portal/campaign": [
-      "static/chunks/[root-of-the-server]__6e2adcea._.js",
-      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
+    "/portal/call-sessions": [
+      "static/chunks/node_modules_next_dist_compiled_ebbb8748._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_49f863e2._.js",
+      "static/chunks/node_modules_next_dist_client_d0aa886c._.js",
       "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_5cb05f67._.js",
       "static/chunks/node_modules_react-dom_4411d9bd._.js",
       "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_6526044e._.js",
-      "static/chunks/pages_portal_campaign_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_campaign_tsx_7868d761._.js"
-    ],
-    "/portal/campaign/[id]": [
-      "static/chunks/components_4a7ae42f._.js",
-      "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
-      "static/chunks/_0398cb9b._.js",
-      "static/chunks/[root-of-the-server]__78abed1d._.js",
-      "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_5cb05f67._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_recharts_es6_util_e968dfe3._.js",
-      "static/chunks/node_modules_recharts_es6_state_e74bbb61._.js",
-      "static/chunks/node_modules_recharts_es6_component_8520eaf5._.js",
-      "static/chunks/node_modules_recharts_es6_cartesian_97297acc._.js",
-      "static/chunks/node_modules_recharts_es6_cf321d8d._.js",
-      "static/chunks/node_modules_fdfb140b._.js",
-      "static/chunks/pages_portal_campaign_[id]_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_campaign_[id]_tsx_822ff369._.js"
-    ],
-    "/portal/campaign/[id]/[customerId]": [
-      "static/chunks/[root-of-the-server]__b944b229._.js",
-      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_5cb05f67._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_6e6f4fdb._.js",
-      "static/chunks/pages_portal_campaign_[id]_[customerId]_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_campaign_[id]_[customerId]_tsx_d0c4f7d1._.js"
+      "static/chunks/node_modules_b82c6d91._.js",
+      "static/chunks/[root-of-the-server]__b18468c4._.js",
+      "static/chunks/pages_portal_call-sessions_tsx_2da965e7._.js",
+      "static/chunks/turbopack-pages_portal_call-sessions_tsx_c995ac8f._.js"
     ],
     "/portal/customer": [
       "static/chunks/components_21498089._.js",
@@ -139,37 +87,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_dashboard_tsx_04b7e2e0._.js"
     ],
-    "/portal/followup": [
-      "static/chunks/[root-of-the-server]__4a491433._.js",
-      "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_5cb05f67._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_82a97d11._.js",
-      "static/chunks/pages_portal_followup_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_followup_tsx_b73fdf5c._.js"
-    ],
-    "/portal/login": [
-      "static/chunks/lib_1b432ad9._.js",
-      "static/chunks/[root-of-the-server]__0b3d5ec8._.js",
-      "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_49f863e2._.js",
-      "static/chunks/node_modules_next_dist_client_d0aa886c._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_router_104fab1c.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_8efd91fd._.js",
-      "static/chunks/pages_portal_login_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_login_tsx_64bf1dfd._.js"
-    ],
     "/portal/organization": [
-      "static/chunks/lib_monitoring_ts_8194ca8b._.js",
       "static/chunks/[root-of-the-server]__3ceb91b0._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
@@ -181,7 +99,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_6526044e._.js",
       "static/chunks/pages_portal_organization_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_organization_tsx_ec882589._.js"
+      "static/chunks/turbopack-pages_portal_organization_tsx_54fe3ae7._.js"
     ],
     "/portal/team": [
       "static/chunks/[root-of-the-server]__6e1cf15e._.js",
@@ -196,44 +114,6 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_6526044e._.js",
       "static/chunks/pages_portal_team_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_team_tsx_4b7b7e7c._.js"
-    ],
-    "/portal/team/[id]": [
-      "static/chunks/[root-of-the-server]__a8ec3316._.js",
-      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_b8cbaf14._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_recharts_es6_util_f4d1715e._.js",
-      "static/chunks/node_modules_recharts_es6_state_579ba1d4._.js",
-      "static/chunks/node_modules_recharts_es6_component_e55b8644._.js",
-      "static/chunks/node_modules_recharts_es6_cartesian_1c35e410._.js",
-      "static/chunks/node_modules_recharts_es6_181c6f1a._.js",
-      "static/chunks/node_modules_b4636b6f._.js",
-      "static/chunks/pages_portal_team_[id]_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_team_[id]_tsx_588e8478._.js"
-    ],
-    "/portal/users": [
-      "static/chunks/components_UtilitySidebar_tsx_187ae758._.js",
-      "static/chunks/components_users_8ac302c1._.js",
-      "static/chunks/components_UserMenuDropdown_tsx_cc8bfca1._.js",
-      "static/chunks/components_15103253._.js",
-      "static/chunks/_7bc31f9c._.js",
-      "static/chunks/[root-of-the-server]__ef8266b7._.js",
-      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
-      "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
-      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
-      "static/chunks/node_modules_next_dist_a1eb637b._.js",
-      "static/chunks/node_modules_next_e5450561._.js",
-      "static/chunks/node_modules_react-dom_4411d9bd._.js",
-      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
-      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_6526044e._.js",
-      "static/chunks/pages_portal_users_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_users_tsx_95895d06._.js"
     ]
   },
   "devFiles": [],

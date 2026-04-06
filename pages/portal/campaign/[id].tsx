@@ -808,6 +808,7 @@ export default function CampaignDetails() {
                     user_id: user.uid,
                     campaign_id: id,
                     customer_id: leadId,
+                    organization_id: campaign?.organization_id,
                     status: 'assigned',
                     updated_at: new Date().toISOString()
                 });

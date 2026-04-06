@@ -727,6 +727,12 @@ const NAV_ITEMS = [
         path: "/team",
         icon: "fi-rr-users-alt",
         adminOnly: false
+    },
+    {
+        name: "Call Sessions",
+        path: "/call-sessions",
+        icon: "fi-rr-headset",
+        adminOnly: true
     }
 ];
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
@@ -921,6 +927,8 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                             '/customer'
                         ].includes(path);
                     }
+                    // 4. NXUS-001 Exclusive Check
+                    if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
                     return false;
                 }
             }["Sidebar.Sidebar.useMemo[navItems].filtered"]);
@@ -976,12 +984,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                 },
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 195,
+                    lineNumber: 198,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 194,
+                lineNumber: 197,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -1003,7 +1011,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: `fi ${item.icon} flex text-sm`
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 220,
+                                lineNumber: 223,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1014,13 +1022,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 children: item.name
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 221,
+                                lineNumber: 224,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, item.path, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 207,
+                        lineNumber: 210,
                         columnNumber: 15
                     }, this);
                 }) : // Skeleton Links - Only shown if cache is completely empty
@@ -1037,25 +1045,25 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: "w-5 h-5 rounded bg-gray-100"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 234,
+                                lineNumber: 237,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "h-3 w-24 bg-gray-100 rounded"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 235,
+                                lineNumber: 238,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 233,
+                        lineNumber: 236,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 199,
+                lineNumber: 202,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1084,12 +1092,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 255,
+                                        lineNumber: 258,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 248,
+                                    lineNumber: 251,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1104,7 +1112,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 265,
+                                            lineNumber: 268,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1116,19 +1124,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.email || "user@example.com" : "user@example.com"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 271,
+                                            lineNumber: 274,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 264,
+                                    lineNumber: 267,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 247,
+                            lineNumber: 250,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1148,7 +1156,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Employee ID:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 285,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1160,13 +1168,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.employeeId || "Not assigned" : "Not assigned"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 285,
+                                            lineNumber: 288,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 284,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1180,7 +1188,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Last Login:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 293,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1192,19 +1200,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: formattedLastLogin
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 296,
+                                            lineNumber: 299,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 295,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 280,
+                            lineNumber: 283,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1234,12 +1242,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "fi flex fi-rr-settings text-sm"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 327,
+                                        lineNumber: 330,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 306,
+                                    lineNumber: 309,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1270,7 +1278,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 355,
+                                        lineNumber: 358,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                         children: [
@@ -1278,44 +1286,44 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                                 className: "fi flex px-1 fi-rr-exit text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 358,
+                                                lineNumber: 361,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Logout"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 359,
+                                                lineNumber: 362,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 332,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 305,
+                            lineNumber: 308,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 243,
+                    lineNumber: 246,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 242,
+                lineNumber: 245,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Sidebar.tsx",
-        lineNumber: 190,
+        lineNumber: 193,
         columnNumber: 5
     }, this);
 }, "1OKE11HEq0ZJKeU7EOp5Zh/gx6M=", false, function() {
@@ -1353,54 +1361,7 @@ const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsIn
 const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
 if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
-// Global flag to prevent recursive logging
-let isLoggingInternal = false;
-// Custom Fetch Wrapper for Logging
-const customFetch = async (url, options)=>{
-    const urlStr = typeof url === 'string' ? url : url instanceof Request ? url.url : url.toString();
-    // CRITICAL: Immediately identify if this is an Auth or internal monitoring request
-    // We skip EVERYTHING for these to ensure no interference with login
-    const isExcluded = isLoggingInternal || urlStr.includes('system_monitoring_logs') || urlStr.includes('rpc/get_monitoring_stats') || urlStr.includes('/auth/v1/') || urlStr.includes('/rest/v1/utility_data') || urlStr.includes('/rest/v1/user_profiles?select=user_name');
-    // If excluded, just return the standard fetch immediately
-    if (isExcluded) {
-        return fetch(url, options);
-    }
-    try {
-        // 1. Execute the original request
-        const response = await fetch(url, options);
-        // 2. Schedule logging in the background (post-response, non-blocking)
-        if ("TURBOPACK compile-time truthy", 1) {
-            (async ()=>{
-                try {
-                    isLoggingInternal = true;
-                    const { logSystemEvent, estimateSize } = await __turbopack_context__.A("[project]/lib/monitoring.ts [client] (ecmascript, async loader)");
-                    const path = urlStr.split('.co')[1] || urlStr;
-                    const method = options?.method || (url instanceof Request ? url.method : 'GET');
-                    await logSystemEvent({
-                        event_type: method === 'GET' ? 'READ' : 'WRITE',
-                        description: `API_HIT: ${method} ${path}`,
-                        path: path,
-                        payload_size: options?.body ? estimateSize(options.body) : 0,
-                        response_size: 1024
-                    });
-                } catch (logErr) {
-                // Ignore background logging errors
-                } finally{
-                    isLoggingInternal = false;
-                }
-            })();
-        }
-        return response;
-    } catch (err) {
-        console.error('[Sentinel] API Request Failed:', urlStr, err);
-        throw err; // Re-throw so the app can handle it
-    }
-};
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey, {
-    global: {
-        fetch: customFetch
-    }
-});
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
 const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         autoRefreshToken: false,
@@ -3295,66 +3256,21 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "[project]/lib/monitoring.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.s([
+/**
+ * Sentinel Monitoring - DISABLED
+ * This file is kept as an empty shell to avoid breaking existing imports.
+ */ __turbopack_context__.s([
     "estimateSize",
     ()=>estimateSize,
     "logSystemEvent",
     ()=>logSystemEvent
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-;
-// Cache to store user profile name during the session to avoid redundant queries
-let cachedUserName = null;
-const logSystemEvent = async (log)=>{
-    try {
-        let finalUserId = log.user_id;
-        let finalUserName = log.user_name;
-        let finalOrgId = log.organization_id;
-        // 1. Resolve User ID and Name
-        if (!finalUserId || !finalUserName) {
-            const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
-            if (user) {
-                finalUserId = finalUserId || user.id;
-                if (!finalUserName) {
-                    // Check cache first
-                    if (cachedUserName) {
-                        finalUserName = cachedUserName;
-                    } else {
-                        // Attempt to get name from profile table
-                        // Use maybeSingle to prevent error if profile doesn't exist yet
-                        const { data: profile } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('user_name').eq('id', user.id).maybeSingle();
-                        if (profile?.user_name) {
-                            finalUserName = profile.user_name;
-                            cachedUserName = profile.user_name; // Cache it
-                        }
-                    }
-                }
-            }
-        }
-        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('system_monitoring_logs').insert({
-            user_id: finalUserId,
-            user_name: finalUserName || 'System/Anonymous',
-            event_type: log.event_type,
-            description: log.description,
-            path: log.path || (("TURBOPACK compile-time truthy", 1) ? window.location.pathname : "TURBOPACK unreachable"),
-            metadata: log.metadata || {},
-            payload_size: log.payload_size || 0,
-            response_size: log.response_size || 0,
-            organization_id: finalOrgId
-        });
-        if (error) {
-            console.error('[Sentinel] Failed to log event:', error);
-        }
-    } catch (err) {
-        console.warn('[Sentinel] Logging error:', err);
-    }
+const logSystemEvent = async (_log)=>{
+    // Monitoring completely disabled by user request.
+    return;
 };
-const estimateSize = (obj)=>{
-    try {
-        return JSON.stringify(obj).length;
-    } catch  {
-        return 0;
-    }
+const estimateSize = (_obj)=>{
+    return 0;
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);

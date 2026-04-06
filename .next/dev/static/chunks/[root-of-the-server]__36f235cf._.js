@@ -614,8 +614,10 @@ function useActivityData() {
     const [mobileActivities, setMobileActivities] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]); // New state for mobile history
     const [selectedDate, setSelectedDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
         "useActivityData.useState": ()=>{
-            const today = new Date();
-            return today.toISOString().split('T')[0];
+            // Correctly get Today's date in IST (YYYY-MM-DD)
+            return new Date().toLocaleDateString("en-CA", {
+                timeZone: "Asia/Kolkata"
+            });
         }
     }["useActivityData.useState"]);
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
@@ -639,9 +641,10 @@ function useActivityData() {
             try {
                 if (!isBackground) setLoading(true);
                 setError("");
-                const localDate = new Date(selectedDate + 'T00:00:00'); // Parse as local
-                const startOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 0, 0, 0, 0).toISOString();
-                const endOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 23, 59, 59, 999).toISOString();
+                // selectedDate is already YYYY-MM-DD in IST
+                // We need to define the boundaries of that specific date in IST and convert to ISO
+                const startOfDay = new Date(`${selectedDate}T00:00:00+05:30`).toISOString();
+                const endOfDay = new Date(`${selectedDate}T23:59:59+05:30`).toISOString();
                 // Base query
                 // Note: We use !inner on agent join to allow filtering by agent's organization_id for Level 3
                 let query = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("call_logs").select(`
@@ -1120,7 +1123,7 @@ function useActivityData() {
         setSource
     };
 }
-_s(useActivityData, "kSzhG07g07UCtX8LoP5GVWBS1+A=", false, function() {
+_s(useActivityData, "nGzHO+Ctx9jvGXSyZaUbiN68biw=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
     ];
