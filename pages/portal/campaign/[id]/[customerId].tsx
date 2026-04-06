@@ -98,6 +98,9 @@ export default function CallingPage() {
     const [isDragging, setIsDragging] = useState(false);
     const startXRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const sliderHandleRef = useRef<HTMLDivElement>(null);
+    const skipTextRef = useRef<HTMLSpanElement>(null);
+    const hasMovedRef = useRef(false);
 
     const lastActiveRef = useRef<number>(Date.now());
 
@@ -3431,62 +3434,120 @@ Campaign: ${campaign?.name || campaignId}
                                                                     {/* Slider Button (Grow) */}
                                                                     <div 
                                                                         ref={containerRef}
-                                                                        className="relative h-12 flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200"
+                                                                        className="relative h-[54px] flex-1 rounded-2xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200 group/slider"
                                                                         onPointerDown={(e) => {
                                                                             setIsDragging(true);
                                                                             startXRef.current = e.clientX;
+                                                                            hasMovedRef.current = false;
+                                                                            if (sliderHandleRef.current) {
+                                                                                sliderHandleRef.current.style.transition = 'none';
+                                                                            }
+                                                                            if (skipTextRef.current) {
+                                                                                skipTextRef.current.style.transition = 'none';
+                                                                            }
+                                                                            try {
+                                                                                 (e.target as Element).setPointerCapture(e.pointerId);
+                                                                            } catch(err) {}
                                                                         }}
                                                                         onPointerMove={(e) => {
-                                                                            if (!isDragging || !containerRef.current) return;
+                                                                            if (!isDragging || !containerRef.current || !sliderHandleRef.current || !skipTextRef.current) return;
                                                                             const currentX = e.clientX;
                                                                             const diff = currentX - startXRef.current;
-                                                                            const maxDrag = containerRef.current.clientWidth - 50; // flexible limit
-                                                                            if (diff > 0 && diff <= maxDrag) {
-                                                                                setDragX(diff);
+                                                                            
+                                                                            if (Math.abs(diff) > 10) {
+                                                                                hasMovedRef.current = true;
                                                                             }
+
+                                                                            const containerWidth = containerRef.current.clientWidth;
+                                                                            const maxDrag = containerWidth * 0.85; 
+                                                                            
+                                                                            const x = Math.max(0, Math.min(diff, maxDrag));
+                                                                            sliderHandleRef.current.style.transform = `translateX(${x}px)`;
+                                                                            
+                                                                            // Subtle Reveal logic (x/10 factor for subtle movement)
+                                                                            const opacity = Math.min(1, x / 40); 
+                                                                            const lateralMove = Math.min(0, (x / 10) - 15);
+                                                                            skipTextRef.current.style.opacity = String(opacity);
+                                                                            skipTextRef.current.style.transform = `translateX(${lateralMove}px)`;
                                                                         }}
-                                                                        onPointerUp={() => {
+                                                                        onPointerUp={(e) => {
+                                                                            if (!isDragging) return;
                                                                             setIsDragging(false);
-                                                                            if (dragX > 80) {
-                                                                               handleSkipCall()
-                                                                            } else if (dragX < 5) {
+                                                                            try {
+                                                                                (e.target as Element).releasePointerCapture(e.pointerId);
+                                                                            } catch(err) {}
+
+                                                                            const containerWidth = containerRef.current?.clientWidth || 300;
+                                                                            const currentTransform = sliderHandleRef.current?.style.transform || "";
+                                                                            const match = currentTransform.match(/translateX\(([\d.]+)px\)/);
+                                                                            const x = match ? parseFloat(match[1]) : 0;
+                                                                            
+                                                                            const threshold = containerWidth * 0.4;
+                                                                            
+                                                                            if (x > threshold) {
+                                                                                handleSkipCall();
+                                                                            } else if (!hasMovedRef.current && x < 5) {
                                                                                 handleStartCall();
                                                                             }
-                                                                            setDragX(0);
+                                                                            
+                                                                            if (sliderHandleRef.current) {
+                                                                                sliderHandleRef.current.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                                                                                sliderHandleRef.current.style.transform = 'translateX(0px)';
+                                                                            }
+                                                                            if (skipTextRef.current) {
+                                                                                skipTextRef.current.style.transition = 'all 0.3s ease';
+                                                                                skipTextRef.current.style.opacity = '0';
+                                                                                skipTextRef.current.style.transform = 'translateX(-15px)';
+                                                                            }
                                                                         }}
                                                                         onPointerLeave={() => {
-                                                                            setIsDragging(false);
-                                                                            setDragX(0);
+                                                                            if (isDragging) {
+                                                                                setIsDragging(false);
+                                                                                if (sliderHandleRef.current) {
+                                                                                    sliderHandleRef.current.style.transition = 'transform 0.3s ease';
+                                                                                    sliderHandleRef.current.style.transform = 'translateX(0px)';
+                                                                                }
+                                                                                if (skipTextRef.current) {
+                                                                                    skipTextRef.current.style.transition = 'all 0.3s ease';
+                                                                                    skipTextRef.current.style.opacity = '0';
+                                                                                    skipTextRef.current.style.transform = 'translateX(-15px)';
+                                                                                }
+                                                                            }
                                                                         }}
                                                                     >
-                                                                        {/* Background Layer */}
-                                                                        <div className="absolute inset-0 flex items-center justify-end pr-6 bg-orange-100/50">
-                                                                            <span className="text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2">
-                                                                                 Slide to Skip <i className="fi flex  fi-rr-angle-double-right text-xs"></i>
+                                                                        {/* Background Layer - revealing "Skip Lead" as we slide right */}
+                                                                        <div className="absolute inset-0 flex items-center justify-start pl-6 bg-transparent pointer-events-none">
+                                                                            <span 
+                                                                                ref={skipTextRef}
+                                                                                className="text-orange-500 font-black uppercase text-[11px] tracking-widest flex items-center gap-2 opacity-0 inline-block"
+                                                                                style={{ transform: 'translateX(-15px)' }}
+                                                                            >
+                                                                                 <i className="fi flex  fi-rr-forward-step text-sm"></i> Skip Lead
                                                                             </span>
                                                                         </div>
-
-                                                                        {/* Foreground Layer (Draggable) */}
+                                                                        
+                                                                        {/* Draggable Button (Foreground) */}
                                                                         <div 
-                                                                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10 rounded-xl"
+                                                                            ref={sliderHandleRef}
+                                                                            className={`absolute inset-0 w-full bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-orange-500/30 will-change-transform z-10 ${isDragging ? 'shadow-2xl brightness-110' : ''}`}
                                                                             style={{ 
-                                                                                width: '100%', 
-                                                                                transform: `translateX(${Math.max(0, dragX)}px)`,
                                                                                 cursor: isDragging ? 'grabbing' : 'grab'
                                                                             }}
                                                                         >
-                                                                            <i className="fi flex  fi-rr-phone-call text-white text-sm"></i>
-                                                                            <span className="text-white font-black text-[11px] uppercase tracking-widest">Follow Up Call</span>
-                                                                            
+                                                                            <i className="fi flex  fi-rr-phone-call text-white text-lg"></i>
+                                                                            <div className="flex flex-col items-start leading-none">
+                                                                                <span className="text-white font-black text-xs uppercase tracking-widest">Connect Now</span>
+                                                                                <span className="text-white/70 font-bold text-[8px] uppercase tracking-tighter">Follow Up Call</span>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
 
                                                                 {/* WhatsApp Button (Inside Row) */}
                                                                 <button 
                                                                     onClick={handleWhatsAppClick}
-                                                                    className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0"
+                                                                    className="h-[54px] w-[54px] rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0"
                                                                 >
-                                                                    <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
+                                                                    <i className="fi flex  fi-brands-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i>
                                                                 </button>
                                                             </div>
                                                         </div>

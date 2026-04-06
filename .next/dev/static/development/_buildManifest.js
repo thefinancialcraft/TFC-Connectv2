@@ -11,6 +11,9 @@ self.__BUILD_MANIFEST = {
   "/portal/campaign": [
     "static/chunks/pages/portal/campaign.js"
   ],
+  "/portal/campaign/[id]": [
+    "static/chunks/pages/portal/campaign/[id].js"
+  ],
   "/portal/campaign/[id]/[customerId]": [
     "static/chunks/pages/portal/campaign/[id]/[customerId].js"
   ],

@@ -1,0 +1,22 @@
+__turbopack_load_page_chunks__("/portal/campaign/[id]", [
+  "static/chunks/components_4a7ae42f._.js",
+  "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
+  "static/chunks/_0398cb9b._.js",
+  "static/chunks/[root-of-the-server]__78abed1d._.js",
+  "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
+  "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
+  "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
+  "static/chunks/node_modules_next_dist_a1eb637b._.js",
+  "static/chunks/node_modules_next_5cb05f67._.js",
+  "static/chunks/node_modules_react-dom_4411d9bd._.js",
+  "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
+  "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+  "static/chunks/node_modules_recharts_es6_util_e968dfe3._.js",
+  "static/chunks/node_modules_recharts_es6_state_e74bbb61._.js",
+  "static/chunks/node_modules_recharts_es6_component_8520eaf5._.js",
+  "static/chunks/node_modules_recharts_es6_cartesian_97297acc._.js",
+  "static/chunks/node_modules_recharts_es6_cf321d8d._.js",
+  "static/chunks/node_modules_fdfb140b._.js",
+  "static/chunks/pages_portal_campaign_[id]_tsx_2da965e7._.js",
+  "static/chunks/turbopack-pages_portal_campaign_[id]_tsx_822ff369._.js"
+])

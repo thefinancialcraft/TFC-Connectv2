@@ -3543,6 +3543,9 @@ function CallingPage() {
     const [isDragging, setIsDragging] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const startXRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(0);
     const containerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const sliderHandleRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const skipTextRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const hasMovedRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(false);
     const lastActiveRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(Date.now());
     // 🔄 STALE SESSION AUTO-RELOAD (Reload if user returns after 5+ minutes)
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -4176,7 +4179,7 @@ function CallingPage() {
             children: "No information available"
         }, void 0, false, {
             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-            lineNumber: 691,
+            lineNumber: 694,
             columnNumber: 30
         }, this);
         let rawData = details;
@@ -4193,7 +4196,7 @@ function CallingPage() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 698,
+                    lineNumber: 701,
                     columnNumber: 24
                 }, this);
             }
@@ -4208,7 +4211,7 @@ function CallingPage() {
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 703,
+                lineNumber: 706,
                 columnNumber: 20
             }, this);
         }
@@ -4250,12 +4253,12 @@ function CallingPage() {
                                 className: "fi flex fi-rr-angle-left mt-0.5"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 743,
+                                lineNumber: 746,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 739,
+                            lineNumber: 742,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4266,7 +4269,7 @@ function CallingPage() {
                                     children: "DATA HISTORY"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 747,
+                                    lineNumber: 750,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4274,13 +4277,13 @@ function CallingPage() {
                                     children: String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 748,
+                                    lineNumber: 751,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 746,
+                            lineNumber: 749,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4290,18 +4293,18 @@ function CallingPage() {
                                 className: "fi flex fi-rr-angle-right mt-0.5"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 757,
+                                lineNumber: 760,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 753,
+                            lineNumber: 756,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 738,
+                    lineNumber: 741,
                     columnNumber: 21
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4320,7 +4323,7 @@ function CallingPage() {
                                     children: cleanKey
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 766,
+                                    lineNumber: 769,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4332,25 +4335,25 @@ function CallingPage() {
                                     children: String(value)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 767,
+                                    lineNumber: 770,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, key, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 765,
+                            lineNumber: 768,
                             columnNumber: 29
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 761,
+                    lineNumber: 764,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-            lineNumber: 736,
+            lineNumber: 739,
             columnNumber: 13
         }, this);
     };
@@ -5651,6 +5654,7 @@ function CallingPage() {
                     attempt_count: (customer?.attempt_count || 0) + 1,
                     last_attempt_at: now,
                     next_called_at: null,
+                    ref_date: now,
                     assigned_to: null,
                     status: 'active',
                     disposition: disposition,
@@ -5704,6 +5708,7 @@ function CallingPage() {
                     combinedDT.setSeconds(0, 0);
                     const finalISO = combinedDT.toISOString();
                     updatePayload.next_called_at = finalISO;
+                    updatePayload.ref_date = finalISO; // Unified priority column
                     logNextCalledAt = finalISO;
                     // --- Google Calendar Sync Logic ---
                     if (user?.googleCalendarConnected) {
@@ -5780,6 +5785,7 @@ Campaign: ${campaign?.name || campaignId}
                     }
                 } else {
                     updatePayload.next_called_at = null;
+                    updatePayload.ref_date = now; // For active leads, ref_date defaults to current time
                 }
                 logStatus = updatePayload.status;
                 const { error: customerUpdateError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').update(updatePayload).eq('id', customerId);
@@ -6118,20 +6124,20 @@ Campaign: ${campaign?.name || campaignId}
                             className: "jsx-b39f0cf342ec66c8" + " " + "absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/20 rounded-full blur-[100px]"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 2719,
+                            lineNumber: 2725,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "jsx-b39f0cf342ec66c8" + " " + "absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-200/20 rounded-full blur-[100px]"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 2720,
+                            lineNumber: 2726,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 2718,
+                    lineNumber: 2724,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6155,7 +6161,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-b39f0cf342ec66c8" + " " + "text-slate-100"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2731,
+                                                lineNumber: 2737,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -6171,13 +6177,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-b39f0cf342ec66c8" + " " + "text-indigo-600 transition-all duration-1000 ease-linear"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2740,
+                                                lineNumber: 2746,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2730,
+                                        lineNumber: 2736,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6188,7 +6194,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: assignmentCountdown
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2755,
+                                                lineNumber: 2761,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6196,19 +6202,19 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "Sec"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2756,
+                                                lineNumber: 2762,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2754,
+                                        lineNumber: 2760,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2728,
+                                lineNumber: 2734,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6219,7 +6225,7 @@ Campaign: ${campaign?.name || campaignId}
                                         children: "Assigning Lead"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2762,
+                                        lineNumber: 2768,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6227,13 +6233,13 @@ Campaign: ${campaign?.name || campaignId}
                                         children: "Syncing Next Opportunity"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2763,
+                                        lineNumber: 2769,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2761,
+                                lineNumber: 2767,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6250,7 +6256,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Today"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 2770,
+                                                        lineNumber: 2776,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6261,7 +6267,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 children: dailyLeadCount
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 2772,
+                                                                lineNumber: 2778,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6269,26 +6275,26 @@ Campaign: ${campaign?.name || campaignId}
                                                                 children: "Dials"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 2773,
+                                                                lineNumber: 2779,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 2771,
+                                                        lineNumber: 2777,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2769,
+                                                lineNumber: 2775,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "jsx-b39f0cf342ec66c8" + " " + "h-10 w-px bg-slate-800"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2776,
+                                                lineNumber: 2782,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6299,7 +6305,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Spirit"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 2778,
+                                                        lineNumber: 2784,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6311,19 +6317,19 @@ Campaign: ${campaign?.name || campaignId}
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 2779,
+                                                        lineNumber: 2785,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2777,
+                                                lineNumber: 2783,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2768,
+                                        lineNumber: 2774,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6335,18 +6341,18 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-b39f0cf342ec66c8" + " " + "h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full animate-[progress_3s_ease-in-out_infinite]"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 2787,
+                                            lineNumber: 2793,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2786,
+                                        lineNumber: 2792,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2767,
+                                lineNumber: 2773,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6356,27 +6362,27 @@ Campaign: ${campaign?.name || campaignId}
                                         className: "jsx-b39f0cf342ec66c8" + " " + "w-1.5 h-1.5 rounded-full bg-slate-200 animate-[bounce_1s_infinite_-0.3s]"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2793,
+                                        lineNumber: 2799,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "jsx-b39f0cf342ec66c8" + " " + "w-1.5 h-1.5 rounded-full bg-indigo-500 animate-[bounce_1s_infinite_-0.15s]"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2794,
+                                        lineNumber: 2800,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "jsx-b39f0cf342ec66c8" + " " + "w-1.5 h-1.5 rounded-full bg-slate-200 animate-[bounce_1s_infinite]"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2795,
+                                        lineNumber: 2801,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2792,
+                                lineNumber: 2798,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6390,7 +6396,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-b39f0cf342ec66c8" + " " + "fi flex fi-rr-exit text-sm transition-transform group-hover:-translate-x-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2804,
+                                                lineNumber: 2810,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6398,13 +6404,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "Cancel Assignment"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2805,
+                                                lineNumber: 2811,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2800,
+                                        lineNumber: 2806,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6412,24 +6418,24 @@ Campaign: ${campaign?.name || campaignId}
                                         children: "Rynxly Engine 2.5"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2808,
+                                        lineNumber: 2814,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2799,
+                                lineNumber: 2805,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2725,
+                        lineNumber: 2731,
                         columnNumber: 21
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 2723,
+                    lineNumber: 2729,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -6439,7 +6445,7 @@ Campaign: ${campaign?.name || campaignId}
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-            lineNumber: 2716,
+            lineNumber: 2722,
             columnNumber: 13
         }, this);
     }
@@ -6456,14 +6462,14 @@ Campaign: ${campaign?.name || campaignId}
                                 className: "absolute inset-0 border-4 border-slate-100 rounded-full"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2830,
+                                lineNumber: 2836,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "absolute inset-0 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent border-l-transparent"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2831,
+                                lineNumber: 2837,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6472,18 +6478,18 @@ Campaign: ${campaign?.name || campaignId}
                                     className: "fi flex fi-rr-shuffle text-indigo-600 text-sm animate-pulse"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 2833,
+                                    lineNumber: 2839,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2832,
+                                lineNumber: 2838,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2829,
+                        lineNumber: 2835,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -6491,7 +6497,7 @@ Campaign: ${campaign?.name || campaignId}
                         children: "Assigning Lead"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2837,
+                        lineNumber: 2843,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6499,7 +6505,7 @@ Campaign: ${campaign?.name || campaignId}
                         children: "Syncing your lead data..."
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2838,
+                        lineNumber: 2844,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6509,38 +6515,38 @@ Campaign: ${campaign?.name || campaignId}
                                 className: "w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2842,
+                                lineNumber: 2848,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2843,
+                                lineNumber: 2849,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "w-1.5 h-1.5 rounded-full bg-indigo-600 animate-bounce"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2844,
+                                lineNumber: 2850,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2841,
+                        lineNumber: 2847,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 2827,
+                lineNumber: 2833,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-            lineNumber: 2826,
+            lineNumber: 2832,
             columnNumber: 13
         }, this);
     }
@@ -6565,7 +6571,7 @@ Campaign: ${campaign?.name || campaignId}
                 onLogout: handleLogoutClick
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 2853,
+                lineNumber: 2859,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6584,7 +6590,7 @@ Campaign: ${campaign?.name || campaignId}
                         hideSidebar: false
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2870,
+                        lineNumber: 2876,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -6607,12 +6613,12 @@ Campaign: ${campaign?.name || campaignId}
                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-bolt text-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 2890,
+                                                        lineNumber: 2896,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 2889,
+                                                    lineNumber: 2895,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6623,7 +6629,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             children: "Assignment Success"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 2893,
+                                                            lineNumber: 2899,
                                                             columnNumber: 41
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6631,19 +6637,19 @@ Campaign: ${campaign?.name || campaignId}
                                                             children: customer?.customer_name || 'New Lead Assigned'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 2894,
+                                                            lineNumber: 2900,
                                                             columnNumber: 41
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 2892,
+                                                    lineNumber: 2898,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 2888,
+                                            lineNumber: 2894,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -6653,23 +6659,23 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-cross-small"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2901,
+                                                lineNumber: 2907,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 2897,
+                                            lineNumber: 2903,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 2887,
+                                    lineNumber: 2893,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2886,
+                                lineNumber: 2892,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6687,14 +6693,14 @@ Campaign: ${campaign?.name || campaignId}
                                                             className: "jsx-bd40b562327a6f52" + " " + "absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-50/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 2919,
+                                                            lineNumber: 2925,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "jsx-bd40b562327a6f52" + " " + "absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-50/30 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 2920,
+                                                            lineNumber: 2926,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6712,7 +6718,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + `fi ${leadScore.icon} ${leadScore.color} text-[10px]`
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 2928,
+                                                                                        lineNumber: 2934,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6723,18 +6729,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 2929,
+                                                                                        lineNumber: 2935,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 2927,
+                                                                                lineNumber: 2933,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 2926,
+                                                                            lineNumber: 2932,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6748,7 +6754,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: customer?.customer_name?.charAt(0) || 'C'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2936,
+                                                                                            lineNumber: 2942,
                                                                                             columnNumber: 53
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6757,24 +6763,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-clock text-[10px] text-white mt-0.5"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 2943,
+                                                                                                lineNumber: 2949,
                                                                                                 columnNumber: 61
                                                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-check text-[10px] text-white mt-0.5"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 2945,
+                                                                                                lineNumber: 2951,
                                                                                                 columnNumber: 61
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2939,
+                                                                                            lineNumber: 2945,
                                                                                             columnNumber: 53
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2935,
+                                                                                    lineNumber: 2941,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6787,12 +6793,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 children: customer?.customer_name || 'Anonymous User'
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 2953,
+                                                                                                lineNumber: 2959,
                                                                                                 columnNumber: 57
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2952,
+                                                                                            lineNumber: 2958,
                                                                                             columnNumber: 53
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6804,7 +6810,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-id-badge text-xs opacity-50"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 2959,
+                                                                                                        lineNumber: 2965,
                                                                                                         columnNumber: 61
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6815,30 +6821,30 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 2960,
+                                                                                                        lineNumber: 2966,
                                                                                                         columnNumber: 61
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 2958,
+                                                                                                lineNumber: 2964,
                                                                                                 columnNumber: 57
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2957,
+                                                                                            lineNumber: 2963,
                                                                                             columnNumber: 53
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2951,
+                                                                                    lineNumber: 2957,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 2933,
+                                                                            lineNumber: 2939,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6849,7 +6855,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Lead Score"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2968,
+                                                                                    lineNumber: 2974,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6859,7 +6865,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + `fi flex mr-2 ${leadScore.icon} ${leadScore.color} text-sm`
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2970,
+                                                                                            lineNumber: 2976,
                                                                                             columnNumber: 53
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6867,25 +6873,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: leadScore.label
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2971,
+                                                                                            lineNumber: 2977,
                                                                                             columnNumber: 53
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2969,
+                                                                                    lineNumber: 2975,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 2967,
+                                                                            lineNumber: 2973,
                                                                             columnNumber: 45
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 2924,
+                                                                    lineNumber: 2930,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6898,7 +6904,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-clock-three text-slate-400 text-[10px]"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2980,
+                                                                                    lineNumber: 2986,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6909,13 +6915,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2981,
+                                                                                    lineNumber: 2987,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 2979,
+                                                                            lineNumber: 2985,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         lastInteraction && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6925,7 +6931,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-vector-alt text-purple-400 text-[10px] shrink-0"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2989,
+                                                                                    lineNumber: 2995,
                                                                                     columnNumber: 54
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6936,7 +6942,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: lastInteraction.disposition || 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 2991,
+                                                                                            lineNumber: 2997,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         lastInteraction.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -6946,7 +6952,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "/"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 2994,
+                                                                                                    lineNumber: 3000,
                                                                                                     columnNumber: 65
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6954,7 +6960,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: lastInteraction.sub_disposition
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 2995,
+                                                                                                    lineNumber: 3001,
                                                                                                     columnNumber: 65
                                                                                                 }, this)
                                                                                             ]
@@ -6966,7 +6972,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "/"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3000,
+                                                                                                    lineNumber: 3006,
                                                                                                     columnNumber: 65
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6974,7 +6980,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: lastInteraction.outcome
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3001,
+                                                                                                    lineNumber: 3007,
                                                                                                     columnNumber: 65
                                                                                                 }, this)
                                                                                             ]
@@ -6982,13 +6988,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 2990,
+                                                                                    lineNumber: 2996,
                                                                                     columnNumber: 54
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 2988,
+                                                                            lineNumber: 2994,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7021,12 +7027,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + `fi flex ${iconClass} text-white text-[10px] transform ${rotateClass}`
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3037,
+                                                                                            lineNumber: 3043,
                                                                                             columnNumber: 61
                                                                                         }, this)
                                                                                     }, i, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3031,
+                                                                                        lineNumber: 3037,
                                                                                         columnNumber: 57
                                                                                     }, this);
                                                                                 }),
@@ -7036,24 +7042,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-minus text-slate-200 text-xs"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3043,
+                                                                                        lineNumber: 3049,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3042,
+                                                                                    lineNumber: 3048,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3009,
+                                                                            lineNumber: 3015,
                                                                             columnNumber: 45
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 2977,
+                                                                    lineNumber: 2983,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7068,12 +7074,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-user flex text-xs sm:text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3054,
+                                                                                        lineNumber: 3060,
                                                                                         columnNumber: 54
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3053,
+                                                                                    lineNumber: 3059,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7081,7 +7087,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Manager"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3056,
+                                                                                    lineNumber: 3062,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7089,13 +7095,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: managedByInfo?.name || 'Self'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3057,
+                                                                                    lineNumber: 3063,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3052,
+                                                                            lineNumber: 3058,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7107,12 +7113,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-comment-alt text-xs sm:text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3063,
+                                                                                        lineNumber: 3069,
                                                                                         columnNumber: 54
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3062,
+                                                                                    lineNumber: 3068,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7120,7 +7126,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Status"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3065,
+                                                                                    lineNumber: 3071,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7128,13 +7134,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: customer?.disposition || 'Fresh'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3066,
+                                                                                    lineNumber: 3072,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3061,
+                                                                            lineNumber: 3067,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7146,12 +7152,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-calendar-clock text-xs sm:text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3072,
+                                                                                        lineNumber: 3078,
                                                                                         columnNumber: 54
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3071,
+                                                                                    lineNumber: 3077,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7159,7 +7165,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Expiry"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3074,
+                                                                                    lineNumber: 3080,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7170,7 +7176,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: formatDate(customer?.expiry_date)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3076,
+                                                                                            lineNumber: 3082,
                                                                                             columnNumber: 53
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7194,18 +7200,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-edit text-[10px]"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3095,
+                                                                                                lineNumber: 3101,
                                                                                                 columnNumber: 57
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3077,
+                                                                                            lineNumber: 3083,
                                                                                             columnNumber: 53
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3075,
+                                                                                    lineNumber: 3081,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 isEditingExpiry && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7217,7 +7223,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: "Update Expiry"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3105,
+                                                                                            lineNumber: 3111,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7234,20 +7240,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             })() : 'DD/MM/YYYY'
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 3108,
+                                                                                                            lineNumber: 3114,
                                                                                                             columnNumber: 65
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi fi-rr-calendar text-slate-400"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 3114,
+                                                                                                            lineNumber: 3120,
                                                                                                             columnNumber: 65
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3107,
+                                                                                                    lineNumber: 3113,
                                                                                                     columnNumber: 61
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -7257,13 +7263,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3116,
+                                                                                                    lineNumber: 3122,
                                                                                                     columnNumber: 61
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3106,
+                                                                                            lineNumber: 3112,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7278,7 +7284,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Cancel"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3124,
+                                                                                                    lineNumber: 3130,
                                                                                                     columnNumber: 61
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7294,7 +7300,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-check text-[8px]"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3143,
+                                                                                                                lineNumber: 3149,
                                                                                                                 columnNumber: 73
                                                                                                             }, this),
                                                                                                             "Save"
@@ -7302,25 +7308,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     }, void 0, true)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3133,
+                                                                                                    lineNumber: 3139,
                                                                                                     columnNumber: 61
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3123,
+                                                                                            lineNumber: 3129,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3101,
+                                                                                    lineNumber: 3107,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3070,
+                                                                            lineNumber: 3076,
                                                                             columnNumber: 46
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7332,12 +7338,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-bullhorn text-xs sm:text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3156,
+                                                                                        lineNumber: 3162,
                                                                                         columnNumber: 54
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3155,
+                                                                                    lineNumber: 3161,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7345,7 +7351,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Campaign"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3158,
+                                                                                    lineNumber: 3164,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7353,36 +7359,36 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: campaign?.name || 'Global'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3159,
+                                                                                    lineNumber: 3165,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3154,
+                                                                            lineNumber: 3160,
                                                                             columnNumber: 46
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3050,
+                                                                    lineNumber: 3056,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 2922,
+                                                            lineNumber: 2928,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 2917,
+                                                    lineNumber: 2923,
                                                     columnNumber: 33
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 2916,
+                                                lineNumber: 2922,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7397,20 +7403,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                     className: "jsx-bd40b562327a6f52" + " " + "absolute -top-12 -left-12 w-64 h-64 rounded-full bg-indigo-50/50 blur-[80px]"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3171,
+                                                                    lineNumber: 3177,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "jsx-bd40b562327a6f52" + " " + "absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-violet-50/50 blur-[80px]"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3172,
+                                                                    lineNumber: 3178,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 3170,
+                                                            lineNumber: 3176,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7437,14 +7443,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Persistent Notes"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3186,
+                                                                                        lineNumber: 3192,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                         className: "jsx-bd40b562327a6f52" + " " + `w-1.5 h-1.5 rounded-full transition-all duration-500 ${liveNotes.trim().length > 0 ? isSavingLiveNotes ? 'bg-amber-400' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-200'}`
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3187,
+                                                                                        lineNumber: 3193,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     isSavingLiveNotes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7452,18 +7458,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Saving..."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3188,
+                                                                                        lineNumber: 3194,
                                                                                         columnNumber: 75
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3185,
+                                                                                lineNumber: 3191,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3184,
+                                                                            lineNumber: 3190,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7480,12 +7486,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-expand text-[10px]"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3201,
+                                                                                        lineNumber: 3207,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3193,
+                                                                                    lineNumber: 3199,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7494,24 +7500,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-angle-small-down"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3208,
+                                                                                        lineNumber: 3214,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3205,
+                                                                                    lineNumber: 3211,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3192,
+                                                                            lineNumber: 3198,
                                                                             columnNumber: 45
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3176,
+                                                                    lineNumber: 3182,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7529,12 +7535,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: i + 1
                                                                                     }, i, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3221,
+                                                                                        lineNumber: 3227,
                                                                                         columnNumber: 57
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3216,
+                                                                                lineNumber: 3222,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -7552,18 +7558,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "flex-1 h-full bg-transparent text-slate-700 p-3 pt-[13px] text-[12px] font-medium outline-none transition-all resize-none leading-6 placeholder:text-slate-300 overflow-y-auto custom-scrollbar"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3224,
+                                                                                lineNumber: 3230,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3214,
+                                                                        lineNumber: 3220,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3213,
+                                                                    lineNumber: 3219,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7580,7 +7586,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "hidden"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3241,
+                                                                                    lineNumber: 3247,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7592,7 +7598,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-clip text-[10px] group-hover/attach:rotate-12 transition-transform"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3253,
+                                                                                            lineNumber: 3259,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7600,7 +7606,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: "Attachment"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3254,
+                                                                                            lineNumber: 3260,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         attachments.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7608,19 +7614,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: attachments.length
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3256,
+                                                                                            lineNumber: 3262,
                                                                                             columnNumber: 61
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3248,
+                                                                                    lineNumber: 3254,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3240,
+                                                                            lineNumber: 3246,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7636,35 +7642,35 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-trash-undo text-xs"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3272,
+                                                                                lineNumber: 3278,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3262,
+                                                                            lineNumber: 3268,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3239,
+                                                                    lineNumber: 3245,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 3175,
+                                                            lineNumber: 3181,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 3168,
+                                                    lineNumber: 3174,
                                                     columnNumber: 33
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 3167,
+                                                lineNumber: 3173,
                                                 columnNumber: 29
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7679,20 +7685,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                     className: "jsx-bd40b562327a6f52" + " " + `absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-white/15' : 'bg-indigo-50/50'}`
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3287,
+                                                                    lineNumber: 3293,
                                                                     columnNumber: 41
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "jsx-bd40b562327a6f52" + " " + `absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-purple-500/20' : 'bg-violet-50/50'}`
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 3288,
+                                                                    lineNumber: 3294,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 3286,
+                                                            lineNumber: 3292,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7713,20 +7719,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + `animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isCalling ? 'bg-emerald-400' : 'bg-indigo-400'}`
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3322,
+                                                                                                lineNumber: 3328,
                                                                                                 columnNumber: 57
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + `relative inline-flex rounded-full h-1.5 w-1.5 ${isCalling ? 'bg-emerald-500' : 'bg-indigo-500'}`
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3323,
+                                                                                                lineNumber: 3329,
                                                                                                 columnNumber: 57
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3321,
+                                                                                        lineNumber: 3327,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7734,13 +7740,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: localCallingStatus === 'preparing' ? 'Establishing' : localCallingStatus === 'connecting' ? 'Connecting' : isCalling ? 'Live' : postCall ? 'Done' : 'Ready'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3325,
+                                                                                        lineNumber: 3331,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3315,
+                                                                                lineNumber: 3321,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7755,12 +7761,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: formatTime(callDuration)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3338,
+                                                                                        lineNumber: 3344,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3337,
+                                                                                    lineNumber: 3343,
                                                                                     columnNumber: 57
                                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "flex flex-col items-center",
@@ -7770,7 +7776,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: postCall ? 'Ended' : 'Ready To Call'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3344,
+                                                                                            lineNumber: 3350,
                                                                                             columnNumber: 61
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7778,7 +7784,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: postCall ? 'Mark outcome.' : 'Line ready.'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3347,
+                                                                                            lineNumber: 3353,
                                                                                             columnNumber: 61
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7789,7 +7795,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3356,
+                                                                                                    lineNumber: 3362,
                                                                                                     columnNumber: 65
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7797,7 +7803,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: isPhoneUnmasked ? customer?.phone_no ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["decryptPhone"])(customer.phone_no) : 'N/A' : (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(customer?.phone_no) || 'N/A'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3357,
+                                                                                                    lineNumber: 3363,
                                                                                                     columnNumber: 65
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7805,24 +7811,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: customer?.status || 'Active'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3363,
+                                                                                                    lineNumber: 3369,
                                                                                                     columnNumber: 61
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3352,
+                                                                                            lineNumber: 3358,
                                                                                             columnNumber: 62
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3343,
+                                                                                    lineNumber: 3349,
                                                                                     columnNumber: 57
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3335,
+                                                                                lineNumber: 3341,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7839,23 +7845,23 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "w-1 bg-white/60 rounded-full animate-[bounce_1s_infinite]"
                                                                                         }, i, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3380,
+                                                                                            lineNumber: 3386,
                                                                                             columnNumber: 65
                                                                                         }, this))
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3378,
+                                                                                    lineNumber: 3384,
                                                                                     columnNumber: 57
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3376,
+                                                                                lineNumber: 3382,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3313,
+                                                                        lineNumber: 3319,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7873,12 +7879,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-phone-slash text-sm"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3397,
+                                                                                                lineNumber: 3403,
                                                                                                 columnNumber: 65
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3396,
+                                                                                            lineNumber: 3402,
                                                                                             columnNumber: 61
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7886,13 +7892,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: "End"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3399,
+                                                                                            lineNumber: 3405,
                                                                                             columnNumber: 61
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3392,
+                                                                                    lineNumber: 3398,
                                                                                     columnNumber: 57
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7902,18 +7908,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3405,
+                                                                                        lineNumber: 3411,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3401,
+                                                                                    lineNumber: 3407,
                                                                                     columnNumber: 59
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3391,
+                                                                            lineNumber: 3397,
                                                                             columnNumber: 53
                                                                         }, this) : !postCall ? // CONDITIONAL LAYOUT: Follow-up vs Standard
                                                                         (customer?.status || 'Active').toLowerCase() === 'followup' ? // FOLLOW-UP LAYOUT (Unified Container)
@@ -7931,7 +7937,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Last Interaction"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3418,
+                                                                                                    lineNumber: 3424,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7939,13 +7945,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: lastInteraction ? formatDate(lastInteraction.created_at) : 'No history'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3419,
+                                                                                                    lineNumber: 3425,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3417,
+                                                                                            lineNumber: 3423,
                                                                                             columnNumber: 66
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7957,13 +7963,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3421,
+                                                                                            lineNumber: 3427,
                                                                                             columnNumber: 66
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3416,
+                                                                                    lineNumber: 3422,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7974,115 +7980,180 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             onPointerDown: (e)=>{
                                                                                                 setIsDragging(true);
                                                                                                 startXRef.current = e.clientX;
+                                                                                                hasMovedRef.current = false;
+                                                                                                if (sliderHandleRef.current) {
+                                                                                                    sliderHandleRef.current.style.transition = 'none';
+                                                                                                }
+                                                                                                if (skipTextRef.current) {
+                                                                                                    skipTextRef.current.style.transition = 'none';
+                                                                                                }
+                                                                                                try {
+                                                                                                    e.target.setPointerCapture(e.pointerId);
+                                                                                                } catch (err) {}
                                                                                             },
                                                                                             onPointerMove: (e)=>{
-                                                                                                if (!isDragging || !containerRef.current) return;
+                                                                                                if (!isDragging || !containerRef.current || !sliderHandleRef.current || !skipTextRef.current) return;
                                                                                                 const currentX = e.clientX;
                                                                                                 const diff = currentX - startXRef.current;
-                                                                                                const maxDrag = containerRef.current.clientWidth - 50; // flexible limit
-                                                                                                if (diff > 0 && diff <= maxDrag) {
-                                                                                                    setDragX(diff);
+                                                                                                if (Math.abs(diff) > 10) {
+                                                                                                    hasMovedRef.current = true;
                                                                                                 }
+                                                                                                const containerWidth = containerRef.current.clientWidth;
+                                                                                                const maxDrag = containerWidth * 0.85;
+                                                                                                const x = Math.max(0, Math.min(diff, maxDrag));
+                                                                                                sliderHandleRef.current.style.transform = `translateX(${x}px)`;
+                                                                                                // Subtle Reveal logic (x/10 factor for subtle movement)
+                                                                                                const opacity = Math.min(1, x / 40);
+                                                                                                const lateralMove = Math.min(0, x / 10 - 15);
+                                                                                                skipTextRef.current.style.opacity = String(opacity);
+                                                                                                skipTextRef.current.style.transform = `translateX(${lateralMove}px)`;
                                                                                             },
-                                                                                            onPointerUp: ()=>{
+                                                                                            onPointerUp: (e)=>{
+                                                                                                if (!isDragging) return;
                                                                                                 setIsDragging(false);
-                                                                                                if (dragX > 80) {
+                                                                                                try {
+                                                                                                    e.target.releasePointerCapture(e.pointerId);
+                                                                                                } catch (err) {}
+                                                                                                const containerWidth = containerRef.current?.clientWidth || 300;
+                                                                                                const currentTransform = sliderHandleRef.current?.style.transform || "";
+                                                                                                const match = currentTransform.match(/translateX\(([\d.]+)px\)/);
+                                                                                                const x = match ? parseFloat(match[1]) : 0;
+                                                                                                const threshold = containerWidth * 0.4;
+                                                                                                if (x > threshold) {
                                                                                                     handleSkipCall();
-                                                                                                } else if (dragX < 5) {
+                                                                                                } else if (!hasMovedRef.current && x < 5) {
                                                                                                     handleStartCall();
                                                                                                 }
-                                                                                                setDragX(0);
+                                                                                                if (sliderHandleRef.current) {
+                                                                                                    sliderHandleRef.current.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                                                                                                    sliderHandleRef.current.style.transform = 'translateX(0px)';
+                                                                                                }
+                                                                                                if (skipTextRef.current) {
+                                                                                                    skipTextRef.current.style.transition = 'all 0.3s ease';
+                                                                                                    skipTextRef.current.style.opacity = '0';
+                                                                                                    skipTextRef.current.style.transform = 'translateX(-15px)';
+                                                                                                }
                                                                                             },
                                                                                             onPointerLeave: ()=>{
-                                                                                                setIsDragging(false);
-                                                                                                setDragX(0);
+                                                                                                if (isDragging) {
+                                                                                                    setIsDragging(false);
+                                                                                                    if (sliderHandleRef.current) {
+                                                                                                        sliderHandleRef.current.style.transition = 'transform 0.3s ease';
+                                                                                                        sliderHandleRef.current.style.transform = 'translateX(0px)';
+                                                                                                    }
+                                                                                                    if (skipTextRef.current) {
+                                                                                                        skipTextRef.current.style.transition = 'all 0.3s ease';
+                                                                                                        skipTextRef.current.style.opacity = '0';
+                                                                                                        skipTextRef.current.style.transform = 'translateX(-15px)';
+                                                                                                    }
+                                                                                                }
                                                                                             },
-                                                                                            className: "jsx-bd40b562327a6f52" + " " + "relative h-12 flex-1 rounded-xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200",
+                                                                                            className: "jsx-bd40b562327a6f52" + " " + "relative h-[54px] flex-1 rounded-2xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200 group/slider",
                                                                                             children: [
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                                    className: "jsx-bd40b562327a6f52" + " " + "absolute inset-0 flex items-center justify-end pr-6 bg-orange-100/50",
+                                                                                                    className: "jsx-bd40b562327a6f52" + " " + "absolute inset-0 flex items-center justify-start pl-6 bg-transparent pointer-events-none",
                                                                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                                        className: "jsx-bd40b562327a6f52" + " " + "text-orange-300 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2",
+                                                                                                        ref: skipTextRef,
+                                                                                                        style: {
+                                                                                                            transform: 'translateX(-15px)'
+                                                                                                        },
+                                                                                                        className: "jsx-bd40b562327a6f52" + " " + "text-orange-500 font-black uppercase text-[11px] tracking-widest flex items-center gap-2 opacity-0 inline-block",
                                                                                                         children: [
-                                                                                                            "Slide to Skip ",
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                                                                className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-angle-double-right text-xs"
+                                                                                                                className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-forward-step text-sm"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3462,
-                                                                                                                columnNumber: 96
-                                                                                                            }, this)
+                                                                                                                lineNumber: 3525,
+                                                                                                                columnNumber: 82
+                                                                                                            }, this),
+                                                                                                            " Skip Lead"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3461,
+                                                                                                        lineNumber: 3520,
                                                                                                         columnNumber: 77
                                                                                                     }, this)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3460,
+                                                                                                    lineNumber: 3519,
                                                                                                     columnNumber: 73
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                                    ref: sliderHandleRef,
                                                                                                     style: {
-                                                                                                        width: '100%',
-                                                                                                        transform: `translateX(${Math.max(0, dragX)}px)`,
                                                                                                         cursor: isDragging ? 'grabbing' : 'grab'
                                                                                                     },
-                                                                                                    className: "jsx-bd40b562327a6f52" + " " + "absolute inset-y-0 left-0 bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center gap-2 shadow-xl shadow-orange-500/20 transition-transform duration-75 ease-out will-change-transform z-10 rounded-xl",
+                                                                                                    className: "jsx-bd40b562327a6f52" + " " + `absolute inset-0 w-full bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-orange-500/30 will-change-transform z-10 ${isDragging ? 'shadow-2xl brightness-110' : ''}`,
                                                                                                     children: [
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                                                            className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-phone-call text-white text-sm"
+                                                                                                            className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-phone-call text-white text-lg"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 3475,
+                                                                                                            lineNumber: 3537,
                                                                                                             columnNumber: 77
                                                                                                         }, this),
-                                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                                            className: "jsx-bd40b562327a6f52" + " " + "text-white font-black text-[11px] uppercase tracking-widest",
-                                                                                                            children: "Follow Up Call"
-                                                                                                        }, void 0, false, {
+                                                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                                            className: "jsx-bd40b562327a6f52" + " " + "flex flex-col items-start leading-none",
+                                                                                                            children: [
+                                                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                                                    className: "jsx-bd40b562327a6f52" + " " + "text-white font-black text-xs uppercase tracking-widest",
+                                                                                                                    children: "Connect Now"
+                                                                                                                }, void 0, false, {
+                                                                                                                    fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
+                                                                                                                    lineNumber: 3539,
+                                                                                                                    columnNumber: 81
+                                                                                                                }, this),
+                                                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                                                    className: "jsx-bd40b562327a6f52" + " " + "text-white/70 font-bold text-[8px] uppercase tracking-tighter",
+                                                                                                                    children: "Follow Up Call"
+                                                                                                                }, void 0, false, {
+                                                                                                                    fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
+                                                                                                                    lineNumber: 3540,
+                                                                                                                    columnNumber: 81
+                                                                                                                }, this)
+                                                                                                            ]
+                                                                                                        }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 3476,
+                                                                                                            lineNumber: 3538,
                                                                                                             columnNumber: 77
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3467,
+                                                                                                    lineNumber: 3530,
                                                                                                     columnNumber: 73
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3429,
+                                                                                            lineNumber: 3435,
                                                                                             columnNumber: 69
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                                                             onClick: handleWhatsAppClick,
-                                                                                            className: "jsx-bd40b562327a6f52" + " " + "h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0",
+                                                                                            className: "jsx-bd40b562327a6f52" + " " + "h-[54px] w-[54px] rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0",
                                                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                                                className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"
+                                                                                                className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-brands-whatsapp text-2xl group-hover:rotate-12 transition-transform"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3486,
+                                                                                                lineNumber: 3550,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3482,
+                                                                                            lineNumber: 3546,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3427,
+                                                                                    lineNumber: 3433,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3414,
+                                                                            lineNumber: 3420,
                                                                             columnNumber: 57
                                                                         }, this) : // STANDARD LAYOUT (Grid)
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8098,12 +8169,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-phone-call text-sm"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3498,
+                                                                                                lineNumber: 3562,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3497,
+                                                                                            lineNumber: 3561,
                                                                                             columnNumber: 65
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8111,13 +8182,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: "Call Now"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3500,
+                                                                                            lineNumber: 3564,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3493,
+                                                                                    lineNumber: 3557,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8127,18 +8198,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3507,
+                                                                                        lineNumber: 3571,
                                                                                         columnNumber: 65
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3503,
+                                                                                    lineNumber: 3567,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3492,
+                                                                            lineNumber: 3556,
                                                                             columnNumber: 57
                                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                             className: "jsx-bd40b562327a6f52" + " " + "grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300",
@@ -8151,14 +8222,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-refresh text-xs"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3517,
+                                                                                            lineNumber: 3581,
                                                                                             columnNumber: 61
                                                                                         }, this),
                                                                                         " Redial"
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3513,
+                                                                                    lineNumber: 3577,
                                                                                     columnNumber: 57
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8169,53 +8240,53 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-brands-whatsapp text-xs"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3523,
+                                                                                            lineNumber: 3587,
                                                                                             columnNumber: 61
                                                                                         }, this),
                                                                                         " Chat"
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3519,
+                                                                                    lineNumber: 3583,
                                                                                     columnNumber: 57
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3512,
+                                                                            lineNumber: 3576,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3389,
+                                                                        lineNumber: 3395,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 3309,
+                                                                lineNumber: 3315,
                                                                 columnNumber: 37
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 3308,
+                                                            lineNumber: 3314,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 3280,
+                                                    lineNumber: 3286,
                                                     columnNumber: 33
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 3278,
+                                                lineNumber: 3284,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 2913,
+                                        lineNumber: 2919,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8228,7 +8299,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         className: "jsx-bd40b562327a6f52" + " " + "absolute top-0 right-0 w-24 h-24 bg-indigo-50/30 rounded-bl-[3rem] -z-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 3539,
+                                                        lineNumber: 3603,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8243,12 +8314,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex   fi-rr-info text-sm"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3543,
+                                                                            lineNumber: 3607,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3542,
+                                                                        lineNumber: 3606,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8262,7 +8333,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: " Details"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3547,
+                                                                                        lineNumber: 3611,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8272,18 +8343,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-edit text-[9px] group-hover/editbtn:text-indigo-300"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3552,
+                                                                                            lineNumber: 3616,
                                                                                             columnNumber: 61
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3548,
+                                                                                        lineNumber: 3612,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3546,
+                                                                                lineNumber: 3610,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8291,19 +8362,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 children: "Reference Data"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3556,
+                                                                                lineNumber: 3620,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3545,
+                                                                        lineNumber: 3609,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 3541,
+                                                                lineNumber: 3605,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8311,19 +8382,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                 children: renderCleanedDetails(customer?.customer_details)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 3559,
+                                                                lineNumber: 3623,
                                                                 columnNumber: 46
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 3540,
+                                                        lineNumber: 3604,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 3538,
+                                                lineNumber: 3602,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8333,7 +8404,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         className: "jsx-bd40b562327a6f52" + " " + "absolute top-0 right-0 w-24 h-24 bg-purple-50/30 rounded-bl-[3rem] z-0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 3567,
+                                                        lineNumber: 3631,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8348,12 +8419,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex   fi-rr-check-circle text-sm"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 3571,
+                                                                            lineNumber: 3635,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3570,
+                                                                        lineNumber: 3634,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8364,7 +8435,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 children: "Set Outcome"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3574,
+                                                                                lineNumber: 3638,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8372,19 +8443,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 children: "Post-Call Disposition"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3575,
+                                                                                lineNumber: 3639,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3573,
+                                                                        lineNumber: 3637,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 3569,
+                                                                lineNumber: 3633,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8401,7 +8472,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Primary Status"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3583,
+                                                                                        lineNumber: 3647,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8416,7 +8487,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-user-gear flex text-[10px] text-indigo-500 group-hover:text-indigo-300"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3590,
+                                                                                                        lineNumber: 3654,
                                                                                                         columnNumber: 65
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8424,20 +8495,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         children: "Assigned To"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3591,
+                                                                                                        lineNumber: 3655,
                                                                                                         columnNumber: 65
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + `fi fi-rr-angle-small-down flex text-[10px] transition-transform ${isAssignPickerOpen ? 'rotate-180' : ''}`
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3592,
+                                                                                                        lineNumber: 3656,
                                                                                                         columnNumber: 65
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3586,
+                                                                                                lineNumber: 3650,
                                                                                                 columnNumber: 61
                                                                                             }, this),
                                                                                             isAssignPickerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8451,12 +8522,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             children: "No Users Found"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 3600,
+                                                                                                            lineNumber: 3664,
                                                                                                             columnNumber: 81
                                                                                                         }, this)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3599,
+                                                                                                        lineNumber: 3663,
                                                                                                         columnNumber: 77
                                                                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "space-y-1",
@@ -8472,7 +8543,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                         children: u.name?.charAt(0) || 'U'
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3613,
+                                                                                                                        lineNumber: 3677,
                                                                                                                         columnNumber: 93
                                                                                                                     }, this),
                                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8483,7 +8554,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                                 children: u.name || 'Unknown'
                                                                                                                             }, void 0, false, {
                                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                                lineNumber: 3617,
+                                                                                                                                lineNumber: 3681,
                                                                                                                                 columnNumber: 97
                                                                                                                             }, this),
                                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8491,47 +8562,47 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                                 children: u.email || 'No email'
                                                                                                                             }, void 0, false, {
                                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                                lineNumber: 3618,
+                                                                                                                                lineNumber: 3682,
                                                                                                                                 columnNumber: 97
                                                                                                                             }, this)
                                                                                                                         ]
                                                                                                                     }, void 0, true, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3616,
+                                                                                                                        lineNumber: 3680,
                                                                                                                         columnNumber: 93
                                                                                                                     }, this)
                                                                                                                 ]
                                                                                                             }, u.id, true, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3608,
+                                                                                                                lineNumber: 3672,
                                                                                                                 columnNumber: 89
                                                                                                             }, this);
                                                                                                         })
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3603,
+                                                                                                        lineNumber: 3667,
                                                                                                         columnNumber: 77
                                                                                                     }, this)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3597,
+                                                                                                    lineNumber: 3661,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3596,
+                                                                                                lineNumber: 3660,
                                                                                                 columnNumber: 65
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3585,
+                                                                                        lineNumber: 3649,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3582,
+                                                                                lineNumber: 3646,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8558,18 +8629,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: item
                                                                                     }, item, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3632,
+                                                                                        lineNumber: 3696,
                                                                                         columnNumber: 61
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3630,
+                                                                                lineNumber: 3694,
                                                                                 columnNumber: 54
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3581,
+                                                                        lineNumber: 3645,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     disposition && dispositionHierarchy[disposition]?.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8580,7 +8651,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 children: "Reason / Type"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3662,
+                                                                                lineNumber: 3726,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8594,18 +8665,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: sub
                                                                                     }, sub, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3665,
+                                                                                        lineNumber: 3729,
                                                                                         columnNumber: 69
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3663,
+                                                                                lineNumber: 3727,
                                                                                 columnNumber: 58
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3661,
+                                                                        lineNumber: 3725,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     (disposition === 'Call Back' || disposition === 'Not Contactable') && subDisposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8619,7 +8690,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Outcome"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3688,
+                                                                                        lineNumber: 3752,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8630,20 +8701,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-plus-small"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3693,
+                                                                                                lineNumber: 3757,
                                                                                                 columnNumber: 65
                                                                                             }, this),
                                                                                             " Add New"
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3689,
+                                                                                        lineNumber: 3753,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3687,
+                                                                                lineNumber: 3751,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             isAddingOutcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8658,7 +8729,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "flex-1 text-gray-500 px-3 py-2 text-xs border border-indigo-200 rounded-lg focus:outline-none focus:border-indigo-500 bg-white"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3699,
+                                                                                        lineNumber: 3763,
                                                                                         columnNumber: 65
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8667,7 +8738,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Add"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3707,
+                                                                                        lineNumber: 3771,
                                                                                         columnNumber: 65
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8676,13 +8747,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: "Cancel"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3713,
+                                                                                        lineNumber: 3777,
                                                                                         columnNumber: 65
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3698,
+                                                                                lineNumber: 3762,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8697,7 +8768,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: out.outcome_label
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3733,
+                                                                                                    lineNumber: 3797,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8710,18 +8781,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-cross-small text-[10px]"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3741,
+                                                                                                        lineNumber: 3805,
                                                                                                         columnNumber: 74
                                                                                                     }, this)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3734,
+                                                                                                    lineNumber: 3798,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, out.id, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3724,
+                                                                                            lineNumber: 3788,
                                                                                             columnNumber: 65
                                                                                         }, this)),
                                                                                     userOutcomes.length === 0 && !isAddingOutcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8731,24 +8802,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: 'No custom outcomes added yet. Click "+ Add New" to create one.'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3747,
+                                                                                            lineNumber: 3811,
                                                                                             columnNumber: 69
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3746,
+                                                                                        lineNumber: 3810,
                                                                                         columnNumber: 66
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3722,
+                                                                                lineNumber: 3786,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3686,
+                                                                        lineNumber: 3750,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     disposition === 'Call Back' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8760,12 +8831,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -mr-16 -mt-16"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3761,
+                                                                                    lineNumber: 3825,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3760,
+                                                                                lineNumber: 3824,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8779,12 +8850,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-calendar-clock text-xs"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3767,
+                                                                                                lineNumber: 3831,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3766,
+                                                                                            lineNumber: 3830,
                                                                                             columnNumber: 65
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8795,7 +8866,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Schedule Call"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3770,
+                                                                                                    lineNumber: 3834,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8803,24 +8874,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: callbackDate ? `Interaction set for ${formatDate(callbackDate)}` : 'Next interaction timeline'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3771,
+                                                                                                    lineNumber: 3835,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 3769,
+                                                                                            lineNumber: 3833,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 3765,
+                                                                                    lineNumber: 3829,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3764,
+                                                                                lineNumber: 3828,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8896,19 +8967,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + `fi flex fi-rr-${preset.icon} text-[10px]`
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3834,
+                                                                                                lineNumber: 3898,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             preset.label
                                                                                         ]
                                                                                     }, preset.label, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3828,
+                                                                                        lineNumber: 3892,
                                                                                         columnNumber: 65
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3779,
+                                                                                lineNumber: 3843,
                                                                                 columnNumber: 58
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8924,12 +8995,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-calendar text-slate-400 text-[12px]"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3844,
+                                                                                                    lineNumber: 3908,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3843,
+                                                                                                lineNumber: 3907,
                                                                                                 columnNumber: 65
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8939,7 +9010,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 children: callbackDate ? formatDate(callbackDate) : 'Select Date'
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3846,
+                                                                                                lineNumber: 3910,
                                                                                                 columnNumber: 65
                                                                                             }, this),
                                                                                             isDatePickerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8956,12 +9027,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-angle-left text-[10px]"
                                                                                                                 }, void 0, false, {
                                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                    lineNumber: 3863,
+                                                                                                                    lineNumber: 3927,
                                                                                                                     columnNumber: 81
                                                                                                                 }, this)
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3858,
+                                                                                                                lineNumber: 3922,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8973,7 +9044,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 ]
                                                                                                             }, void 0, true, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3865,
+                                                                                                                lineNumber: 3929,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8984,18 +9055,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-angle-right text-[10px]"
                                                                                                                 }, void 0, false, {
                                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                    lineNumber: 3873,
+                                                                                                                    lineNumber: 3937,
                                                                                                                     columnNumber: 81
                                                                                                                 }, this)
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3868,
+                                                                                                                lineNumber: 3932,
                                                                                                                 columnNumber: 77
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3857,
+                                                                                                        lineNumber: 3921,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9005,12 +9076,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: d
                                                                                                             }, d, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3880,
+                                                                                                                lineNumber: 3944,
                                                                                                                 columnNumber: 81
                                                                                                             }, this))
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3878,
+                                                                                                        lineNumber: 3942,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9026,25 +9097,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: d.day
                                                                                                             }, i, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3892,
+                                                                                                                lineNumber: 3956,
                                                                                                                 columnNumber: 85
                                                                                                             }, this);
                                                                                                         })
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3885,
+                                                                                                        lineNumber: 3949,
                                                                                                         columnNumber: 73
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3855,
+                                                                                                lineNumber: 3919,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3842,
+                                                                                        lineNumber: 3906,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9057,12 +9128,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-clock-three text-slate-400 text-[12px]"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 3918,
+                                                                                                    lineNumber: 3982,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3917,
+                                                                                                lineNumber: 3981,
                                                                                                 columnNumber: 65
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9099,7 +9170,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 })() : 'Select Time'
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3920,
+                                                                                                lineNumber: 3984,
                                                                                                 columnNumber: 66
                                                                                             }, this),
                                                                                             isTimePickerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9117,7 +9188,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: "Set Callback Time"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3963,
+                                                                                                                lineNumber: 4027,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9126,18 +9197,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-apps text-slate-300 text-xs"
                                                                                                                 }, void 0, false, {
                                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                    lineNumber: 3965,
+                                                                                                                    lineNumber: 4029,
                                                                                                                     columnNumber: 82
                                                                                                                 }, this)
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3964,
+                                                                                                                lineNumber: 4028,
                                                                                                                 columnNumber: 77
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3959,
+                                                                                                        lineNumber: 4023,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9151,7 +9222,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                         children: "HH"
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3972,
+                                                                                                                        lineNumber: 4036,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this),
                                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9168,19 +9239,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                                 children: h
                                                                                                                             }, h, false, {
                                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                                lineNumber: 3978,
+                                                                                                                                lineNumber: 4042,
                                                                                                                                 columnNumber: 93
                                                                                                                             }, this);
                                                                                                                         })
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3973,
+                                                                                                                        lineNumber: 4037,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this)
                                                                                                                 ]
                                                                                                             }, void 0, true, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3971,
+                                                                                                                lineNumber: 4035,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9188,7 +9259,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: ":"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3991,
+                                                                                                                lineNumber: 4055,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9199,7 +9270,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                         children: "MM"
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3995,
+                                                                                                                        lineNumber: 4059,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this),
                                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9216,26 +9287,26 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                                 children: m
                                                                                                                             }, m, false, {
                                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                                lineNumber: 4001,
+                                                                                                                                lineNumber: 4065,
                                                                                                                                 columnNumber: 93
                                                                                                                             }, this);
                                                                                                                         })
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 3996,
+                                                                                                                        lineNumber: 4060,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this)
                                                                                                                 ]
                                                                                                             }, void 0, true, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 3994,
+                                                                                                                lineNumber: 4058,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "w-px bg-slate-200 h-10 mx-1"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4014,
+                                                                                                                lineNumber: 4078,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9246,7 +9317,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                         children: "Period"
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 4018,
+                                                                                                                        lineNumber: 4082,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this),
                                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9261,24 +9332,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                                 children: p
                                                                                                                             }, p, false, {
                                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                                lineNumber: 4021,
+                                                                                                                                lineNumber: 4085,
                                                                                                                                 columnNumber: 89
                                                                                                                             }, this))
                                                                                                                     }, void 0, false, {
                                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                        lineNumber: 4019,
+                                                                                                                        lineNumber: 4083,
                                                                                                                         columnNumber: 81
                                                                                                                     }, this)
                                                                                                                 ]
                                                                                                             }, void 0, true, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4017,
+                                                                                                                lineNumber: 4081,
                                                                                                                 columnNumber: 77
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 3969,
+                                                                                                        lineNumber: 4033,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9291,7 +9362,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: "Cancel"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4035,
+                                                                                                                lineNumber: 4099,
                                                                                                                 columnNumber: 77
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9307,20 +9378,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: "Apply"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4042,
+                                                                                                                lineNumber: 4106,
                                                                                                                 columnNumber: 77
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4034,
+                                                                                                        lineNumber: 4098,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "h-px bg-slate-100 mb-4"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4057,
+                                                                                                        lineNumber: 4121,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9328,7 +9399,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         children: "Popular Slots"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4059,
+                                                                                                        lineNumber: 4123,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9348,24 +9419,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 })()
                                                                                                             }, t, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4062,
+                                                                                                                lineNumber: 4126,
                                                                                                                 columnNumber: 81
                                                                                                             }, this))
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4060,
+                                                                                                        lineNumber: 4124,
                                                                                                         columnNumber: 73
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 3955,
+                                                                                                lineNumber: 4019,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 3916,
+                                                                                        lineNumber: 3980,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     callbackDate && callbackTime && new Date(`${callbackDate}T${callbackTime}`) < new Date() && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9375,7 +9446,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-info text-red-500 text-[12px]"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4090,
+                                                                                                lineNumber: 4154,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9383,19 +9454,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 children: "Cannot schedule for a past time!"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4091,
+                                                                                                lineNumber: 4155,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4089,
+                                                                                        lineNumber: 4153,
                                                                                         columnNumber: 65
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 3840,
+                                                                                lineNumber: 3904,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             conflictInfo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9409,12 +9480,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-triangle-warning text-rose-500 text-sm"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4101,
+                                                                                                lineNumber: 4165,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4100,
+                                                                                            lineNumber: 4164,
                                                                                             columnNumber: 69
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9425,7 +9496,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Slot Conflict Detected"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4104,
+                                                                                                    lineNumber: 4168,
                                                                                                     columnNumber: 73
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9439,7 +9510,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4106,
+                                                                                                            lineNumber: 4170,
                                                                                                             columnNumber: 77
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9450,7 +9521,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4107,
+                                                                                                            lineNumber: 4171,
                                                                                                             columnNumber: 77
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9463,13 +9534,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4108,
+                                                                                                            lineNumber: 4172,
                                                                                                             columnNumber: 77
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4105,
+                                                                                                    lineNumber: 4169,
                                                                                                     columnNumber: 73
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9505,7 +9576,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             children: "Check Next Slot (+15m)"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4112,
+                                                                                                            lineNumber: 4176,
                                                                                                             columnNumber: 77
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9518,36 +9589,36 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             children: "Cancel & Reset"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4149,
+                                                                                                            lineNumber: 4213,
                                                                                                             columnNumber: 77
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4111,
+                                                                                                    lineNumber: 4175,
                                                                                                     columnNumber: 73
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4103,
+                                                                                            lineNumber: 4167,
                                                                                             columnNumber: 69
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4099,
+                                                                                    lineNumber: 4163,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4098,
+                                                                                lineNumber: 4162,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 3758,
+                                                                        lineNumber: 3822,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9558,7 +9629,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 children: "Session Notes"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4168,
+                                                                                lineNumber: 4232,
                                                                                 columnNumber: 53
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -9568,13 +9639,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "w-full bg-slate-50/50 text-gray-700 rounded-2xl p-4 text-xs font-semibold border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:outline-none transition-all min-h-[80px] resize-none"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4169,
+                                                                                lineNumber: 4233,
                                                                                 columnNumber: 53
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4167,
+                                                                        lineNumber: 4231,
                                                                         columnNumber: 49
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9587,7 +9658,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4184,
+                                                                                    lineNumber: 4248,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9595,7 +9666,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Processing..."
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4185,
+                                                                                    lineNumber: 4249,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
@@ -9605,7 +9676,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "w-3 h-3 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4189,
+                                                                                    lineNumber: 4253,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9613,32 +9684,32 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "Syncing Lead..."
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4190,
+                                                                                    lineNumber: 4254,
                                                                                     columnNumber: 61
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true) : 'Save & Continue'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4177,
+                                                                        lineNumber: 4241,
                                                                         columnNumber: 49
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 3579,
+                                                                lineNumber: 3643,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 3568,
+                                                        lineNumber: 3632,
                                                         columnNumber: 42
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 3566,
+                                                lineNumber: 3630,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9659,14 +9730,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-time-past"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4209,
+                                                                                lineNumber: 4273,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             "Timeline"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4204,
+                                                                        lineNumber: 4268,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9678,14 +9749,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-call-history"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4217,
+                                                                                lineNumber: 4281,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             "Logs"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4212,
+                                                                        lineNumber: 4276,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9697,20 +9768,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-calendar-clock"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4225,
+                                                                                lineNumber: 4289,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             "Schedules"
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4220,
+                                                                        lineNumber: 4284,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4203,
+                                                                lineNumber: 4267,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9718,13 +9789,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                 children: timelineView === 'timeline' ? history.length : timelineView === 'call_logs' ? mobileLogs.length : scheduledCalls.length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4229,
+                                                                lineNumber: 4293,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4202,
+                                                        lineNumber: 4266,
                                                         columnNumber: 41
                                                     }, this),
                                                     timelineView === 'timeline' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9738,12 +9809,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex   fi-rr-box-open text-2xl"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4239,
+                                                                        lineNumber: 4303,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4238,
+                                                                    lineNumber: 4302,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9751,13 +9822,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                     children: "No Activity Yet"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4241,
+                                                                    lineNumber: 4305,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4237,
+                                                            lineNumber: 4301,
                                                             columnNumber: 49
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "jsx-bd40b562327a6f52" + " " + "relative pl-6 border-l-2 border-slate-200 space-y-6",
@@ -9768,7 +9839,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                             className: "jsx-bd40b562327a6f52" + " " + `absolute -left-[33px] top-1 w-4 h-4 rounded-full border-4 border-white    ${log.disposition === 'Deal Done' ? 'bg-green-500' : log.disposition === 'Call Back' ? 'bg-amber-500' : log.disposition === 'Not Contactable' ? 'bg-red-400' : 'bg-indigo-500'}`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4248,
+                                                                            lineNumber: 4312,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9785,7 +9856,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: log.disposition || 'N/A'
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4259,
+                                                                                                    lineNumber: 4323,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 log.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9793,13 +9864,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: log.sub_disposition
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4266,
+                                                                                                    lineNumber: 4330,
                                                                                                     columnNumber: 73
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4258,
+                                                                                            lineNumber: 4322,
                                                                                             columnNumber: 65
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9807,13 +9878,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             children: formatDate(log.created_at)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4271,
+                                                                                            lineNumber: 4335,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4257,
+                                                                                    lineNumber: 4321,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9828,7 +9899,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4280,
+                                                                                            lineNumber: 4344,
                                                                                             columnNumber: 69
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9846,14 +9917,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex  mr-2 fi-rr-calendar-clock text-[10px] text-amber-400"
                                                                                                                 }, void 0, false, {
                                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                    lineNumber: 4293,
+                                                                                                                    lineNumber: 4357,
                                                                                                                     columnNumber: 144
                                                                                                                 }, this),
                                                                                                                 " Follow Up: "
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4293,
+                                                                                                            lineNumber: 4357,
                                                                                                             columnNumber: 81
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9867,23 +9938,23 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             })
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4294,
+                                                                                                            lineNumber: 4358,
                                                                                                             columnNumber: 81
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4292,
+                                                                                                    lineNumber: 4356,
                                                                                                     columnNumber: 77
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4290,
+                                                                                                lineNumber: 4354,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4286,
+                                                                                            lineNumber: 4350,
                                                                                             columnNumber: 65
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9896,14 +9967,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-clock-three"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4311,
+                                                                                                            lineNumber: 4375,
                                                                                                             columnNumber: 73
                                                                                                         }, this),
                                                                                                         formatTime(log.duration || 0)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4310,
+                                                                                                    lineNumber: 4374,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9914,19 +9985,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     })
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4314,
+                                                                                                    lineNumber: 4378,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4309,
+                                                                                            lineNumber: 4373,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4277,
+                                                                                    lineNumber: 4341,
                                                                                     columnNumber: 61
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9936,7 +10007,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-user mt-1 text-[12px] text-indigo-400"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4321,
+                                                                                            lineNumber: 4385,
                                                                                             columnNumber: 73
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9947,7 +10018,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Agent: "
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4323,
+                                                                                                    lineNumber: 4387,
                                                                                                     columnNumber: 77
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9963,25 +10034,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4327,
+                                                                                                            lineNumber: 4391,
                                                                                                             columnNumber: 85
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4324,
+                                                                                                    lineNumber: 4388,
                                                                                                     columnNumber: 77
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4322,
+                                                                                            lineNumber: 4386,
                                                                                             columnNumber: 73
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4320,
+                                                                                    lineNumber: 4384,
                                                                                     columnNumber: 69
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9991,7 +10062,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-pencil mt-1 text-[12px] text-purple-400"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4335,
+                                                                                            lineNumber: 4399,
                                                                                             columnNumber: 73
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10002,7 +10073,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     children: "Updated: "
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4337,
+                                                                                                    lineNumber: 4401,
                                                                                                     columnNumber: 77
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10018,47 +10089,47 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             ]
                                                                                                         }, void 0, true, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4341,
+                                                                                                            lineNumber: 4405,
                                                                                                             columnNumber: 85
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4338,
+                                                                                                    lineNumber: 4402,
                                                                                                     columnNumber: 77
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4336,
+                                                                                            lineNumber: 4400,
                                                                                             columnNumber: 73
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4334,
+                                                                                    lineNumber: 4398,
                                                                                     columnNumber: 69
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4255,
+                                                                            lineNumber: 4319,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, log.id, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4246,
+                                                                    lineNumber: 4310,
                                                                     columnNumber: 53
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4244,
+                                                            lineNumber: 4308,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4235,
+                                                        lineNumber: 4299,
                                                         columnNumber: 41
                                                     }, this) : timelineView === 'call_logs' ? // MOBILE LOGS VIEW
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10072,12 +10143,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-smartphone text-2xl"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4362,
+                                                                        lineNumber: 4426,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4361,
+                                                                    lineNumber: 4425,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10085,13 +10156,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                     children: "No Mobile Logs Found"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4364,
+                                                                    lineNumber: 4428,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4360,
+                                                            lineNumber: 4424,
                                                             columnNumber: 49
                                                         }, this) : mobileLogs.map((log)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "jsx-bd40b562327a6f52" + " " + "relative p-4 rounded-xl bg-white border border-slate-200/80 hover:border-slate-200 hover:shadow-lg transition-all duration-300 group overflow-hidden",
@@ -10100,7 +10171,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                         className: "jsx-bd40b562327a6f52" + " " + `absolute top-0 right-0 w-16 h-16 rounded-bl-full opacity-5 transition-colors ${log.type === 'INCOMING' ? 'bg-emerald-500' : log.type === 'OUTGOING' ? 'bg-blue-500' : 'bg-red-500'}`
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4370,
+                                                                        lineNumber: 4434,
                                                                         columnNumber: 58
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10112,12 +10183,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + `fi text-lg flex ${log.type === 'INCOMING' ? 'fi-rr-call-incoming' : log.type === 'OUTGOING' ? 'fi-rr-call-outgoing' : 'fi-rr-phone-cross'}`
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4383,
+                                                                                    lineNumber: 4447,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4378,
+                                                                                lineNumber: 4442,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10134,7 +10205,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(log.number)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4394,
+                                                                                                        lineNumber: 4458,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10142,13 +10213,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         children: log.type
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4395,
+                                                                                                        lineNumber: 4459,
                                                                                                         columnNumber: 73
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4393,
+                                                                                                lineNumber: 4457,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10158,7 +10229,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-calendar-clock text-[10px] opacity-60"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4402,
+                                                                                                        lineNumber: 4466,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     new Date(log.timestamp).toLocaleDateString([], {
@@ -10168,13 +10239,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4401,
+                                                                                                lineNumber: 4465,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4392,
+                                                                                        lineNumber: 4456,
                                                                                         columnNumber: 65
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10187,7 +10258,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-clock-three text-[10px] text-slate-400"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4410,
+                                                                                                        lineNumber: 4474,
                                                                                                         columnNumber: 74
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10195,20 +10266,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         children: formatTime(log.duration || 0)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4411,
+                                                                                                        lineNumber: 4475,
                                                                                                         columnNumber: 74
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4409,
+                                                                                                lineNumber: 4473,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "jsx-bd40b562327a6f52" + " " + "h-4 w-px bg-slate-200"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4413,
+                                                                                                lineNumber: 4477,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10219,25 +10290,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 })
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4414,
+                                                                                                lineNumber: 4478,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4408,
+                                                                                        lineNumber: 4472,
                                                                                         columnNumber: 66
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4391,
+                                                                                lineNumber: 4455,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4376,
+                                                                        lineNumber: 4440,
                                                                         columnNumber: 58
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10252,12 +10323,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-circle-user text-[14px]"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4423,
+                                                                                            lineNumber: 4487,
                                                                                             columnNumber: 70
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4422,
+                                                                                        lineNumber: 4486,
                                                                                         columnNumber: 65
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10268,7 +10339,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 children: log.agent_name || 'Unknown Agent'
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4426,
+                                                                                                lineNumber: 4490,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10278,26 +10349,26 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         className: "jsx-bd40b562327a6f52" + " " + "w-1 h-1 rounded-full bg-indigo-400"
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4430,
+                                                                                                        lineNumber: 4494,
                                                                                                         columnNumber: 73
                                                                                                     }, this),
                                                                                                     log.employee_id || 'N/A'
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4429,
+                                                                                                lineNumber: 4493,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4425,
+                                                                                        lineNumber: 4489,
                                                                                         columnNumber: 65
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4421,
+                                                                                lineNumber: 4485,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10308,7 +10379,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-smartphone text-[12px] text-slate-400"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4436,
+                                                                                        lineNumber: 4500,
                                                                                         columnNumber: 65
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10316,30 +10387,30 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         children: log.device_model || (log.device_id ? log.device_id.substring(0, 8) + '...' : 'Unknown')
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4437,
+                                                                                        lineNumber: 4501,
                                                                                         columnNumber: 65
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4435,
+                                                                                lineNumber: 4499,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4420,
+                                                                        lineNumber: 4484,
                                                                         columnNumber: 58
                                                                     }, this)
                                                                 ]
                                                             }, log.id, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4368,
+                                                                lineNumber: 4432,
                                                                 columnNumber: 53
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4358,
+                                                        lineNumber: 4422,
                                                         columnNumber: 46
                                                     }, this) : // SCHEDULES VIEW
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10367,12 +10438,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-angle-small-left text-lg"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4463,
+                                                                                            lineNumber: 4527,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4454,
+                                                                                        lineNumber: 4518,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10387,7 +10458,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             className: "jsx-bd40b562327a6f52" + " " + `fi fi-rr-calendar text-[10px] ${selectedScheduleDate && new Date().toDateString() === selectedScheduleDate.toDateString() ? 'text-indigo-600' : 'text-slate-300'}`
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4469,
+                                                                                                            lineNumber: 4533,
                                                                                                             columnNumber: 73
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10395,13 +10466,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             children: selectedScheduleDate ? selectedScheduleDate.toLocaleDateString('en-GB') : 'Select Date'
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4470,
+                                                                                                            lineNumber: 4534,
                                                                                                             columnNumber: 73
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4468,
+                                                                                                    lineNumber: 4532,
                                                                                                     columnNumber: 69
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -10418,18 +10489,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     className: "jsx-bd40b562327a6f52" + " " + "absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4474,
+                                                                                                    lineNumber: 4538,
                                                                                                     columnNumber: 69
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4467,
+                                                                                            lineNumber: 4531,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4466,
+                                                                                        lineNumber: 4530,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10444,18 +10515,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-angle-small-right text-lg"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4499,
+                                                                                            lineNumber: 4563,
                                                                                             columnNumber: 65
                                                                                         }, this)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4490,
+                                                                                        lineNumber: 4554,
                                                                                         columnNumber: 61
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4453,
+                                                                                lineNumber: 4517,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             selectedScheduleDate && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10466,23 +10537,23 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-undo text-[14px]"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4509,
+                                                                                    lineNumber: 4573,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4504,
+                                                                                lineNumber: 4568,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4452,
+                                                                        lineNumber: 4516,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4450,
+                                                                    lineNumber: 4514,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 (()=>{
@@ -10511,12 +10582,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex  fi-rr-calendar-clock text-2xl"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                        lineNumber: 4542,
+                                                                                        lineNumber: 4606,
                                                                                         columnNumber: 69
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4541,
+                                                                                    lineNumber: 4605,
                                                                                     columnNumber: 65
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10524,13 +10595,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     children: "No Schedules Found"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4544,
+                                                                                    lineNumber: 4608,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4540,
+                                                                            lineNumber: 4604,
                                                                             columnNumber: 61
                                                                         }, this);
                                                                     }
@@ -10541,7 +10612,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                 className: "jsx-bd40b562327a6f52" + " " + "absolute left-16 top-0 bottom-0 w-px bg-slate-100"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                lineNumber: 4552,
+                                                                                lineNumber: 4616,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             filtered.map((call)=>{
@@ -10562,19 +10633,19 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                 children: timeStr
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                lineNumber: 4562,
+                                                                                                lineNumber: 4626,
                                                                                                 columnNumber: 77
                                                                                             }, this)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4561,
+                                                                                            lineNumber: 4625,
                                                                                             columnNumber: 73
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                             className: "jsx-bd40b562327a6f52" + " " + "absolute left-[-4px] top-4 w-2 h-2 rounded-full border-2 border-white bg-slate-200 group-hover:bg-indigo-500 z-10 transition-colors"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4568,
+                                                                                            lineNumber: 4632,
                                                                                             columnNumber: 73
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10588,7 +10659,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                             children: call.customer_name || 'Customer'
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4573,
+                                                                                                            lineNumber: 4637,
                                                                                                             columnNumber: 81
                                                                                                         }, this),
                                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10598,18 +10669,18 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                                 children: "G"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                                lineNumber: 4577,
+                                                                                                                lineNumber: 4641,
                                                                                                                 columnNumber: 85
                                                                                                             }, this)
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                            lineNumber: 4576,
+                                                                                                            lineNumber: 4640,
                                                                                                             columnNumber: 81
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4572,
+                                                                                                    lineNumber: 4636,
                                                                                                     columnNumber: 77
                                                                                                 }, this),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10622,12 +10693,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                        lineNumber: 4582,
+                                                                                                        lineNumber: 4646,
                                                                                                         columnNumber: 81
                                                                                                     }, this)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4581,
+                                                                                                    lineNumber: 4645,
                                                                                                     columnNumber: 77
                                                                                                 }, this),
                                                                                                 call.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10639,38 +10710,38 @@ Campaign: ${campaign?.name || campaignId}
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                                    lineNumber: 4588,
+                                                                                                    lineNumber: 4652,
                                                                                                     columnNumber: 81
                                                                                                 }, this)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                            lineNumber: 4571,
+                                                                                            lineNumber: 4635,
                                                                                             columnNumber: 73
                                                                                         }, this)
                                                                                     ]
                                                                                 }, call.id, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                                    lineNumber: 4559,
+                                                                                    lineNumber: 4623,
                                                                                     columnNumber: 69
                                                                                 }, this);
                                                                             })
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4550,
+                                                                        lineNumber: 4614,
                                                                         columnNumber: 57
                                                                     }, this);
                                                                 })()
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4449,
+                                                            lineNumber: 4513,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4448,
+                                                        lineNumber: 4512,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10685,12 +10756,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex   fi-rr-phone-call text-xs"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4606,
+                                                                            lineNumber: 4670,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4605,
+                                                                        lineNumber: 4669,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10698,13 +10769,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                         children: "Total Connects"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                        lineNumber: 4608,
+                                                                        lineNumber: 4672,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4604,
+                                                                lineNumber: 4668,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10712,43 +10783,43 @@ Campaign: ${campaign?.name || campaignId}
                                                                 children: history.filter((h)=>h.duration > 0).length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4610,
+                                                                lineNumber: 4674,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4603,
+                                                        lineNumber: 4667,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4201,
+                                                lineNumber: 4265,
                                                 columnNumber: 29
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 3536,
+                                        lineNumber: 3600,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 2907,
+                                lineNumber: 2913,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 2883,
+                        lineNumber: 2889,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 2869,
+                lineNumber: 2875,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$BottomNav$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -10756,7 +10827,7 @@ Campaign: ${campaign?.name || campaignId}
                 userRole: user?.role || null
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 4617,
+                lineNumber: 4681,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -10779,7 +10850,7 @@ Campaign: ${campaign?.name || campaignId}
                                     className: "jsx-bd40b562327a6f52" + " " + "absolute inset-0 opacity-10"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4654,
+                                    lineNumber: 4718,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10788,12 +10859,12 @@ Campaign: ${campaign?.name || campaignId}
                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-brands-google text-3xl text-indigo-600"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4656,
+                                        lineNumber: 4720,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4655,
+                                    lineNumber: 4719,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10802,18 +10873,18 @@ Campaign: ${campaign?.name || campaignId}
                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-calendar-clock text-3xl text-blue-500"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4659,
+                                        lineNumber: 4723,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4658,
+                                    lineNumber: 4722,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4653,
+                            lineNumber: 4717,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10824,7 +10895,7 @@ Campaign: ${campaign?.name || campaignId}
                                     children: "Connect Google Calendar?"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4664,
+                                    lineNumber: 4728,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10832,7 +10903,7 @@ Campaign: ${campaign?.name || campaignId}
                                     children: "Get automatic reminders for your follow-ups directly on your phone and laptop by connecting your Google Calendar."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4665,
+                                    lineNumber: 4729,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10846,14 +10917,14 @@ Campaign: ${campaign?.name || campaignId}
                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-brands-google"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4674,
+                                                    lineNumber: 4738,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Connect & Sync Now"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4670,
+                                            lineNumber: 4734,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10862,13 +10933,13 @@ Campaign: ${campaign?.name || campaignId}
                                             children: "Skip for now"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4678,
+                                            lineNumber: 4742,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4669,
+                                    lineNumber: 4733,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10876,24 +10947,24 @@ Campaign: ${campaign?.name || campaignId}
                                     children: "You can also connect this later from your Profile Settings."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4686,
+                                    lineNumber: 4750,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4663,
+                            lineNumber: 4727,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 4651,
+                    lineNumber: 4715,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 4650,
+                lineNumber: 4714,
                 columnNumber: 17
             }, this),
             showAttachmentModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10913,12 +10984,12 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-clip text-lg"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4702,
+                                                lineNumber: 4766,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4701,
+                                            lineNumber: 4765,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10929,7 +11000,7 @@ Campaign: ${campaign?.name || campaignId}
                                                     children: "Lead Attachments"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4705,
+                                                    lineNumber: 4769,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10940,19 +11011,19 @@ Campaign: ${campaign?.name || campaignId}
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4706,
+                                                    lineNumber: 4770,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4704,
+                                            lineNumber: 4768,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4700,
+                                    lineNumber: 4764,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10962,18 +11033,18 @@ Campaign: ${campaign?.name || campaignId}
                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-cross-small text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4713,
+                                        lineNumber: 4777,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4709,
+                                    lineNumber: 4773,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4699,
+                            lineNumber: 4763,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10986,7 +11057,7 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4720,
+                                            lineNumber: 4784,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -10997,13 +11068,13 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "w-full h-10 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-50 focus:border-indigo-200 transition-all outline-none"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4721,
+                                            lineNumber: 4785,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4719,
+                                    lineNumber: 4783,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11014,7 +11085,7 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-plus-small text-lg"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4733,
+                                            lineNumber: 4797,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11022,19 +11093,19 @@ Campaign: ${campaign?.name || campaignId}
                                             children: "Upload Attachment"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4734,
+                                            lineNumber: 4798,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4729,
+                                    lineNumber: 4793,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4718,
+                            lineNumber: 4782,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11051,12 +11122,12 @@ Campaign: ${campaign?.name || campaignId}
                                                     className: "jsx-bd40b562327a6f52" + " " + `fi ${pendingFile.type.includes('image') ? 'fi-rr-picture' : pendingFile.type.includes('pdf') ? 'fi-rr-document' : 'fi-rr-file'} text-xl`
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4744,
+                                                    lineNumber: 4808,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4743,
+                                                lineNumber: 4807,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11064,7 +11135,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "Selected File"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4749,
+                                                lineNumber: 4813,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11072,13 +11143,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: pendingFile.name
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4750,
+                                                lineNumber: 4814,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4742,
+                                        lineNumber: 4806,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11092,7 +11163,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Document Name"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4755,
+                                                        lineNumber: 4819,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -11105,13 +11176,13 @@ Campaign: ${campaign?.name || campaignId}
                                                         className: "jsx-bd40b562327a6f52" + " " + "w-full h-11 text-gray-400 px-4 bg-white border border-slate-200 rounded-xl text-xs font-bold focus:ring-4 focus:ring-indigo-50 focus:border-indigo-300 transition-all outline-none"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4756,
+                                                        lineNumber: 4820,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4754,
+                                                lineNumber: 4818,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11126,7 +11197,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Cancel"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4768,
+                                                        lineNumber: 4832,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11135,25 +11206,25 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Finalize Upload"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4777,
+                                                        lineNumber: 4841,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4767,
+                                                lineNumber: 4831,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4753,
+                                        lineNumber: 4817,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4741,
+                                lineNumber: 4805,
                                 columnNumber: 33
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "jsx-bd40b562327a6f52" + " " + "space-y-1.5 pt-2",
@@ -11170,12 +11241,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className: "jsx-bd40b562327a6f52" + " " + `fi ${file.file_type?.includes('image') ? 'fi-rr-picture' : file.file_type?.includes('pdf') ? 'fi-rr-document' : 'fi-rr-file'} text-sm`
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4797,
+                                                                lineNumber: 4861,
                                                                 columnNumber: 54
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4796,
+                                                            lineNumber: 4860,
                                                             columnNumber: 50
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11186,7 +11257,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                     children: file.file_name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4803,
+                                                                    lineNumber: 4867,
                                                                     columnNumber: 54
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11197,14 +11268,14 @@ Campaign: ${campaign?.name || campaignId}
                                                                             children: formatFileSize(file.file_size)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4805,
+                                                                            lineNumber: 4869,
                                                                             columnNumber: 58
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             className: "jsx-bd40b562327a6f52" + " " + "w-1 h-1 rounded-full bg-slate-200"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4806,
+                                                                            lineNumber: 4870,
                                                                             columnNumber: 58
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11212,25 +11283,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                             children: formatDate(file.created_at)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                            lineNumber: 4807,
+                                                                            lineNumber: 4871,
                                                                             columnNumber: 58
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                    lineNumber: 4804,
+                                                                    lineNumber: 4868,
                                                                     columnNumber: 54
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4802,
+                                                            lineNumber: 4866,
                                                             columnNumber: 50
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4795,
+                                                    lineNumber: 4859,
                                                     columnNumber: 46
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11251,12 +11322,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-eye text-xs"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4827,
+                                                                lineNumber: 4891,
                                                                 columnNumber: 54
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4813,
+                                                            lineNumber: 4877,
                                                             columnNumber: 50
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11267,24 +11338,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-trash text-xs"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4834,
+                                                                lineNumber: 4898,
                                                                 columnNumber: 54
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4829,
+                                                            lineNumber: 4893,
                                                             columnNumber: 50
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4812,
+                                                    lineNumber: 4876,
                                                     columnNumber: 46
                                                 }, this)
                                             ]
                                         }, file.id, true, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4791,
+                                            lineNumber: 4855,
                                             columnNumber: 42
                                         }, this)),
                                     attachments.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11296,12 +11367,12 @@ Campaign: ${campaign?.name || campaignId}
                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-folder-open text-2xl text-slate-200"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4843,
+                                                    lineNumber: 4907,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4842,
+                                                lineNumber: 4906,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -11309,7 +11380,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "Empty Vault"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4845,
+                                                lineNumber: 4909,
                                                 columnNumber: 45
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11317,35 +11388,35 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "No attachments found"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4846,
+                                                lineNumber: 4910,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4841,
+                                        lineNumber: 4905,
                                         columnNumber: 41
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4787,
+                                lineNumber: 4851,
                                 columnNumber: 33
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4739,
+                            lineNumber: 4803,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 4697,
+                    lineNumber: 4761,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 4696,
+                lineNumber: 4760,
                 columnNumber: 17
             }, this),
             showEnlargedNotes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11367,12 +11438,12 @@ Campaign: ${campaign?.name || campaignId}
                                                     className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-edit text-white text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4865,
+                                                    lineNumber: 4929,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4864,
+                                                lineNumber: 4928,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11383,7 +11454,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         children: "Focus Notes"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4868,
+                                                        lineNumber: 4932,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11395,19 +11466,19 @@ Campaign: ${campaign?.name || campaignId}
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4869,
+                                                        lineNumber: 4933,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4867,
+                                                lineNumber: 4931,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4863,
+                                        lineNumber: 4927,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11417,18 +11488,18 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-cross-small text-lg group-hover:rotate-90 transition-transform"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4876,
+                                            lineNumber: 4940,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4872,
+                                        lineNumber: 4936,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4862,
+                                lineNumber: 4926,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11443,12 +11514,12 @@ Campaign: ${campaign?.name || campaignId}
                                                     children: i + 1
                                                 }, i, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4888,
+                                                    lineNumber: 4952,
                                                     columnNumber: 45
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4884,
+                                            lineNumber: 4948,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -11463,18 +11534,18 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "flex-1 h-full bg-transparent text-slate-700 p-3 pt-[13px] text-[13px] font-medium outline-none transition-all resize-none leading-6 placeholder:text-slate-300 custom-scrollbar"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4891,
+                                            lineNumber: 4955,
                                             columnNumber: 37
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4882,
+                                    lineNumber: 4946,
                                     columnNumber: 33
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4881,
+                                lineNumber: 4945,
                                 columnNumber: 29
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11487,7 +11558,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-bd40b562327a6f52" + " " + `w-1.5 h-1.5 rounded-full ${notes.length > 0 ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.3)]' : 'bg-slate-300'}`
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4906,
+                                                lineNumber: 4970,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11498,13 +11569,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4907,
+                                                lineNumber: 4971,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4905,
+                                        lineNumber: 4969,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11516,29 +11587,29 @@ Campaign: ${campaign?.name || campaignId}
                                         children: "Save & Done"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4911,
+                                        lineNumber: 4975,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4904,
+                                lineNumber: 4968,
                                 columnNumber: 29
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                        lineNumber: 4860,
+                        lineNumber: 4924,
                         columnNumber: 25
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 4859,
+                    lineNumber: 4923,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 4858,
+                lineNumber: 4922,
                 columnNumber: 17
             }, this),
             isEditingDetails && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11559,12 +11630,12 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-edit-alt text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4936,
+                                                lineNumber: 5000,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4935,
+                                            lineNumber: 4999,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11575,7 +11646,7 @@ Campaign: ${campaign?.name || campaignId}
                                                     children: "Modify Details"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4939,
+                                                    lineNumber: 5003,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11583,19 +11654,19 @@ Campaign: ${campaign?.name || campaignId}
                                                     children: "Customer Reference Data"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                    lineNumber: 4940,
+                                                    lineNumber: 5004,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4938,
+                                            lineNumber: 5002,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4934,
+                                    lineNumber: 4998,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11605,18 +11676,18 @@ Campaign: ${campaign?.name || campaignId}
                                         className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-cross-small text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4947,
+                                        lineNumber: 5011,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 4943,
+                                    lineNumber: 5007,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4933,
+                            lineNumber: 4997,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11646,7 +11717,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className: "jsx-bd40b562327a6f52" + " " + "w-full text-[9px] font-black text-slate-400 uppercase tracking-widest bg-transparent border-none outline-none placeholder:text-slate-200"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4959,
+                                                                lineNumber: 5023,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -11663,13 +11734,13 @@ Campaign: ${campaign?.name || campaignId}
                                                                 className: "jsx-bd40b562327a6f52" + " " + "w-full min-h-[20px] bg-transparent border-none p-0 text-[12px] font-semibold text-slate-700 outline-none resize-none placeholder:text-slate-300 custom-scrollbar"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                                lineNumber: 4970,
+                                                                lineNumber: 5034,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4958,
+                                                        lineNumber: 5022,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11682,23 +11753,23 @@ Campaign: ${campaign?.name || campaignId}
                                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-trash text-[10px]"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                            lineNumber: 4990,
+                                                            lineNumber: 5054,
                                                             columnNumber: 49
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                        lineNumber: 4983,
+                                                        lineNumber: 5047,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 4956,
+                                                lineNumber: 5020,
                                                 columnNumber: 41
                                             }, this)
                                         }, item.id, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4955,
+                                            lineNumber: 5019,
                                             columnNumber: 37
                                         }, this)),
                                     tempDetails.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11708,12 +11779,12 @@ Campaign: ${campaign?.name || campaignId}
                                             children: "No details recorded"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 4998,
+                                            lineNumber: 5062,
                                             columnNumber: 41
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 4997,
+                                        lineNumber: 5061,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11733,7 +11804,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-plus-small text-lg"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 5008,
+                                                lineNumber: 5072,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11741,24 +11812,24 @@ Campaign: ${campaign?.name || campaignId}
                                                 children: "New Field"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                                lineNumber: 5009,
+                                                lineNumber: 5073,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                        lineNumber: 5002,
+                                        lineNumber: 5066,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                lineNumber: 4953,
+                                lineNumber: 5017,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 4952,
+                            lineNumber: 5016,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11770,7 +11841,7 @@ Campaign: ${campaign?.name || campaignId}
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 5016,
+                                    lineNumber: 5080,
                                     columnNumber: 29
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11782,13 +11853,13 @@ Campaign: ${campaign?.name || campaignId}
                                             className: "jsx-bd40b562327a6f52" + " " + "w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 5028,
+                                            lineNumber: 5092,
                                             columnNumber: 37
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                             className: "jsx-bd40b562327a6f52" + " " + "fi flex fi-rr-disk-check"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 5030,
+                                            lineNumber: 5094,
                                             columnNumber: 37
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11796,40 +11867,40 @@ Campaign: ${campaign?.name || campaignId}
                                             children: "Save Changes"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                            lineNumber: 5032,
+                                            lineNumber: 5096,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                                    lineNumber: 5022,
+                                    lineNumber: 5086,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                            lineNumber: 5015,
+                            lineNumber: 5079,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                    lineNumber: 4928,
+                    lineNumber: 4992,
                     columnNumber: 21
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-                lineNumber: 4927,
+                lineNumber: 4991,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/pages/portal/campaign/[id]/[customerId].tsx",
-        lineNumber: 2852,
+        lineNumber: 2858,
         columnNumber: 9
     }, this);
 }
-_s(CallingPage, "OCKhKS20as32BD2RCda3iAsKZFQ=", false, function() {
+_s(CallingPage, "zyCaHqVnrj0VHwME0lqr3XDcHw8=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];

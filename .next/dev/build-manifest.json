@@ -58,7 +58,6 @@
       "static/chunks/turbopack-pages_portal_activity_tsx_fb1a3744._.js"
     ],
     "/portal/campaign": [
-      "static/chunks/lib_monitoring_ts_8194ca8b._.js",
       "static/chunks/[root-of-the-server]__6e2adcea._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
@@ -70,7 +69,29 @@
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_6526044e._.js",
       "static/chunks/pages_portal_campaign_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_campaign_tsx_94818741._.js"
+      "static/chunks/turbopack-pages_portal_campaign_tsx_7868d761._.js"
+    ],
+    "/portal/campaign/[id]": [
+      "static/chunks/components_4a7ae42f._.js",
+      "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
+      "static/chunks/_0398cb9b._.js",
+      "static/chunks/[root-of-the-server]__78abed1d._.js",
+      "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
+      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
+      "static/chunks/node_modules_next_dist_a1eb637b._.js",
+      "static/chunks/node_modules_next_5cb05f67._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
+      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+      "static/chunks/node_modules_recharts_es6_util_e968dfe3._.js",
+      "static/chunks/node_modules_recharts_es6_state_e74bbb61._.js",
+      "static/chunks/node_modules_recharts_es6_component_8520eaf5._.js",
+      "static/chunks/node_modules_recharts_es6_cartesian_97297acc._.js",
+      "static/chunks/node_modules_recharts_es6_cf321d8d._.js",
+      "static/chunks/node_modules_fdfb140b._.js",
+      "static/chunks/pages_portal_campaign_[id]_tsx_2da965e7._.js",
+      "static/chunks/turbopack-pages_portal_campaign_[id]_tsx_822ff369._.js"
     ],
     "/portal/campaign/[id]/[customerId]": [
       "static/chunks/[root-of-the-server]__b944b229._.js",
