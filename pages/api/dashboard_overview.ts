@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase, supabaseAdmin } from "../../lib/supabase";
+import { getISTDateRange } from "../../lib/dateUtils";
 import { DashboardLevel, getUserDashboardLevel } from "../../lib/dashboardUtils";
 
 /**
@@ -51,67 +52,7 @@ interface DashboardOverviewResponse {
 /**
  * Calculate date range based on filter
  */
-function getDateRange(filter: string) {
-  const now = new Date();
-  const todayStart = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  ).toISOString();
-  const todayEnd = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    23,
-    59,
-    59
-  ).toISOString();
-
-  let start = todayStart;
-  let end = todayEnd;
-
-  switch (filter) {
-    case "yesterday": {
-      const y = new Date(now);
-      y.setDate(y.getDate() - 1);
-      start = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
-      end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59).toISOString();
-      break;
-    }
-    case "this_week": {
-      const d = new Date(now);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(d.setDate(diff));
-      start = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).toISOString();
-      break;
-    }
-    case "last_7_days": {
-      const d = new Date(now);
-      d.setDate(d.getDate() - 7);
-      start = d.toISOString();
-      break;
-    }
-    case "this_month":
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      break;
-    case "last_month":
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-      end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
-      break;
-    case "this_year":
-      start = new Date(now.getFullYear(), 0, 1).toISOString();
-      break;
-    case "multi_year":
-      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
-      break;
-    case "all_time":
-      start = "2000-01-01T00:00:00.000Z";
-      break;
-  }
-
-  return { start, end };
-}
+// getDateRange moved to lib/dateUtils.ts
 
 /**
  * Helper function to fetch only specific columns for summing (handles 1000 row limit)
@@ -277,10 +218,8 @@ export default async function handler(
       }
     }
 
-    const range = getDateRange(dateFilter as string);
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+    const range = getISTDateRange(dateFilter as string);
+    const { start: todayStart, end: todayEnd } = getISTDateRange("today");
 
     // Use admin client to bypass RLS and get all data
     const dbClient = supabaseAdmin || supabase;

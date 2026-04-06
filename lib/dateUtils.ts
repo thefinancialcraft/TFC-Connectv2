@@ -1,52 +1,78 @@
 /**
- * Formats a date string into DD/MM/YYYY format safely.
+ * Shared date range utilities for dashboard APIs
+ * All calculations are standardized to Asia/Kolkata (IST)
  */
-export const formatDate = (dateString: string | null): string => {
-  if (!dateString) return "—";
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "—";
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  } catch (e) {
-    return "—";
+
+export function getISTDateRange(filter: string) {
+  const now = new Date();
+  
+  // Get date string in YYYY-MM-DD for IST
+  const istDateString = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  
+  // Midnight IST in ISO format
+  const todayStart = new Date(`${istDateString}T00:00:00+05:30`).toISOString();
+  // End of day IST in ISO format
+  const todayEnd = new Date(`${istDateString}T23:59:59+05:30`).toISOString();
+
+  let start = todayStart;
+  let end = todayEnd;
+
+  switch (filter) {
+    case "yesterday": {
+      const yesterday = new Date(`${istDateString}T00:00:00+05:30`);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yStr = yesterday.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+      start = new Date(`${yStr}T00:00:00+05:30`).toISOString();
+      end = new Date(`${yStr}T23:59:59+05:30`).toISOString();
+      break;
+    }
+    case "this_week": {
+      const d = new Date(`${istDateString}T00:00:00+05:30`);
+      const day = d.getDay();
+      const diff = day === 0 ? -6 : 1 - day; // Monday
+      d.setDate(d.getDate() + diff);
+      const monStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+      start = new Date(`${monStr}T00:00:00+05:30`).toISOString();
+      break;
+    }
+    case "last_7_days": {
+      const d = new Date(now);
+      d.setDate(d.getDate() - 7);
+      start = d.toISOString();
+      break;
+    }
+    case "this_month": {
+      const parts = istDateString.split("-");
+      start = new Date(`${parts[0]}-${parts[1]}-01T00:00:00+05:30`).toISOString();
+      break;
+    }
+    case "last_month": {
+      const parts = istDateString.split("-");
+      let year = parseInt(parts[0]);
+      let month = parseInt(parts[1]) - 1;
+      if (month === 0) {
+        month = 12;
+        year--;
+      }
+      const prevMonthStr = month.toString().padStart(2, '0');
+      start = new Date(`${year}-${prevMonthStr}-01T00:00:00+05:30`).toISOString();
+      
+      const lastDay = new Date(year, month, 0).getDate();
+      end = new Date(`${year}-${prevMonthStr}-${lastDay}T23:59:59+05:30`).toISOString();
+      break;
+    }
+    case "this_year":
+      const yStr = istDateString.split("-")[0];
+      start = new Date(`${yStr}-01-01T00:00:00+05:30`).toISOString();
+      break;
+    case "multi_year":
+      const yearInt = parseInt(istDateString.split("-")[0]);
+      start = new Date(`${yearInt - 3}-01-01T00:00:00+05:30`).toISOString();
+      break;
+    case "all_time":
+      start = "2020-01-01T00:00:00.000Z";
+      break;
   }
-};
 
-/**
- * Calculates a new expiry date based on the current expiry and months to add.
- * The logic follows the TFC Connect formula: 
- * 1. Find the target month
- * 2. Get the last day of that month
- * 3. Add one day (making it the first day of the subsequent month)
- */
-export const calculateNewExpiryDate = (currentExpiryStr: string | null, monthsToAdd: number): string => {
-  const currentExpiry = currentExpiryStr ? new Date(currentExpiryStr) : new Date();
-  
-  // Calculate target year and month
-  const currentMonth = currentExpiry.getMonth();
-  const currentYear = currentExpiry.getFullYear();
-  const targetMonth = currentMonth + monthsToAdd;
-  
-  // Create date for the first day of target month
-  const targetDate = new Date(currentYear, targetMonth, 1);
-  
-  // Get the last day of that month by going to next month's day 0
-  const lastDay = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
-  
-  // Add one extra day (TFC logic: next month's 1st)
-  lastDay.setDate(lastDay.getDate() + 1);
-  
-  return lastDay.toISOString().split('T')[0];
-};
-
-/**
- * Calculates number of months between current date and a target (year, month).
- */
-export const calculateMonthsToTarget = (customYear: string, customMonth: string): number => {
-  const currentDate = new Date();
-  const targetDate = new Date(parseInt(customYear), parseInt(customMonth) - 1, 1);
-  return (targetDate.getFullYear() - currentDate.getFullYear()) * 12 + (targetDate.getMonth() - currentDate.getMonth());
-};
+  return { start, end };
+}

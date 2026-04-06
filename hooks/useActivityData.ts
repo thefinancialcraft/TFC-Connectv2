@@ -20,8 +20,8 @@ export function useActivityData() {
   const [activities, setActivities] = useState<any[]>([]);
   const [mobileActivities, setMobileActivities] = useState<any[]>([]); // New state for mobile history
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    // Correctly get Today's date in IST (YYYY-MM-DD)
+    return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
   });
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -49,9 +49,10 @@ export function useActivityData() {
       if (!isBackground) setLoading(true);
       setError("");
 
-      const localDate = new Date(selectedDate + 'T00:00:00'); // Parse as local
-      const startOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 0, 0, 0, 0).toISOString();
-      const endOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 23, 59, 59, 999).toISOString();
+      // selectedDate is already YYYY-MM-DD in IST
+      // We need to define the boundaries of that specific date in IST and convert to ISO
+      const startOfDay = new Date(`${selectedDate}T00:00:00+05:30`).toISOString();
+      const endOfDay = new Date(`${selectedDate}T23:59:59+05:30`).toISOString();
 
       // Base query
       // Note: We use !inner on agent join to allow filtering by agent's organization_id for Level 3

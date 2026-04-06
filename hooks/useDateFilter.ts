@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import { getISTDateRange } from "@/lib/dateUtils";
 
 export type DateFilterType =
   | "today"
@@ -33,75 +34,7 @@ export function useDateFilter(
   const [selectedFilter, setSelectedFilter] = useState<DateFilterType>(initialFilter);
 
   const dateRange = useMemo(() => {
-    const now = new Date();
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    ).toISOString();
-    const todayEnd = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      23,
-      59,
-      59
-    ).toISOString();
-
-    let start = todayStart;
-    let end = todayEnd;
-
-    if (selectedFilter === "yesterday") {
-      const y = new Date(now);
-      y.setDate(y.getDate() - 1);
-      start = new Date(
-        y.getFullYear(),
-        y.getMonth(),
-        y.getDate()
-      ).toISOString();
-      end = new Date(
-        y.getFullYear(),
-        y.getMonth(),
-        y.getDate(),
-        23,
-        59,
-        59
-      ).toISOString();
-    } else if (selectedFilter === "this_week") {
-      const d = new Date(now);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(d.setDate(diff));
-      start = new Date(
-        monday.getFullYear(),
-        monday.getMonth(),
-        monday.getDate()
-      ).toISOString();
-    } else if (selectedFilter === "last_7_days") {
-      const d = new Date(now);
-      d.setDate(d.getDate() - 7);
-      start = d.toISOString();
-    } else if (selectedFilter === "this_month") {
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    } else if (selectedFilter === "last_month") {
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-      end = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        0,
-        23,
-        59,
-        59
-      ).toISOString();
-    } else if (selectedFilter === "this_year") {
-      start = new Date(now.getFullYear(), 0, 1).toISOString();
-    } else if (selectedFilter === "multi_year") {
-      start = new Date(now.getFullYear() - 3, 0, 1).toISOString();
-    } else if (selectedFilter === "all_time") {
-      start = "2000-01-01T00:00:00.000Z";
-    }
-
-    return { start, end };
+    return getISTDateRange(selectedFilter);
   }, [selectedFilter]);
 
   const setFilter = useCallback((filter: DateFilterType) => {

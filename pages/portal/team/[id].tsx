@@ -7,6 +7,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, 
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
+import { getISTDateRange } from "@/lib/dateUtils";
 
 /**
  * TeamDetails Page Refactor
@@ -36,34 +37,10 @@ export default function TeamDetails() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
-   * Safe Date Range Generation
+   * Safe Date Range Generation (Standardized to IST)
    */
   const getDateRange = useCallback((filter: string) => {
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
-    
-    let start = todayStart;
-    let end = todayEnd;
-
-    if (filter === 'yesterday') {
-      const y = new Date(now);
-      y.setDate(y.getDate() - 1);
-      start = new Date(y.getFullYear(), y.getMonth(), y.getDate()).toISOString();
-      end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59).toISOString();
-    } else if (filter === 'this_week') {
-      const d = new Date(now);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-      const monday = new Date(d.setDate(diff));
-      start = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).toISOString();
-    } else if (filter === 'this_month') {
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    } else if (filter === 'all_time') {
-      start = '2000-01-01T00:00:00.000Z';
-    }
-    
-    return { start, end };
+    return getISTDateRange(filter);
   }, []);
 
   /**

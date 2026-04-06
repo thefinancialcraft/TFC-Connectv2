@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { supabase, supabaseAdmin } from "../../lib/supabase";
+import { getISTDateRange } from "../../lib/dateUtils";
 import { DashboardLevel, getUserDashboardLevel } from "../../lib/dashboardUtils";
 
 /**
@@ -70,81 +71,7 @@ interface ChartsResponse {
   error?: string;
 }
 
-function getDateRange(filter: string) {
-  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-  const nowUtc = new Date();
-  const nowIst = new Date(nowUtc.getTime() + IST_OFFSET);
-
-  // Helper to get midnight IST for a given IST date
-  const getMidnightIstAsUtc = (dateIst: Date) => {
-    const midnight = new Date(dateIst);
-    midnight.setUTCHours(0, 0, 0, 0);
-    return new Date(midnight.getTime() - IST_OFFSET);
-  };
-
-  const todayStart = getMidnightIstAsUtc(nowIst);
-  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000 - 1000);
-
-  let start = todayStart.toISOString();
-  let end = todayEnd.toISOString();
-
-  switch (filter) {
-    case "yesterday": {
-      const yesterdayIst = new Date(nowIst.getTime() - 24 * 60 * 60 * 1000);
-      const yStart = getMidnightIstAsUtc(yesterdayIst);
-      start = yStart.toISOString();
-      end = new Date(yStart.getTime() + 24 * 60 * 60 * 1000 - 1000).toISOString();
-      break;
-    }
-    case "this_week": {
-      const day = nowIst.getDay();
-      const diff = nowIst.getDate() - day + (day === 0 ? -6 : 1);
-      const mondayIst = new Date(nowIst);
-      mondayIst.setDate(diff);
-      start = getMidnightIstAsUtc(mondayIst).toISOString();
-      end = nowUtc.toISOString();
-      break;
-    }
-    case "last_7_days": {
-      const dStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
-      start = dStart.toISOString();
-      end = nowUtc.toISOString();
-      break;
-    }
-    case "this_month": {
-      const firstDayIst = new Date(nowIst.getFullYear(), nowIst.getMonth(), 1);
-      start = getMidnightIstAsUtc(firstDayIst).toISOString();
-      end = nowUtc.toISOString();
-      break;
-    }
-    case "last_month": {
-      const firstDayLastMonthIst = new Date(nowIst.getFullYear(), nowIst.getMonth() - 1, 1);
-      const lastDayLastMonthIst = new Date(nowIst.getFullYear(), nowIst.getMonth(), 0);
-      start = getMidnightIstAsUtc(firstDayLastMonthIst).toISOString();
-      const lEnd = getMidnightIstAsUtc(lastDayLastMonthIst);
-      end = new Date(lEnd.getTime() + 24 * 60 * 60 * 1000 - 1000).toISOString();
-      break;
-    }
-    case "this_year": {
-      const firstDayYearIst = new Date(nowIst.getFullYear(), 0, 1);
-      start = getMidnightIstAsUtc(firstDayYearIst).toISOString();
-      end = nowUtc.toISOString();
-      break;
-    }
-    case "multi_year": {
-      const threeYearsAgoIst = new Date(nowIst.getFullYear() - 3, 0, 1);
-      start = getMidnightIstAsUtc(threeYearsAgoIst).toISOString();
-      end = nowUtc.toISOString();
-      break;
-    }
-    case "all_time":
-      start = "2020-01-01T00:00:00.000Z";
-      end = nowUtc.toISOString();
-      break;
-  }
-
-  return { start, end };
-}
+// getDateRange moved to lib/dateUtils.ts
 
 /**
  * Helper function to fetch ALL rows (bypasses 1000 row limit)
@@ -329,7 +256,7 @@ export default async function handler(
       start = startDate as string;
       end = endDate as string;
     } else {
-      const range = getDateRange(dateFilter as string);
+      const range = getISTDateRange(dateFilter as string);
       if (dateFilter !== "all_time") {
         start = range.start;
         end = range.end;
