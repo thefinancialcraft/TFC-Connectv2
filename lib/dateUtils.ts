@@ -76,3 +76,47 @@ export function getISTDateRange(filter: string) {
 
   return { start, end };
 }
+
+/**
+ * Basic date formatter for display
+ */
+export function formatDate(date: string | Date | null) {
+  if (!date) return "N/A";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "N/A";
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/**
+ * Calculates new expiry date by adding months to an existing string or now
+ */
+export function calculateNewExpiryDate(currentExpiry: string | null, monthsToAdd: number) {
+  const baseDate = currentExpiry ? new Date(currentExpiry) : new Date();
+  if (isNaN(baseDate.getTime())) return new Date().toISOString().split('T')[0];
+  
+  const newDate = new Date(baseDate);
+  newDate.setMonth(newDate.getMonth() + monthsToAdd);
+  
+  return newDate.toISOString().split('T')[0];
+}
+
+/**
+ * Calculates months from now to a specific target month/year
+ */
+export function calculateMonthsToTarget(year: string | number, month: string | number) {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  
+  const targetYear = typeof year === 'string' ? parseInt(year) : year;
+  const targetMonth = typeof month === 'string' ? parseInt(month) : month;
+  
+  if (isNaN(targetYear) || isNaN(targetMonth)) return 0;
+  
+  // Note: targetMonth expected as 1-12 from UI select, convert to 0-11
+  return (targetYear - currentYear) * 12 + (targetMonth - 1 - currentMonth);
+}

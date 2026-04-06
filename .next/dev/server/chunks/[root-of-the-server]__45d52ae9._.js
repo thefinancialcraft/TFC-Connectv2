@@ -59,6 +59,12 @@ __turbopack_async_result__();
  * Shared date range utilities for dashboard APIs
  * All calculations are standardized to Asia/Kolkata (IST)
  */ __turbopack_context__.s([
+    "calculateMonthsToTarget",
+    ()=>calculateMonthsToTarget,
+    "calculateNewExpiryDate",
+    ()=>calculateNewExpiryDate,
+    "formatDate",
+    ()=>formatDate,
     "getISTDateRange",
     ()=>getISTDateRange
 ]);
@@ -142,6 +148,33 @@ function getISTDateRange(filter) {
         start,
         end
     };
+}
+function formatDate(date) {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
+}
+function calculateNewExpiryDate(currentExpiry, monthsToAdd) {
+    const baseDate = currentExpiry ? new Date(currentExpiry) : new Date();
+    if (isNaN(baseDate.getTime())) return new Date().toISOString().split('T')[0];
+    const newDate = new Date(baseDate);
+    newDate.setMonth(newDate.getMonth() + monthsToAdd);
+    return newDate.toISOString().split('T')[0];
+}
+function calculateMonthsToTarget(year, month) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-11
+    const targetYear = typeof year === 'string' ? parseInt(year) : year;
+    const targetMonth = typeof month === 'string' ? parseInt(month) : month;
+    if (isNaN(targetYear) || isNaN(targetMonth)) return 0;
+    // Note: targetMonth expected as 1-12 from UI select, convert to 0-11
+    return (targetYear - currentYear) * 12 + (targetMonth - 1 - currentMonth);
 }
 }),
 "[project]/lib/dashboardUtils.ts [api] (ecmascript)", ((__turbopack_context__) => {
