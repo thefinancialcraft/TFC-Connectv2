@@ -71,7 +71,8 @@ DECLARE
     v_next_lead_id UUID;
 BEGIN
 
-    -- STEP 1: Sticky Session / Recovery
+    -- 1. Sticky Session / Recovery
+    -- If the agent has an active session that isn't finished, give it back first.
     SELECT customer_id::UUID INTO v_next_lead_id
     FROM public.call_sessions
     WHERE user_id = p_user_id
@@ -84,36 +85,34 @@ BEGIN
         RETURN v_next_lead_id;
     END IF;
 
-    -- STEP 2: Main Logic with Tiered Global Priority
+    -- 2. Strictly Prioritized Queue Logic (using ref_date)
     WITH prioritized_leads AS (
         SELECT 
-            l.id,
-            l.next_called_at,
-            l.expiry_date,
-            l.updated_at,
-            l.attempt_count,
+            l.id, l.ref_date, l.updated_at, l.attempt_count, l.assigned_to, l.expiry_date,
             CASE 
-                -- Level 1: MY Own Overdue Follow-ups (Personal)
-                WHEN l.next_called_at <= now() AND l.assigned_to = p_user_id THEN 1
+                -- TIER 1: OVERDUE/DUE CALLBACKS (Commitments)
+                WHEN l.ref_date <= now() AND COALESCE(l.attempt_count, 0) > 0 AND l.assigned_to = p_user_id THEN 1
                 
-                -- Level 2: MY Own Upcoming Follow-ups (Personal, 4hr window)
-                WHEN l.next_called_at > now() AND l.next_called_at <= (now() + interval '4 hours') AND l.assigned_to = p_user_id THEN 2
+                -- TIER 2: UPCOMING (Due in the next 1 minute specifically)
+                WHEN l.ref_date > now() AND l.ref_date <= (now() + interval '1 minute') AND l.assigned_to = p_user_id THEN 2
                 
-                -- Level 3: Fresh leads (Global Pool, 0 attempts)
-                WHEN COALESCE(l.attempt_count, 0) = 0 AND (l.assigned_to IS NULL OR l.assigned_to = p_user_id) THEN 3
+                -- TIER 3: FRESH LEADS (Available Now)
+                WHEN COALESCE(l.attempt_count, 0) = 0 AND (l.assigned_to IS NULL OR l.assigned_to = p_user_id) AND l.ref_date <= now() THEN 3
                 
-                -- Level 4: Retry / Not Contactable (The "Back of the line" Pool)
-                ELSE 4
+                -- TIER 4: ASSIGNED WITHOUT DISPOSITION (Stuck)
+                WHEN COALESCE(l.attempt_count, 0) > 0 AND l.assigned_to = p_user_id AND l.disposition IS NULL THEN 4
+
+                -- TIER 5: RETRIES (Not Contactable, etc)
+                WHEN COALESCE(l.attempt_count, 0) > 0 AND (l.assigned_to IS NULL OR l.assigned_to = p_user_id) AND l.ref_date <= now() THEN 5
+                
+                ELSE NULL -- Filters out future callbacks
             END as tier_priority
         FROM public.customers l
-        LEFT JOIN public.call_sessions cs ON l.id::TEXT = cs.customer_id
+        LEFT JOIN public.call_sessions cs ON l.id = cs.customer_id
         WHERE l.campaign_id = p_campaign_id
           AND l.status = 'active'
-          -- Privacy Rule: If it's a scheduled call, it MUST belong to the user
-          AND (l.next_called_at IS NULL OR l.assigned_to = p_user_id)
-          -- Availability Rule: No active session from someone else
+          -- General availability check: No other active agent should have this lead locked
           AND (cs.customer_id IS NULL OR cs.user_id = p_user_id OR cs.updated_at < (now() - interval '30 minutes'))
-          -- Global exclusion for the lead we just came from
           AND (p_exclude_lead_id IS NULL OR l.id != p_exclude_lead_id)
     )
     SELECT id INTO v_next_lead_id
@@ -121,20 +120,19 @@ BEGIN
     WHERE tier_priority IS NOT NULL
     ORDER BY 
         tier_priority ASC,
-        -- Tier 1 & 2: By Scheduled Time
-        CASE WHEN tier_priority IN (1, 2) THEN next_called_at END ASC,
-        -- [NEW SORTING LOGIC]
-        -- Tier 3 (Fresh): Expiry Date First (Rule C)
+        -- Tier 1 & 2: By Scheduled Time ASC
+        CASE WHEN tier_priority IN (1, 2) THEN ref_date END ASC,
+        -- Tier 3 (Fresh): Expiry Date AND Ref Date First (Rule C)
         CASE WHEN tier_priority = 3 THEN expiry_date END ASC NULLS LAST,
+        CASE WHEN tier_priority = 3 THEN ref_date END ASC NULLS LAST,
         CASE WHEN tier_priority = 3 THEN updated_at END ASC NULLS LAST,
-        -- Tier 4 (Not Contactable): Updated At ASC (Last called goes to the the very back)
-        CASE WHEN tier_priority = 4 THEN updated_at END ASC NULLS LAST,
-        CASE WHEN tier_priority = 4 THEN expiry_date END ASC NULLS LAST
+        -- Tier 4 & 5: Updated At ASC (Last called goes to the the back)
+        CASE WHEN tier_priority IN (4, 5) THEN updated_at END ASC,
+        CASE WHEN tier_priority IN (4, 5) THEN ref_date END ASC
     LIMIT 1;
 
-    -- STEP 3: Assign / Update Session
+    -- STEP 3: Assign / Update Lead
     IF v_next_lead_id IS NOT NULL THEN
-        -- Locking lead in customer table to ensure current agent is the owner
         UPDATE public.customers 
         SET assigned_to = p_user_id,
             updated_at = now()
@@ -146,7 +144,25 @@ BEGIN
     RETURN NULL;
 END;
 $function$
-;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+;
+
+-- 20. Trigger function to sync ref_date with expiry_date on upload (INSERT)
+CREATE OR REPLACE FUNCTION public.handle_customer_upload_sync()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- If ref_date is not provided during upload, sync it with expiry_date
+    IF NEW.ref_date IS NULL AND NEW.expiry_date IS NOT NULL THEN
+        NEW.ref_date := NEW.expiry_date;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Attach the trigger to the customers table
+DROP TRIGGER IF EXISTS tr_sync_ref_date_on_upload ON public.customers;
+CREATE TRIGGER tr_sync_ref_date_on_upload
+BEFORE INSERT ON public.customers
+FOR EACH ROW EXECUTE FUNCTION public.handle_customer_upload_sync();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | CREATE OR REPLACE FUNCTION public.update_updated_at()
  RETURNS trigger
  LANGUAGE plpgsql
@@ -554,8 +570,8 @@ BEGIN
         SELECT 
             c.campaign_id,
             COUNT(*) FILTER (WHERE (c.attempt_count IS NULL OR c.attempt_count = 0) AND c.assigned_to IS NULL) as raw_fresh,
-            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND c.next_called_at >= NOW()) as upcoming,
-            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND (c.next_called_at < NOW() OR c.next_called_at IS NULL)) as overdue
+            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND c.ref_date >= NOW()) as upcoming,
+            COUNT(*) FILTER (WHERE (c.disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) AND (c.ref_date < NOW() OR c.ref_date IS NULL)) as overdue
         FROM customers c
         GROUP BY c.campaign_id
     ),
@@ -600,7 +616,7 @@ BEGIN
             COUNT(*) FILTER (WHERE (p_start_date IS NULL OR created_at >= p_start_date) AND (p_end_date IS NULL OR created_at <= p_end_date) AND (disposition ILIKE '%Sold%' OR disposition ILIKE '%Success%' OR disposition ILIKE '%Converted%' OR disposition ILIKE '%Closed%')) as total_converted,
             COUNT(*) as all_time_records,
             COUNT(*) FILTER (WHERE disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp')) as all_time_followups,
-            COUNT(*) FILTER (WHERE disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp') AND (next_called_at < v_now OR next_called_at IS NULL)) as all_time_overdue,
+            COUNT(*) FILTER (WHERE disposition IN ('Callback', 'Call Back', 'Follow Up', 'FollowUp') AND (ref_date < v_now OR ref_date IS NULL)) as all_time_overdue,
             COUNT(*) FILTER (WHERE (disposition IS NULL OR disposition = '') AND (attempt_count = 0 OR attempt_count IS NULL)) as fresh_global_count
         FROM public.customers
         WHERE (p_org_id IS NULL OR organization_id = p_org_id)

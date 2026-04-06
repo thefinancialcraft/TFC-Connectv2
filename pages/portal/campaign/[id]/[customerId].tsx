@@ -2255,6 +2255,7 @@ export default function CallingPage() {
                     attempt_count: (customer?.attempt_count || 0) + 1,
                     last_attempt_at: now,
                     next_called_at: null,
+                    ref_date: now, // Ensure retries are available immediately in Priority 4 pool
                     assigned_to: null, 
                     
                     status: 'active',
@@ -2325,6 +2326,7 @@ export default function CallingPage() {
                     const finalISO = combinedDT.toISOString();
                     
                     updatePayload.next_called_at = finalISO;
+                    updatePayload.ref_date = finalISO; // Unified priority column
                     logNextCalledAt = finalISO;
 
                     // --- Google Calendar Sync Logic ---
@@ -2397,6 +2399,7 @@ Campaign: ${campaign?.name || campaignId}
                     }
                 } else {
                     updatePayload.next_called_at = null;
+                    updatePayload.ref_date = now; // For active leads, ref_date defaults to current time
                 }
 
                 logStatus = updatePayload.status;

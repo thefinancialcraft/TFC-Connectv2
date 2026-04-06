@@ -8623,3 +8623,393 @@ Import traces:
 [02:27:05.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
 [02:27:07.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
 [02:27:09.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:11.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:13.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:15.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:17.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:19.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:21.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:23.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:23.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:25.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:27.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:29.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:31.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:33.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:35.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:37.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:39.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:41.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:43.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:45.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:47.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:49.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:51.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:53.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:53.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:55.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:57.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:27:59.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:01.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:12.572] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:28:12.572] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:28:12.572] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:28:12.900] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:15.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:17.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:19.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:21.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:23.119] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:28:23.284] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:23.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:23.326] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 411ms
+[02:28:25.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:27.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:29.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:31.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:33.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:35.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:37.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:39.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:41.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:43.292] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:45.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:47.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:49.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:51.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:53.278] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:53.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:55.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:57.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:28:59.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:01.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:03.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:05.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:07.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:09.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:12.109] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:29:12.109] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:13.479] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:29:15.286] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:29:23.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:42.283] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:29:45.276] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:29:53.170] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:29:53.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:53.379] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 424ms
+[02:29:56.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:44:58.383] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:44:59.312] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:44:59.542] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 432ms
+[02:45:01.067] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:45:01.067] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:45:01.067] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:45:05.280] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:45:57.287] Browser LOG     ❌ [Status] Offline Event
+[02:46:01.285] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:2103:52)","hint":"","message":"TypeError: Failed to fetch"}
+[02:46:01.285] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[02:46:01.285] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[02:46:03.291] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:08.290] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:11.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:13.285] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:17.285] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:17.285] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:18.283] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:23.287] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:24.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:24.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:31.277] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[02:46:31.277] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:31.277] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:43.279] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:43.279] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:52.281] Browser LOG     🌐 [Status] Online Event
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:52.281] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:53.288] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[02:46:56.288] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:56.288] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:46:56.288] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[02:46:56.288] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:2103:52)","hint":"","message":"TypeError: Failed to fetch"}
+[02:46:56.288] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[02:47:06.528] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\lib\fetch.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.533] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\GoTrueClient.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.549] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\[root-of-the-server]__45d52ae9._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.567] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.614] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\node_modules_next_dist_958b1c1c._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.617] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.626] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.628] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.630] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.633] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.634] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:47:06.655] Server  ERROR   TypeError: fetch failed
+[02:47:07.381] Browser ERROR   Agent Performance Fetch Error: {}
+[02:47:08.283] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:08.283] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:20.286] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:20.286] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:24.290] Browser LOG     ❌ [Status] Offline Event
+[02:47:28.281] Browser LOG     🌐 [Status] Online Event
+[02:47:33.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:33.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:45.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:45.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:56.280] Browser ERROR   [Session-Guard] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkActiveSession (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:9479:47)","hint":"","message":"TypeError: Failed to fetch"}
+[02:47:56.280] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:2103:52)","hint":"","message":"TypeError: Failed to fetch"}
+[02:47:56.280] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__112a413a._.js:10283:41)","hint":"","message":"TypeError: Failed to fetch"}
+[02:47:57.287] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:47:57.287] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:06.497] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\lib\fetch.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.498] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\GoTrueClient.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.500] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\[root-of-the-server]__45d52ae9._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.503] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.504] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\node_modules_next_dist_958b1c1c._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.506] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.508] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.509] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.510] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.511] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.512] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[02:48:06.514] Server  ERROR   TypeError: fetch failed
+[02:48:07.281] Browser ERROR   Agent Performance Fetch Error: {}
+[02:48:09.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:09.284] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:31.285] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:48:33.276] Browser LOG     ❌ [Status] Offline Event
+[02:48:35.286] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:36.277] Browser LOG     🌐 [Status] Online Event
+[02:48:43.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:43.291] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:48:49.280] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:48:56.302] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:48:56.306] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:48:56.306] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:48:56.518] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 484ms
+[02:49:00.344] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:49:00.344] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:49:00.344] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:00.735] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:02.217] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:02.991] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:49:03.455] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:49:03.455] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:49:03.455] Browser LOG     [App] Logger and Interceptors initialized.
+[02:49:03.939] Server  LOG     Using date-holidays fallback
+[02:49:04.003] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:49:04.003] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:49:04.003] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:49:04.003] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:04.003] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:49:04.038] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:49:04.142] Browser LOG     [Realtime-Redirect] Monitoring session for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:49:04.142] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:04.142] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:49:04.321] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:49:04.360] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:49:04.360] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:49:04.360] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:04.504] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:49:04.511] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:49:04.534] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:49:04.728] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 430ms
+[02:49:04.900] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:49:05.171] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:49:05.198] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:49:05.201] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1163ms
+[02:49:05.385] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 423ms
+[02:49:06.409] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:06.625] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2317ms
+[02:49:08.315] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:10.730] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:49:10.730] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:49:10.730] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:10.730] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:13.274] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:15.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:17.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:19.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:19.788] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:49:19.788] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:49:19.788] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:21.356] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:49:21.356] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:49:21.356] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:49:25.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:25.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:25.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:25.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:25.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:27.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:29.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:31.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:33.280] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:35.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:35.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:49:37.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:39.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:41.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:43.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:45.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:47.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:49.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:51.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:53.275] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:55.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:57.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:49:59.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:01.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:03.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:05.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:50:05.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:07.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:09.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:11.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:13.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:15.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:17.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:19.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:21.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:50:35.181] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:50:35.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:50:35.401] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 429ms
+[02:50:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:51:05.280] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:51:35.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:51:56.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:52:05.191] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:52:05.280] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:52:05.407] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 435ms
+[02:52:40.282] Browser LOG     📡 [Header] Subscription status for NXUS-001: CHANNEL_ERROR
+[02:52:45.274] Browser LOG     📡 [Header] Subscription status for NXUS-001: SUBSCRIBED
+[02:52:56.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:52:56.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:56.195] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:53:56.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:56.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:53:56.418] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 448ms
+[02:54:56.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:54:56.285] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:56.211] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:55:56.291] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:56.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:55:56.424] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 423ms
+[02:56:56.278] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:56:56.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:57:56.280] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[02:57:56.536] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:57:56.750] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 426ms
+[02:57:57.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:57:57.283] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:58:56.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:58:56.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:56.286] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[02:59:56.286] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:56.538] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:59:56.764] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 443ms
+[03:00:56.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:00:56.289] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:56.228] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:01:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:01:56.448] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 432ms
+[03:02:56.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:02:56.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:56.163] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:03:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:03:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:56.384] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 432ms
+[03:04:56.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:04:56.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:56.223] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:05:56.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:56.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:05:56.447] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 449ms
+[03:06:56.278] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:56.278] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:07:56.213] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:07:56.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:07:56.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:56.433] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 443ms
+[03:08:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:08:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:09:56.140] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:09:56.284] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:09:56.284] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:09:56.359] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 422ms
+[03:10:56.285] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:10:56.285] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:11:56.240] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:11:56.276] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:11:56.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:11:56.464] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 441ms
+[03:12:56.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:12:56.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:13:56.156] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:13:56.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:13:56.288] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:13:56.377] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 436ms
+[03:14:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:14:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:15:56.191] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:15:56.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:15:56.277] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:15:56.408] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 425ms
+[03:16:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:16:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:17:56.291] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:17:56.291] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:17:56.342] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:17:56.558] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 439ms
+[03:18:56.290] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:18:56.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:19:56.245] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:19:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:19:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:19:56.479] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 452ms
+[03:20:56.288] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:20:56.288] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:21:56.243] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:21:56.282] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:21:56.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:21:56.460] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 463ms
+[03:22:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:22:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:23:56.241] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:23:56.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:23:56.277] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:23:56.461] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 441ms
+[03:24:56.279] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:24:56.279] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:25:50.681] Server  LOG      ✓ Compiled in 1422ms
+[03:25:56.474] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:25:56.689] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 429ms
+[03:25:57.283] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:25:57.283] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:26:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:26:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:27:56.180] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:27:56.287] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:27:56.287] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:27:56.392] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 427ms
+[03:28:56.277] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:28:56.277] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:29:56.281] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:29:56.281] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:29:56.302] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[03:29:56.528] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 446ms
+[03:30:56.289] Browser LOG     [Session-Guard] Pulse Check: Manual-Hot=0, System-Hot=0
+[03:30:56.289] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
