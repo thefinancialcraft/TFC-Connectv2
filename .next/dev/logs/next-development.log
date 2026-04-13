@@ -15384,3 +15384,26 @@ Import traces:
 [18:52:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [18:52:17.681] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
 [18:52:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:10.064] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:53:10.064] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:53:10.064] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:53:10.487] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:10.570] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:53:10.854] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 499ms
+[18:53:11.420] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:53:12.329] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:42.335] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:53:43.233] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:53:43.593] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[18:53:43.788] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[18:53:44.045] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[18:53:44.244] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[18:53:44.257] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[18:53:44.542] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[18:53:44.544] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 757ms
+[18:53:47.017] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2978ms
