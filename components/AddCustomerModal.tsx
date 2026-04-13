@@ -61,12 +61,20 @@ export default function AddCustomerModal({
   useEffect(() => {
     if (show) {
       fetchOrganizations();
-      if (formData.organization_id) {
-        fetchCampaigns(formData.organization_id);
+      
+      // Handle client-side organization locking
+      if (user?.isClient && user.organization_id) {
+        setFormData(prev => ({ ...prev, organization_id: user.organization_id || "" }));
+      } else {
+        // Reset form if opening fresh for non-clients
+        if (!preselectedOrgId) setFormData(prev => ({ ...prev, organization_id: "" }));
       }
-      // Reset form if opening fresh
-      if (!preselectedOrgId) setFormData(prev => ({ ...prev, organization_id: "" }));
+      
       if (!preselectedCampaignId) setFormData(prev => ({ ...prev, campaign_id: "" }));
+      
+      if (formData.organization_id || (user?.isClient && user.organization_id)) {
+        fetchCampaigns(formData.organization_id || user?.organization_id || "");
+      }
     }
   }, [show, preselectedOrgId, preselectedCampaignId]);
 
@@ -213,49 +221,45 @@ export default function AddCustomerModal({
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
-    <div className="fixed inset-0 backdrop-blur-lg flex items-center justify-center z-[110] p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[110] p-4 text-xs font-sans">
+      <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-100">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-[#4b33e8] flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                <i className="fi flex fi-rr-user-add text-lg"></i>
-             </div>
-             <div>
-                <h2 className="text-xl font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>Add Single Customer</h2>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Manual Entry</p>
-             </div>
+             <h2 className="font-bold text-gray-800">Add Single Customer</h2>
+             <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100">Manual Entry</span>
           </div>
-          <button onClick={handleClose} className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
-            <i className="fi flex fi-rr-cross-small"></i>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 p-1">
+            <i className="fi fi-rr-cross-small text-xl leading-none"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Customer Name *</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Customer Name *</label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Full Name"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Phone Number *</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Phone Number *</label>
               <input
                 type="tel"
                 required
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="e.g. 9876543210"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
               />
             </div>
             <div className="space-y-1.5 relative">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Expiry Date (DD/MM/YYYY)</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Expiry Date (DD/MM/YYYY)</label>
               <div className="relative">
                   <input
                     type="text"
@@ -277,7 +281,7 @@ export default function AddCustomerModal({
                         }
                     }}
                     placeholder="DD/MM/YYYY"
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                   />
                   <button 
                     type="button" 
@@ -290,18 +294,18 @@ export default function AddCustomerModal({
 
               {/* Custom Calendar Popover */}
               {showCalendar && (
-                <div ref={calendarRef} className="absolute top-full mt-2 left-0 z-50 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-72 animate-in fade-in slide-in-from-top-2">
+                <div ref={calendarRef} className="absolute top-full mt-2 left-0 z-50 bg-white rounded-lg shadow-2xl border border-gray-100 p-4 w-64 animate-in fade-in slide-in-from-top-2">
                   <div className="flex items-center justify-between mb-4">
                     <button type="button" onClick={() => { if(calMonth === 0) { setCalMonth(11); setCalYear(prev => prev-1); } else setCalMonth(prev => prev-1); }} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400">
                         <i className="fi flex fi-rr-angle-left"></i>
                     </button>
-                    <div className="text-sm font-bold text-gray-800">{months[calMonth]} {calYear}</div>
+                    <div className="text-[11px] font-bold text-gray-800">{months[calMonth]} {calYear}</div>
                     <button type="button" onClick={() => { if(calMonth === 11) { setCalMonth(0); setCalYear(prev => prev+1); } else setCalMonth(prev => prev+1); }} className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400">
                         <i className="fi flex fi-rr-angle-right"></i>
                     </button>
                   </div>
                   <div className="grid grid-cols-7 text-center mb-2">
-                    {['S','M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d} className="text-[10px] font-bold text-gray-300 uppercase">{d}</div>)}
+                    {['S','M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d} className="text-[9px] font-bold text-gray-300 uppercase">{d}</div>)}
                   </div>
                   <div className="grid grid-cols-7 gap-1">
                     {Array.from({ length: firstDayOfMonth(calYear, calMonth) }).map((_, i) => <div key={`empty-${i}`} />)}
@@ -320,7 +324,7 @@ export default function AddCustomerModal({
                             setExpiryRaw(`${d}/${m}/${y}`);
                             setShowCalendar(false);
                           }}
-                          className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${isSelected ? 'bg-[#4b33e8] text-white shadow-lg' : 'hover:bg-indigo-50 text-gray-600'}`}
+                          className={`w-7 h-7 rounded text-[10px] font-bold transition-all ${isSelected ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-600'}`}
                         >
                           {day}
                         </button>
@@ -331,23 +335,24 @@ export default function AddCustomerModal({
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Organization *</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Organization *</label>
               <select
                 required
                 value={formData.organization_id}
+                disabled={user?.isClient}
                 onChange={(e) => setFormData({ ...formData, organization_id: e.target.value, campaign_id: "" })}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className={`w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-100 cursor-not-allowed text-gray-400' : 'bg-white text-gray-700'}`}
               >
                 <option value="">Select Organization</option>
                 {organizations.map(org => <option key={org.id} value={org.id}>{org.company_name}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Campaign</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign</label>
               <select
                 value={formData.campaign_id}
                 onChange={(e) => setFormData({ ...formData, campaign_id: e.target.value })}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
               >
                 <option value="">Select Campaign</option>
                 {campaigns.map(camp => <option key={camp.id} value={camp.id}>{camp.name}</option>)}
@@ -358,11 +363,11 @@ export default function AddCustomerModal({
           {/* Custom Fields */}
           <div className="pt-4 border-t border-gray-100">
             <div className="flex items-center justify-between mb-4">
-               <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Custom Fields</h3>
+               <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Custom Data Fields</h3>
                <button 
                   type="button"
                   onClick={addCustomField}
-                  className="px-3 py-1.5 bg-indigo-50 text-[#4b33e8] rounded-lg text-xs font-bold hover:bg-indigo-100 transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-100 transition-colors flex items-center gap-1.5 border border-indigo-100"
                >
                   <i className="fi fi-rr-plus"></i> Add Field
                </button>
@@ -377,25 +382,25 @@ export default function AddCustomerModal({
                               type="checkbox"
                               checked={cf.showInApp}
                               onChange={(e) => updateCustomField(cf.id, "showInApp", e.target.checked)}
-                              className="w-4 h-4 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
+                              className="w-3.5 h-3.5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
                            />
                        </div>
                        <input
-                           placeholder="Field Name (e.g. Plan)"
-                           className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                           placeholder="Label (e.g. Plan)"
+                           className="flex-1 h-8 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
                            value={cf.name}
                            onChange={(e) => updateCustomField(cf.id, "name", e.target.value)}
                        />
                        <input
                            placeholder="Value"
-                           className="flex-[1.5] px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#4b33e8]"
+                           className="flex-[1.5] h-8 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
                            value={cf.value}
                            onChange={(e) => updateCustomField(cf.id, "value", e.target.value)}
                        />
                        <button 
                          type="button"
                          onClick={() => removeCustomField(cf.id)} 
-                         className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                         className="p-1.5 text-gray-300 hover:text-rose-500 transition-colors"
                        >
                          <i className="fi flex fi-rr-trash text-sm"></i>
                        </button>
@@ -403,25 +408,25 @@ export default function AddCustomerModal({
                   ))}
                </div>
             ) : (
-               <div className="text-center py-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="text-xs text-gray-400 font-medium">No custom fields added yet.</p>
+               <div className="text-center py-5 bg-gray-50/50 rounded-lg border border-dashed border-gray-200">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">No custom fields added yet.</p>
                </div>
             )}
           </div>
 
-          {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 animate-in fade-in slide-in-from-bottom-2">{error}</div>}
-          {success && <div className="p-3 bg-green-50 text-green-600 rounded-xl text-xs font-bold border border-green-100 animate-in fade-in slide-in-from-bottom-2">{success}</div>}
+          {error && <div className="p-2.5 bg-rose-50 text-rose-600 rounded font-bold border border-rose-100 text-[11px] animate-in fade-in slide-in-from-bottom-2">{error}</div>}
+          {success && <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded font-bold border border-emerald-100 text-[11px] animate-in fade-in slide-in-from-bottom-2">{success}</div>}
         </form>
 
-        <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-          <button type="button" onClick={handleClose} className="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors">Cancel</button>
+        <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
+          <button type="button" onClick={handleClose} className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all">Cancel</button>
           <button 
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-2.5 bg-[#4b33e8] text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 disabled:opacity-50 active:scale-95 flex items-center gap-2"
+            className="px-6 py-1.5 bg-[#4b33e8] text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 disabled:opacity-50 flex items-center gap-2"
           >
-            {loading ? <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Saving...</> : "Add Customer"}
+            {loading ? "Saving..." : "Create Customer"}
           </button>
         </div>
       </div>

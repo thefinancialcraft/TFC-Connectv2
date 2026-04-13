@@ -359,12 +359,14 @@ function Customer() {
         createdEndDate: ""
     });
     // Bulk Action States
-    const [showBulkOrgModal, setShowBulkOrgModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [showBulkCampaignModal, setShowBulkCampaignModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [showBulkAssignedModal, setShowBulkAssignedModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [showBulkDispositionModal, setShowBulkDispositionModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [showBulkActionModal, setShowBulkActionModal] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isUpdatingBulk, setIsUpdatingBulk] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [bulkValue, setBulkValue] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [bulkUpdates, setBulkUpdates] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
+        organization_id: "",
+        campaign_id: "",
+        assigned_to: "",
+        disposition: ""
+    });
     // Format date safely for SSR (only format on client)
     const formatDate = (dateString)=>{
         if (!mounted || !dateString) return "N/A";
@@ -474,6 +476,28 @@ function Customer() {
                     freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
                 }
                 freshCountQuery = applyUserFilters(freshCountQuery);
+                if (filters.organization) {
+                    pendingQuery = pendingQuery.eq("organization_id", filters.organization);
+                    overdueQuery = overdueQuery.eq("organization_id", filters.organization);
+                    freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
+                }
+                if (filters.campaign) {
+                    pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
+                    overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
+                    freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
+                }
+                if (filters.assignedTo) {
+                    const agentCol = dataSource === 'live' ? 'assigned_to' : 'agent_id';
+                    if (filters.assignedTo === "unassigned") {
+                        pendingQuery = pendingQuery.is(agentCol, null);
+                        overdueQuery = overdueQuery.is(agentCol, null);
+                        freshCountQuery = freshCountQuery.is(agentCol, null);
+                    } else {
+                        pendingQuery = pendingQuery.eq(agentCol, filters.assignedTo);
+                        overdueQuery = overdueQuery.eq(agentCol, filters.assignedTo);
+                        freshCountQuery = freshCountQuery.eq(agentCol, filters.assignedTo);
+                    }
+                }
                 if (filters.startDate) {
                     pendingQuery = pendingQuery.gte(dateField, `${filters.startDate}T00:00:00`);
                     overdueQuery = overdueQuery.gte(dateField, `${filters.startDate}T00:00:00`);
@@ -671,6 +695,21 @@ function Customer() {
                 setSelectedCustomers(new Set());
                 setSearchQuery("");
                 setTempSearchQuery("");
+                // Initialize filters for clients
+                if (user?.isClient && user.organization_id) {
+                    setFilters({
+                        "Customer.useEffect": (prev)=>({
+                                ...prev,
+                                organization: user.organization_id || ""
+                            })
+                    }["Customer.useEffect"]);
+                    setBulkUpdates({
+                        "Customer.useEffect": (prev)=>({
+                                ...prev,
+                                organization_id: user.organization_id || ""
+                            })
+                    }["Customer.useEffect"]);
+                }
             }
         }
     }["Customer.useEffect"], [
@@ -709,18 +748,35 @@ function Customer() {
             console.error("Error fetching filter metadata:", err);
         }
     };
-    const handleBulkUpdate = async (field, value)=>{
-        if (!selectedCustomers.size || !value) return;
+    const handleBulkUpdate = async (updates)=>{
+        if (!selectedCustomers.size || Object.keys(updates).length === 0) return;
         setIsUpdatingBulk(true);
         try {
             const ids = Array.from(selectedCustomers);
-            if (field === "disposition") {
-                if ([
+            // Check for special "Move Fresh" action
+            if (updates.action === "Move Fresh") {
+                const { error: resetError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").update({
+                    disposition: null,
+                    sub_disposition: null,
+                    assigned_to: null,
+                    status: "active",
+                    last_called_at: null,
+                    last_updated_by: null,
+                    is_connected: null,
+                    attempt_count: 0,
+                    last_attempt_at: null,
+                    managed_by: null
+                }).in("id", ids);
+                if (resetError) throw resetError;
+            } else {
+                // Check for Rejected Disposition move
+                const rejectedValue = updates.disposition;
+                if (rejectedValue && [
                     "Wrong NO",
                     "DND",
                     "Language barrier"
-                ].includes(value)) {
-                    // Move to rejected_leads
+                ].includes(rejectedValue)) {
+                    // 1. Fetch the leads first to move them
                     const { data: leads, error: fetchError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").select("*").in("id", ids);
                     if (fetchError) throw fetchError;
                     if (leads && leads.length > 0) {
@@ -729,74 +785,52 @@ function Customer() {
                                 customer_name: lead.customer_name,
                                 phone_no: lead.phone_no,
                                 phone_search_hash: lead.phone_search_hash || (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["computePhoneHash"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["decryptPhone"])(lead.phone_no)),
-                                campaign_id: lead.campaign_id,
-                                disposition: value,
+                                campaign_id: updates.campaign_id || lead.campaign_id,
+                                disposition: updates.disposition || lead.disposition,
                                 sub_disposition: lead.sub_disposition,
-                                agent_id: lead.assigned_to,
+                                agent_id: updates.assigned_to || lead.assigned_to,
                                 rejected_at: new Date().toISOString(),
                                 managed_by: lead.managed_by,
-                                organization_id: lead.organization_id
+                                organization_id: updates.organization_id || lead.organization_id
                             }));
+                        // 2. Insert into rejected
                         const { error: insertError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("rejected_leads").insert(rejectedLeads);
                         if (insertError) throw insertError;
+                        // 3. Delete from customers
                         const { error: deleteError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").delete().in("id", ids);
                         if (deleteError) throw deleteError;
                     }
-                } else if (value === "Move Fresh") {
-                    // Reset lead fields to fresh state
-                    const { error: resetError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").update({
-                        disposition: null,
-                        sub_disposition: null,
-                        assigned_to: null,
-                        status: "active",
-                        last_called_at: null,
-                        last_updated_by: null,
-                        is_connected: null,
-                        attempt_count: 0,
-                        last_attempt_at: null,
-                        managed_by: null
-                    }).in("id", ids);
-                    if (resetError) throw resetError;
                 } else {
-                    // Standard disposition update
-                    const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").update({
-                        [field]: value
-                    }).in("id", ids);
+                    // Standard bulk update for any fields provided
+                    const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").update(updates).in("id", ids);
                     if (error) throw error;
                 }
-            } else {
-                // Standard field update for organization, campaign, assigned_to
-                const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("customers").update({
-                    [field]: value
-                }).in("id", ids);
-                if (error) throw error;
             }
             setSelectedCustomers(new Set());
             await fetchCustomers(currentPage);
             (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["logSystemEvent"])({
                 event_type: 'WRITE',
-                description: `Bulk Update: Field "${field}" set to "${value}" for ${ids.length} records.`,
+                description: `Bulk Update: Applied changes ${JSON.stringify(updates)} to ${ids.length} records.`,
                 metadata: {
-                    field,
-                    value,
+                    updates,
                     record_count: ids.length
                 },
                 payload_size: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["estimateSize"])({
-                    field,
-                    value,
+                    updates,
                     ids
                 }),
                 user_name: user?.displayName || 'Admin',
                 organization_id: user?.organization_id || undefined
             });
-            // Close all bulk modals
-            setShowBulkOrgModal(false);
-            setShowBulkCampaignModal(false);
-            setShowBulkAssignedModal(false);
-            setShowBulkDispositionModal(false);
-            setBulkValue("");
+            setShowBulkActionModal(false);
+            setBulkUpdates({
+                organization_id: "",
+                campaign_id: "",
+                assigned_to: "",
+                disposition: ""
+            });
         } catch (err) {
-            console.error("Error updated customers:", err);
+            console.error("Error updating customers:", err);
             alert("Failed to update customers. Please try again.");
         } finally{
             setIsUpdatingBulk(false);
@@ -976,12 +1010,12 @@ function Customer() {
                     children: "Customers | TFC Connect"
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 994,
+                    lineNumber: 1022,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 993,
+                lineNumber: 1021,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1003,7 +1037,7 @@ function Customer() {
                                             children: "Customers"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1004,
+                                            lineNumber: 1032,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1015,13 +1049,13 @@ function Customer() {
                                             children: "View and manage all customers in the system"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1013,
+                                            lineNumber: 1041,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1003,
+                                    lineNumber: 1031,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1043,7 +1077,7 @@ function Customer() {
                                                     className: `fi text-base flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1039,
+                                                    lineNumber: 1067,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1051,13 +1085,13 @@ function Customer() {
                                                     children: "Live"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1040,
+                                                    lineNumber: 1068,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1026,
+                                            lineNumber: 1054,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1076,7 +1110,7 @@ function Customer() {
                                                     className: `fi text-base flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1055,
+                                                    lineNumber: 1083,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1084,13 +1118,13 @@ function Customer() {
                                                     children: "Rejected"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1056,
+                                                    lineNumber: 1084,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1042,
+                                            lineNumber: 1070,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1109,7 +1143,7 @@ function Customer() {
                                                     className: `fi text-base flex ${dataSource === "closed" ? "fi-sr-check-circle" : "fi-rr-check-circle"}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1071,
+                                                    lineNumber: 1099,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1117,25 +1151,25 @@ function Customer() {
                                                     children: "Closed"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1072,
+                                                    lineNumber: 1100,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1058,
+                                            lineNumber: 1086,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1025,
+                                    lineNumber: 1053,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 1002,
+                            lineNumber: 1030,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1154,28 +1188,28 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1084,
+                                            lineNumber: 1112,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-purple-100/30 blur-2xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1091,
+                                            lineNumber: 1119,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-purple-200/20 blur-xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1093,
+                                            lineNumber: 1121,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-purple-300/15 blur-lg"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1094,
+                                            lineNumber: 1122,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1187,12 +1221,12 @@ function Customer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1097,
+                                                lineNumber: 1125,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1096,
+                                            lineNumber: 1124,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1203,7 +1237,7 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1103,
+                                            lineNumber: 1131,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1221,7 +1255,7 @@ function Customer() {
                                                             children: "Total Customer"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1113,
+                                                            lineNumber: 1141,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1236,18 +1270,18 @@ function Customer() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1128,
+                                                                lineNumber: 1156,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1122,
+                                                            lineNumber: 1150,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1112,
+                                                    lineNumber: 1140,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1262,7 +1296,7 @@ function Customer() {
                                                             children: totalCustomers
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1135,
+                                                            lineNumber: 1163,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1274,25 +1308,25 @@ function Customer() {
                                                             children: "Total customers"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1144,
+                                                            lineNumber: 1172,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1134,
+                                                    lineNumber: 1162,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1111,
+                                            lineNumber: 1139,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1080,
+                                    lineNumber: 1108,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1308,28 +1342,28 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1162,
+                                            lineNumber: 1190,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-green-100/30 blur-2xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1169,
+                                            lineNumber: 1197,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-green-200/20 blur-xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1171,
+                                            lineNumber: 1199,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-green-300/15 blur-lg"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1172,
+                                            lineNumber: 1200,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1341,12 +1375,12 @@ function Customer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1175,
+                                                lineNumber: 1203,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1174,
+                                            lineNumber: 1202,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1357,7 +1391,7 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1181,
+                                            lineNumber: 1209,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1375,7 +1409,7 @@ function Customer() {
                                                             children: "Fresh Customers"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1191,
+                                                            lineNumber: 1219,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1390,18 +1424,18 @@ function Customer() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1206,
+                                                                lineNumber: 1234,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1200,
+                                                            lineNumber: 1228,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1190,
+                                                    lineNumber: 1218,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1416,7 +1450,7 @@ function Customer() {
                                                             children: freshCustomersCount
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1213,
+                                                            lineNumber: 1241,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1428,25 +1462,25 @@ function Customer() {
                                                             children: "Unassigned leads"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1222,
+                                                            lineNumber: 1250,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1212,
+                                                    lineNumber: 1240,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1189,
+                                            lineNumber: 1217,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1158,
+                                    lineNumber: 1186,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1462,28 +1496,28 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1240,
+                                            lineNumber: 1268,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1247,
+                                            lineNumber: 1275,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-4 left-4 w-24 h-24 rounded-full bg-white/5 blur-xl"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1249,
+                                            lineNumber: 1277,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "absolute top-12 right-12 w-20 h-20 rounded-full bg-white/8 blur-lg"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1250,
+                                            lineNumber: 1278,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1492,12 +1526,12 @@ function Customer() {
                                                 className: "fi flex fi-rr-calendar-check text-5xl sm:text-6xl text-white"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1253,
+                                                lineNumber: 1281,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1252,
+                                            lineNumber: 1280,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1508,7 +1542,7 @@ function Customer() {
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1256,
+                                            lineNumber: 1284,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1526,7 +1560,7 @@ function Customer() {
                                                             children: "Follow ups"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1266,
+                                                            lineNumber: 1294,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1541,18 +1575,18 @@ function Customer() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1281,
+                                                                lineNumber: 1309,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1275,
+                                                            lineNumber: 1303,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1265,
+                                                    lineNumber: 1293,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1567,7 +1601,7 @@ function Customer() {
                                                             children: pendingFollowUps
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1288,
+                                                            lineNumber: 1316,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1579,25 +1613,25 @@ function Customer() {
                                                             children: "Pending follow ups"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1297,
+                                                            lineNumber: 1325,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1287,
+                                                    lineNumber: 1315,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1264,
+                                            lineNumber: 1292,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1236,
+                                    lineNumber: 1264,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1622,28 +1656,28 @@ function Customer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1323,
+                                                        lineNumber: 1351,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1330,
+                                                        lineNumber: 1358,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1332,
+                                                        lineNumber: 1360,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1333,
+                                                        lineNumber: 1361,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1652,12 +1686,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-clock text-3xl text-white"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1336,
+                                                            lineNumber: 1364,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1335,
+                                                        lineNumber: 1363,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1668,7 +1702,7 @@ function Customer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1339,
+                                                        lineNumber: 1367,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1686,7 +1720,7 @@ function Customer() {
                                                                         children: "Upcoming follow ups"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1349,
+                                                                        lineNumber: 1377,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1698,13 +1732,13 @@ function Customer() {
                                                                         children: upcomingFollowUps
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1358,
+                                                                        lineNumber: 1386,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1348,
+                                                                lineNumber: 1376,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1719,24 +1753,24 @@ function Customer() {
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 1374,
+                                                                    lineNumber: 1402,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1368,
+                                                                lineNumber: 1396,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1347,
+                                                        lineNumber: 1375,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1317,
+                                                lineNumber: 1345,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1752,28 +1786,28 @@ function Customer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1389,
+                                                        lineNumber: 1417,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1396,
+                                                        lineNumber: 1424,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1398,
+                                                        lineNumber: 1426,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1399,
+                                                        lineNumber: 1427,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1782,12 +1816,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-clock text-3xl text-white"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1402,
+                                                            lineNumber: 1430,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1401,
+                                                        lineNumber: 1429,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1798,7 +1832,7 @@ function Customer() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1405,
+                                                        lineNumber: 1433,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1816,7 +1850,7 @@ function Customer() {
                                                                         children: "Overdue follow ups"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1415,
+                                                                        lineNumber: 1443,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1828,13 +1862,13 @@ function Customer() {
                                                                         children: overdueFollowUps
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1424,
+                                                                        lineNumber: 1452,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1414,
+                                                                lineNumber: 1442,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1849,41 +1883,41 @@ function Customer() {
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 1440,
+                                                                    lineNumber: 1468,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1434,
+                                                                lineNumber: 1462,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1413,
+                                                        lineNumber: 1441,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1383,
+                                                lineNumber: 1411,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 1315,
+                                        lineNumber: 1343,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 1311,
+                                    lineNumber: 1339,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 1078,
+                            lineNumber: 1106,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1910,13 +1944,13 @@ function Customer() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1465,
+                                                        lineNumber: 1493,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1456,
+                                                lineNumber: 1484,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1928,13 +1962,13 @@ function Customer() {
                                                 children: "Manage and view all your customers"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1470,
+                                                lineNumber: 1498,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 1455,
+                                        lineNumber: 1483,
                                         columnNumber: 19
                                     }, this),
                                     !selectedCustomers.size && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1949,7 +1983,7 @@ function Customer() {
                                                             className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1486,
+                                                            lineNumber: 1514,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1961,13 +1995,13 @@ function Customer() {
                                                             className: "w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1487,
+                                                            lineNumber: 1515,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1485,
+                                                    lineNumber: 1513,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1976,18 +2010,18 @@ function Customer() {
                                                     children: "Search"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1496,
+                                                    lineNumber: 1524,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 1484,
+                                            lineNumber: 1512,
                                             columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 1483,
+                                        lineNumber: 1511,
                                         columnNumber: 21
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1995,89 +2029,39 @@ function Customer() {
                                         children: [
                                             selectedCustomers.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: dataSource !== 'rejected' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>setShowBulkOrgModal(true),
-                                                            className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`,
-                                                            title: "Change Organization",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi flex fi-rr-building text-sm"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1518,
-                                                                columnNumber: 31
-                                                            }, this)
-                                                        }, void 0, false, {
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>setShowBulkActionModal(true),
+                                                            className: "h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100",
+                                                            title: "Bulk Actions",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                    className: "fi flex fi-rr-menu-dots-vertical text-sm"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                    lineNumber: 1547,
+                                                                    columnNumber: 31
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "text-xs font-bold uppercase tracking-wider",
+                                                                    children: [
+                                                                        "Actions (",
+                                                                        selectedCustomers.size,
+                                                                        ")"
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                    lineNumber: 1548,
+                                                                    columnNumber: 31
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1513,
+                                                            lineNumber: 1542,
                                                             columnNumber: 29
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>setShowBulkCampaignModal(true),
-                                                            className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`,
-                                                            title: "Change Campaign",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi flex fi-rr-megaphone text-sm"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1525,
-                                                                columnNumber: 31
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1520,
-                                                            columnNumber: 29
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>setShowBulkAssignedModal(true),
-                                                            className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`,
-                                                            title: "Change Assigned",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi flex fi-rr-user-pen text-sm"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1532,
-                                                                columnNumber: 31
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1527,
-                                                            columnNumber: 29
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>setShowBulkDispositionModal(true),
-                                                            className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`,
-                                                            title: "Change Disposition",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi flex fi-rr-list-check text-sm"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1539,
-                                                                columnNumber: 31
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1534,
-                                                            columnNumber: 29
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>handleBulkUpdate("disposition", "Move Fresh"),
-                                                            className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`,
-                                                            title: "Move Fresh",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi flex fi-rr-refresh text-sm"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1546,
-                                                                columnNumber: 33
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1541,
-                                                            columnNumber: 31
                                                         }, this)
-                                                    ]
-                                                }, void 0, true)
+                                                    }, void 0, false)
+                                                }, void 0, false)
                                             }, void 0, false),
                                             selectedCustomers.size > 0 && dataSource === 'rejected' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: handleMoveToLive,
@@ -2088,7 +2072,7 @@ function Customer() {
                                                     className: "animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1561,
+                                                    lineNumber: 1564,
                                                     columnNumber: 29
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                     children: [
@@ -2096,7 +2080,7 @@ function Customer() {
                                                             className: "fi flex fi-rr-redo text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1564,
+                                                            lineNumber: 1567,
                                                             columnNumber: 31
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2104,14 +2088,14 @@ function Customer() {
                                                             children: "LIVE"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1565,
+                                                            lineNumber: 1568,
                                                             columnNumber: 31
                                                         }, this)
                                                     ]
                                                 }, void 0, true)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1554,
+                                                lineNumber: 1557,
                                                 columnNumber: 25
                                             }, this),
                                             selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2171,18 +2155,18 @@ function Customer() {
                                                     className: "animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1655,
+                                                    lineNumber: 1658,
                                                     columnNumber: 27
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                     className: "fi flex fi-rr-trash text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1657,
+                                                    lineNumber: 1660,
                                                     columnNumber: 27
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1572,
+                                                lineNumber: 1575,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2194,12 +2178,12 @@ function Customer() {
                                                     className: `fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1667,
+                                                    lineNumber: 1670,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1661,
+                                                lineNumber: 1664,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2213,20 +2197,20 @@ function Customer() {
                                                         className: "fi flex fi-rr-filter text-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1679,
+                                                        lineNumber: 1682,
                                                         columnNumber: 23
                                                     }, this),
                                                     Object.values(filters).some((v)=>v) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "w-2 h-2 rounded-full bg-indigo-600"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1681,
+                                                        lineNumber: 1684,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1670,
+                                                lineNumber: 1673,
                                                 columnNumber: 21
                                             }, this),
                                             permissionFlags.isImportButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2239,12 +2223,12 @@ function Customer() {
                                                     className: "fi flex fi-rr-upload text-sm text-gray-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1691,
+                                                    lineNumber: 1694,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1686,
+                                                lineNumber: 1689,
                                                 columnNumber: 21
                                             }, this),
                                             permissionFlags.isExportButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2258,12 +2242,12 @@ function Customer() {
                                                     className: "fi flex fi-rr-download text-sm text-gray-600"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1702,
+                                                    lineNumber: 1705,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1696,
+                                                lineNumber: 1699,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2279,12 +2263,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-list"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1715,
+                                                            lineNumber: 1718,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1707,
+                                                        lineNumber: 1710,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2297,18 +2281,18 @@ function Customer() {
                                                             className: "fi flex fi-rr-grid"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1725,
+                                                            lineNumber: 1728,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1717,
+                                                        lineNumber: 1720,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1706,
+                                                lineNumber: 1709,
                                                 columnNumber: 21
                                             }, this),
                                             permissionFlags.isAddCustomerButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2322,18 +2306,18 @@ function Customer() {
                                                     className: "fi flex fi-rr-user-add text-sm text-white"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 1738,
+                                                    lineNumber: 1741,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1730,
+                                                lineNumber: 1733,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 1507,
+                                        lineNumber: 1535,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2357,13 +2341,13 @@ function Customer() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1755,
+                                                                lineNumber: 1758,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1746,
+                                                        lineNumber: 1749,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2375,13 +2359,13 @@ function Customer() {
                                                         children: "Manage and view all your customers"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1760,
+                                                        lineNumber: 1763,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1745,
+                                                lineNumber: 1748,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2444,18 +2428,18 @@ function Customer() {
                                                             className: "animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1857,
+                                                            lineNumber: 1860,
                                                             columnNumber: 29
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                             className: "fi flex fi-rr-trash text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1859,
+                                                            lineNumber: 1862,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1773,
+                                                        lineNumber: 1776,
                                                         columnNumber: 25
                                                     }, this),
                                                     !selectedCustomers.size ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2468,7 +2452,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1867,
+                                                                        lineNumber: 1870,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2480,13 +2464,13 @@ function Customer() {
                                                                         className: "w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1868,
+                                                                        lineNumber: 1871,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1866,
+                                                                lineNumber: 1869,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2497,106 +2481,54 @@ function Customer() {
                                                                     className: "fi flex fi-rr-copy-alt text-xs"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 1882,
+                                                                    lineNumber: 1885,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1877,
+                                                                lineNumber: 1880,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1865,
+                                                        lineNumber: 1868,
                                                         columnNumber: 25
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300",
                                                         children: [
                                                             dataSource !== 'rejected' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>setShowBulkOrgModal(true),
-                                                                        className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`,
-                                                                        title: "Change Organization",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi flex fi-rr-building text-sm"
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                                    onClick: ()=>setShowBulkActionModal(true),
+                                                                    className: "h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100",
+                                                                    title: "Bulk Actions",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                            className: "fi flex fi-rr-menu-dots-vertical text-sm"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1902,
+                                                                            lineNumber: 1905,
                                                                             columnNumber: 33
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1897,
-                                                                        columnNumber: 31
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>setShowBulkCampaignModal(true),
-                                                                        className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`,
-                                                                        title: "Change Campaign",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi flex fi-rr-megaphone text-sm"
-                                                                        }, void 0, false, {
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: "text-xs font-bold uppercase tracking-widest",
+                                                                            children: [
+                                                                                "Bulk Actions (",
+                                                                                selectedCustomers.size,
+                                                                                ")"
+                                                                            ]
+                                                                        }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1909,
+                                                                            lineNumber: 1906,
                                                                             columnNumber: 33
                                                                         }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1904,
-                                                                        columnNumber: 31
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>setShowBulkAssignedModal(true),
-                                                                        className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`,
-                                                                        title: "Change Assigned",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi flex fi-rr-user-pen text-sm"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1916,
-                                                                            columnNumber: 33
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1911,
-                                                                        columnNumber: 31
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>setShowBulkDispositionModal(true),
-                                                                        className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`,
-                                                                        title: "Change Disposition",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi flex fi-rr-list-check text-sm"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1923,
-                                                                            columnNumber: 33
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1918,
-                                                                        columnNumber: 31
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                        onClick: ()=>handleBulkUpdate("disposition", "Move Fresh"),
-                                                                        className: `h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`,
-                                                                        title: "Move Fresh",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi flex fi-rr-refresh text-sm"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1930,
-                                                                            columnNumber: 33
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 1925,
-                                                                        columnNumber: 31
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true),
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                    lineNumber: 1900,
+                                                                    columnNumber: 31
+                                                                }, this)
+                                                            }, void 0, false),
                                                             dataSource === 'rejected' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                                 onClick: handleMoveToLive,
                                                                 disabled: isMovingToLive,
@@ -2606,7 +2538,7 @@ function Customer() {
                                                                     className: "animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 1944,
+                                                                    lineNumber: 1920,
                                                                     columnNumber: 33
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                                     children: [
@@ -2614,7 +2546,7 @@ function Customer() {
                                                                             className: "fi flex fi-rr-redo text-sm"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 1947,
+                                                                            lineNumber: 1923,
                                                                             columnNumber: 35
                                                                         }, this),
                                                                         "MOVE TO LIVE"
@@ -2622,13 +2554,13 @@ function Customer() {
                                                                 }, void 0, true)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1937,
+                                                                lineNumber: 1913,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1894,
+                                                        lineNumber: 1897,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2640,12 +2572,12 @@ function Customer() {
                                                             className: `fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1962,
+                                                            lineNumber: 1938,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1956,
+                                                        lineNumber: 1932,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2659,14 +2591,14 @@ function Customer() {
                                                                 className: "fi flex fi-rr-filter text-sm"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1975,
+                                                                lineNumber: 1951,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 children: "Filter"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1976,
+                                                                lineNumber: 1952,
                                                                 columnNumber: 25
                                                             }, this),
                                                             Object.values(filters).some((v)=>v) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2674,13 +2606,13 @@ function Customer() {
                                                                 children: Object.values(filters).filter((v)=>v).length
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 1978,
+                                                                lineNumber: 1954,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1966,
+                                                        lineNumber: 1942,
                                                         columnNumber: 23
                                                     }, this),
                                                     permissionFlags.isImportButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2693,12 +2625,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-upload text-sm text-gray-600"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 1991,
+                                                            lineNumber: 1967,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1986,
+                                                        lineNumber: 1962,
                                                         columnNumber: 23
                                                     }, this),
                                                     permissionFlags.isExportButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2712,12 +2644,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-download text-sm text-gray-600"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2002,
+                                                            lineNumber: 1978,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 1996,
+                                                        lineNumber: 1972,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2733,12 +2665,12 @@ function Customer() {
                                                                     className: "fi flex fi-rr-list"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2015,
+                                                                    lineNumber: 1991,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2007,
+                                                                lineNumber: 1983,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2751,18 +2683,18 @@ function Customer() {
                                                                     className: "fi flex fi-rr-grid"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2025,
+                                                                    lineNumber: 2001,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2017,
+                                                                lineNumber: 1993,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2006,
+                                                        lineNumber: 1982,
                                                         columnNumber: 23
                                                     }, this),
                                                     permissionFlags.isAddCustomerButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2776,24 +2708,24 @@ function Customer() {
                                                             className: "fi flex fi-rr-user-add text-sm text-white"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2038,
+                                                            lineNumber: 2014,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2030,
+                                                        lineNumber: 2006,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 1770,
+                                                lineNumber: 1773,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 1744,
+                                        lineNumber: 1747,
                                         columnNumber: 19
                                     }, this),
                                     loadingCustomers ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2806,7 +2738,7 @@ function Customer() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2047,
+                                                lineNumber: 2023,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2817,13 +2749,13 @@ function Customer() {
                                                 children: "Loading customers..."
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2051,
+                                                lineNumber: 2027,
                                                 columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2046,
+                                        lineNumber: 2022,
                                         columnNumber: 21
                                     }, this) : filteredCustomers.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "text-center py-12",
@@ -2835,12 +2767,12 @@ function Customer() {
                                             children: searchQuery ? "No customers found matching your search." : "No customers found."
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 2060,
+                                            lineNumber: 2036,
                                             columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2059,
+                                        lineNumber: 2035,
                                         columnNumber: 21
                                     }, this) : viewType === "list" ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "overflow-x-auto",
@@ -2871,17 +2803,17 @@ function Customer() {
                                                                             className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2078,
+                                                                            lineNumber: 2054,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2077,
+                                                                        lineNumber: 2053,
                                                                         columnNumber: 35
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2075,
+                                                                    lineNumber: 2051,
                                                                     columnNumber: 34
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2889,7 +2821,7 @@ function Customer() {
                                                                     children: "Customer Name"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2100,
+                                                                    lineNumber: 2076,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2897,7 +2829,7 @@ function Customer() {
                                                                     children: "Status"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2103,
+                                                                    lineNumber: 2079,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2905,7 +2837,7 @@ function Customer() {
                                                                     children: "Campaign"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2106,
+                                                                    lineNumber: 2082,
                                                                     columnNumber: 34
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2913,7 +2845,7 @@ function Customer() {
                                                                     children: "Organization"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2109,
+                                                                    lineNumber: 2085,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2921,7 +2853,7 @@ function Customer() {
                                                                     children: "Assigned To"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2112,
+                                                                    lineNumber: 2088,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2929,7 +2861,7 @@ function Customer() {
                                                                     children: "Managed By"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2115,
+                                                                    lineNumber: 2091,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2937,7 +2869,7 @@ function Customer() {
                                                                     children: "Disposition"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2118,
+                                                                    lineNumber: 2094,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2945,7 +2877,7 @@ function Customer() {
                                                                     children: dataSource === "closed" ? "Final Status" : dataSource === "rejected" ? "Rejection Reason" : "Expiry Date"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2121,
+                                                                    lineNumber: 2097,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2953,7 +2885,7 @@ function Customer() {
                                                                     children: dataSource === "closed" ? "Closed Date" : dataSource === "rejected" ? "Rejected Date" : "Created Date"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2124,
+                                                                    lineNumber: 2100,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2961,18 +2893,18 @@ function Customer() {
                                                                     children: "Action"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2127,
+                                                                    lineNumber: 2103,
                                                                     columnNumber: 33
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2074,
+                                                            lineNumber: 2050,
                                                             columnNumber: 31
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2073,
+                                                        lineNumber: 2049,
                                                         columnNumber: 29
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -2999,17 +2931,17 @@ function Customer() {
                                                                                 className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2141,
+                                                                                lineNumber: 2117,
                                                                                 columnNumber: 39
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2140,
+                                                                            lineNumber: 2116,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2138,
+                                                                        lineNumber: 2114,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3022,7 +2954,7 @@ function Customer() {
                                                                                     children: customer.customer_name ? customer.customer_name.charAt(0).toUpperCase() : "C"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2162,
+                                                                                    lineNumber: 2138,
                                                                                     columnNumber: 39
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3034,18 +2966,18 @@ function Customer() {
                                                                                     children: customer.customer_name || "N/A"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2169,
+                                                                                    lineNumber: 2145,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2161,
+                                                                            lineNumber: 2137,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2160,
+                                                                        lineNumber: 2136,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3057,17 +2989,17 @@ function Customer() {
                                                                                 children: dataSource === "closed" ? "Deal Done" : dataSource === "rejected" ? "Rejected" : customer.status === "active" ? "Active" : customer.status === "inactive" ? "Inactive" : "Pending"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2183,
+                                                                                lineNumber: 2159,
                                                                                 columnNumber: 39
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2182,
+                                                                            lineNumber: 2158,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2181,
+                                                                        lineNumber: 2157,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3077,12 +3009,12 @@ function Customer() {
                                                                             children: customer.campaign_name || "No Campaign"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2200,
+                                                                            lineNumber: 2176,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2199,
+                                                                        lineNumber: 2175,
                                                                         columnNumber: 36
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3094,7 +3026,7 @@ function Customer() {
                                                                                     className: "fi flex fi-rr-building text-[#4b33e8] text-xs"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2206,
+                                                                                    lineNumber: 2182,
                                                                                     columnNumber: 39
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3105,18 +3037,18 @@ function Customer() {
                                                                                     children: customer.organization_name || "N/A"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2207,
+                                                                                    lineNumber: 2183,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2205,
+                                                                            lineNumber: 2181,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2204,
+                                                                        lineNumber: 2180,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3125,6 +3057,88 @@ function Customer() {
                                                                             className: "text-xs font-medium text-gray-600",
                                                                             children: customer.assigned_user_name || customer.assigned_employee_id || "Unassigned"
                                                                         }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                                            lineNumber: 2194,
+                                                                            columnNumber: 37
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/customer.tsx",
+                                                                        lineNumber: 2193,
+                                                                        columnNumber: 35
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                        className: "px-4 py-4",
+                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "flex flex-col",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "text-xs font-semibold text-gray-800",
+                                                                                    children: customer.managed_by_name || "Self"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                                    lineNumber: 2202,
+                                                                                    columnNumber: 39
+                                                                                }, this),
+                                                                                customer.managed_by_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "text-[10px] text-gray-400 font-medium",
+                                                                                    children: [
+                                                                                        "ID: ",
+                                                                                        customer.managed_by_id
+                                                                                    ]
+                                                                                }, void 0, true, {
+                                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                                    lineNumber: 2206,
+                                                                                    columnNumber: 41
+                                                                                }, this)
+                                                                            ]
+                                                                        }, void 0, true, {
+                                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                                            lineNumber: 2201,
+                                                                            columnNumber: 37
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/customer.tsx",
+                                                                        lineNumber: 2200,
+                                                                        columnNumber: 35
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                        className: "px-4 py-4",
+                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: "text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 uppercase tracking-tighter",
+                                                                            children: customer.disposition || "No Status"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                                            lineNumber: 2213,
+                                                                            columnNumber: 37
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/customer.tsx",
+                                                                        lineNumber: 2212,
+                                                                        columnNumber: 36
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                                        className: "px-4 py-4",
+                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: "flex flex-col",
+                                                                            children: [
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "text-xs font-medium text-gray-700 leading-none mb-1",
+                                                                                    children: dataSource === "closed" || dataSource === "rejected" ? customer.disposition || "N/A" : customer.expiry_date ? formatDate(customer.expiry_date) : "---"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                                    lineNumber: 2219,
+                                                                                    columnNumber: 39
+                                                                                }, this),
+                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                    className: "text-[9px] text-gray-400 font-medium uppercase tracking-tighter",
+                                                                                    children: dataSource === "closed" || dataSource === "rejected" ? "Disposition" : "Expires"
+                                                                                }, void 0, false, {
+                                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                                    lineNumber: 2224,
+                                                                                    columnNumber: 39
+                                                                                }, this)
+                                                                            ]
+                                                                        }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
                                                                             lineNumber: 2218,
                                                                             columnNumber: 37
@@ -3140,93 +3154,11 @@ function Customer() {
                                                                             className: "flex flex-col",
                                                                             children: [
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-xs font-semibold text-gray-800",
-                                                                                    children: customer.managed_by_name || "Self"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2226,
-                                                                                    columnNumber: 39
-                                                                                }, this),
-                                                                                customer.managed_by_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-[10px] text-gray-400 font-medium",
-                                                                                    children: [
-                                                                                        "ID: ",
-                                                                                        customer.managed_by_id
-                                                                                    ]
-                                                                                }, void 0, true, {
-                                                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2230,
-                                                                                    columnNumber: 41
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2225,
-                                                                            columnNumber: 37
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2224,
-                                                                        columnNumber: 35
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                                        className: "px-4 py-4",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 uppercase tracking-tighter",
-                                                                            children: customer.disposition || "No Status"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2237,
-                                                                            columnNumber: 37
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2236,
-                                                                        columnNumber: 36
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                                        className: "px-4 py-4",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "flex flex-col",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-xs font-medium text-gray-700 leading-none mb-1",
-                                                                                    children: dataSource === "closed" || dataSource === "rejected" ? customer.disposition || "N/A" : customer.expiry_date ? formatDate(customer.expiry_date) : "---"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2243,
-                                                                                    columnNumber: 39
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-[9px] text-gray-400 font-medium uppercase tracking-tighter",
-                                                                                    children: dataSource === "closed" || dataSource === "rejected" ? "Disposition" : "Expires"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2248,
-                                                                                    columnNumber: 39
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2242,
-                                                                            columnNumber: 37
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2241,
-                                                                        columnNumber: 35
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                                        className: "px-4 py-4",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "flex flex-col",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                                     className: "text-xs font-medium text-gray-700 leading-none mb-1",
                                                                                     children: formatDate(dataSource === "closed" ? customer.closed_at : dataSource === "rejected" ? customer.rejected_at : customer.created_at)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2255,
+                                                                                    lineNumber: 2231,
                                                                                     columnNumber: 39
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3234,18 +3166,18 @@ function Customer() {
                                                                                     children: dataSource === "closed" ? "Closed" : dataSource === "rejected" ? "Rejected" : "Created"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2258,
+                                                                                    lineNumber: 2234,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2254,
+                                                                            lineNumber: 2230,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2253,
+                                                                        lineNumber: 2229,
                                                                         columnNumber: 35
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3264,12 +3196,12 @@ function Customer() {
                                                                                         className: "fi flex fi-rr-info text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                                        lineNumber: 2273,
+                                                                                        lineNumber: 2249,
                                                                                         columnNumber: 41
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2265,
+                                                                                    lineNumber: 2241,
                                                                                     columnNumber: 39
                                                                                 }, this),
                                                                                 permissionFlags.isDeleteFromLeadButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3306,50 +3238,50 @@ function Customer() {
                                                                                         className: "fi flex fi-rr-trash text-sm"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                                        lineNumber: 2322,
+                                                                                        lineNumber: 2298,
                                                                                         columnNumber: 41
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2276,
+                                                                                    lineNumber: 2252,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2264,
+                                                                            lineNumber: 2240,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2263,
+                                                                        lineNumber: 2239,
                                                                         columnNumber: 35
                                                                     }, this)
                                                                 ]
                                                             }, customer.id, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2134,
+                                                                lineNumber: 2110,
                                                                 columnNumber: 33
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2132,
+                                                        lineNumber: 2108,
                                                         columnNumber: 29
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2072,
+                                                lineNumber: 2048,
                                                 columnNumber: 27
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 2071,
+                                            lineNumber: 2047,
                                             columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2070,
+                                        lineNumber: 2046,
                                         columnNumber: 21
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4",
@@ -3374,12 +3306,12 @@ function Customer() {
                                                                     className: "fi flex fi-rr-info text-sm"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2354,
+                                                                    lineNumber: 2330,
                                                                     columnNumber: 31
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2342,
+                                                                lineNumber: 2318,
                                                                 columnNumber: 29
                                                             }, this),
                                                             permissionFlags.isDeleteFromLeadButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3420,18 +3352,18 @@ function Customer() {
                                                                     className: "fi flex fi-rr-trash text-sm"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2403,
+                                                                    lineNumber: 2379,
                                                                     columnNumber: 31
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2357,
+                                                                lineNumber: 2333,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2341,
+                                                        lineNumber: 2317,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3442,7 +3374,7 @@ function Customer() {
                                                                 children: customer.customer_name ? customer.customer_name.charAt(0).toUpperCase() : "C"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2408,
+                                                                lineNumber: 2384,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3456,7 +3388,7 @@ function Customer() {
                                                                         children: customer.customer_name || "N/A"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2414,
+                                                                        lineNumber: 2390,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3467,19 +3399,19 @@ function Customer() {
                                                                         children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(customer.phone_no) || "N/A"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2420,
+                                                                        lineNumber: 2396,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2413,
+                                                                lineNumber: 2389,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2407,
+                                                        lineNumber: 2383,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3492,7 +3424,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-id-card text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2431,
+                                                                        lineNumber: 2407,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3503,13 +3435,13 @@ function Customer() {
                                                                         children: customer.lead_id
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2432,
+                                                                        lineNumber: 2408,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2430,
+                                                                lineNumber: 2406,
                                                                 columnNumber: 31
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3519,7 +3451,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-bullhorn text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2441,
+                                                                        lineNumber: 2417,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3530,13 +3462,13 @@ function Customer() {
                                                                         children: customer.campaign_name || "N/A"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2442,
+                                                                        lineNumber: 2418,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2440,
+                                                                lineNumber: 2416,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3546,7 +3478,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-building text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2450,
+                                                                        lineNumber: 2426,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3557,13 +3489,13 @@ function Customer() {
                                                                         children: customer.organization_name || "N/A"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2451,
+                                                                        lineNumber: 2427,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2449,
+                                                                lineNumber: 2425,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3573,7 +3505,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-headset text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2459,
+                                                                        lineNumber: 2435,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3584,13 +3516,13 @@ function Customer() {
                                                                         children: customer.assigned_user_name || "Unassigned"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2460,
+                                                                        lineNumber: 2436,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2458,
+                                                                lineNumber: 2434,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3600,7 +3532,7 @@ function Customer() {
                                                                         className: "fi flex fi-rr-user text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2468,
+                                                                        lineNumber: 2444,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3611,13 +3543,13 @@ function Customer() {
                                                                         children: customer.managed_by_name || "Self"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2469,
+                                                                        lineNumber: 2445,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2467,
+                                                                lineNumber: 2443,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3630,7 +3562,7 @@ function Customer() {
                                                                                 className: `w-1 h-1 rounded-full ${customer.status === "active" ? "bg-green-500" : customer.status === "inactive" ? "bg-gray-400" : "bg-orange-400"}`
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2487,
+                                                                                lineNumber: 2463,
                                                                                 columnNumber: 33
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3638,13 +3570,13 @@ function Customer() {
                                                                                 children: customer.status === "active" ? "Active" : customer.status === "inactive" ? "Inactive" : "Pending"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2496,
+                                                                                lineNumber: 2472,
                                                                                 columnNumber: 33
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2478,
+                                                                        lineNumber: 2454,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     customer.expiry_date && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3654,7 +3586,7 @@ function Customer() {
                                                                                 className: "fi flex fi-rr-calendar text-[10px]"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2515,
+                                                                                lineNumber: 2491,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3664,19 +3596,19 @@ function Customer() {
                                                                                 children: formatDate(customer.expiry_date)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2516,
+                                                                                lineNumber: 2492,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2514,
+                                                                        lineNumber: 2490,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2477,
+                                                                lineNumber: 2453,
                                                                 columnNumber: 29
                                                             }, this),
                                                             customer.customer_details && (()=>{
@@ -3698,7 +3630,7 @@ function Customer() {
                                                                                     className: "fi flex fi-rr-check text-[10px] text-green-500"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2549,
+                                                                                    lineNumber: 2525,
                                                                                     columnNumber: 39
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3716,7 +3648,7 @@ function Customer() {
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                                            lineNumber: 2557,
+                                                                                            lineNumber: 2533,
                                                                                             columnNumber: 41
                                                                                         }, this),
                                                                                         " ",
@@ -3724,13 +3656,13 @@ function Customer() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2550,
+                                                                                    lineNumber: 2526,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             ]
                                                                         }, field.fieldName, true, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 2545,
+                                                                            lineNumber: 2521,
                                                                             columnNumber: 37
                                                                         }, this));
                                                                 } catch (e) {
@@ -3740,18 +3672,18 @@ function Customer() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2428,
+                                                        lineNumber: 2404,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, customer.id, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2336,
+                                                lineNumber: 2312,
                                                 columnNumber: 25
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2334,
+                                        lineNumber: 2310,
                                         columnNumber: 21
                                     }, this),
                                     !loadingCustomers && totalCustomers > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3777,7 +3709,7 @@ function Customer() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2578,
+                                                        lineNumber: 2554,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3791,7 +3723,7 @@ function Customer() {
                                                                 children: "Per page:"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2587,
+                                                                lineNumber: 2563,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3810,7 +3742,7 @@ function Customer() {
                                                                         children: "50"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2605,
+                                                                        lineNumber: 2581,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3818,7 +3750,7 @@ function Customer() {
                                                                         children: "100"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2606,
+                                                                        lineNumber: 2582,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3826,7 +3758,7 @@ function Customer() {
                                                                         children: "200"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2607,
+                                                                        lineNumber: 2583,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3834,25 +3766,25 @@ function Customer() {
                                                                         children: "All"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2608,
+                                                                        lineNumber: 2584,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2593,
+                                                                lineNumber: 2569,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2586,
+                                                        lineNumber: 2562,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2577,
+                                                lineNumber: 2553,
                                                 columnNumber: 23
                                             }, this),
                                             pageSize !== "all" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3873,12 +3805,12 @@ function Customer() {
                                                             className: "fi flex fi-rr-angle-left"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2627,
+                                                            lineNumber: 2603,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2614,
+                                                        lineNumber: 2590,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3906,13 +3838,13 @@ function Customer() {
                                                                 children: pageNum
                                                             }, pageNum, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2644,
+                                                                lineNumber: 2620,
                                                                 columnNumber: 35
                                                             }, this);
                                                         })
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2629,
+                                                        lineNumber: 2605,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3930,46 +3862,46 @@ function Customer() {
                                                             className: "fi flex fi-rr-angle-right "
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2677,
+                                                            lineNumber: 2653,
                                                             columnNumber: 29
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 2662,
+                                                        lineNumber: 2638,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 2613,
+                                                lineNumber: 2589,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2576,
+                                        lineNumber: 2552,
                                         columnNumber: 21
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/customer.tsx",
-                                lineNumber: 1453,
+                                lineNumber: 1481,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 1452,
+                            lineNumber: 1480,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 1000,
+                    lineNumber: 1028,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 999,
+                lineNumber: 1027,
                 columnNumber: 11
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ImportCustomersModal$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -3978,7 +3910,7 @@ function Customer() {
                 onSuccess: ()=>fetchCustomers(1)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 2690,
+                lineNumber: 2666,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AddCustomerModal$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -3990,7 +3922,7 @@ function Customer() {
                 }
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 2696,
+                lineNumber: 2672,
                 columnNumber: 7
             }, this),
             showCustomerDetailsModal && selectedCustomer && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4010,7 +3942,7 @@ function Customer() {
                                     children: "Customer Details"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 2711,
+                                    lineNumber: 2687,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4024,18 +3956,18 @@ function Customer() {
                                         className: "fi flex fi-rr-cross text-xl"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 2728,
+                                        lineNumber: 2704,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 2720,
+                                    lineNumber: 2696,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 2710,
+                            lineNumber: 2686,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4053,7 +3985,7 @@ function Customer() {
                                             children: "Basic Information"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 2736,
+                                            lineNumber: 2712,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4093,12 +4025,12 @@ function Customer() {
                                                                                     className: "fi flex fi-rr-angle-left mt-0.5"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2777,
+                                                                                    lineNumber: 2753,
                                                                                     columnNumber: 51
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2773,
+                                                                                lineNumber: 2749,
                                                                                 columnNumber: 47
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4109,7 +4041,7 @@ function Customer() {
                                                                                         children: "DATA HISTORY"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                                        lineNumber: 2781,
+                                                                                        lineNumber: 2757,
                                                                                         columnNumber: 51
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4117,13 +4049,13 @@ function Customer() {
                                                                                         children: String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                                        lineNumber: 2782,
+                                                                                        lineNumber: 2758,
                                                                                         columnNumber: 51
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2780,
+                                                                                lineNumber: 2756,
                                                                                 columnNumber: 47
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4133,23 +4065,23 @@ function Customer() {
                                                                                     className: "fi flex fi-rr-angle-right mt-0.5"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                                    lineNumber: 2791,
+                                                                                    lineNumber: 2767,
                                                                                     columnNumber: 51
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 2787,
+                                                                                lineNumber: 2763,
                                                                                 columnNumber: 47
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2772,
+                                                                        lineNumber: 2748,
                                                                         columnNumber: 43
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2771,
+                                                                    lineNumber: 2747,
                                                                     columnNumber: 39
                                                                 }, this);
                                                             }
@@ -4167,7 +4099,7 @@ function Customer() {
                                                             children: "Customer Name"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2802,
+                                                            lineNumber: 2778,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4178,13 +4110,13 @@ function Customer() {
                                                             children: selectedCustomer.customer_name || "N/A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2808,
+                                                            lineNumber: 2784,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2801,
+                                                    lineNumber: 2777,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4197,7 +4129,7 @@ function Customer() {
                                                             children: "Phone Number"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2816,
+                                                            lineNumber: 2792,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4208,13 +4140,13 @@ function Customer() {
                                                             children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(selectedCustomer.phone_no) || "N/A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2822,
+                                                            lineNumber: 2798,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2815,
+                                                    lineNumber: 2791,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4227,7 +4159,7 @@ function Customer() {
                                                             children: "Lead ID"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2830,
+                                                            lineNumber: 2806,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4238,13 +4170,13 @@ function Customer() {
                                                             children: selectedCustomer.lead_id || "N/A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2836,
+                                                            lineNumber: 2812,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2829,
+                                                    lineNumber: 2805,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4257,7 +4189,7 @@ function Customer() {
                                                             children: "Expiry Date"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2844,
+                                                            lineNumber: 2820,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4268,13 +4200,13 @@ function Customer() {
                                                             children: selectedCustomer.expiry_date ? formatDate(selectedCustomer.expiry_date) : "N/A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2850,
+                                                            lineNumber: 2826,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2843,
+                                                    lineNumber: 2819,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4287,7 +4219,7 @@ function Customer() {
                                                             children: "Assigned To"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2860,
+                                                            lineNumber: 2836,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4298,13 +4230,13 @@ function Customer() {
                                                             children: selectedCustomer.assigned_user_name || selectedCustomer.assigned_employee_id || "N/A"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2866,
+                                                            lineNumber: 2842,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2859,
+                                                    lineNumber: 2835,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4317,7 +4249,7 @@ function Customer() {
                                                             children: "Managed By"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2876,
+                                                            lineNumber: 2852,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4331,7 +4263,7 @@ function Customer() {
                                                                     children: selectedCustomer.managed_by_name || "Self"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2883,
+                                                                    lineNumber: 2859,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 selectedCustomer.managed_by_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4345,19 +4277,19 @@ function Customer() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 2890,
+                                                                    lineNumber: 2866,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2882,
+                                                            lineNumber: 2858,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2875,
+                                                    lineNumber: 2851,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4370,7 +4302,7 @@ function Customer() {
                                                             children: "Status"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2900,
+                                                            lineNumber: 2876,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4382,7 +4314,7 @@ function Customer() {
                                                                         className: `w-1.5 h-1.5 rounded-full ${selectedCustomer.status === "active" ? "bg-green-500" : selectedCustomer.status === "inactive" ? "bg-gray-400" : "bg-orange-400"}`
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2915,
+                                                                        lineNumber: 2891,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4390,24 +4322,24 @@ function Customer() {
                                                                         children: selectedCustomer.status === "active" ? "Active" : selectedCustomer.status === "inactive" ? "Inactive" : "Pending"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2923,
+                                                                        lineNumber: 2899,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2907,
+                                                                lineNumber: 2883,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2906,
+                                                            lineNumber: 2882,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2899,
+                                                    lineNumber: 2875,
                                                     columnNumber: 19
                                                 }, this),
                                                 selectedCustomer.campaign_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4420,7 +4352,7 @@ function Customer() {
                                                             children: "Campaign ID"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2942,
+                                                            lineNumber: 2918,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4431,13 +4363,13 @@ function Customer() {
                                                             children: selectedCustomer.campaign_id
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2948,
+                                                            lineNumber: 2924,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2941,
+                                                    lineNumber: 2917,
                                                     columnNumber: 21
                                                 }, this),
                                                 selectedCustomer.utilities && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4450,7 +4382,7 @@ function Customer() {
                                                             children: "Utilities"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2958,
+                                                            lineNumber: 2934,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4461,13 +4393,13 @@ function Customer() {
                                                             children: selectedCustomer.utilities
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 2964,
+                                                            lineNumber: 2940,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 2957,
+                                                    lineNumber: 2933,
                                                     columnNumber: 21
                                                 }, this),
                                                 selectedCustomer.customer_details && (()=>{
@@ -4491,7 +4423,7 @@ function Customer() {
                                                                         children: field.fieldName
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2990,
+                                                                        lineNumber: 2966,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4502,13 +4434,13 @@ function Customer() {
                                                                         children: field.value
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 2996,
+                                                                        lineNumber: 2972,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, field.fieldName, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 2989,
+                                                                lineNumber: 2965,
                                                                 columnNumber: 27
                                                             }, this));
                                                     } catch (e) {
@@ -4518,13 +4450,13 @@ function Customer() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 2745,
+                                            lineNumber: 2721,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 2735,
+                                    lineNumber: 2711,
                                     columnNumber: 15
                                 }, this),
                                 selectedCustomer.customer_details && (()=>{
@@ -4548,7 +4480,7 @@ function Customer() {
                                                     children: "Policy Details"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3028,
+                                                    lineNumber: 3004,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4565,7 +4497,7 @@ function Customer() {
                                                                     children: displayKey
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3042,
+                                                                    lineNumber: 3018,
                                                                     columnNumber: 33
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4576,25 +4508,25 @@ function Customer() {
                                                                     children: String(value)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3048,
+                                                                    lineNumber: 3024,
                                                                     columnNumber: 33
                                                                 }, this)
                                                             ]
                                                         }, key, true, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3041,
+                                                            lineNumber: 3017,
                                                             columnNumber: 31
                                                         }, this);
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3037,
+                                                    lineNumber: 3013,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3027,
+                                            lineNumber: 3003,
                                             columnNumber: 23
                                         }, this);
                                     } catch (e) {
@@ -4613,7 +4545,7 @@ function Customer() {
                                             children: "Additional Information"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3067,
+                                            lineNumber: 3043,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4629,7 +4561,7 @@ function Customer() {
                                                             children: "Created Date"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3078,
+                                                            lineNumber: 3054,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4640,13 +4572,13 @@ function Customer() {
                                                             children: formatDate(selectedCustomer.created_at)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3084,
+                                                            lineNumber: 3060,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3077,
+                                                    lineNumber: 3053,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4659,7 +4591,7 @@ function Customer() {
                                                             children: "Last Updated"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3092,
+                                                            lineNumber: 3068,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4670,25 +4602,25 @@ function Customer() {
                                                             children: formatDate(selectedCustomer.updated_at)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3098,
+                                                            lineNumber: 3074,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3091,
+                                                    lineNumber: 3067,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3076,
+                                            lineNumber: 3052,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3066,
+                                    lineNumber: 3042,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4706,107 +4638,118 @@ function Customer() {
                                         children: "Close"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3110,
+                                        lineNumber: 3086,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3109,
+                                    lineNumber: 3085,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 2733,
+                            lineNumber: 2709,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 2708,
+                    lineNumber: 2684,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 2707,
+                lineNumber: 2683,
                 columnNumber: 9
             }, this),
             showFilterModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
+                className: "fixed inset-0 z-[110] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs font-sans",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200",
+                    className: "bg-white rounded-lg w-full max-w-md shadow-2xl flex flex-col border border-gray-100",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50",
+                            className: "px-5 py-4 border-b border-gray-100 flex items-center justify-between",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-lg font-bold text-gray-800",
-                                    style: {
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
-                                    children: "Filter Customers"
-                                }, void 0, false, {
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "font-bold text-gray-800",
+                                            children: "Filter Customers"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3110,
+                                            columnNumber: 17
+                                        }, this),
+                                        (Object.values(filters).some((v)=>v) || filters.createdStartDate || filters.createdEndDate) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100",
+                                            children: "Active Filters"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3112,
+                                            columnNumber: 19
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3132,
+                                    lineNumber: 3109,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>setShowFilterModal(false),
-                                    className: "w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors",
+                                    className: "text-gray-400 hover:text-gray-600 p-1",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-cross-small"
+                                        className: "fi fi-rr-cross-small text-xl leading-none"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3139,
+                                        lineNumber: 3121,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3135,
+                                    lineNumber: 3117,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3131,
+                            lineNumber: 3108,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 space-y-4",
+                            className: "p-5 space-y-4",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                            style: {
-                                                fontFamily: "'Roboto', sans-serif"
-                                            },
+                                            className: "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
                                             children: "Organization"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3146,
+                                            lineNumber: 3128,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                            value: filters.organization,
+                                            value: filters.organization || (user?.isClient ? user.organization_id || "" : ""),
+                                            disabled: user?.isClient,
                                             onChange: (e)=>{
                                                 const newOrg = e.target.value;
                                                 setFilters((prev)=>({
                                                         ...prev,
                                                         organization: newOrg,
-                                                        // Reset dependent filters if they don't match the new organization
                                                         campaign: "",
                                                         assignedTo: ""
                                                     }));
                                             },
-                                            className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
+                                            className: `w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white cursor-pointer text-gray-700'}`,
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                     value: "",
                                                     children: "All Organizations"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3163,
+                                                    lineNumber: 3145,
                                                     columnNumber: 19
                                                 }, this),
                                                 filterStats.organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -4814,32 +4757,29 @@ function Customer() {
                                                         children: org.company_name
                                                     }, org.id, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3165,
+                                                        lineNumber: 3147,
                                                         columnNumber: 21
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3149,
+                                            lineNumber: 3131,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3145,
+                                    lineNumber: 3127,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                            style: {
-                                                fontFamily: "'Roboto', sans-serif"
-                                            },
+                                            className: "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
                                             children: "Campaign"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3172,
+                                            lineNumber: 3154,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -4849,172 +4789,171 @@ function Customer() {
                                                 setFilters((prev)=>({
                                                         ...prev,
                                                         campaign: newCamp,
-                                                        // Reset assigned to if it doesn't match the new campaign
                                                         assignedTo: ""
                                                     }));
                                             },
-                                            className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
+                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                     value: "",
                                                     children: "All Campaigns"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3188,
+                                                    lineNumber: 3169,
                                                     columnNumber: 19
                                                 }, this),
-                                                filterStats.campaigns.filter((camp)=>!filters.organization || camp.organization_id === filters.organization).map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                filterStats.campaigns.filter((camp)=>filters.organization && camp.organization_id === filters.organization).map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                         value: camp.id,
                                                         children: camp.name
                                                     }, camp.id, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3192,
+                                                        lineNumber: 3173,
                                                         columnNumber: 23
                                                     }, this))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3175,
+                                            lineNumber: 3157,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3171,
+                                    lineNumber: 3153,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-2 gap-4",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                            style: {
-                                                fontFamily: "'Roboto', sans-serif"
-                                            },
-                                            children: "Assigned To"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3199,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                            value: filters.assignedTo,
-                                            onChange: (e)=>setFilters((prev)=>({
-                                                        ...prev,
-                                                        assignedTo: e.target.value
-                                                    })),
-                                            className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "",
-                                                    children: "All Agents"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
+                                                    children: "Assigned To"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3207,
+                                                    lineNumber: 3181,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "unassigned",
-                                                    children: "Unassigned Only"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: filters.assignedTo,
+                                                    onChange: (e)=>setFilters((prev)=>({
+                                                                ...prev,
+                                                                assignedTo: e.target.value
+                                                            })),
+                                                    className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "All Agents"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3189,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "unassigned",
+                                                            children: "Unassigned"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3190,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        (()=>{
+                                                            const selectedCampaign = filterStats.campaigns.find((c)=>c.id === filters.campaign);
+                                                            const campaignUserIds = selectedCampaign?.users?.map((u)=>u.user_id) || [];
+                                                            return filterStats.agents.filter((agent)=>{
+                                                                const orgMatch = filters.organization && agent.organization_id === filters.organization;
+                                                                const campaignMatch = !filters.campaign || campaignUserIds.includes(agent.user_id);
+                                                                return orgMatch && campaignMatch;
+                                                            }).map((agent)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                    value: agent.user_id || agent.id,
+                                                                    children: agent.user_name
+                                                                }, agent.id, false, {
+                                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                                    lineNumber: 3202,
+                                                                    columnNumber: 27
+                                                                }, this));
+                                                        })()
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3184,
+                                                    columnNumber: 19
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3180,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
+                                                    children: "Disposition"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
                                                     lineNumber: 3208,
                                                     columnNumber: 19
                                                 }, this),
-                                                (()=>{
-                                                    const selectedCampaign = filterStats.campaigns.find((c)=>c.id === filters.campaign);
-                                                    const campaignUserIds = selectedCampaign?.users?.map((u)=>u.user_id) || [];
-                                                    return filterStats.agents.filter((agent)=>{
-                                                        const orgMatch = !filters.organization || agent.organization_id === filters.organization;
-                                                        const campaignMatch = !filters.campaign || campaignUserIds.includes(agent.user_id);
-                                                        return orgMatch && campaignMatch;
-                                                    }).map((agent)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                            value: agent.user_id || agent.id,
-                                                            children: agent.user_name
-                                                        }, agent.id, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: filters.disposition,
+                                                    onChange: (e)=>setFilters((prev)=>({
+                                                                ...prev,
+                                                                disposition: e.target.value
+                                                            })),
+                                                    className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "All Stats"
+                                                        }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3220,
-                                                            columnNumber: 25
-                                                        }, this));
-                                                })()
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3202,
-                                            columnNumber: 17
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3198,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                            className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                            style: {
-                                                fontFamily: "'Roboto', sans-serif"
-                                            },
-                                            children: "Disposition"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3228,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                            value: filters.disposition,
-                                            onChange: (e)=>setFilters((prev)=>({
-                                                        ...prev,
-                                                        disposition: e.target.value
-                                                    })),
-                                            className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "",
-                                                    children: "All Dispositions"
-                                                }, void 0, false, {
+                                                            lineNumber: 3216,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        filterStats.dispositions.map((disp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: disp,
+                                                                children: disp
+                                                            }, disp, false, {
+                                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                                lineNumber: 3218,
+                                                                columnNumber: 23
+                                                            }, this))
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3236,
+                                                    lineNumber: 3211,
                                                     columnNumber: 19
-                                                }, this),
-                                                filterStats.dispositions.map((disp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: disp,
-                                                        children: disp
-                                                    }, disp, false, {
-                                                        fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3238,
-                                                        columnNumber: 21
-                                                    }, this))
+                                                }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3231,
+                                            lineNumber: 3207,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3227,
+                                    lineNumber: 3179,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-2 gap-4 mt-2",
+                                    className: "pt-3 border-t border-gray-100 space-y-4",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Created Start"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
+                                                    children: "Lead Generation Date"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3246,
-                                                    columnNumber: 19
+                                                    lineNumber: 3228,
+                                                    columnNumber: 20
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative group",
+                                                    className: "grid grid-cols-2 gap-4",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                             type: "date",
@@ -5023,54 +4962,12 @@ function Customer() {
                                                                         ...prev,
                                                                         createdStartDate: e.target.value
                                                                     })),
-                                                            className: "w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3250,
+                                                            lineNumber: 3230,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-calendar text-xs"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3257,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3256,
-                                                            columnNumber: 21
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3249,
-                                                    columnNumber: 19
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3245,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Created End"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3262,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative group",
-                                                    children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                             type: "date",
                                                             value: filters.createdEndDate,
@@ -5078,62 +4975,36 @@ function Customer() {
                                                                         ...prev,
                                                                         createdEndDate: e.target.value
                                                                     })),
-                                                            className: "w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3266,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-calendar text-xs"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3273,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3272,
+                                                            lineNumber: 3236,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3265,
-                                                    columnNumber: 19
+                                                    lineNumber: 3229,
+                                                    columnNumber: 20
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3261,
+                                            lineNumber: 3227,
                                             columnNumber: 17
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3244,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-2 gap-4 mt-2",
-                                    children: [
+                                        }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Expiry Start"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5",
+                                                    children: "Policy Expiry Window"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3282,
-                                                    columnNumber: 19
+                                                    lineNumber: 3247,
+                                                    columnNumber: 20
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative group",
+                                                    className: "grid grid-cols-2 gap-4",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                             type: "date",
@@ -5142,54 +5013,12 @@ function Customer() {
                                                                         ...prev,
                                                                         startDate: e.target.value
                                                                     })),
-                                                            className: "w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3286,
+                                                            lineNumber: 3249,
                                                             columnNumber: 21
                                                         }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-calendar text-xs"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3293,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3292,
-                                                            columnNumber: 21
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3285,
-                                                    columnNumber: 19
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3281,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                                    style: {
-                                                        fontFamily: "'Roboto', sans-serif"
-                                                    },
-                                                    children: "Expiry End"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3298,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "relative group",
-                                                    children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                             type: "date",
                                                             value: filters.endDate,
@@ -5197,52 +5026,38 @@ function Customer() {
                                                                         ...prev,
                                                                         endDate: e.target.value
                                                                     })),
-                                                            className: "w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3302,
-                                                            columnNumber: 21
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-calendar text-xs"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3309,
-                                                                columnNumber: 23
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3308,
+                                                            lineNumber: 3255,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3301,
-                                                    columnNumber: 19
+                                                    lineNumber: 3248,
+                                                    columnNumber: 20
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3297,
+                                            lineNumber: 3246,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3280,
+                                    lineNumber: 3225,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3143,
+                            lineNumber: 3125,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3",
+                            className: "px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>{
@@ -5257,11 +5072,11 @@ function Customer() {
                                             createdEndDate: ""
                                         });
                                     },
-                                    className: "flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors",
+                                    className: "px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all",
                                     children: "Reset"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3317,
+                                    lineNumber: 3268,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5269,28 +5084,28 @@ function Customer() {
                                         setShowFilterModal(false);
                                         fetchCustomers(1);
                                     },
-                                    className: "flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200",
-                                    children: "Apply Filters"
+                                    className: "px-6 py-1.5 bg-[#1e1b4b] text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-900 transition-all shadow-sm shadow-indigo-100",
+                                    children: "Apply Records"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3334,
+                                    lineNumber: 3285,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3316,
+                            lineNumber: 3267,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3130,
+                    lineNumber: 3106,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3129,
+                lineNumber: 3105,
                 columnNumber: 9
             }, this),
             showDuplicateModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5309,7 +5124,7 @@ function Customer() {
                                             children: "Duplicate Entries"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3355,
+                                            lineNumber: 3306,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5332,7 +5147,7 @@ function Customer() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3359,
+                                                            lineNumber: 3310,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5340,13 +5155,13 @@ function Customer() {
                                                             children: "Select All"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3372,
+                                                            lineNumber: 3323,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3358,
+                                                    lineNumber: 3309,
                                                     columnNumber: 20
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5359,7 +5174,7 @@ function Customer() {
                                                             children: "All Dispositions"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3380,
+                                                            lineNumber: 3331,
                                                             columnNumber: 21
                                                         }, this),
                                                         [
@@ -5369,13 +5184,13 @@ function Customer() {
                                                                 children: disp
                                                             }, disp, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3382,
+                                                                lineNumber: 3333,
                                                                 columnNumber: 23
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3375,
+                                                    lineNumber: 3326,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5388,7 +5203,7 @@ function Customer() {
                                                             children: "All Campaigns"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3390,
+                                                            lineNumber: 3341,
                                                             columnNumber: 21
                                                         }, this),
                                                         [
@@ -5398,25 +5213,25 @@ function Customer() {
                                                                 children: camp
                                                             }, camp, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3392,
+                                                                lineNumber: 3343,
                                                                 columnNumber: 23
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3385,
+                                                    lineNumber: 3336,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3357,
+                                            lineNumber: 3308,
                                             columnNumber: 18
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3354,
+                                    lineNumber: 3305,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5430,18 +5245,18 @@ function Customer() {
                                         className: "fi fi-rr-cross-small text-xl leading-none"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3406,
+                                        lineNumber: 3357,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3398,
+                                    lineNumber: 3349,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3353,
+                            lineNumber: 3304,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5451,14 +5266,14 @@ function Customer() {
                                 children: "Scanning for duplicates..."
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/customer.tsx",
-                                lineNumber: 3412,
+                                lineNumber: 3363,
                                 columnNumber: 17
                             }, this) : duplicateLeads.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "py-20 text-center text-gray-400 text-sm",
                                 children: "No duplicates found."
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/customer.tsx",
-                                lineNumber: 3416,
+                                lineNumber: 3367,
                                 columnNumber: 17
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "divide-y divide-gray-100",
@@ -5489,7 +5304,7 @@ function Customer() {
                                                                 }
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3429,
+                                                                lineNumber: 3380,
                                                                 columnNumber: 28
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5500,13 +5315,13 @@ function Customer() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3442,
+                                                                lineNumber: 3393,
                                                                 columnNumber: 28
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3428,
+                                                        lineNumber: 3379,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5523,14 +5338,14 @@ function Customer() {
                                                                         className: "fi fi-rr-trash"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3453,
+                                                                        lineNumber: 3404,
                                                                         columnNumber: 32
                                                                     }, this),
                                                                     "Delete Selected"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3446,
+                                                                lineNumber: 3397,
                                                                 columnNumber: 30
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5541,19 +5356,19 @@ function Customer() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3457,
+                                                                lineNumber: 3408,
                                                                 columnNumber: 28
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3444,
+                                                        lineNumber: 3395,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3427,
+                                                lineNumber: 3378,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -5567,7 +5382,7 @@ function Customer() {
                                                                     className: "px-5 py-2 w-10"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3463,
+                                                                    lineNumber: 3414,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5575,7 +5390,7 @@ function Customer() {
                                                                     children: "Customer / Phone"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3464,
+                                                                    lineNumber: 3415,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5583,7 +5398,7 @@ function Customer() {
                                                                     children: "Lead ID"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3465,
+                                                                    lineNumber: 3416,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5591,7 +5406,7 @@ function Customer() {
                                                                     children: "Date"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3466,
+                                                                    lineNumber: 3417,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5599,7 +5414,7 @@ function Customer() {
                                                                     children: "Stage"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3467,
+                                                                    lineNumber: 3418,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5607,7 +5422,7 @@ function Customer() {
                                                                     children: "Campaign"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3468,
+                                                                    lineNumber: 3419,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5615,7 +5430,7 @@ function Customer() {
                                                                     children: "Agent"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3469,
+                                                                    lineNumber: 3420,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -5623,25 +5438,25 @@ function Customer() {
                                                                     children: "Status"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3470,
+                                                                    lineNumber: 3421,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                                                     className: "px-5 py-2"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                                    lineNumber: 3471,
+                                                                    lineNumber: 3422,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                            lineNumber: 3462,
+                                                            lineNumber: 3413,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3461,
+                                                        lineNumber: 3412,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -5663,12 +5478,12 @@ function Customer() {
                                                                             }
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 3478,
+                                                                            lineNumber: 3429,
                                                                             columnNumber: 33
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3477,
+                                                                        lineNumber: 3428,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5679,7 +5494,7 @@ function Customer() {
                                                                                 children: item.customer_name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 3491,
+                                                                                lineNumber: 3442,
                                                                                 columnNumber: 33
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5687,13 +5502,13 @@ function Customer() {
                                                                                 children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(item.phone_no)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 3492,
+                                                                                lineNumber: 3443,
                                                                                 columnNumber: 33
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3490,
+                                                                        lineNumber: 3441,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5701,7 +5516,7 @@ function Customer() {
                                                                         children: item.lead_id || '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3494,
+                                                                        lineNumber: 3445,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5709,7 +5524,7 @@ function Customer() {
                                                                         children: item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB') : '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3495,
+                                                                        lineNumber: 3446,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5719,12 +5534,12 @@ function Customer() {
                                                                             children: item.stage
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 3499,
+                                                                            lineNumber: 3450,
                                                                             columnNumber: 33
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3498,
+                                                                        lineNumber: 3449,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5732,7 +5547,7 @@ function Customer() {
                                                                         children: item.campaign_name || item.campaign_id || '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3507,
+                                                                        lineNumber: 3458,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5740,7 +5555,7 @@ function Customer() {
                                                                         children: item.assigned_to_name || '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3508,
+                                                                        lineNumber: 3459,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5748,7 +5563,7 @@ function Customer() {
                                                                         children: item.disposition || '-'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3509,
+                                                                        lineNumber: 3460,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -5761,50 +5576,50 @@ function Customer() {
                                                                                 className: "fi fi-rr-trash"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                                lineNumber: 3516,
+                                                                                lineNumber: 3467,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/customer.tsx",
-                                                                            lineNumber: 3511,
+                                                                            lineNumber: 3462,
                                                                             columnNumber: 33
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                                        lineNumber: 3510,
+                                                                        lineNumber: 3461,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, i, true, {
                                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                                lineNumber: 3476,
+                                                                lineNumber: 3427,
                                                                 columnNumber: 29
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/customer.tsx",
-                                                        lineNumber: 3474,
+                                                        lineNumber: 3425,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3460,
+                                                lineNumber: 3411,
                                                 columnNumber: 23
                                             }, this)
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3426,
+                                        lineNumber: 3377,
                                         columnNumber: 21
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/customer.tsx",
-                                lineNumber: 3420,
+                                lineNumber: 3371,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3410,
+                            lineNumber: 3361,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5825,13 +5640,13 @@ function Customer() {
                                                         }), {})).length
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3533,
+                                                    lineNumber: 3484,
                                                     columnNumber: 27
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3532,
+                                            lineNumber: 3483,
                                             columnNumber: 17
                                         }, this),
                                         selectedDuplicateLeads.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5845,7 +5660,7 @@ function Customer() {
                                                     className: "fi fi-rr-trash"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/customer.tsx",
-                                                    lineNumber: 3543,
+                                                    lineNumber: 3494,
                                                     columnNumber: 21
                                                 }, this),
                                                 "Delete All Selected (",
@@ -5854,13 +5669,13 @@ function Customer() {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3536,
+                                            lineNumber: 3487,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3531,
+                                    lineNumber: 3482,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5873,570 +5688,388 @@ function Customer() {
                                     children: "Done"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3548,
+                                    lineNumber: 3499,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3530,
+                            lineNumber: 3481,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3351,
+                    lineNumber: 3302,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3350,
+                lineNumber: 3301,
                 columnNumber: 9
             }, this),
-            showBulkOrgModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
+            showBulkActionModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs font-sans",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200",
+                    className: "bg-white rounded-lg w-full max-w-lg shadow-2xl flex flex-col border border-gray-100",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50",
+                            className: "px-5 py-4 border-b border-gray-100 flex items-center justify-between",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-lg font-bold text-gray-800",
-                                    style: {
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-3",
                                     children: [
-                                        "Update Organization (",
-                                        selectedCustomers.size,
-                                        ")"
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                            className: "font-bold text-gray-800",
+                                            children: "Bulk Update Records"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3520,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100",
+                                            children: [
+                                                selectedCustomers.size,
+                                                " Items"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3521,
+                                            columnNumber: 17
+                                        }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3567,
+                                    lineNumber: 3519,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkOrgModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors",
+                                    onClick: ()=>setShowBulkActionModal(false),
+                                    className: "text-gray-400 hover:text-gray-600 p-1",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-cross-small"
+                                        className: "fi fi-rr-cross-small text-xl leading-none"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3577,
+                                        lineNumber: 3529,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3570,
+                                    lineNumber: 3525,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3566,
+                            lineNumber: 3518,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6",
+                            className: "p-6 space-y-5",
                             children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                    children: "Select New Organization"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3581,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                    value: bulkValue,
-                                    onChange: (e)=>setBulkValue(e.target.value),
-                                    className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: "",
-                                            children: "Select Organization"
-                                        }, void 0, false, {
+                                        permissionFlags.isChangeOrganizationButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                    children: "Organization"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3538,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: bulkUpdates.organization_id || (user?.isClient ? user.organization_id || "" : ""),
+                                                    disabled: user?.isClient,
+                                                    onChange: (e)=>setBulkUpdates((prev)=>({
+                                                                ...prev,
+                                                                organization_id: e.target.value
+                                                            })),
+                                                    className: `w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white text-gray-700'}`,
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "No Change"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3545,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        filterStats.organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: org.id,
+                                                                children: org.company_name
+                                                            }, org.id, false, {
+                                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                                lineNumber: 3547,
+                                                                columnNumber: 25
+                                                            }, this))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3539,
+                                                    columnNumber: 21
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
                                             fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3587,
-                                            columnNumber: 17
+                                            lineNumber: 3537,
+                                            columnNumber: 19
                                         }, this),
-                                        filterStats.organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                value: org.id,
-                                                children: org.company_name
-                                            }, org.id, false, {
-                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3589,
-                                                columnNumber: 19
-                                            }, this))
+                                        permissionFlags.isChangeCampaginButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                    children: "Campaign"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3556,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: bulkUpdates.campaign_id,
+                                                    onChange: (e)=>setBulkUpdates((prev)=>({
+                                                                ...prev,
+                                                                campaign_id: e.target.value
+                                                            })),
+                                                    className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "No Change"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3562,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        filterStats.campaigns.filter((camp)=>bulkUpdates.organization_id && camp.organization_id === bulkUpdates.organization_id).map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: camp.id,
+                                                                children: camp.name
+                                                            }, camp.id, false, {
+                                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                                lineNumber: 3566,
+                                                                columnNumber: 25
+                                                            }, this))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3557,
+                                                    columnNumber: 21
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3555,
+                                            columnNumber: 19
+                                        }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3582,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3580,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkOrgModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors",
-                                    children: "Cancel"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3594,
+                                    lineNumber: 3534,
                                     columnNumber: 15
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    disabled: isUpdatingBulk || !bulkValue,
-                                    onClick: ()=>handleBulkUpdate("organization_id", bulkValue),
-                                    className: "flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50",
-                                    children: isUpdatingBulk ? "Updating..." : "Update Organization"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3603,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3593,
-                            columnNumber: 13
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3565,
-                    columnNumber: 11
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3564,
-                columnNumber: 9
-            }, this),
-            showBulkCampaignModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-lg font-bold text-gray-800",
-                                    style: {
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
                                     children: [
-                                        "Update Campaign (",
-                                        selectedCustomers.size,
-                                        ")"
+                                        permissionFlags.isChangeAssignedButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                    children: "Assign To"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3577,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: bulkUpdates.assigned_to,
+                                                    onChange: (e)=>setBulkUpdates((prev)=>({
+                                                                ...prev,
+                                                                assigned_to: e.target.value
+                                                            })),
+                                                    className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "No Change"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3583,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "unassigned",
+                                                            children: "Unassigned (Clear Agent)"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3584,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        filterStats.agents.filter((a)=>bulkUpdates.organization_id && a.organization_id === bulkUpdates.organization_id).map((agent)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: agent.user_id || agent.id,
+                                                                children: agent.user_name
+                                                            }, agent.id, false, {
+                                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                                lineNumber: 3588,
+                                                                columnNumber: 25
+                                                            }, this))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3578,
+                                                    columnNumber: 21
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3576,
+                                            columnNumber: 19
+                                        }, this),
+                                        permissionFlags.isChangeDispostionButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-1.5",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                    children: "Disposition"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3597,
+                                                    columnNumber: 21
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: bulkUpdates.disposition,
+                                                    onChange: (e)=>setBulkUpdates((prev)=>({
+                                                                ...prev,
+                                                                disposition: e.target.value
+                                                            })),
+                                                    className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "",
+                                                            children: "No Change"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/customer.tsx",
+                                                            lineNumber: 3603,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        filterStats.dispositions.map((disp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                value: disp,
+                                                                children: disp
+                                                            }, disp, false, {
+                                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                                lineNumber: 3605,
+                                                                columnNumber: 25
+                                                            }, this))
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/pages/portal/customer.tsx",
+                                                    lineNumber: 3598,
+                                                    columnNumber: 21
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/pages/portal/customer.tsx",
+                                            lineNumber: 3596,
+                                            columnNumber: 19
+                                        }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3619,
+                                    lineNumber: 3573,
                                     columnNumber: 15
                                 }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkCampaignModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-cross-small"
-                                    }, void 0, false, {
+                                permissionFlags.isMoveFreshButtonVisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "pt-2",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>{
+                                            if (confirm(`Are you sure you want to reset ${selectedCustomers.size} leads to Fresh state? This will clear all history and assignments.`)) {
+                                                handleBulkUpdate({
+                                                    action: "Move Fresh"
+                                                });
+                                            }
+                                        },
+                                        className: "w-full h-9 flex items-center justify-center gap-2 border border-rose-200 bg-rose-50 text-rose-600 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-refresh"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/customer.tsx",
+                                                lineNumber: 3623,
+                                                columnNumber: 21
+                                            }, this),
+                                            "Reset to Fresh Leads"
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3629,
-                                        columnNumber: 17
+                                        lineNumber: 3615,
+                                        columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3622,
-                                    columnNumber: 15
+                                    lineNumber: 3614,
+                                    columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3618,
+                            lineNumber: 3533,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                    children: "Select New Campaign"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3633,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                    value: bulkValue,
-                                    onChange: (e)=>setBulkValue(e.target.value),
-                                    className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: "",
-                                            children: "Select Campaign"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3639,
-                                            columnNumber: 17
-                                        }, this),
-                                        filterStats.campaigns.map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                value: camp.id,
-                                                children: camp.name
-                                            }, camp.id, false, {
-                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3641,
-                                                columnNumber: 19
-                                            }, this))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3634,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3632,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3",
+                            className: "px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkCampaignModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors",
+                                    onClick: ()=>setShowBulkActionModal(false),
+                                    className: "px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all",
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3646,
+                                    lineNumber: 3631,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    disabled: isUpdatingBulk || !bulkValue,
-                                    onClick: ()=>handleBulkUpdate("campaign_id", bulkValue),
-                                    className: "flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50",
-                                    children: isUpdatingBulk ? "Updating..." : "Update Campaign"
+                                    disabled: isUpdatingBulk || !Object.entries(bulkUpdates).some(([k, v])=>v !== ""),
+                                    onClick: ()=>{
+                                        const cleanUpdates = {};
+                                        if (bulkUpdates.organization_id) cleanUpdates.organization_id = bulkUpdates.organization_id;
+                                        if (bulkUpdates.campaign_id) cleanUpdates.campaign_id = bulkUpdates.campaign_id;
+                                        if (bulkUpdates.assigned_to) cleanUpdates.assigned_to = bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to;
+                                        if (bulkUpdates.disposition) cleanUpdates.disposition = bulkUpdates.disposition;
+                                        handleBulkUpdate(cleanUpdates);
+                                    },
+                                    className: "px-6 py-1.5 bg-indigo-600 text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 disabled:opacity-50",
+                                    children: isUpdatingBulk ? "Updating..." : `Apply Changes (${selectedCustomers.size})`
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3655,
+                                    lineNumber: 3637,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3645,
+                            lineNumber: 3630,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3617,
+                    lineNumber: 3516,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3616,
-                columnNumber: 9
-            }, this),
-            showBulkAssignedModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-lg font-bold text-gray-800",
-                                    style: {
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
-                                    children: [
-                                        "Update Assignment (",
-                                        selectedCustomers.size,
-                                        ")"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3672,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkAssignedModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-cross-small"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3682,
-                                        columnNumber: 17
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3675,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3671,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                    children: "Select Agent"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3686,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                    value: bulkValue,
-                                    onChange: (e)=>setBulkValue(e.target.value),
-                                    className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: "",
-                                            children: "Select Agent"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3692,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: "unassigned",
-                                            children: "Unassigned"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3693,
-                                            columnNumber: 17
-                                        }, this),
-                                        filterStats.agents.map((agent)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                value: agent.user_id || agent.id,
-                                                children: agent.user_name
-                                            }, agent.id, false, {
-                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3695,
-                                                columnNumber: 19
-                                            }, this))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3687,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3685,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkAssignedModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors",
-                                    children: "Cancel"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3700,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    disabled: isUpdatingBulk || !bulkValue,
-                                    onClick: ()=>handleBulkUpdate("assigned_to", bulkValue === "unassigned" ? null : bulkValue),
-                                    className: "flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50",
-                                    children: isUpdatingBulk ? "Updating..." : "Update Assignment"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3709,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3699,
-                            columnNumber: 13
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3670,
-                    columnNumber: 11
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3669,
-                columnNumber: 9
-            }, this),
-            showBulkDispositionModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                    className: "text-lg font-bold text-gray-800",
-                                    style: {
-                                        fontFamily: "'Poppins', sans-serif"
-                                    },
-                                    children: [
-                                        "Update Disposition (",
-                                        selectedCustomers.size,
-                                        ")"
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3726,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkDispositionModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: "fi flex fi-rr-cross-small"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/customer.tsx",
-                                        lineNumber: 3736,
-                                        columnNumber: 17
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3729,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3725,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                    className: "block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2",
-                                    children: "Select Disposition"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3740,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                    value: bulkValue,
-                                    onChange: (e)=>setBulkValue(e.target.value),
-                                    className: "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                            value: "",
-                                            children: "Select Disposition"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/customer.tsx",
-                                            lineNumber: 3746,
-                                            columnNumber: 17
-                                        }, this),
-                                        filterStats.dispositions.map((disp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                value: disp,
-                                                children: disp
-                                            }, disp, false, {
-                                                fileName: "[project]/pages/portal/customer.tsx",
-                                                lineNumber: 3748,
-                                                columnNumber: 19
-                                            }, this))
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3741,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3739,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setShowBulkDispositionModal(false);
-                                        setBulkValue("");
-                                    },
-                                    className: "flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors",
-                                    children: "Cancel"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3753,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    disabled: isUpdatingBulk || !bulkValue,
-                                    onClick: ()=>handleBulkUpdate("disposition", bulkValue),
-                                    className: "flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50",
-                                    children: isUpdatingBulk ? "Updating..." : "Update Disposition"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/customer.tsx",
-                                    lineNumber: 3762,
-                                    columnNumber: 15
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/customer.tsx",
-                            lineNumber: 3752,
-                            columnNumber: 13
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/pages/portal/customer.tsx",
-                    lineNumber: 3724,
-                    columnNumber: 11
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/pages/portal/customer.tsx",
-                lineNumber: 3723,
+                lineNumber: 3515,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true);
 }
-_s(Customer, "gT9VRI37NscnTERMkMdpX5gr1JA=", false, function() {
+_s(Customer, "HTX3ywkBHdIpx/ADBpxLt54fJ1Y=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]

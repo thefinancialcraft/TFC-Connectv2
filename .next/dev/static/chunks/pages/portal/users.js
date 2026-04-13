@@ -3,7 +3,7 @@ __turbopack_load_page_chunks__("/portal/users", [
   "static/chunks/components_users_8ac302c1._.js",
   "static/chunks/components_UserMenuDropdown_tsx_cc8bfca1._.js",
   "static/chunks/components_15103253._.js",
-  "static/chunks/_7bc31f9c._.js",
+  "static/chunks/_6937d256._.js",
   "static/chunks/[root-of-the-server]__ef8266b7._.js",
   "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
   "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
@@ -15,5 +15,5 @@ __turbopack_load_page_chunks__("/portal/users", [
   "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
   "static/chunks/node_modules_6526044e._.js",
   "static/chunks/pages_portal_users_tsx_2da965e7._.js",
-  "static/chunks/turbopack-pages_portal_users_tsx_95895d06._.js"
+  "static/chunks/turbopack-pages_portal_users_tsx_b311be7e._.js"
 ])

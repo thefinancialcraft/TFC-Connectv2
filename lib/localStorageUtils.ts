@@ -26,6 +26,7 @@ export interface StoredUserData {
   is_client?: boolean;
   designation?: string | null;
   department?: string | null;
+  organization_id?: string;
   allowed_tabs?: string[];
   google_calendar_connected?: boolean;
   google_calendar_skipped?: boolean;

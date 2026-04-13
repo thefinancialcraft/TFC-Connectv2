@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/router";
+import { useSession } from "@/context/SessionContext";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
@@ -10,9 +11,11 @@ import { decryptPhone, formatMaskedPhone, computePhoneHash } from "@/lib/phoneUt
 import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "@/lib/flutterBridge";
 import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 
+
 export default function CallingPage() {
     const router = useRouter();
     const { id: campaignId, customerId } = router.query;
+    const { currentSession: globalHotSession, allSessions } = useSession();
 
     const handleLogoutClick = async () => {
         await handleLogout(router);
@@ -87,6 +90,7 @@ export default function CallingPage() {
     const [tempDetails, setTempDetails] = useState<any[]>([]);
     const [prefetchStatus, setPrefetchStatus] = useState<'idle' | 'fetching' | 'ready' | 'none' | 'error'>('idle');
     const [dailyLeadCount, setDailyLeadCount] = useState(0);
+    const [activePreset, setActivePreset] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isManualMode, setIsManualMode] = useState(false);
     const [isInterruption, setIsInterruption] = useState(false);
@@ -100,6 +104,8 @@ export default function CallingPage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const sliderHandleRef = useRef<HTMLDivElement>(null);
     const skipTextRef = useRef<HTMLSpanElement>(null);
+    const hourScrollRef = useRef<HTMLDivElement>(null);
+    const minuteScrollRef = useRef<HTMLDivElement>(null);
     const hasMovedRef = useRef(false);
 
     const lastActiveRef = useRef<number>(Date.now());
@@ -168,6 +174,25 @@ export default function CallingPage() {
         };
     }, [isTimePickerDragging]);
 
+    // 🕒 Auto-scroll Time Picker when opened or selection changes
+    useEffect(() => {
+        if (isTimePickerOpen) {
+            // Small delay to ensure state and DOM are perfectly synced
+            const timer = setTimeout(() => {
+                const activeHour = hourScrollRef.current?.querySelector('[data-active="true"]');
+                const activeMinute = minuteScrollRef.current?.querySelector('[data-active="true"]');
+
+                if (activeHour) {
+                    activeHour.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                if (activeMinute) {
+                    activeMinute.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isTimePickerOpen, tempHour, tempMinute]);
+
     const handleTimePickerMouseDown = (e: React.MouseEvent) => {
         // Prevent drag on interactive elements
         if ((e.target as HTMLElement).closest('button')) return;
@@ -199,6 +224,7 @@ export default function CallingPage() {
     })();
 
     // --- 💾 STATE PERSISTENCE ENGINE ---
+    const isApiUpdatingRef = useRef(false); // Prevents polling conflict during call start/end
 
 
     const datePickerRef = useRef<HTMLDivElement>(null);
@@ -262,6 +288,7 @@ export default function CallingPage() {
 
 
     const handleEndCall = useCallback(async (isFromBridge = false) => {
+        isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
         
         // If the call never reached 'connected' status, force duration to 0
@@ -337,14 +364,23 @@ export default function CallingPage() {
                     });
                     const resData = await response.json();
                     console.log('🤙 [EndCall] API Update Response:', resData);
+                    
+                    // Release lock after a short delay to allow DB propagation
+                    setTimeout(() => {
+                        isApiUpdatingRef.current = false; // LOCK OFF
+                    }, 2000);
+
                 } catch (error) {
                     console.error('🤙 [EndCall] Failed to update call session via API:', error);
+                    isApiUpdatingRef.current = false;
                 }
             } else {
                 console.error('🤙 [EndCall] No auth session found, cannot update session status');
+                isApiUpdatingRef.current = false;
             }
         } else {
             console.warn('🤙 [EndCall] User UID missing, skipping call_sessions update');
+            isApiUpdatingRef.current = false;
         }
         console.log('🤙 [EndCall] Process complete.');
     }, [campaignId, customerId, customer?.phone_no, user?.uid, user?.employeeId, user?.employeeId]);
@@ -1436,122 +1472,83 @@ export default function CallingPage() {
         return ms; // Returns UTC milliseconds
     };
 
-    // Subscribe to Real-time Session Changes
+useEffect(() => {
+    if (isApiUpdatingRef.current) return;
+    
+    const currentCustomerId = String(customerId || "");
+    
+    // Find if there's a session for the lead we are CURRENTLY viewing
+    // This allows the UI to stay 'active' even if we are manually inspecting while another lead is 'Hot'
+    const thisLeadSession = allSessions.find(s => String(s.customer_id) === currentCustomerId);
+    
+    // We prioritize the globalHotSession if we are NOT manually locked, 
+    // but if we are manually on THIS page, we use thisLeadSession to drive the buttons/timer.
+    const sessionToProcess = thisLeadSession || globalHotSession;
+
+    if (!sessionToProcess) {
+        setIsCalling(false);
+        setPostCall(false);
+        setCallDuration(0);
+        return;
+    }
+
+    const isManualModeFromSession = sessionToProcess.is_manual === true;
+    const sessionStatus = isManualModeFromSession ? (sessionToProcess.manual_status || sessionToProcess.status) : sessionToProcess.status;
+
+    setIsManualMode(isManualModeFromSession);
+    setIsInterruption(!!(isManualModeFromSession && sessionToProcess.manual_customer_id && sessionToProcess.customer_id && String(sessionToProcess.manual_customer_id) !== String(sessionToProcess.customer_id)));
+
+    if (sessionStatus === 'active') {
+        setPostCall(false);
+        setIsCalling(true);
+        if (sessionToProcess.call_start_at) {
+            const start = parseUTCtoMS(sessionToProcess.call_start_at);
+            if (start) setCallStartTime(start);
+        }
+    } else if (sessionStatus === 'assigned') {
+        setIsCalling(false);
+        setPostCall(false);
+        setIsAssigning(false); 
+        setCallDuration(0);
+        setCallStartTime(null);
+    } else if (sessionStatus === 'disposition_pending') {
+        setIsCalling(false);
+        setPostCall(true);
+    } else if (sessionStatus === 'closed') {
+        setIsCalling(false);
+        setPostCall(false);
+        setIsAssigning(false);
+        setCallDuration(0);
+        setCallStartTime(null);
+    }
+}, [globalHotSession, allSessions, customerId]);
+
     useEffect(() => {
-        if (!user?.uid || !campaignId || !customerId) return;
+        // Only check status if calling is active
+        if (!user?.employeeId || !isCalling) return;
 
-        const syncChannel = supabase
-            .channel(`lead_sync_${user.uid}_${customerId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'call_sessions',
-                    filter: `user_id=eq.${user.uid}`
-                },
-                (payload: any) => {
-                    console.log('[Realtime-Sync] Event received:', payload.eventType, payload.new);
-                    const session = payload.new;
-                    
-                    if (!session) return;
-
-                    const currentCustomerId = String(customerId || "");
-                    
-                    // DUAL SESSION REAL-TIME LOGIC
-                    const isManualModeFromSession = session.is_manual === true;
-                    const sessionCustomerId = isManualModeFromSession ? session.manual_customer_id : session.customer_id;
-                    const sessionStatus = isManualModeFromSession ? (session.manual_status || session.status) : session.status;
-                    const sessionCampaignId = isManualModeFromSession ? (session.manual_campaign_id || session.campaign_id) : session.campaign_id;
-
-                    if (!sessionCustomerId || sessionCustomerId === "undefined") return;
-
-                    if (String(sessionCustomerId) === currentCustomerId) {
-                        setIsManualMode(isManualModeFromSession);
-                        if (isManualModeFromSession && session.manual_customer_id && session.customer_id && String(session.manual_customer_id) !== String(session.customer_id)) {
-                            setIsInterruption(true);
-                        } else {
-                            setIsInterruption(false);
-                        }
-
-                        if (sessionStatus === 'active') {
-                            setPostCall(false);
-                            setIsCalling(true);
-                            if (session.call_start_at) {
-                                const start = parseUTCtoMS(session.call_start_at);
-                                if (start) setCallStartTime(start);
-                            }
-                        } else if (sessionStatus === 'assigned') {
-                            setIsCalling(false);
-                            setPostCall(false);
-                            setCallDuration(0);
-                            setCallStartTime(null);
-                        } else if (sessionStatus === 'disposition_pending') {
-                            setIsCalling(false);
-                            setPostCall(true);
-                        } else if (sessionStatus === 'closed') {
-                            setIsCalling(false);
-                            setPostCall(false);
-                            setCallDuration(0);
-                            setCallStartTime(null);
-                        }
-                    } else if (sessionCustomerId && String(sessionCustomerId) !== currentCustomerId && !isAssigning && !postCall) {
-                        // Redirect to another lead only if NOT in a manual interruption or if that manual lead is active
-                        if (sessionStatus === 'paused') return;
-                        router.push(`/portal/campaign/${sessionCampaignId}/${sessionCustomerId}`);
-                    }
+        const fetchStatus = async () => {
+            try {
+                const { data } = await supabase
+                    .from('sync_meta')
+                    .select('calling_status')
+                    .eq('employee_id', user.employeeId)
+                    .eq('is_primary', true)
+                    .maybeSingle();
+                
+                if (data?.calling_status) {
+                    setLocalCallingStatus(data.calling_status);
                 }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(syncChannel);
-        };
-    }, [user?.uid, campaignId, customerId]);
-
-    // Subscribe to sync_meta for real-time device status (Header-like sync)
-    useEffect(() => {
-        if (!user?.employeeId) return;
-
-        const fetchInitialStatus = async () => {
-            const { data } = await supabase
-                .from('sync_meta')
-                .select('calling_status')
-                .eq('employee_id', user.employeeId)
-                .eq('is_primary', true)
-                .maybeSingle();
-            
-            if (data?.calling_status) {
-                setLocalCallingStatus(data.calling_status);
+            } catch (e) {
+                console.error("Status polling error:", e);
             }
         };
 
-        fetchInitialStatus();
+        fetchStatus();
+        const interval = setInterval(fetchStatus, 30000); // 30s status polling (matching heartbeat)
 
-        const syncMetaChannel = supabase
-            .channel(`sync_meta_page_${user.employeeId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'sync_meta',
-                    filter: `employee_id=eq.${user.employeeId}`
-                },
-                (payload: any) => {
-                    const newData = payload.new;
-                    if (newData && newData.is_primary) {
-                        console.log('📡 [Sync-Meta] Page sync update:', newData.calling_status);
-                        setLocalCallingStatus(newData.calling_status);
-                    }
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(syncMetaChannel);
-        };
-    }, [user?.employeeId]);
+        return () => clearInterval(interval);
+    }, [user?.employeeId, isCalling]);
 
     // Initial State Restoration
     useEffect(() => {
@@ -1728,6 +1725,7 @@ export default function CallingPage() {
     };
 
     const handleStartCall = async () => {
+        isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         const cId = campaignId as string;
         const custId = customerId as string;
 
@@ -1822,9 +1820,18 @@ export default function CallingPage() {
                     } else if (!result.success) {
                         console.error('[Session] Failed to persist session:', result.error);
                     }
+                } else {
+                    isApiUpdatingRef.current = false;
                 }
+                
+                // Release lock after a short delay for DB to propagate
+                setTimeout(() => {
+                    isApiUpdatingRef.current = false; // LOCK OFF
+                }, 2000);
+
             } catch (err) {
                 console.error('[Session] Network error persisting session:', err);
+                isApiUpdatingRef.current = false;
             }
         }
     };
@@ -2701,6 +2708,7 @@ Campaign: ${campaign?.name || campaignId}
 
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
         setCallbackDate(dateStr);
+        setActivePreset(null);
         setIsDatePickerOpen(false);
     };
 
@@ -3842,7 +3850,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         </div>
 
                                                         {/* Quick Presets */}
-                                                         <div className="flex flex-wrap mt-4 gap-1.5 relative z-10">
+                                                        <div className="flex flex-wrap mt-4 gap-1.5 relative z-10">
                                                              {[
                                                                  { 
                                                                      label: '10 Min', 
@@ -3853,6 +3861,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                          const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
                                                                          setCallbackDate(localDate);
                                                                          setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+                                                                         setActivePreset('10 Min');
                                                                      }
                                                                  },
                                                                  { 
@@ -3864,6 +3873,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                          const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
                                                                          setCallbackDate(localDate);
                                                                          setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+                                                                         setActivePreset('In 1 Hr');
                                                                      }
                                                                  },
                                                                  { 
@@ -3875,6 +3885,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                          const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
                                                                          setCallbackDate(localDate);
                                                                          setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+                                                                         setActivePreset('3 Hr');
                                                                      }
                                                                  },
                                                                 
@@ -3888,6 +3899,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                          const localDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
                                                                          setCallbackDate(localDate);
                                                                          setCallbackTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+                                                                         setActivePreset('Tomorrow');
                                                                      }
                                                                  }
                                                              ].map((preset) => (
@@ -3895,7 +3907,11 @@ Campaign: ${campaign?.name || campaignId}
                                                                     key={preset.label}
                                                                     type="button"
                                                                     onClick={preset.action}
-                                                                    className="px-2.5 py-1.5 rounded-lg bg-white border border-indigo-100 text-[10px] font-bold text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-1.5"
+                                                                    className={`px-2.5 py-1.5 rounded-lg border text-[10px] font-bold transition-all flex items-center gap-1.5 ${
+                                                                        activePreset === preset.label
+                                                                        ? 'bg-indigo-600 text-white border-indigo-600 transform scale-105'
+                                                                        : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-300 hover:bg-indigo-50'
+                                                                    }`}
                                                                 >
                                                                     <i className={`fi flex fi-rr-${preset.icon} text-[10px]`}></i>
                                                                     {preset.label}
@@ -4036,7 +4052,10 @@ Campaign: ${campaign?.name || campaignId}
                                                                             {/* Hour Column */}
                                                                             <div className="flex-1 flex flex-col items-center gap-1">
                                                                                 <span className="text-[8px] font-bold text-slate-400 uppercase mb-1">HH</span>
-                                                                                <div className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1">
+                                                                                <div 
+                                                                                    ref={hourScrollRef}
+                                                                                    className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1 py-[44px]"
+                                                                                >
                                                                                     {Array.from({ length: 12 }).map((_, i) => {
                                                                                         const h = String(i + 1).padStart(2, '0');
                                                                                         const isSel = tempHour === h;
@@ -4059,7 +4078,10 @@ Campaign: ${campaign?.name || campaignId}
                                                                             {/* Minute Column */}
                                                                             <div className="flex-1 flex flex-col items-center gap-1">
                                                                                 <span className="text-[8px] font-bold text-slate-400 uppercase mb-1">MM</span>
-                                                                                <div className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1">
+                                                                                <div 
+                                                                                    ref={minuteScrollRef}
+                                                                                    className="h-[120px] overflow-y-auto w-full custom-scrollbar flex flex-col gap-1 items-center px-1 py-[44px]"
+                                                                                >
                                                                                     {Array.from({ length: 60 }).map((_, i) => {
                                                                                         const m = String(i).padStart(2, '0');
                                                                                         const isSel = tempMinute === m;
@@ -4112,6 +4134,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     if (tempAmPm === "PM" && h < 12) h += 12;
                                                                                     if (tempAmPm === "AM" && h === 12) h = 0;
                                                                                     setCallbackTime(`${String(h).padStart(2, '0')}:${tempMinute}`);
+                                                                                    setActivePreset(null);
                                                                                     setIsTimePickerOpen(false);
                                                                                 }}
                                                                                 className="py-2.5 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95"
@@ -4130,6 +4153,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                                     type="button"
                                                                                     onClick={() => {
                                                                                         setCallbackTime(t);
+                                                                                        setActivePreset(null);
                                                                                         setIsTimePickerOpen(false);
                                                                                     }}
                                                                                     className={`py-1.5 rounded-xl text-[10px] font-bold transition-all border ${

@@ -8266,31 +8266,26 @@ function useCallSessionRedirect(userId) {
     };
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         if (!userId) return;
+        // 1. Initial Check on Mount
         checkActiveSession();
-        const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].channel(`global_session_guard:${userId}`).on('postgres_changes', {
-            event: '*',
-            schema: 'public',
-            table: 'call_sessions',
-            filter: `user_id=eq.${userId}`
-        }, (payload)=>{
-            console.log(`[Session-Guard] Realtime sync event received:`, payload.eventType);
-            // Short delay to allow DB propagation
-            setTimeout(checkActiveSession, 500);
-        }).subscribe();
+        // 2. Visibility Listener: Check when user returns to tab
         const handleVisibility = ()=>{
-            if (document.visibilityState === 'visible') checkActiveSession();
+            if (document.visibilityState === 'visible') {
+                console.log("[Session-Guard] Tab visible, polling session...");
+                checkActiveSession();
+            }
         };
-        // 2000ms Stable Heartbeat (Reduced from aggressive 500ms)
+        // 3. Optimized Heartbeat: 15-second Stable Polling
+        // Using 15s provides a balance between responsiveness and server load.
+        // This consumes ZERO Realtime Messaging quota.
         const heartbeat = setInterval(()=>{
-            // Check for localized "save-in-progress" lock to prevent race conditions
             const isSaving = ("TURBOPACK compile-time value", "undefined") !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
             if ("TURBOPACK compile-time truthy", 1) {
                 checkActiveSession();
             }
-        }, 2000);
+        }, 15000);
         window.addEventListener('visibilitychange', handleVisibility);
         return ()=>{
-            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
             clearInterval(heartbeat);
             window.removeEventListener('visibilitychange', handleVisibility);
         };

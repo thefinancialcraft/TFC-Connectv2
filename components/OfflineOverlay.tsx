@@ -29,24 +29,24 @@ const OfflineOverlay = () => {
       window.addEventListener('offline', handleOffline);
 
       // 2. Robust Polling (Heartbeat) - Fix for Flutter WebView
-      // Poll every 5 seconds to check actual reachability
+      // Poll every 20 seconds (Increased from 5s to save egregious data usage)
       const checkConnection = async () => {
+        // Only ping if tab is active to save data egress
+        if (document.visibilityState !== 'visible') return;
+
         try {
           // Fetch a tiny resource to verify connection
-          // cached responses might fool us, so we add a timestamp
           await fetch('/favicon.ico?' + new Date().getTime(), { 
               method: 'HEAD',
               mode: 'no-cors',
               cache: 'no-store' 
           });
           
-          // If we reach here, we are online
           if (isOffline) {
               console.log("🌐 [Status] Connection Restored (Ping Success)");
               setIsOffline(false);
           }
         } catch (err) {
-          // Network error implies offline
           if (!isOffline) {
               console.log("❌ [Status] Connection Lost (Ping Failed)");
               setIsOffline(true);
@@ -55,7 +55,7 @@ const OfflineOverlay = () => {
       };
 
       // Start polling
-      intervalId = setInterval(checkConnection, 5000);
+      intervalId = setInterval(checkConnection, 20000);
 
       return () => {
         window.removeEventListener('online', handleOnline);

@@ -132,6 +132,9 @@ const Sidebar = memo(function Sidebar({
     const isAdminState = isAdmin || isInternalStaff;
 
     const filtered = NAV_ITEMS.filter(item => {
+      // 0. NXUS-001 Exclusive Check (Hard rejection for Call Sessions)
+      if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
+
       // 1. Admin/Super Admin check
       if (item.adminOnly && !isAdminState) return false;
 
@@ -157,9 +160,6 @@ const Sidebar = memo(function Sidebar({
       if (isManager) {
         return ['/dashboard', '/campaign', '/activity', '/followup', '/team', '/customer'].includes(path);
       }
-
-      // 4. NXUS-001 Exclusive Check
-      if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
 
       return false;
     });

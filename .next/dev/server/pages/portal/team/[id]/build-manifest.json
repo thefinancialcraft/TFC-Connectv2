@@ -6,7 +6,7 @@
   "rootMainFiles": [],
   "pages": {
     "/portal/team/[id]": [
-      "static/chunks/[root-of-the-server]__a8ec3316._.js",
+      "static/chunks/[root-of-the-server]__40aadb9d._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
       "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
@@ -22,7 +22,7 @@
       "static/chunks/node_modules_recharts_es6_181c6f1a._.js",
       "static/chunks/node_modules_b4636b6f._.js",
       "static/chunks/pages_portal_team_[id]_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_team_[id]_tsx_588e8478._.js"
+      "static/chunks/turbopack-pages_portal_team_[id]_tsx_54eadf49._.js"
     ]
   },
   "ampFirstPages": []

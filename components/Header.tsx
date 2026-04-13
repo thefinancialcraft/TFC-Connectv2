@@ -209,87 +209,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     // Initial fetch
     fetchPrimaryStatus();
 
-    // Subscribe specifically to THIS device's entry_id
-    // If we don't have entryId yet, we subscribe to all for safety until identity is confirmed
-    const filter = localEntryId 
-                   ? `entry_id=eq.${localEntryId}` 
-                   : `employee_id=eq.${displayUser.employeeId}`;
-
-    const channel = supabase
-      .channel(`device_sync_${localEntryId || displayUser.employeeId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*', 
-          schema: 'public',
-          table: 'sync_meta',
-          filter: filter
-        },
-        (payload: any) => {
-          const newData = payload.new;
-          if (!newData) return;
-
-          // 1. EXPLICIT IDENTITY CHECK
-          // We only process if the message is explicitly for THIS device's entry_id
-          const currentEntryId = localEntryId || localStorage.getItem('entry_id');
-          if (newData.entry_id && newData.entry_id === currentEntryId) {
-             console.log("⚡ [Header] Valid command for this device received:", newData.entry_id);
-             
-             // 2. FORWARD COMMANDS TO FLUTTER
-             if (isBridgeActive && newData.type && newData.value) {
-                // 3. MASTER MOVE: Reject call_to if already on a call
-                if (newData.type === 'call_to' && isOnCallRef.current) {
-                   console.log("🛡️ [Header] MASTER MOVE: Call rejected! Device is already busy.");
-                   fetchPrimaryStatus();
-                   return;
-                }
-
-                // Deduplication A: Check if this was just sent locally (prevent local loop)
-                const bridgeHistory = (window as any).__bridge_history || {};
-                const lastLocalMsg = bridgeHistory[newData.type];
-                const isLocalDuplicate = lastLocalMsg && 
-                                        String(lastLocalMsg.value) === String(newData.value) && 
-                                        (Date.now() - lastLocalMsg.time < 5000); 
-
-                // Deduplication B: Check if this REMOTE command was already processed (prevent double-fire)
-                const isRemoteDuplicate = lastProcessedRef.current &&
-                                         lastProcessedRef.current.type === newData.type &&
-                                         String(lastProcessedRef.current.value) === String(newData.value) &&
-                                         (Date.now() - lastProcessedRef.current.time < 2000); // 2 second window
-
-                // Deduplication C: MASTER PERSISTENT CHECKPOINT
-                // Don't send the same command again until we get a disconnect signal from the bridge
-                const isStickyDuplicate = lastSentCommandRef.current &&
-                                         lastSentCommandRef.current.type === newData.type &&
-                                         String(lastSentCommandRef.current.value) === String(newData.value);
-
-                if (!isLocalDuplicate && !isRemoteDuplicate && !isStickyDuplicate) {
-                   console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
-                   
-                   // Update refs BEFORE notifying
-                   lastProcessedRef.current = { type: newData.type, value: newData.value, time: Date.now() };
-                   lastSentCommandRef.current = { type: newData.type, value: newData.value };
-                   
-                   notifyFlutter(newData.type, newData.value);
-                } else if (isStickyDuplicate) {
-                   console.log(`🛡️ [Header] Persistent lock: Command ${newData.type} already sent once. Waiting for disconnect.`);
-                } else if (isRemoteDuplicate) {
-                   console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
-                } else {
-                   console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
-                }
-             }
-          }
-
-          fetchPrimaryStatus();
-        }
-      )
-      .subscribe((status) => {
-        console.log(`📡 [Header] Subscription status for ${displayUser.employeeId}:`, status);
-      });
+    // --- REFACTORED: NO REALTIME SUBSCRIPTION (Saves 100% Messaging Quota) ---
+    // Instead, we use a 5s polling loop for absolute responsiveness (REST API - Free Quota)
+    const interval = setInterval(fetchPrimaryStatus, 5000);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, [mounted, displayUser?.employeeId, isBridgeActive, localEntryId]);
 
@@ -301,10 +226,10 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     // Send initial heartbeat
     sendHeartbeat(empId);
 
-    // Set up interval for every 10 seconds (for 15s timeout)
+    // Set up interval for every 30 seconds (Increased from 10s to save 66% messaging quota)
     const interval = setInterval(() => {
       sendHeartbeat(empId);
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [isBridgeActive, displayUser?.employeeId]);
@@ -325,8 +250,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     const now = Date.now();
     const diffSeconds = (now - lastSeen) / 1000;
     
-    // Mark offline if no heartbeat for 15 seconds
-    return diffSeconds < 15 ? 'online' : 'offline';
+    // Mark offline if no heartbeat for 20 seconds (Stable for 5s polling)
+    return diffSeconds < 20 ? 'online' : 'offline';
   }, [deviceStatus?.last_seen, tick]);
 
   // Ghost update: Only update if props actually changed
@@ -418,32 +343,6 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
                       return prev.filter(n => n.id !== payload.old.id);
                   });
               }
-          })
-          .on('broadcast', { event: 'manual_lead_access' }, (payload: any) => {
-              console.log('🔔 [Header] Fast broadcast signal received:', payload);
-              
-              // 1. Show alert immediately
-              showWarning(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
-
-              // 2. MASTER MOVE: Optimistically update local UI state immediately
-              // This ensures the bell shakes and count increases INSTANTLY
-              const optimisticNotification = {
-                  id: `temp_${Date.now()}`,
-                  type: 'lead_access',
-                  message: payload.payload.message,
-                  actor_id: payload.payload.actor_id,
-                  is_seen: false,
-                  created_at: new Date().toISOString(),
-                  metadata: payload.payload
-              };
-
-              setNotifications(prev => {
-                  // Prevent duplicate if DB insert was somehow faster
-                  const exists = prev.some(n => n.message === optimisticNotification.message && (Date.now() - new Date(n.created_at).getTime() < 5000));
-                  if (exists) return prev;
-                  return [optimisticNotification, ...prev].slice(0, 20);
-              });
-              setUnreadCount(c => c + 1);
           })
           .subscribe();
 

@@ -413,6 +413,8 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 ;
 const CACHE_TTL = 60 * 1000;
+// Global cache to persist across remounts/tab switches
+const globalCache = {};
 function useAgentPerformance() {
     const [agentData, setAgentData] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
     const [totalDials, setTotalDials] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(0);
@@ -420,7 +422,6 @@ function useAgentPerformance() {
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])(null);
-    const cacheRef = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useRef"])({});
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
         return ()=>{
             if (abortControllerRef.current) {
@@ -430,12 +431,12 @@ function useAgentPerformance() {
     }, []);
     const fetchAgentPerformance = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useCallback"])(async (orgId, dateFilter = "this_month", customRange, force = false, userId)=>{
         const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
-        const cached = cacheRef.current[cacheKey];
+        const cached = globalCache[cacheKey];
         if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
             setAgentData(cached.data.agentData);
             setTotalDials(cached.data.totalDials);
             setTotalDuration(cached.data.totalDuration);
-            loading && setLoading(false);
+            if (loading) setLoading(false);
             return;
         }
         if (abortControllerRef.current) {
@@ -486,7 +487,7 @@ function useAgentPerformance() {
             setAgentData(data.agentData);
             setTotalDials(data.totalDials);
             setTotalDuration(data.totalDuration);
-            cacheRef.current[cacheKey] = {
+            globalCache[cacheKey] = {
                 data,
                 timestamp: Date.now()
             };

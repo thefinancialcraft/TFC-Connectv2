@@ -213,23 +213,6 @@ function Document() {
                         fileName: "[project]/pages/_document.tsx",
                         lineNumber: 41,
                         columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("script", {
-                        dangerouslySetInnerHTML: {
-                            __html: `
-              function initApollo(){
-                var n=Math.random().toString(36).substring(7),o=document.createElement("script");
-                o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
-                o.onload=function(){window.trackingFunctions.onLoad({appId:"69918f831f332b0021a93049"})},
-                document.head.appendChild(o)
-              }
-              initApollo();
-            `
-                        }
-                    }, void 0, false, {
-                        fileName: "[project]/pages/_document.tsx",
-                        lineNumber: 46,
-                        columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
@@ -241,18 +224,18 @@ function Document() {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$document$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Main"], {}, void 0, false, {
                         fileName: "[project]/pages/_document.tsx",
-                        lineNumber: 61,
+                        lineNumber: 47,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$document$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["NextScript"], {}, void 0, false, {
                         fileName: "[project]/pages/_document.tsx",
-                        lineNumber: 62,
+                        lineNumber: 48,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/_document.tsx",
-                lineNumber: 60,
+                lineNumber: 46,
                 columnNumber: 7
             }, this)
         ]

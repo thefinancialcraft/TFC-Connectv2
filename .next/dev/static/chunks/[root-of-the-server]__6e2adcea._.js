@@ -727,6 +727,12 @@ const NAV_ITEMS = [
         path: "/team",
         icon: "fi-rr-users-alt",
         adminOnly: false
+    },
+    {
+        name: "Call Sessions",
+        path: "/call-sessions",
+        icon: "fi-rr-headset",
+        adminOnly: true
     }
 ];
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
@@ -921,6 +927,8 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                             '/customer'
                         ].includes(path);
                     }
+                    // 4. NXUS-001 Exclusive Check
+                    if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
                     return false;
                 }
             }["Sidebar.Sidebar.useMemo[navItems].filtered"]);
@@ -976,12 +984,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                 },
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 195,
+                    lineNumber: 198,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 194,
+                lineNumber: 197,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -1003,7 +1011,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: `fi ${item.icon} flex text-sm`
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 220,
+                                lineNumber: 223,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1014,13 +1022,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 children: item.name
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 221,
+                                lineNumber: 224,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, item.path, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 207,
+                        lineNumber: 210,
                         columnNumber: 15
                     }, this);
                 }) : // Skeleton Links - Only shown if cache is completely empty
@@ -1037,25 +1045,25 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: "w-5 h-5 rounded bg-gray-100"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 234,
+                                lineNumber: 237,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "h-3 w-24 bg-gray-100 rounded"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 235,
+                                lineNumber: 238,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 233,
+                        lineNumber: 236,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 199,
+                lineNumber: 202,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1084,12 +1092,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 255,
+                                        lineNumber: 258,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 248,
+                                    lineNumber: 251,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1104,7 +1112,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 265,
+                                            lineNumber: 268,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1116,19 +1124,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.email || "user@example.com" : "user@example.com"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 271,
+                                            lineNumber: 274,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 264,
+                                    lineNumber: 267,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 247,
+                            lineNumber: 250,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1148,7 +1156,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Employee ID:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 285,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1160,13 +1168,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.employeeId || "Not assigned" : "Not assigned"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 285,
+                                            lineNumber: 288,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 284,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1180,7 +1188,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Last Login:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 293,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1192,19 +1200,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: formattedLastLogin
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 296,
+                                            lineNumber: 299,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 295,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 280,
+                            lineNumber: 283,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1234,12 +1242,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "fi flex fi-rr-settings text-sm"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 327,
+                                        lineNumber: 330,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 306,
+                                    lineNumber: 309,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1270,7 +1278,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 355,
+                                        lineNumber: 358,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                         children: [
@@ -1278,44 +1286,44 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                                 className: "fi flex px-1 fi-rr-exit text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 358,
+                                                lineNumber: 361,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Logout"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 359,
+                                                lineNumber: 362,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 332,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 305,
+                            lineNumber: 308,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 243,
+                    lineNumber: 246,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 242,
+                lineNumber: 245,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Sidebar.tsx",
-        lineNumber: 190,
+        lineNumber: 193,
         columnNumber: 5
     }, this);
 }, "1OKE11HEq0ZJKeU7EOp5Zh/gx6M=", false, function() {
@@ -1910,72 +1918,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             }["HeaderComponent.useEffect.fetchPrimaryStatus"];
             // Initial fetch
             fetchPrimaryStatus();
-            // Subscribe specifically to THIS device's entry_id
-            // If we don't have entryId yet, we subscribe to all for safety until identity is confirmed
-            const filter = localEntryId ? `entry_id=eq.${localEntryId}` : `employee_id=eq.${displayUser.employeeId}`;
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`device_sync_${localEntryId || displayUser.employeeId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'sync_meta',
-                filter: filter
-            }, {
-                "HeaderComponent.useEffect.channel": (payload)=>{
-                    const newData = payload.new;
-                    if (!newData) return;
-                    // 1. EXPLICIT IDENTITY CHECK
-                    // We only process if the message is explicitly for THIS device's entry_id
-                    const currentEntryId = localEntryId || localStorage.getItem('entry_id');
-                    if (newData.entry_id && newData.entry_id === currentEntryId) {
-                        console.log("⚡ [Header] Valid command for this device received:", newData.entry_id);
-                        // 2. FORWARD COMMANDS TO FLUTTER
-                        if (isBridgeActive && newData.type && newData.value) {
-                            // 3. MASTER MOVE: Reject call_to if already on a call
-                            if (newData.type === 'call_to' && isOnCallRef.current) {
-                                console.log("🛡️ [Header] MASTER MOVE: Call rejected! Device is already busy.");
-                                fetchPrimaryStatus();
-                                return;
-                            }
-                            // Deduplication A: Check if this was just sent locally (prevent local loop)
-                            const bridgeHistory = window.__bridge_history || {};
-                            const lastLocalMsg = bridgeHistory[newData.type];
-                            const isLocalDuplicate = lastLocalMsg && String(lastLocalMsg.value) === String(newData.value) && Date.now() - lastLocalMsg.time < 5000;
-                            // Deduplication B: Check if this REMOTE command was already processed (prevent double-fire)
-                            const isRemoteDuplicate = lastProcessedRef.current && lastProcessedRef.current.type === newData.type && String(lastProcessedRef.current.value) === String(newData.value) && Date.now() - lastProcessedRef.current.time < 2000; // 2 second window
-                            // Deduplication C: MASTER PERSISTENT CHECKPOINT
-                            // Don't send the same command again until we get a disconnect signal from the bridge
-                            const isStickyDuplicate = lastSentCommandRef.current && lastSentCommandRef.current.type === newData.type && String(lastSentCommandRef.current.value) === String(newData.value);
-                            if (!isLocalDuplicate && !isRemoteDuplicate && !isStickyDuplicate) {
-                                console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
-                                // Update refs BEFORE notifying
-                                lastProcessedRef.current = {
-                                    type: newData.type,
-                                    value: newData.value,
-                                    time: Date.now()
-                                };
-                                lastSentCommandRef.current = {
-                                    type: newData.type,
-                                    value: newData.value
-                                };
-                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["notifyFlutter"])(newData.type, newData.value);
-                            } else if (isStickyDuplicate) {
-                                console.log(`🛡️ [Header] Persistent lock: Command ${newData.type} already sent once. Waiting for disconnect.`);
-                            } else if (isRemoteDuplicate) {
-                                console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
-                            } else {
-                                console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
-                            }
-                        }
-                    }
-                    fetchPrimaryStatus();
-                }
-            }["HeaderComponent.useEffect.channel"]).subscribe({
-                "HeaderComponent.useEffect.channel": (status)=>{
-                    console.log(`📡 [Header] Subscription status for ${displayUser.employeeId}:`, status);
-                }
-            }["HeaderComponent.useEffect.channel"]);
+            // --- REFACTORED: NO REALTIME SUBSCRIPTION (Saves 100% Messaging Quota) ---
+            // Instead, we use a 5s polling loop for absolute responsiveness (REST API - Free Quota)
+            const interval = setInterval(fetchPrimaryStatus, 5000);
             return ({
                 "HeaderComponent.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
+                    clearInterval(interval);
                 }
             })["HeaderComponent.useEffect"];
         }
@@ -1992,12 +1940,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             if (!isBridgeActive || !empId) return;
             // Send initial heartbeat
             (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
-            // Set up interval for every 10 seconds (for 15s timeout)
+            // Set up interval for every 30 seconds (Increased from 10s to save 66% messaging quota)
             const interval = setInterval({
                 "HeaderComponent.useEffect.interval": ()=>{
                     (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
                 }
-            }["HeaderComponent.useEffect.interval"], 10000);
+            }["HeaderComponent.useEffect.interval"], 30000);
             return ({
                 "HeaderComponent.useEffect": ()=>clearInterval(interval)
             })["HeaderComponent.useEffect"];
@@ -2028,8 +1976,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             const lastSeen = new Date(deviceStatus.last_seen).getTime();
             const now = Date.now();
             const diffSeconds = (now - lastSeen) / 1000;
-            // Mark offline if no heartbeat for 15 seconds
-            return diffSeconds < 15 ? 'online' : 'offline';
+            // Mark offline if no heartbeat for 20 seconds (Stable for 5s polling)
+            return diffSeconds < 20 ? 'online' : 'offline';
         }
     }["HeaderComponent.useMemo[deviceOnlineStatus]"], [
         deviceStatus?.last_seen,
@@ -2143,41 +2091,6 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     }
                                 }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                             }
-                        }
-                    }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).on('broadcast', {
-                        event: 'manual_lead_access'
-                    }, {
-                        "HeaderComponent.useEffect.syncNotificationChannel.channel": (payload)=>{
-                            console.log('🔔 [Header] Fast broadcast signal received:', payload);
-                            // 1. Show alert immediately
-                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dialogUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["showWarning"])(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
-                            // 2. MASTER MOVE: Optimistically update local UI state immediately
-                            // This ensures the bell shakes and count increases INSTANTLY
-                            const optimisticNotification = {
-                                id: `temp_${Date.now()}`,
-                                type: 'lead_access',
-                                message: payload.payload.message,
-                                actor_id: payload.payload.actor_id,
-                                is_seen: false,
-                                created_at: new Date().toISOString(),
-                                metadata: payload.payload
-                            };
-                            setNotifications({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (prev)=>{
-                                    // Prevent duplicate if DB insert was somehow faster
-                                    const exists = prev.some({
-                                        "HeaderComponent.useEffect.syncNotificationChannel.channel.exists": (n)=>n.message === optimisticNotification.message && Date.now() - new Date(n.created_at).getTime() < 5000
-                                    }["HeaderComponent.useEffect.syncNotificationChannel.channel.exists"]);
-                                    if (exists) return prev;
-                                    return [
-                                        optimisticNotification,
-                                        ...prev
-                                    ].slice(0, 20);
-                                }
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
-                            setUnreadCount({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (c)=>c + 1
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                         }
                     }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).subscribe();
                     return channel;
@@ -2320,12 +2233,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                 className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 573,
+                                lineNumber: 472,
                                 columnNumber: 15
                             }, this) : initials
                         }, void 0, false, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 564,
+                            lineNumber: 463,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2340,7 +2253,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 585,
+                                    lineNumber: 484,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2352,13 +2265,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 591,
+                                    lineNumber: 490,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 584,
+                            lineNumber: 483,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2375,7 +2288,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 609,
+                                                    lineNumber: 508,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2383,7 +2296,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 610,
+                                                    lineNumber: 509,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -2391,17 +2304,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 514,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 603,
+                                        lineNumber: 502,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 602,
+                                    lineNumber: 501,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2413,35 +2326,35 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-5 h-5 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 627,
+                                        lineNumber: 526,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                         className: "jsx-85a9f6e6ef799593" + " " + "fi flex fi-rr-exit text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 528,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 620,
+                                    lineNumber: 519,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 600,
+                            lineNumber: 499,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 562,
+                    lineNumber: 461,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 558,
+                lineNumber: 457,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
@@ -2473,12 +2386,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 656,
+                                        lineNumber: 555,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 649,
+                                    lineNumber: 548,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2493,7 +2406,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 670,
+                                            lineNumber: 569,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2508,19 +2421,19 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 676,
+                                            lineNumber: 575,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 669,
+                                    lineNumber: 568,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 648,
+                            lineNumber: 547,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2535,12 +2448,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "jsx-85a9f6e6ef799593" + " " + `fi flex ${deviceOnlineStatus === 'online' && deviceStatus.on_call ? 'fi-rr-phone-call animate-pulse' : 'fi-rr-smartphone'} text-sm`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 695,
+                                                lineNumber: 594,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 690,
+                                            lineNumber: 589,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2551,7 +2464,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: deviceStatus.device_model
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 702,
+                                                    lineNumber: 601,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2561,7 +2474,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             className: "jsx-85a9f6e6ef799593" + " " + `w-1 h-1 rounded-full ${deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500' : 'bg-gray-400'}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 706,
+                                                            lineNumber: 605,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2569,25 +2482,25 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'In Call' : 'Online' : 'Offline'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 711,
+                                                            lineNumber: 610,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 705,
+                                                    lineNumber: 604,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 701,
+                                            lineNumber: 600,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 689,
+                                    lineNumber: 588,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2601,7 +2514,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 732,
+                                                    lineNumber: 631,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2609,7 +2522,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount > 20 ? '20+' : unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 733,
+                                                    lineNumber: 632,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -2617,34 +2530,34 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5 group-hover:rotate-12 transition-transform"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 738,
+                                            lineNumber: 637,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 726,
+                                        lineNumber: 625,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 725,
+                                    lineNumber: 624,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 686,
+                            lineNumber: 585,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 646,
+                    lineNumber: 545,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 637,
+                lineNumber: 536,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -2658,7 +2571,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                         className: "jsx-85a9f6e6ef799593" + " " + "fixed inset-0 z-40 bg-black/5"
                     }, void 0, false, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 757,
+                        lineNumber: 656,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2678,7 +2591,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 children: "Notifications"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 769,
+                                                lineNumber: 668,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2690,13 +2603,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 770,
+                                                lineNumber: 669,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 768,
+                                        lineNumber: 667,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2710,12 +2623,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 779,
+                                                    lineNumber: 678,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 774,
+                                                lineNumber: 673,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2725,24 +2638,24 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 786,
+                                                    lineNumber: 685,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 782,
+                                                lineNumber: 681,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 772,
+                                        lineNumber: 671,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 767,
+                                lineNumber: 666,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2758,18 +2671,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 57
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 97
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 801,
+                                                    lineNumber: 700,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2783,7 +2696,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     children: notif.type.replace('_', ' ')
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 809,
+                                                                    lineNumber: 708,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2794,13 +2707,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 812,
+                                                                    lineNumber: 711,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 808,
+                                                            lineNumber: 707,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2808,7 +2721,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: notif.message
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 816,
+                                                            lineNumber: 715,
                                                             columnNumber: 25
                                                         }, this),
                                                         notif.metadata?.employee_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2819,13 +2732,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 820,
+                                                            lineNumber: 719,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 807,
+                                                    lineNumber: 706,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2841,12 +2754,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 836,
+                                                                lineNumber: 735,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 829,
+                                                            lineNumber: 728,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2859,29 +2772,29 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 846,
+                                                                lineNumber: 745,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 839,
+                                                            lineNumber: 738,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 827,
+                                                    lineNumber: 726,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, notif.id, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 796,
+                                            lineNumber: 695,
                                             columnNumber: 21
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 794,
+                                    lineNumber: 693,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "jsx-85a9f6e6ef799593" + " " + "px-6 py-12 flex flex-col items-center justify-center text-center",
@@ -2892,12 +2805,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "w-8 h-8 text-gray-300"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 855,
+                                                lineNumber: 754,
                                                 columnNumber: 23
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 854,
+                                            lineNumber: 753,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -2905,7 +2818,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "No Notifications Yet"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 857,
+                                            lineNumber: 756,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2913,18 +2826,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "We'll notify you when something important happens."
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 858,
+                                            lineNumber: 757,
                                             columnNumber: 20
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 853,
+                                    lineNumber: 752,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 792,
+                                lineNumber: 691,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2935,18 +2848,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: "Close Panel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 865,
+                                    lineNumber: 764,
                                     columnNumber: 16
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 864,
+                                lineNumber: 763,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 762,
+                        lineNumber: 661,
                         columnNumber: 11
                     }, this)
                 ]
@@ -8214,37 +8127,59 @@ function useCallSessionRedirect(userId) {
             const { data: sessions, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').select('*').eq('user_id', userId);
             if (error) throw error;
             if (!sessions || sessions.length === 0) return;
-            // 1. Filter for "HOT" sessions (Active or Pending)
-            const manualHotSessions = sessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
-            const systemHotSessions = sessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
-            console.log(`[Session-Guard] Pulse Check: Manual-Hot=${manualHotSessions.length}, System-Hot=${systemHotSessions.length}`);
+            // --- LATEST ACTIVITY SORT ---
+            const sortedSessions = [
+                ...sessions
+            ].sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+            // 1. Filter for "HOT" sessions (Using the sorted list)
+            const manualHotSessions = sortedSessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
+            const systemHotSessions = sortedSessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
             let sessionToFollow = null;
             let prioritizeManual = false;
-            // PRIORITY RULE: Manual sessions take priority over System sessions
             if (manualHotSessions.length > 0) {
-                // Pick the most recently updated manual session
-                sessionToFollow = manualHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = manualHotSessions[0];
                 prioritizeManual = true;
             } else if (systemHotSessions.length > 0) {
-                // Pick the most recently updated system session
-                sessionToFollow = systemHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = systemHotSessions[0];
             }
             if (sessionToFollow) {
+                // --- MANUAL INSPECTION LOCK ---
+                const snapshotStr = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('manual_inspection_snapshot') : "TURBOPACK unreachable";
+                if (snapshotStr) {
+                    try {
+                        const snapshot = JSON.parse(snapshotStr);
+                        // LOCK Rule: Match based on primary IDs and status. Ignore heartbeat (updated_at).
+                        const isSessionSame = String(sessionToFollow.customer_id) === String(snapshot.customer_id) && String(sessionToFollow.status) === String(snapshot.status);
+                        if (isSessionSame) {
+                            console.log("[Session-Guard] 🔒 Manual Inspection Lock ACTIVE for:", sessionToFollow.customer_id);
+                            return;
+                        } else {
+                            console.log("[Session-Guard] 🔓 Session state change detected (Status or Customer). Breaking lock.");
+                            localStorage.removeItem('manual_inspection_snapshot');
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('manual_inspection_snapshot');
+                    }
+                }
                 const targetCamp = prioritizeManual ? sessionToFollow.manual_campaign_id || sessionToFollow.campaign_id : sessionToFollow.campaign_id;
                 const targetCust = prioritizeManual ? sessionToFollow.manual_customer_id : sessionToFollow.customer_id;
                 if (targetCamp && targetCust) {
                     const { id: currentCamp, customerId: currentCust } = router.query;
+                    // --- SMART CHECK ---
+                    // Is the current page ALREADY matching the LATEST active session?
                     const isAlreadyThere = String(currentCamp) === String(targetCamp) && String(currentCust) === String(targetCust);
                     if (!isAlreadyThere) {
                         const expectedPath = `/portal/campaign/${targetCamp}/${targetCust}`;
-                        console.log(`[Session-Guard] Forced redirection to HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
+                        console.log(`[Session-Guard] Forced redirection to LATEST HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
                         router.push(expectedPath);
                     }
                 }
             } else {
-            // NO HOT SESSIONS FOUND
-            // If the leads are just 'assigned' (call_start_at is null, etc.), we ALLOW navigation.
-            // console.log("[Session-Guard] No active/pending sessions. Navigation allowed.");
+                // NO HOT SESSIONS FOUND
+                // Clear any stale snapshots
+                if (("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('manual_inspection_snapshot')) {
+                    localStorage.removeItem('manual_inspection_snapshot');
+                }
             }
         } catch (err) {
             console.error('[Session-Guard] Error:', err);
@@ -8253,38 +8188,31 @@ function useCallSessionRedirect(userId) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "useCallSessionRedirect.useEffect": ()=>{
             if (!userId) return;
+            // 1. Initial Check on Mount
             checkActiveSession();
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`global_session_guard:${userId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'call_sessions',
-                filter: `user_id=eq.${userId}`
-            }, {
-                "useCallSessionRedirect.useEffect.channel": (payload)=>{
-                    console.log(`[Session-Guard] Realtime sync event received:`, payload.eventType);
-                    // Short delay to allow DB propagation
-                    setTimeout(checkActiveSession, 500);
-                }
-            }["useCallSessionRedirect.useEffect.channel"]).subscribe();
+            // 2. Visibility Listener: Check when user returns to tab
             const handleVisibility = {
                 "useCallSessionRedirect.useEffect.handleVisibility": ()=>{
-                    if (document.visibilityState === 'visible') checkActiveSession();
+                    if (document.visibilityState === 'visible') {
+                        console.log("[Session-Guard] Tab visible, polling session...");
+                        checkActiveSession();
+                    }
                 }
             }["useCallSessionRedirect.useEffect.handleVisibility"];
-            // 2000ms Stable Heartbeat (Reduced from aggressive 500ms)
+            // 3. Optimized Heartbeat: 15-second Stable Polling
+            // Using 15s provides a balance between responsiveness and server load.
+            // This consumes ZERO Realtime Messaging quota.
             const heartbeat = setInterval({
                 "useCallSessionRedirect.useEffect.heartbeat": ()=>{
-                    // Check for localized "save-in-progress" lock to prevent race conditions
                     const isSaving = ("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
                     if (!isSaving) {
                         checkActiveSession();
                     }
                 }
-            }["useCallSessionRedirect.useEffect.heartbeat"], 2000);
+            }["useCallSessionRedirect.useEffect.heartbeat"], 15000);
             window.addEventListener('visibilitychange', handleVisibility);
             return ({
                 "useCallSessionRedirect.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
                     clearInterval(heartbeat);
                     window.removeEventListener('visibilitychange', handleVisibility);
                 }
@@ -9343,1181 +9271,853 @@ function AddCampaignModal({ isOpen, onClose, onSuccess, users, loadingUsers, cam
     };
     if (!isOpen) return null;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "fixed inset-0 z-50 overflow-y-auto overflow-x-hidden backdrop-blur-sm flex items-center justify-center p-4",
-        children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "fixed inset-0 bg-gray-900/60 transition-opacity",
-                onClick: onClose
-            }, void 0, false, {
-                fileName: "[project]/components/AddCampaignModal.tsx",
-                lineNumber: 235,
-                columnNumber: 13
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "relative w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all scale-100 opacity-100 border border-gray-100 overflow-hidden",
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-white",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-4",
+        className: "fixed inset-0 z-[120] backdrop-blur-sm bg-black/30 flex items-center justify-center p-4 text-xs font-sans",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "relative w-full max-w-4xl transform rounded-lg bg-white  flex flex-col border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 h-[85vh]",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white shrink-0",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex items-center gap-4",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-11 h-11 rounded-lg bg-indigo-600 flex items-center justify-center text-white",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: "fi flex fi-rr-bullhorn text-lg"
-                                        }, void 0, false, {
-                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                            lineNumber: 247,
-                                            columnNumber: 30
-                                        }, this)
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                        className: "font-bold text-gray-800",
+                                        children: campaign ? 'Modify Campaign' : 'Initiate Campaign'
                                     }, void 0, false, {
                                         fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 246,
-                                        columnNumber: 25
+                                        lineNumber: 241,
+                                        columnNumber: 29
                                     }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                                className: "text-lg font-medium text-gray-900",
-                                                style: {
-                                                    fontFamily: "'Roboto', sans-serif"
-                                                },
-                                                children: campaign ? 'Modify Campaign' : 'Initiate Campaign'
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 250,
-                                                columnNumber: 29
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-xs text-gray-500 mt-0.5",
-                                                style: {
-                                                    fontFamily: "'Roboto', sans-serif"
-                                                },
-                                                children: campaign ? 'Configuration Update' : 'Strategic Onboarding Sequence'
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 253,
-                                                columnNumber: 29
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100 mt-1 inline-block",
+                                        children: campaign ? 'Configuration Update' : 'Strategic Onboarding Sequence'
+                                    }, void 0, false, {
                                         fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 249,
-                                        columnNumber: 25
+                                        lineNumber: 244,
+                                        columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 245,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: onClose,
-                                className: "w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus:outline-none",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                    className: "fi flex fi-rr-cross text-sm"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                    lineNumber: 262,
-                                    columnNumber: 25
-                                }, this)
+                                lineNumber: 240,
+                                columnNumber: 25
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 239,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: onClose,
+                            className: "text-gray-400 hover:text-gray-600 p-1",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                className: "fi fi-rr-cross-small text-xl leading-none"
                             }, void 0, false, {
                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 258,
-                                columnNumber: 21
+                                lineNumber: 253,
+                                columnNumber: 25
                             }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/components/AddCampaignModal.tsx",
-                        lineNumber: 244,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex border-b border-gray-100 bg-white sticky top-0 z-10",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>setActiveTab("info"),
-                                className: `flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'info' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`,
+                        }, void 0, false, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 249,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/AddCampaignModal.tsx",
+                    lineNumber: 238,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex border-b border-gray-100 bg-white shrink-0",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setActiveTab("info"),
+                            className: `flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'info' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`,
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: `fi flex ${activeTab === 'info' ? 'fi-sr-info' : 'fi-rr-info'} text-sm`
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 263,
+                                    columnNumber: 25
+                                }, this),
+                                "Basic Information",
+                                activeTab === 'info' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 265,
+                                    columnNumber: 50
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 259,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setActiveTab("org"),
+                            className: `flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'org' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`,
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: `fi flex ${activeTab === 'org' ? 'fi-sr-building' : 'fi-rr-building'} text-sm`
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 271,
+                                    columnNumber: 25
+                                }, this),
+                                "Organization",
+                                activeTab === 'org' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 273,
+                                    columnNumber: 49
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 267,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setActiveTab("team"),
+                            className: `flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'team' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`,
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: `fi flex ${activeTab === 'team' ? 'fi-sr-users' : 'fi-rr-users'} text-sm`
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 279,
+                                    columnNumber: 25
+                                }, this),
+                                "Team Personnel",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: `ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-bold ${selectedUsers.length > 0 ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-400'}`,
+                                    children: selectedUsers.length
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 281,
+                                    columnNumber: 26
+                                }, this),
+                                activeTab === 'team' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 284,
+                                    columnNumber: 50
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 275,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/AddCampaignModal.tsx",
+                    lineNumber: 258,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex-1 overflow-y-auto custom-scrollbar",
+                    children: [
+                        activeTab === 'info' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "p-6 space-y-6",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "grid grid-cols-1 md:grid-cols-2 gap-6",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: `fi flex ${activeTab === 'info' ? 'fi-sr-info' : 'fi-rr-info'} text-sm`
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 272,
-                                        columnNumber: 25
-                                    }, this),
-                                    "Basic Info",
-                                    activeTab === 'info' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 274,
-                                        columnNumber: 50
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 268,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>setActiveTab("org"),
-                                className: `flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'org' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`,
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: `fi flex ${activeTab === 'org' ? 'fi-sr-building' : 'fi-rr-building'} text-sm`
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 280,
-                                        columnNumber: 25
-                                    }, this),
-                                    "Organization",
-                                    activeTab === 'org' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 282,
-                                        columnNumber: 49
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 276,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>setActiveTab("team"),
-                                className: `flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'team' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`,
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                        className: `fi flex ${activeTab === 'team' ? 'fi-sr-users' : 'fi-rr-users'} text-sm`
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 288,
-                                        columnNumber: 25
-                                    }, this),
-                                    "Team Members",
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: `ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-semibold ${selectedUsers.length > 0 ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'}`,
-                                        children: selectedUsers.length
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 290,
-                                        columnNumber: 26
-                                    }, this),
-                                    activeTab === 'team' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 293,
-                                        columnNumber: 50
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 284,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/components/AddCampaignModal.tsx",
-                        lineNumber: 267,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "h-[55vh] overflow-y-auto custom-scrollbar bg-gray-50/30",
-                        children: [
-                            activeTab === 'info' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "grid grid-cols-1 md:grid-cols-2 gap-8",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-6",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-3 mb-2",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500",
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-fingerprint"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-6",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "bg-white p-5 rounded-lg border border-gray-100  space-y-4",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4",
+                                                    children: "Protocol Metadata"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 297,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "space-y-1.5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                            className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                            children: "Campaign ID"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 300,
+                                                            columnNumber: 45
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "relative",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                                    type: "text",
+                                                                    value: campaignId,
+                                                                    readOnly: true,
+                                                                    className: "w-full h-9 px-3 bg-gray-50 border border-gray-200 rounded text-[11px] font-mono font-bold text-gray-500 outline-none"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 302,
+                                                                    columnNumber: 49
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                    className: "fi fi-rr-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/AddCampaignModal.tsx",
                                                                     lineNumber: 308,
                                                                     columnNumber: 49
                                                                 }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 307,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                                className: "text-sm font-semibold text-gray-800 uppercase tracking-widest",
-                                                                children: "Protocol Metadata"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 310,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 306,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "space-y-1.5",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: "text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1",
-                                                                children: "Campaign Identifier"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 314,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "relative",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                        type: "text",
-                                                                        value: campaignId,
-                                                                        readOnly: true,
-                                                                        className: "w-full h-12 pl-4 pr-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-mono font-bold text-gray-500 outline-none"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 316,
-                                                                        columnNumber: 49
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-300"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 322,
-                                                                        columnNumber: 49
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 315,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 313,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "space-y-1.5",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: "text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1",
-                                                                children: "Functional Status"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 327,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                onClick: ()=>setCampaignStatus((prev)=>prev === 'active' ? 'inactive' : 'active'),
-                                                                className: `w-full h-12 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between px-4 ${campaignStatus === 'active' ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`,
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center gap-3",
-                                                                        children: [
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: `w-2 h-2 rounded-full ${campaignStatus === 'active' ? 'bg-green-500 animate-pulse' : 'bg-orange-500'}`
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                                lineNumber: 333,
-                                                                                columnNumber: 53
-                                                                            }, this),
-                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                className: `text-xs font-semibold uppercase tracking-widest ${campaignStatus === 'active' ? 'text-green-700' : 'text-orange-700'}`,
-                                                                                children: campaignStatus.toUpperCase()
-                                                                            }, void 0, false, {
-                                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                                lineNumber: 334,
-                                                                                columnNumber: 53
-                                                                            }, this)
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 332,
-                                                                        columnNumber: 49
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: `w-10 h-6 rounded-full relative transition-all duration-300 ${campaignStatus === 'active' ? 'bg-green-500' : 'bg-gray-300'}`,
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: `absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${campaignStatus === 'active' ? 'right-1' : 'left-1'}`
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 301,
+                                                            columnNumber: 45
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 299,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "space-y-1.5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                            className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                            children: "Functional Status"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 313,
+                                                            columnNumber: 45
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            onClick: ()=>setCampaignStatus((prev)=>prev === 'active' ? 'inactive' : 'active'),
+                                                            className: `w-full h-9 rounded border cursor-pointer transition-all flex items-center justify-between px-3 ${campaignStatus === 'active' ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`,
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: "flex items-center gap-2",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            className: `w-2 h-2 rounded-full ${campaignStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                            lineNumber: 339,
+                                                                            lineNumber: 319,
+                                                                            columnNumber: 53
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                            className: `text-[10px] font-bold uppercase tracking-widest ${campaignStatus === 'active' ? 'text-emerald-700' : 'text-rose-700'}`,
+                                                                            children: campaignStatus
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                            lineNumber: 320,
                                                                             columnNumber: 53
                                                                         }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 318,
+                                                                    columnNumber: 49
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                    className: `w-8 h-4 rounded-full relative transition-all ${campaignStatus === 'active' ? 'bg-emerald-500' : 'bg-gray-300'}`,
+                                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: `absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${campaignStatus === 'active' ? 'right-0.5' : 'left-0.5'}`
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 338,
-                                                                        columnNumber: 49
+                                                                        lineNumber: 325,
+                                                                        columnNumber: 53
                                                                     }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 328,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 326,
-                                                        columnNumber: 41
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 324,
+                                                                    columnNumber: 49
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 314,
+                                                            columnNumber: 45
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 312,
+                                                    columnNumber: 41
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 296,
+                                            columnNumber: 37
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/AddCampaignModal.tsx",
+                                        lineNumber: 295,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "space-y-6",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "bg-white p-5 rounded-lg border border-gray-100  space-y-4",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4",
+                                                    children: "Identity Details"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 334,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "space-y-1.5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                            className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                            children: "Campaign Name *"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 337,
+                                                            columnNumber: 45
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                            type: "text",
+                                                            value: campaignName,
+                                                            onChange: (e)=>setCampaignName(e.target.value),
+                                                            placeholder: "e.g. Operation Q4 Growth",
+                                                            className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 338,
+                                                            columnNumber: 45
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 336,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "space-y-1.5",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                            className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                            children: "Strategic Description"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 348,
+                                                            columnNumber: 45
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                                                            value: campaignDescription,
+                                                            onChange: (e)=>setCampaignDescription(e.target.value),
+                                                            placeholder: "Mission parameters and objectives...",
+                                                            rows: 4,
+                                                            className: "w-full px-3 py-2 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans resize-none"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 349,
+                                                            columnNumber: 45
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 347,
+                                                    columnNumber: 41
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 333,
+                                            columnNumber: 37
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/AddCampaignModal.tsx",
+                                        lineNumber: 332,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                lineNumber: 294,
+                                columnNumber: 29
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 293,
+                            columnNumber: 25
+                        }, this),
+                        activeTab === 'org' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "p-6 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                        className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                        children: "Select Organization Binding"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/AddCampaignModal.tsx",
+                                        lineNumber: 367,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 366,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+                                    children: loadingOrgs ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "col-span-full py-20 flex flex-col items-center justify-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"
+                                            }, void 0, false, {
                                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 305,
-                                                columnNumber: 37
+                                                lineNumber: 373,
+                                                columnNumber: 41
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest",
+                                                children: "Scanning Registry..."
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                lineNumber: 374,
+                                                columnNumber: 41
                                             }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/AddCampaignModal.tsx",
+                                        lineNumber: 372,
+                                        columnNumber: 37
+                                    }, this) : organizations.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "col-span-full py-10 bg-gray-50/50 rounded-lg border border-dashed border-gray-200 text-center",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-[10px] text-gray-400 font-bold uppercase tracking-widest",
+                                            children: "No organizations found"
                                         }, void 0, false, {
                                             fileName: "[project]/components/AddCampaignModal.tsx",
-                                            lineNumber: 304,
+                                            lineNumber: 378,
+                                            columnNumber: 41
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/AddCampaignModal.tsx",
+                                        lineNumber: 377,
+                                        columnNumber: 37
+                                    }, this) : organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            onClick: ()=>setSelectedOrgId(org.id),
+                                            className: `relative p-4 rounded-lg border transition-all cursor-pointer ${selectedOrgId === org.id ? 'bg-indigo-50 border-indigo-500 ' : 'bg-white border-gray-100 hover:border-indigo-200 hover:'}`,
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-center justify-between mb-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "w-8 h-8 rounded bg-white border border-gray-100 flex items-center justify-center text-gray-400",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                className: "fi fi-rr-building text-sm"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                lineNumber: 391,
+                                                                columnNumber: 53
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 390,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        selectedOrgId === org.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                            className: "fi fi-sr-check-circle text-indigo-600 text-sm"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 394,
+                                                            columnNumber: 53
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 389,
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                    className: "text-[11px] font-bold text-gray-800 truncate uppercase tracking-tight",
+                                                    children: org.company_name
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 397,
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-[9px] font-mono text-gray-400 mt-0.5",
+                                                    children: [
+                                                        "#",
+                                                        org.org_code || 'N/A'
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 398,
+                                                    columnNumber: 45
+                                                }, this)
+                                            ]
+                                        }, org.id, true, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 382,
+                                            columnNumber: 41
+                                        }, this))
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 370,
+                                    columnNumber: 29
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 365,
+                            columnNumber: 25
+                        }, this),
+                        activeTab === 'team' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "h-full flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "w-full md:w-[320px] p-5 bg-white border-r border-gray-100 flex flex-col shrink-0",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "mb-4",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 pl-0.5",
+                                                    children: "Personnel Pool Search"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 412,
+                                                    columnNumber: 37
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "relative",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                            type: "text",
+                                                            placeholder: "ID or Name...",
+                                                            value: searchTerm,
+                                                            onChange: (e)=>setSearchTerm(e.target.value),
+                                                            className: "w-full h-8 pl-8 pr-3 bg-white border border-gray-200 rounded text-[10px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 414,
+                                                            columnNumber: 41
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                            className: "fi fi-rr-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 421,
+                                                            columnNumber: 41
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 413,
+                                                    columnNumber: 37
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 411,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "space-y-6",
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4",
+                                            className: "flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar",
+                                            children: loadingUsers ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "py-10 text-center",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-3 mb-2",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500",
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-edit-alt"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 350,
-                                                                    columnNumber: 49
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 349,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                                className: "text-sm font-semibold text-gray-800 uppercase tracking-widest",
-                                                                children: "Brand Narrative"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 352,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                        className: "w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"
+                                                    }, void 0, false, {
                                                         fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 348,
-                                                        columnNumber: 41
+                                                        lineNumber: 428,
+                                                        columnNumber: 45
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "space-y-1.5",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: "text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1",
-                                                                children: [
-                                                                    "Campaign Title ",
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                        className: "text-red-500",
-                                                                        children: "*"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 356,
-                                                                        columnNumber: 156
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 356,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "relative group",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                        type: "text",
-                                                                        value: campaignName,
-                                                                        onChange: (e)=>setCampaignName(e.target.value),
-                                                                        placeholder: "e.g. Operation Q4 Growth",
-                                                                        className: "w-full h-12 pl-12 pr-4 bg-gray-50 border border-transparent rounded-xl text-sm font-bold text-gray-700 focus:bg-white focus:border-purple-500 focus:shadow-lg focus:shadow-purple-500/5 transition-all outline-none"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 358,
-                                                                        columnNumber: 49
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-badge absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 transition-colors"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 365,
-                                                                        columnNumber: 49
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 357,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-[9px] font-bold text-gray-400 uppercase tracking-widest",
+                                                        children: "Loading..."
+                                                    }, void 0, false, {
                                                         fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 355,
-                                                        columnNumber: 41
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "space-y-1.5",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                className: "text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1",
-                                                                children: "Strategic Description"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 370,
-                                                                columnNumber: 45
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "relative group",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
-                                                                        value: campaignDescription,
-                                                                        onChange: (e)=>setCampaignDescription(e.target.value),
-                                                                        placeholder: "Operational objectives and mission parameters...",
-                                                                        rows: 4,
-                                                                        className: "w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-xl text-sm font-bold text-gray-700 focus:bg-white focus:border-purple-500 transition-all outline-none resize-none"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 372,
-                                                                        columnNumber: 49
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                        className: "fi fi-rr-align-left absolute left-4 top-5 text-gray-400 group-focus-within:text-purple-500 transition-colors"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 379,
-                                                                        columnNumber: 49
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 371,
-                                                                columnNumber: 45
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 369,
-                                                        columnNumber: 41
+                                                        lineNumber: 429,
+                                                        columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 347,
-                                                columnNumber: 37
-                                            }, this)
+                                                lineNumber: 427,
+                                                columnNumber: 41
+                                            }, this) : filteredUsers.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "py-10 text-center bg-gray-50/50 rounded-lg",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-[9px] font-bold text-gray-400 uppercase tracking-widest",
+                                                    children: "No agents found"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 433,
+                                                    columnNumber: 45
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                lineNumber: 432,
+                                                columnNumber: 41
+                                            }, this) : filteredUsers.map((user)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    onClick: ()=>{
+                                                        if (selectedUsers.includes(user.user_id)) {
+                                                            setSelectedUsers(selectedUsers.filter((id)=>id !== user.user_id));
+                                                        } else {
+                                                            setSelectedUsers([
+                                                                ...selectedUsers,
+                                                                user.user_id
+                                                            ]);
+                                                        }
+                                                    },
+                                                    className: `flex items-center gap-3 p-2 rounded border transition-all cursor-pointer ${selectedUsers.includes(user.user_id) ? 'bg-indigo-50 border-indigo-300' : 'bg-white border-gray-50 hover:border-gray-200 hover:bg-gray-50'}`,
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: `w-3.5 h-3.5 rounded border flex items-center justify-center transition-all ${selectedUsers.includes(user.user_id) ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-gray-300'}`,
+                                                            children: selectedUsers.includes(user.user_id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                className: "fi fi-rr-check text-[8px] text-white"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                lineNumber: 451,
+                                                                columnNumber: 94
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 450,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "w-7 h-7 rounded overflow-hidden shrink-0 border border-gray-100",
+                                                            children: user.profile_pic_url ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                                src: user.profile_pic_url,
+                                                                className: "w-full h-full object-cover",
+                                                                alt: ""
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                lineNumber: 455,
+                                                                columnNumber: 57
+                                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                className: "w-full h-full bg-indigo-50 flex items-center justify-center text-[10px] font-bold text-indigo-400",
+                                                                children: user.user_name?.charAt(0) || 'U'
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                lineNumber: 457,
+                                                                columnNumber: 57
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 453,
+                                                            columnNumber: 49
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex-1 min-w-0",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                                    className: "text-[10px] font-bold text-gray-800 truncate uppercase mt-0.5",
+                                                                    children: user.user_name || 'N/A'
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 463,
+                                                                    columnNumber: 53
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "text-[8px] font-mono text-gray-400",
+                                                                    children: [
+                                                                        "ID: ",
+                                                                        user.employee_id || '--'
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 464,
+                                                                    columnNumber: 53
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 462,
+                                                            columnNumber: 49
+                                                        }, this)
+                                                    ]
+                                                }, user.id, true, {
+                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                    lineNumber: 437,
+                                                    columnNumber: 45
+                                                }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/components/AddCampaignModal.tsx",
-                                            lineNumber: 346,
+                                            lineNumber: 425,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/AddCampaignModal.tsx",
-                                    lineNumber: 303,
+                                    lineNumber: 410,
                                     columnNumber: 29
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 302,
-                                columnNumber: 25
-                            }, this),
-                            activeTab === 'org' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "p-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center justify-between mb-4",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                        className: "text-lg font-semibold text-gray-800",
-                                                        style: {
-                                                            fontFamily: "'Poppins', sans-serif"
-                                                        },
-                                                        children: "Available Organizations"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 393,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                        className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest",
-                                                        children: "Bind this campaign to a business entity"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 394,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex-1 p-5 bg-gray-50/30 overflow-y-auto custom-scrollbar",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center justify-between mb-4",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5",
+                                                children: "Assigned Sequence Personnel"
+                                            }, void 0, false, {
                                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 392,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm cursor-help",
-                                                title: "Campaign must be linked to one organization",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-info"
+                                                lineNumber: 475,
+                                                columnNumber: 37
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 474,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+                                            children: selectedUsers.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "col-span-full h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg bg-white/50",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest",
+                                                    children: "No members assigned"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 397,
-                                                    columnNumber: 37
+                                                    lineNumber: 481,
+                                                    columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 396,
-                                                columnNumber: 33
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 391,
-                                        columnNumber: 29
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
-                                        children: loadingOrgs ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "col-span-full py-20 flex flex-col items-center justify-center gap-4",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 404,
-                                                    columnNumber: 41
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-xs font-semibold text-gray-400 uppercase tracking-widest",
-                                                    children: "Scanning Registry..."
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 405,
-                                                    columnNumber: 41
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                            lineNumber: 403,
-                                            columnNumber: 37
-                                        }, this) : organizations.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "col-span-full py-20 bg-white rounded-3xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-center",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-building text-3xl text-gray-300 mb-4"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 409,
-                                                    columnNumber: 41
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                    className: "text-sm font-semibold text-gray-800 uppercase tracking-widest mb-1",
-                                                    children: "No Active Organizations"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 410,
-                                                    columnNumber: 41
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-[10px] font-bold text-gray-400",
-                                                    children: "Register an organization first to proceed"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 411,
-                                                    columnNumber: 41
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                            lineNumber: 408,
-                                            columnNumber: 37
-                                        }, this) : organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                onClick: ()=>setSelectedOrgId(org.id),
-                                                className: `relative overflow-hidden p-5 rounded-2xl border-2 transition-all cursor-pointer group ${selectedOrgId === org.id ? 'bg-purple-50 border-purple-500 shadow-xl shadow-purple-500/10' : 'bg-white border-gray-100 hover:border-purple-200 hover:shadow-lg'}`,
-                                                children: [
-                                                    selectedOrgId === org.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "absolute top-0 right-0 p-3 text-purple-600",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-sr-check-circle text-lg"
+                                                lineNumber: 480,
+                                                columnNumber: 41
+                                            }, this) : selectedUsers.map((uid)=>{
+                                                const u = users.find((usr)=>usr.user_id === uid || usr.id === uid);
+                                                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-center gap-3 bg-white border border-gray-100 p-2 rounded-lg  group",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "w-8 h-8 rounded border border-gray-100 shrink-0 bg-indigo-50 flex items-center justify-center text-indigo-400 font-bold text-[10px]",
+                                                            children: u?.user_name?.charAt(0) || 'U'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 424,
+                                                            lineNumber: 488,
+                                                            columnNumber: 53
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "flex-1 min-w-0",
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                                    className: "text-[10px] font-bold text-gray-800 truncate uppercase",
+                                                                    children: u?.user_name || 'Anonymous'
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 492,
+                                                                    columnNumber: 57
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                    className: "text-[8px] font-mono text-gray-400",
+                                                                    children: [
+                                                                        "EMP: ",
+                                                                        u?.employee_id || '---'
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                    lineNumber: 493,
+                                                                    columnNumber: 57
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 491,
+                                                            columnNumber: 53
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                            onClick: ()=>setSelectedUsers((prev)=>prev.filter((id)=>id !== uid)),
+                                                            className: "p-1 px-1.5 text-gray-300 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100",
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                                className: "fi fi-rr-cross-small text-lg leading-none"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/AddCampaignModal.tsx",
+                                                                lineNumber: 499,
+                                                                columnNumber: 57
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                                            lineNumber: 495,
                                                             columnNumber: 53
                                                         }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 423,
-                                                        columnNumber: 49
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-4 mb-4",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `w-10 h-10 rounded-xl flex items-center justify-center transition-all ${selectedOrgId === org.id ? 'bg-purple-600 text-white' : 'bg-gray-50 text-gray-400 group-hover:bg-purple-50 group-hover:text-purple-400'}`,
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-building"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 429,
-                                                                    columnNumber: 53
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 428,
-                                                                columnNumber: 49
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                        className: `text-xs font-semibold uppercase tracking-tight truncate max-w-[120px] ${selectedOrgId === org.id ? 'text-purple-900' : 'text-gray-700'}`,
-                                                                        children: org.company_name
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 432,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        className: "flex items-center gap-1.5 mt-0.5",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: "text-[9px] font-mono text-gray-400 group-hover:text-purple-400 transition-colors",
-                                                                            children: [
-                                                                                "#",
-                                                                                org.org_code || 'N/A'
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                            lineNumber: 436,
-                                                                            columnNumber: 57
-                                                                        }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 435,
-                                                                        columnNumber: 53
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 431,
-                                                                columnNumber: 49
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 427,
-                                                        columnNumber: 45
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "w-full h-1 bg-gray-100 rounded-full overflow-hidden",
-                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: `h-full transition-all duration-700 ${selectedOrgId === org.id ? 'w-full bg-purple-500' : 'w-0 bg-gray-300'}`
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 441,
-                                                            columnNumber: 49
-                                                        }, this)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 440,
-                                                        columnNumber: 45
-                                                    }, this)
-                                                ]
-                                            }, org.id, true, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 415,
-                                                columnNumber: 41
-                                            }, this))
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 401,
-                                        columnNumber: 29
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 390,
-                                columnNumber: 25
-                            }, this),
-                            activeTab === 'team' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "h-full flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-4 duration-500",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex-1 p-8 border-r border-gray-100 bg-white/50",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center justify-between mb-6",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                                className: "text-sm font-semibold text-gray-800 uppercase tracking-widest",
-                                                                children: "Operational Team"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 458,
-                                                                columnNumber: 41
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest",
-                                                                children: "Assigned Personnel"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 459,
-                                                                columnNumber: 41
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 457,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "px-3 py-1 rounded-lg bg-purple-100 text-purple-600 text-[10px] font-semibold",
-                                                        children: [
-                                                            selectedUsers.length,
-                                                            " MEMBERS"
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 461,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 456,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "grid grid-cols-1 sm:grid-cols-2 gap-3 min-h-[200px] content-start",
-                                                children: selectedUsers.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "col-span-full h-48 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-300 mb-3",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-users text-xl"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 470,
-                                                                columnNumber: 49
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 469,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[10px] font-semibold text-gray-400 uppercase tracking-widest",
-                                                            children: "No team members assigned"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 472,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[9px] font-bold text-gray-300 mt-1 uppercase",
-                                                            children: "Select from available pool ➜"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 473,
-                                                            columnNumber: 45
-                                                        }, this)
                                                     ]
-                                                }, void 0, true, {
+                                                }, uid, true, {
                                                     fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 468,
-                                                    columnNumber: 41
-                                                }, this) : selectedUsers.map((uid)=>{
-                                                    const user = users.find((u)=>u.user_id === uid || u.id === uid);
-                                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "flex items-center gap-3 bg-white border border-gray-100 p-2.5 rounded-xl shadow-sm group animate-in zoom-in-95 duration-200",
-                                                        children: [
-                                                            user?.profile_pic_url ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                                src: user.profile_pic_url,
-                                                                className: "w-8 h-8 rounded-lg object-cover ring-2 ring-gray-50",
-                                                                alt: ""
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 481,
-                                                                columnNumber: 57
-                                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-[10px] font-semibold text-white shadow-md",
-                                                                children: user?.user_name?.charAt(0) || 'U'
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 483,
-                                                                columnNumber: 57
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex-1 min-w-0",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                        className: "text-[11px] font-bold text-gray-800 truncate",
-                                                                        children: user?.user_name || 'Anonymous'
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 488,
-                                                                        columnNumber: 57
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                        className: "text-[9px] font-medium text-gray-400 truncate",
-                                                                        children: [
-                                                                            "ID: ",
-                                                                            user?.employee_id || '---'
-                                                                        ]
-                                                                    }, void 0, true, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 489,
-                                                                        columnNumber: 57
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 487,
-                                                                columnNumber: 53
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>setSelectedUsers((prev)=>prev.filter((id)=>id !== uid)),
-                                                                className: "w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100",
-                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-cross-small text-lg"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 495,
-                                                                    columnNumber: 57
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 491,
-                                                                columnNumber: 53
-                                                            }, this)
-                                                        ]
-                                                    }, uid, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 479,
-                                                        columnNumber: 49
-                                                    }, this);
-                                                })
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 466,
-                                                columnNumber: 33
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 455,
-                                        columnNumber: 29
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-full md:w-[360px] p-6 bg-white space-y-4 flex flex-col h-full",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                        className: "text-[11px] font-semibold text-gray-400 uppercase tracking-[0.2em] mb-4",
-                                                        children: "Personnel Pool"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 507,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "relative group",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                                type: "text",
-                                                                placeholder: "Search by ID or Name...",
-                                                                value: searchTerm,
-                                                                onChange: (e)=>setSearchTerm(e.target.value),
-                                                                className: "w-full h-11 pl-11 pr-4 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:border-purple-500 transition-all outline-none"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 509,
-                                                                columnNumber: 41
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: "fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-500 transition-colors"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 516,
-                                                                columnNumber: 41
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 508,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 506,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar",
-                                                children: loadingUsers ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "py-10 flex flex-col items-center justify-center gap-3",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 523,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                            className: "text-[9px] font-semibold text-gray-400 uppercase tracking-widest",
-                                                            children: "Fetching Pool..."
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 524,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 522,
-                                                    columnNumber: 41
-                                                }, this) : filteredUsers.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "py-10 text-center space-y-2 bg-gray-50 rounded-2xl",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                            className: "fi fi-rr-search-alt text-lg text-gray-300"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 528,
-                                                            columnNumber: 45
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[9px] font-semibold text-gray-400 uppercase tracking-widest",
-                                                            children: "No matching agents"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/AddCampaignModal.tsx",
-                                                            lineNumber: 529,
-                                                            columnNumber: 45
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 527,
-                                                    columnNumber: 41
-                                                }, this) : filteredUsers.map((user, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        onClick: ()=>{
-                                                            if (selectedUsers.includes(user.user_id)) {
-                                                                setSelectedUsers(selectedUsers.filter((id)=>id !== user.user_id));
-                                                            } else {
-                                                                setSelectedUsers([
-                                                                    ...selectedUsers,
-                                                                    user.user_id
-                                                                ]);
-                                                            }
-                                                        },
-                                                        className: `flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border ${selectedUsers.includes(user.user_id) ? 'bg-purple-100/50 border-purple-200' : 'bg-white border-gray-50 hover:border-gray-200 hover:bg-gray-50/50'}`,
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: `w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${selectedUsers.includes(user.user_id) ? 'bg-purple-600 border-purple-600 shadow-md' : 'bg-white border-gray-200'}`,
-                                                                children: selectedUsers.includes(user.user_id) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                    className: "fi fi-rr-check text-[8px] text-white"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 547,
-                                                                    columnNumber: 94
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 546,
-                                                                columnNumber: 49
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "w-8 h-8 rounded-lg overflow-hidden shrink-0",
-                                                                children: user.profile_pic_url ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                                    src: user.profile_pic_url,
-                                                                    className: "w-full h-full object-cover",
-                                                                    alt: ""
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 551,
-                                                                    columnNumber: 57
-                                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "w-full h-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-400",
-                                                                    children: user.user_name?.charAt(0) || 'U'
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                    lineNumber: 553,
-                                                                    columnNumber: 57
-                                                                }, this)
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 549,
-                                                                columnNumber: 49
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "flex-1 min-w-0",
-                                                                children: [
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                                        className: "text-[11px] font-semibold text-gray-800 truncate",
-                                                                        children: user.user_name || 'Incomplete Profile'
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 559,
-                                                                        columnNumber: 53
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                        className: "text-[9px] font-bold text-gray-400 uppercase",
-                                                                        children: user.employee_id || 'ID-TBD'
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                        lineNumber: 560,
-                                                                        columnNumber: 53
-                                                                    }, this)
-                                                                ]
-                                                            }, void 0, true, {
-                                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                                lineNumber: 558,
-                                                                columnNumber: 49
-                                                            }, this)
-                                                        ]
-                                                    }, user.id, true, {
-                                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                                        lineNumber: 533,
-                                                        columnNumber: 45
-                                                    }, this))
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                                lineNumber: 520,
-                                                columnNumber: 33
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 505,
-                                        columnNumber: 29
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 452,
-                                columnNumber: 25
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/components/AddCampaignModal.tsx",
-                        lineNumber: 298,
-                        columnNumber: 17
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "p-6 bg-white border-t border-gray-100 flex gap-4",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: onClose,
-                                className: "flex-1 h-14 rounded-2xl border border-gray-200 text-gray-500 font-semibold uppercase tracking-widest text-[10px] hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95",
-                                children: "Abort Sequence"
-                            }, void 0, false, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 573,
-                                columnNumber: 21
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: handleSaveCampaign,
-                                disabled: isSubmitting,
-                                className: "group relative flex-[2] h-14 rounded-2xl bg-[#1e1b4b] text-white overflow-hidden shadow-2xl shadow-indigo-100 transition-all active:scale-95 disabled:opacity-50",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 584,
-                                        columnNumber: 25
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative z-10 flex items-center justify-center gap-3",
-                                        children: isSubmitting ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 588,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[10px] font-semibold uppercase tracking-widest",
-                                                    children: "Processing Injection..."
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 589,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-disk text-lg group-hover:-translate-y-1 transition-transform"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 593,
-                                                    columnNumber: 37
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    className: "text-[10px] font-semibold uppercase tracking-widest",
-                                                    children: campaign ? 'Commit Changes' : 'Execute Creation'
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/AddCampaignModal.tsx",
-                                                    lineNumber: 594,
-                                                    columnNumber: 37
-                                                }, this)
-                                            ]
-                                        }, void 0, true)
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/AddCampaignModal.tsx",
-                                        lineNumber: 585,
-                                        columnNumber: 25
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/AddCampaignModal.tsx",
-                                lineNumber: 579,
-                                columnNumber: 21
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/components/AddCampaignModal.tsx",
-                        lineNumber: 572,
-                        columnNumber: 17
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/components/AddCampaignModal.tsx",
-                lineNumber: 241,
-                columnNumber: 13
-            }, this)
-        ]
-    }, void 0, true, {
+                                                    lineNumber: 487,
+                                                    columnNumber: 49
+                                                }, this);
+                                            })
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/AddCampaignModal.tsx",
+                                            lineNumber: 478,
+                                            columnNumber: 33
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/AddCampaignModal.tsx",
+                                    lineNumber: 473,
+                                    columnNumber: 29
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 408,
+                            columnNumber: 25
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/AddCampaignModal.tsx",
+                    lineNumber: 289,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white shrink-0 rounded-b-lg",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: onClose,
+                            className: "px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all",
+                            children: "Abort Sequence"
+                        }, void 0, false, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 513,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: handleSaveCampaign,
+                            disabled: isSubmitting,
+                            className: "px-6 py-1.5 bg-[#4b33e8] text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all   disabled:opacity-50 flex items-center gap-2",
+                            children: isSubmitting ? "Processing..." : campaign ? 'Commit Changes' : 'Execute Creation'
+                        }, void 0, false, {
+                            fileName: "[project]/components/AddCampaignModal.tsx",
+                            lineNumber: 519,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/AddCampaignModal.tsx",
+                    lineNumber: 512,
+                    columnNumber: 17
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/components/AddCampaignModal.tsx",
+            lineNumber: 235,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
         fileName: "[project]/components/AddCampaignModal.tsx",
         lineNumber: 233,
         columnNumber: 9

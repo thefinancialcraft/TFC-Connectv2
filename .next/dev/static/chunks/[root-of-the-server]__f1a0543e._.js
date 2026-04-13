@@ -10438,54 +10438,7 @@ const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsIn
 const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
 if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
-// Global flag to prevent recursive logging
-let isLoggingInternal = false;
-// Custom Fetch Wrapper for Logging
-const customFetch = async (url, options)=>{
-    const urlStr = typeof url === 'string' ? url : url instanceof Request ? url.url : url.toString();
-    // CRITICAL: Immediately identify if this is an Auth or internal monitoring request
-    // We skip EVERYTHING for these to ensure no interference with login
-    const isExcluded = isLoggingInternal || urlStr.includes('system_monitoring_logs') || urlStr.includes('rpc/get_monitoring_stats') || urlStr.includes('/auth/v1/') || urlStr.includes('/rest/v1/utility_data') || urlStr.includes('/rest/v1/user_profiles?select=user_name');
-    // If excluded, just return the standard fetch immediately
-    if (isExcluded) {
-        return fetch(url, options);
-    }
-    try {
-        // 1. Execute the original request
-        const response = await fetch(url, options);
-        // 2. Schedule logging in the background (post-response, non-blocking)
-        if ("TURBOPACK compile-time truthy", 1) {
-            (async ()=>{
-                try {
-                    isLoggingInternal = true;
-                    const { logSystemEvent, estimateSize } = await __turbopack_context__.A("[project]/lib/monitoring.ts [client] (ecmascript, async loader)");
-                    const path = urlStr.split('.co')[1] || urlStr;
-                    const method = options?.method || (url instanceof Request ? url.method : 'GET');
-                    await logSystemEvent({
-                        event_type: method === 'GET' ? 'READ' : 'WRITE',
-                        description: `API_HIT: ${method} ${path}`,
-                        path: path,
-                        payload_size: options?.body ? estimateSize(options.body) : 0,
-                        response_size: 1024
-                    });
-                } catch (logErr) {
-                // Ignore background logging errors
-                } finally{
-                    isLoggingInternal = false;
-                }
-            })();
-        }
-        return response;
-    } catch (err) {
-        console.error('[Sentinel] API Request Failed:', urlStr, err);
-        throw err; // Re-throw so the app can handle it
-    }
-};
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey, {
-    global: {
-        fetch: customFetch
-    }
-});
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
 const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         autoRefreshToken: false,

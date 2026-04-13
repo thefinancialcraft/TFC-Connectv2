@@ -1,11 +1,11 @@
 import React from 'react';
-import SessionRedirect from "./SessionRedirect";
 import { UserProvider } from "./UserProvider";
 import AppLayout from "./AppLayout";
 import GlobalCallHandler from "./GlobalCallHandler";
 import { useRouter } from "next/router";
 import CallReminderOverlay from "./CallReminderOverlay";
 import LogPip from "./LogPip";
+import { SessionProvider } from '../context/SessionContext';
 
 export default function PortalContainer({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -26,13 +26,14 @@ export default function PortalContainer({ children }: { children: React.ReactNod
 
   return (
     <UserProvider>
-      <SessionRedirect />
-      <AppLayout hideSidebar={isMinimal} hideHeader={isMinimal}>
-        {children}
-        <GlobalCallHandler />
-        <CallReminderOverlay />
-        <LogPip />
-      </AppLayout>
+      <SessionProvider>
+        <AppLayout hideSidebar={isMinimal} hideHeader={isMinimal}>
+          {children}
+          <GlobalCallHandler />
+          <CallReminderOverlay />
+          <LogPip />
+        </AppLayout>
+      </SessionProvider>
     </UserProvider>
   );
 }

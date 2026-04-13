@@ -3,7 +3,7 @@
     chunks: [
   "static/chunks/components_4a7ae42f._.js",
   "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
-  "static/chunks/_0398cb9b._.js",
+  "static/chunks/_87566831._.js",
   "static/chunks/[root-of-the-server]__78abed1d._.js",
   "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
   "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
@@ -18,7 +18,7 @@
   "static/chunks/node_modules_recharts_es6_component_8520eaf5._.js",
   "static/chunks/node_modules_recharts_es6_cartesian_97297acc._.js",
   "static/chunks/node_modules_recharts_es6_cf321d8d._.js",
-  "static/chunks/node_modules_fdfb140b._.js"
+  "static/chunks/node_modules_0dd507ff._.js"
 ],
     source: "entry"
 });

@@ -1,0 +1,3 @@
+{
+  "/api/auth/user-profile": "pages/api/auth/user-profile.js"
+}

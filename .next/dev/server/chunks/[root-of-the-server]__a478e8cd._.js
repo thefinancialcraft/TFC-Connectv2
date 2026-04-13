@@ -43,35 +43,7 @@ const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsIn
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
-// Global flag to prevent recursive logging
-let isLoggingInternal = false;
-// Custom Fetch Wrapper for Logging
-const customFetch = async (url, options)=>{
-    const urlStr = typeof url === 'string' ? url : url instanceof Request ? url.url : url.toString();
-    // CRITICAL: Immediately identify if this is an Auth or internal monitoring request
-    // We skip EVERYTHING for these to ensure no interference with login
-    const isExcluded = isLoggingInternal || urlStr.includes('system_monitoring_logs') || urlStr.includes('rpc/get_monitoring_stats') || urlStr.includes('/auth/v1/') || urlStr.includes('/rest/v1/utility_data') || urlStr.includes('/rest/v1/user_profiles?select=user_name');
-    // If excluded, just return the standard fetch immediately
-    if (isExcluded) {
-        return fetch(url, options);
-    }
-    try {
-        // 1. Execute the original request
-        const response = await fetch(url, options);
-        // 2. Schedule logging in the background (post-response, non-blocking)
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        return response;
-    } catch (err) {
-        console.error('[Sentinel] API Request Failed:', urlStr, err);
-        throw err; // Re-throw so the app can handle it
-    }
-};
-const supabase = (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$supabase$2f$supabase$2d$js__$5b$external$5d$__$2840$supabase$2f$supabase$2d$js$2c$__esm_import$29$__["createClient"])(supabaseUrl, supabaseAnonKey, {
-    global: {
-        fetch: customFetch
-    }
-});
+const supabase = (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$supabase$2f$supabase$2d$js__$5b$external$5d$__$2840$supabase$2f$supabase$2d$js$2c$__esm_import$29$__["createClient"])(supabaseUrl, supabaseAnonKey);
 const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$externals$5d2f40$supabase$2f$supabase$2d$js__$5b$external$5d$__$2840$supabase$2f$supabase$2d$js$2c$__esm_import$29$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         autoRefreshToken: false,

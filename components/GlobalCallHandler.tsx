@@ -42,10 +42,9 @@ export default function GlobalCallHandler() {
         const notifyLeadOwner = async (ownerId: string, customerName: string) => {
             if (!user) return;
             
-            const channelName = `agent_notifications_${ownerId}`;
-            console.log(`[Global-Call] 🔔 Notifying owner ${ownerId} about reach attempt to ${customerName}`);
+            console.log(`[Global-Call] 🔔 Saving notification for owner ${ownerId} about reach attempt to ${customerName}`);
             
-            // 1. Persist to Database for persistence
+            // 1. Persist to Database - Notification listener in Header.tsx will pick this up via Realtime DB Changes
             try {
                 await supabase.from('notifications').insert({
                     user_id: ownerId,
@@ -58,28 +57,10 @@ export default function GlobalCallHandler() {
                         employee_id: user.employeeId
                     }
                 });
+                console.log(`[Global-Call] ✅ Notification saved to DB for ${ownerId}`);
             } catch (err) {
                 console.error("[Global-Call] Failed to save notification:", err);
             }
-
-            // 2. Broadcast for real-time UI reaction (Immediate Signal)
-            const notifyChannel = supabase.channel(channelName);
-            await notifyChannel.subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    await notifyChannel.send({
-                        type: 'broadcast',
-                        event: 'manual_lead_access',
-                        payload: {
-                            actor_id: user.uid,
-                            actor_name: user.displayName || (user as any).user_name,
-                            customer_name: customerName,
-                            message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`,
-                            employee_id: user.employeeId
-                        },
-                    });
-                    console.log(`[Global-Call] 🚀 Broadcast sent to ${channelName}`);
-                }
-            });
         };
 
         const updateCallState = (isActive: boolean) => {

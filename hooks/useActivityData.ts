@@ -25,6 +25,19 @@ export function useActivityData() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   
+  // Advanced Filters
+  const [agentFilter, setAgentFilter] = useState("All Agents");
+  const [campaignFilter, setCampaignFilter] = useState("All Campaigns");
+  const [dispositionFilter, setDispositionFilter] = useState("All Dispositions");
+  const [orgFilter, setOrgFilter] = useState("All Organizations");
+  const [callTypeFilter, setCallTypeFilter] = useState("All Types");
+  
+  // Global filter options states
+  const [globalOrganizations, setGlobalOrganizations] = useState<any[]>([]);
+  const [globalCampaigns, setGlobalCampaigns] = useState<any[]>([]);
+  const [globalAgents, setGlobalAgents] = useState<any[]>([]);
+  const [globalDispositions, setGlobalDispositions] = useState<string[]>([]);
+
   const [stats, setStats] = useState<ActivityStats>({
     totalDials: 0,
     totalTalkTime: 0,
@@ -35,6 +48,7 @@ export function useActivityData() {
   });
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const fetchIdRef = useRef<number>(0);
 
   const fetchActivities = useCallback(async (isBackground = false) => {
     if (!mounted || !user) return;
@@ -44,6 +58,7 @@ export function useActivityData() {
       abortControllerRef.current.abort();
     }
     abortControllerRef.current = new AbortController();
+    const fetchId = ++fetchIdRef.current;
 
     try {
       if (!isBackground) setLoading(true);
@@ -60,6 +75,7 @@ export function useActivityData() {
         .from("call_logs")
         .select(`
           *,
+          customer_name,
           agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
           campaign:campaigns!campaign_id(name)
         `)
@@ -158,6 +174,7 @@ export function useActivityData() {
       const mappedLogs = (callLogs || []).map(log => ({
         ...log,
         created_at: log.created_at, // Use standard
+        customer: log.customer_name ? { customer_name: log.customer_name } : null,
         activity_type: 'call'
       }));
 
@@ -211,27 +228,34 @@ export function useActivityData() {
 
           const promises = [];
           
-          if (uniqueIds.length > 0) {
-              // Active (by id)
-              promises.push(supabase.from('customers').select('id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => activeHydrate.push(...(r.data || []))));
+          if (uniqueIds.length > 0 || uniqueHashes.length > 0) {
+              const CHUNK_SIZE = 150; 
               
-              // Rejected/Closed: Check 'customer_id' column (mapped from original id) AND 'id' (new pk)
-              promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', uniqueIds).then(r => rHydrate.push(...(r.data || []))));
-              promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => rHydrate.push(...(r.data || []))));
+              const idChunks = Array.from({ length: Math.ceil(uniqueIds.length / CHUNK_SIZE) }, (_, i) => uniqueIds.slice(i * CHUNK_SIZE, i * CHUNK_SIZE + CHUNK_SIZE));
+              const hashChunks = Array.from({ length: Math.ceil(uniqueHashes.length / CHUNK_SIZE) }, (_, i) => uniqueHashes.slice(i * CHUNK_SIZE, i * CHUNK_SIZE + CHUNK_SIZE));
+
+              // 1. Hydrate by ID
+              for (const batch of idChunks) {
+                  promises.push(supabase.from('customers').select('id, customer_name, phone_no, phone_search_hash').in('id', batch).then(r => activeHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', batch).then(r => rHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('rejected_leads').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', batch).then(r => rHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', batch).then(r => cHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', batch).then(r => cHydrate.push(...(r.data || []))));
+              }
               
-              promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('customer_id', uniqueIds).then(r => cHydrate.push(...(r.data || []))));
-              promises.push(supabase.from('closed_deals').select('id, customer_id, customer_name, phone_no, phone_search_hash').in('id', uniqueIds).then(r => cHydrate.push(...(r.data || []))));
-          }
-          
-          if (uniqueHashes.length > 0) {
-              promises.push(supabase.from('customers').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => activeHydrate.push(...(r.data || []))));
-              promises.push(supabase.from('rejected_leads').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => rHydrate.push(...(r.data || []))));
-              promises.push(supabase.from('closed_deals').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', uniqueHashes).then(r => cHydrate.push(...(r.data || []))));
+              // 2. Hydrate by Hash
+              for (const batch of hashChunks) {
+                  promises.push(supabase.from('customers').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', batch).then(r => activeHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('rejected_leads').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', batch).then(r => rHydrate.push(...(r.data || []))));
+                  promises.push(supabase.from('closed_deals').select('customer_name, phone_no, phone_search_hash').in('phone_search_hash', batch).then(r => cHydrate.push(...(r.data || []))));
+              }
           }
           
           if (promises.length > 0) {
               await Promise.all(promises);
               
+              if (fetchIdRef.current !== fetchId) return;
+
               setActivities(prev => prev.map(act => {
                  if (act.customer?.customer_name) return act; 
                  
@@ -268,20 +292,6 @@ export function useActivityData() {
         } catch (err) {
            console.error("Hydration failed:", err);
         }
-
-      // Calculate Stats
-      const totalTalkTimeSec = combined.reduce((acc, curr) => acc + (curr.duration || 0), 0);
-      const contactableCount = combined.filter(cl => cl.is_connected === 'contactable').length;
-      const lastCall = combined.length > 0 ? new Date(combined[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
-      
-      setStats({
-        totalDials: combined.length,
-        totalTalkTime: totalTalkTimeSec,
-        contactable: contactableCount,
-        uncontactable: combined.length - contactableCount,
-        lastCallTime: lastCall,
-        idleFrom: combined.length > 0 ? lastCall : "N/A"
-      });
 
     } catch (err: any) {
       if (err.name !== 'AbortError') {
@@ -349,47 +359,34 @@ export function useActivityData() {
               if (empIds.length > 0) {
                   const { data: profiles } = await supabase
                       .from('user_profiles')
-                      .select('employee_id, user_name')
+                      .select('employee_id, user_name, organization_id')
                       .in('employee_id', empIds);
                   profileMap = Object.fromEntries((profiles || []).map(p => [p.employee_id, p.user_name]));
-              }
-
-              const hydratedData = data.map(d => ({
-                  ...d,
-                  user_name: profileMap[d.employee_id] || "Unknown"
-              }));
-
-              // DEDUPLICATION LOGIC: Filter by Number + Timestamp + Duration
-              const seenKeys = new Set<string>();
-              finalUniqueData = hydratedData.filter(item => {
-                  const timestamp = new Date(item.timestamp);
-                  const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                  const dateStr = timestamp.toLocaleDateString();
-                  const key = `${item.number}-${item.employee_id}-${dateStr}-${timeStr}-${item.duration}`;
+                  // Separate map for Org ID hydration
+                  const orgMap = Object.fromEntries((profiles || []).map(p => [p.employee_id, p.organization_id]));
                   
-                  if (!seenKeys.has(key)) {
-                      seenKeys.add(key);
-                      return true;
-                  }
-                  return false;
-              });
-          }
+                  const hydratedData = data.map(d => ({
+                      ...d,
+                      user_name: profileMap[d.employee_id] || "Unknown",
+                      organization_id: orgMap[d.employee_id] || null
+                  }));
 
-          setMobileActivities(finalUniqueData);
-          
-          // Update Stats from Mobile History if Source is Mobile
-          if (source === 'mobile') {
-              const totalTalkTimeSec = finalUniqueData.reduce((acc: number, curr: any) => acc + (curr.duration || 0), 0);
-              const lastCall = finalUniqueData.length > 0 ? new Date(finalUniqueData[0].timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A";
-              
-              setStats({
-                totalDials: finalUniqueData.length,
-                totalTalkTime: totalTalkTimeSec,
-                contactable: 0, 
-                uncontactable: 0, 
-                lastCallTime: lastCall,
-                idleFrom: lastCall
-              });
+                  // DEDUPLICATION LOGIC
+                  const seenKeys = new Set<string>();
+                  finalUniqueData = hydratedData.filter(item => {
+                      const timestamp = new Date(item.timestamp);
+                      const timeStr = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      const dateStr = timestamp.toLocaleDateString();
+                      const key = `${item.number}-${item.employee_id}-${dateStr}-${timeStr}-${item.duration}`;
+                      
+                      if (!seenKeys.has(key)) {
+                          seenKeys.add(key);
+                          return true;
+                      }
+                      return false;
+                  });
+              }
+              setMobileActivities(finalUniqueData);
           }
 
       } catch (e) {
@@ -399,63 +396,154 @@ export function useActivityData() {
       }
   }, [selectedDate, user, mounted, source]);
 
+  // Reset data when date changes to force a fresh fetch
   useEffect(() => {
-     if (source === 'mobile') {
+     setActivities([]);
+     setMobileActivities([]);
+  }, [selectedDate]);
+
+  useEffect(() => {
+     if (source === 'mobile' && mobileActivities.length === 0) {
          fetchMobileHistory();
-     } else {
+     } else if (source === 'crm' && activities.length === 0) {
          fetchActivities();
      }
-  }, [source, fetchActivities, fetchMobileHistory]);
+  }, [source, fetchActivities, fetchMobileHistory, activities.length, mobileActivities.length]);
 
 
-  const filteredActivities = useMemo(() => {
-    const targetData = source === 'mobile' ? mobileActivities : activities;
+   const filteredActivities = useMemo(() => {
+    let result = source === 'mobile' ? mobileActivities : activities;
     const query = searchQuery.toLowerCase();
     
-    if (!query) return targetData;
-    
-    // Check if query looks like a phone number
-    const cleanQuery = query.replace(/\D/g, '');
-    const isPhoneSearch = cleanQuery.length > 3;
-    const queryHash = isPhoneSearch ? computePhoneHash(cleanQuery) : null;
+    // 1. Core Filtration
+    if (query) {
+        const cleanQuery = query.replace(/\D/g, '');
+        const isPhoneSearch = cleanQuery.length > 3;
+        const queryHash = isPhoneSearch ? computePhoneHash(cleanQuery) : null;
 
-    return targetData.filter(a => {
-       // 1. Phone Search Strategy
-       if (isPhoneSearch) {
-           // A. Exact Hash Match
-           if (a.phone_search_hash && a.phone_search_hash === queryHash) return true;
-           
-           // B. Decryption / Plain Match
-           if (a.phone_no || a.number) { // Check 'number' for mobile history
+        result = result.filter(a => {
+           if (isPhoneSearch) {
+               if (a.phone_search_hash && a.phone_search_hash === queryHash) return true;
                const phoneField = a.phone_no || a.number;
-               const plainPhone = decryptPhone(phoneField);
-               if (plainPhone.includes(cleanQuery)) return true;
+               if (phoneField && decryptPhone(phoneField).includes(cleanQuery)) return true;
            }
-       }
-        
-       // 2. Standard Text Search
-       // Mobile History Fields: name, number, employee_id, device_id
-       if (source === 'mobile') {
-           return (
-               (a.name && a.name.toLowerCase().includes(query)) ||
-               (a.number && a.number.toLowerCase().includes(query)) ||
-               (a.employee_id && a.employee_id.toLowerCase().includes(query)) ||
-               (a.device_id && a.device_id.toLowerCase().includes(query))
-           );
-       }
+            
+           if (source === 'mobile') {
+               return (
+                   (a.name && a.name.toLowerCase().includes(query)) ||
+                   (a.number && a.number.toLowerCase().includes(query)) ||
+                   (a.employee_id && a.employee_id.toLowerCase().includes(query)) ||
+                   (a.device_id && a.device_id.toLowerCase().includes(query))
+               );
+           }
 
-       // CRM Fields
-       return (
-          a.agent?.user_name?.toLowerCase().includes(query) ||
-          a.customer?.customer_name?.toLowerCase().includes(query) ||
-          (a.disposition && a.disposition.toLowerCase().includes(query)) ||
-          (a.sub_disposition && a.sub_disposition.toLowerCase().includes(query)) ||
-          a.agent?.employee_id?.toLowerCase().includes(query) ||
-          a.campaign?.name?.toLowerCase().includes(query) ||
-          (a.notes && a.notes.toLowerCase().includes(query))
-       );
+           return (
+              a.agent?.user_name?.toLowerCase().includes(query) ||
+              a.customer?.customer_name?.toLowerCase().includes(query) ||
+              (a.disposition && a.disposition.toLowerCase().includes(query)) ||
+              (a.sub_disposition && a.sub_disposition.toLowerCase().includes(query)) ||
+              a.agent?.employee_id?.toLowerCase().includes(query) ||
+              a.campaign?.name?.toLowerCase().includes(query) ||
+              (a.notes && a.notes.toLowerCase().includes(query))
+           );
+        });
+    }
+
+    // 2. Advanced Filters
+    if (agentFilter !== "All Agents") {
+       result = result.filter(a => {
+           const empId = source === 'mobile' ? a.employee_id : a.agent?.employee_id;
+           return empId === agentFilter;
+       });
+    }
+
+    if (orgFilter !== "All Organizations") {
+       result = result.filter(a => {
+           const orgId = source === 'mobile' ? a.organization_id : (a.agent?.organization_id || a.organization_id);
+           return orgId === orgFilter;
+       });
+    }
+
+    if (campaignFilter !== "All Campaigns") {
+       result = result.filter(a => {
+          const campName = source === 'mobile' ? (a.campaign_name || "General") : (a.campaign?.name || "General");
+          return campName === campaignFilter;
+       });
+    }
+
+    if (dispositionFilter !== "All Dispositions") {
+       result = result.filter(a => a.disposition === dispositionFilter);
+    }
+
+    if (callTypeFilter !== "All Types") {
+        result = result.filter(a => {
+            const type = (a.call_type || (a.is_connected === 'contactable' ? 'outgoing' : 'missed')).toLowerCase();
+            if (callTypeFilter === 'Outgoing') return type.includes('outgoing');
+            if (callTypeFilter === 'Incoming') return type.includes('incoming');
+            if (callTypeFilter === 'Missed') return type.includes('missed') || type.includes('reject');
+            return true;
+        });
+    }
+
+    return result;
+  }, [activities, mobileActivities, searchQuery, source, agentFilter, campaignFilter, dispositionFilter, orgFilter, callTypeFilter]);
+
+  // Reactive Stats Update
+  useEffect(() => {
+    const totalDials = filteredActivities.length;
+    const totalTalkTimeSec = filteredActivities.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+    const contactableCount = filteredActivities.filter(a => a.is_connected === 'contactable').length;
+    
+    let lastCall = "N/A";
+    if (totalDials > 0) {
+        const sorted = [...filteredActivities].sort((a, b) => new Date(b.created_at || b.timestamp).getTime() - new Date(a.created_at || a.timestamp).getTime());
+        lastCall = new Date(sorted[0].created_at || sorted[0].timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    setStats({
+       totalDials,
+       totalTalkTime: totalTalkTimeSec,
+       contactable: contactableCount,
+       uncontactable: totalDials - contactableCount,
+       lastCallTime: lastCall,
+       idleFrom: totalDials > 0 ? lastCall : "N/A"
     });
-  }, [activities, mobileActivities, searchQuery, source]);
+  }, [filteredActivities]);
+
+  // Fetch all global filter data on mount
+  useEffect(() => {
+    const fetchGlobalFilters = async () => {
+      // 1. All Organizations
+      const { data: orgs } = await supabase.from('organizations').select('id, company_name').order('company_name');
+      if (orgs) setGlobalOrganizations(orgs);
+
+      // 2. All Campaigns
+      const { data: camps } = await supabase.from('campaigns').select('id, name').order('name');
+      if (camps) setGlobalCampaigns(camps);
+
+      // 3. All Agents
+      const { data: agents } = await supabase.from('user_profiles').select('employee_id, user_name').order('user_name');
+      if (agents) setGlobalAgents(agents.filter(a => a.employee_id && a.user_name));
+
+      // 4. Unique Dispositions from call_logs
+      const { data: logs } = await supabase.from('call_logs').select('disposition').not('disposition', 'is', null);
+      if (logs) {
+         const uniqueDisps = Array.from(new Set(logs.map(l => l.disposition))).sort();
+         setGlobalDispositions(uniqueDisps);
+      }
+    };
+    fetchGlobalFilters();
+  }, []);
+
+  // Use global options for dropdowns
+  const filterOptions = useMemo(() => {
+    return {
+      agents: globalAgents.map(a => ({ id: a.employee_id, name: a.user_name })),
+      campaigns: globalCampaigns.map(c => c.name),
+      dispositions: globalDispositions,
+      organizations: globalOrganizations.map(o => ({ id: o.id, name: o.company_name }))
+    };
+  }, [globalAgents, globalCampaigns, globalDispositions, globalOrganizations]);
 
   // Utility formatters memoized or optimized
   const formatSeconds = useCallback((seconds: number) => {
@@ -493,6 +581,14 @@ export function useActivityData() {
     formatTime,
     formatDisplayDate,
     source,
-    setSource
+    setSource,
+    mobileActivities,
+    // Add shared filter states
+    agentFilter, setAgentFilter,
+    campaignFilter, setCampaignFilter,
+    dispositionFilter, setDispositionFilter,
+    orgFilter, setOrgFilter,
+    callTypeFilter, setCallTypeFilter,
+    filterOptions
   };
 }

@@ -6535,13 +6535,27 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
 ;
+;
 function ImportModal({ show, onClose, onSuccess, organizations }) {
     _s();
+    const { user } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
     const [selectedImportOrgId, setSelectedImportOrgId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].useEffect({
+        "ImportModal.useEffect": ()=>{
+            if (show && user?.isClient && user.organization_id) {
+                setSelectedImportOrgId(user.organization_id);
+            }
+        }
+    }["ImportModal.useEffect"], [
+        show,
+        user
+    ]);
     const [importFile, setImportFile] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [importing, setImporting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [importError, setImportError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
@@ -6585,7 +6599,7 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                             children: "Import Users (Bulk Creation)"
                         }, void 0, false, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 60,
+                            lineNumber: 68,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -6609,7 +6623,7 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                         y2: "18"
                                     }, void 0, false, {
                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                        lineNumber: 84,
+                                        lineNumber: 92,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -6619,24 +6633,24 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                         y2: "18"
                                     }, void 0, false, {
                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                        lineNumber: 85,
+                                        lineNumber: 93,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                lineNumber: 73,
+                                lineNumber: 81,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 69,
+                            lineNumber: 77,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                    lineNumber: 59,
+                    lineNumber: 67,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6647,7 +6661,7 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                             children: importError
                         }, void 0, false, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 91,
+                            lineNumber: 99,
                             columnNumber: 13
                         }, this),
                         importSuccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6655,7 +6669,7 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                             children: importSuccess
                         }, void 0, false, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 96,
+                            lineNumber: 104,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6670,7 +6684,7 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                     children: "CSV Format Required:"
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 103,
+                                    lineNumber: 111,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -6686,14 +6700,14 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "User Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 117,
+                                                    lineNumber: 125,
                                                     columnNumber: 19
                                                 }, this),
                                                 " - Full name of the user"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 116,
+                                            lineNumber: 124,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -6703,14 +6717,14 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "Employee ID"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 120,
+                                                    lineNumber: 128,
                                                     columnNumber: 19
                                                 }, this),
                                                 " - Unique employee ID (e.g., TFC-001)"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 119,
+                                            lineNumber: 127,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -6720,14 +6734,14 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "Email"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 124,
+                                                    lineNumber: 132,
                                                     columnNumber: 19
                                                 }, this),
                                                 " - Valid email address"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 123,
+                                            lineNumber: 131,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -6737,14 +6751,14 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "Contact No"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 127,
+                                                    lineNumber: 135,
                                                     columnNumber: 19
                                                 }, this),
                                                 " - 10-digit phone number"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 126,
+                                            lineNumber: 134,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -6754,14 +6768,14 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "User Type"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 130,
+                                                    lineNumber: 138,
                                                     columnNumber: 19
                                                 }, this),
                                                 ' - "employee" or "posp_agent"'
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 129,
+                                            lineNumber: 137,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -6771,26 +6785,26 @@ function ImportModal({ show, onClose, onSuccess, organizations }) {
                                                     children: "Password"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                    lineNumber: 134,
+                                                    lineNumber: 142,
                                                     columnNumber: 19
                                                 }, this),
                                                 " - Minimum 6 characters"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 133,
+                                            lineNumber: 141,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 112,
+                                    lineNumber: 120,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 102,
+                            lineNumber: 110,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6820,25 +6834,25 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                         className: "fi flex fi-rr-download"
                                     }, void 0, false, {
                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                        lineNumber: 160,
+                                        lineNumber: 168,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: "Download Sample CSV"
                                     }, void 0, false, {
                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                        lineNumber: 161,
+                                        lineNumber: 169,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                lineNumber: 141,
+                                lineNumber: 149,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 140,
+                            lineNumber: 148,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6859,19 +6873,20 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                             children: "*"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 174,
+                                            lineNumber: 182,
                                             columnNumber: 35
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 167,
+                                    lineNumber: 175,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
                                     value: selectedImportOrgId,
+                                    disabled: user?.isClient,
                                     onChange: (e)=>setSelectedImportOrgId(e.target.value),
-                                    className: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                    className: `w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8] ${user?.isClient ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700'}`,
                                     style: {
                                         fontFamily: "'Roboto', sans-serif"
                                     },
@@ -6881,27 +6896,27 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                             children: "Select an organization"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 182,
+                                            lineNumber: 191,
                                             columnNumber: 15
                                         }, this),
-                                        organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                        organizations.filter((org)=>!user?.isClient || org.id === user.organization_id).map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: org.id,
                                                 children: org.company_name
                                             }, org.id, false, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 184,
+                                                lineNumber: 195,
                                                 columnNumber: 17
                                             }, this))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 176,
+                                    lineNumber: 184,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 166,
+                            lineNumber: 174,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6922,13 +6937,13 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                             children: "*"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                            lineNumber: 200,
+                                            lineNumber: 211,
                                             columnNumber: 31
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 193,
+                                    lineNumber: 204,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6940,7 +6955,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                 className: "animate-spin rounded-full h-10 w-10 border-b-2 border-[#4b33e8] mb-3"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 205,
+                                                lineNumber: 216,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6951,7 +6966,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                 children: "Importing users..."
                                             }, void 0, false, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 206,
+                                                lineNumber: 217,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6962,13 +6977,13 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                 children: "Please wait while we process your CSV file"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 212,
+                                                lineNumber: 223,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                        lineNumber: 204,
+                                        lineNumber: 215,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                         children: [
@@ -6993,7 +7008,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                 id: "csv-upload"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 221,
+                                                lineNumber: 232,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -7004,7 +7019,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                         className: "fi flex fi-rr-upload text-3xl text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                        lineNumber: 248,
+                                                        lineNumber: 259,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7017,7 +7032,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                                 children: "Click to upload"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                                lineNumber: 250,
+                                                                lineNumber: 261,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7031,13 +7046,13 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                                lineNumber: 256,
+                                                                lineNumber: 267,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                        lineNumber: 249,
+                                                        lineNumber: 260,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7048,13 +7063,13 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                         children: "CSV file only"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                        lineNumber: 264,
+                                                        lineNumber: 275,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 255,
                                                 columnNumber: 19
                                             }, this),
                                             importFile && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7067,7 +7082,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                                 className: "fi flex fi-rr-file text-gray-600"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                                lineNumber: 274,
+                                                                lineNumber: 285,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7078,13 +7093,13 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                                 children: importFile.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                                lineNumber: 275,
+                                                                lineNumber: 286,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                        lineNumber: 273,
+                                                        lineNumber: 284,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7101,31 +7116,31 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                                             className: "fi flex fi-rr-cross text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                            lineNumber: 293,
+                                                            lineNumber: 304,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                        lineNumber: 282,
+                                                        lineNumber: 293,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                                lineNumber: 272,
+                                                lineNumber: 283,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 202,
+                                    lineNumber: 213,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 192,
+                            lineNumber: 203,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7138,7 +7153,7 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 304,
+                                    lineNumber: 315,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7310,34 +7325,38 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
                                     children: importing ? "Importing..." : "Import Users"
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                                    lineNumber: 311,
+                                    lineNumber: 322,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ImportModal.tsx",
-                            lineNumber: 303,
+                            lineNumber: 314,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/users/modals/ImportModal.tsx",
-                    lineNumber: 89,
+                    lineNumber: 97,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/users/modals/ImportModal.tsx",
-            lineNumber: 55,
+            lineNumber: 63,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/users/modals/ImportModal.tsx",
-        lineNumber: 43,
+        lineNumber: 51,
         columnNumber: 5
     }, this);
 }
-_s(ImportModal, "letiA/jaFBhXMKE/pcTasd5zZQs=");
+_s(ImportModal, "P3DVtDHkkgKdaC4SnOGpDAJkvFE=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
+    ];
+});
 _c = ImportModal;
 var _c;
 __turbopack_context__.k.register(_c, "ImportModal");

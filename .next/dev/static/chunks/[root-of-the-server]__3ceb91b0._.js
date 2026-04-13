@@ -1918,72 +1918,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             }["HeaderComponent.useEffect.fetchPrimaryStatus"];
             // Initial fetch
             fetchPrimaryStatus();
-            // Subscribe specifically to THIS device's entry_id
-            // If we don't have entryId yet, we subscribe to all for safety until identity is confirmed
-            const filter = localEntryId ? `entry_id=eq.${localEntryId}` : `employee_id=eq.${displayUser.employeeId}`;
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`device_sync_${localEntryId || displayUser.employeeId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'sync_meta',
-                filter: filter
-            }, {
-                "HeaderComponent.useEffect.channel": (payload)=>{
-                    const newData = payload.new;
-                    if (!newData) return;
-                    // 1. EXPLICIT IDENTITY CHECK
-                    // We only process if the message is explicitly for THIS device's entry_id
-                    const currentEntryId = localEntryId || localStorage.getItem('entry_id');
-                    if (newData.entry_id && newData.entry_id === currentEntryId) {
-                        console.log("⚡ [Header] Valid command for this device received:", newData.entry_id);
-                        // 2. FORWARD COMMANDS TO FLUTTER
-                        if (isBridgeActive && newData.type && newData.value) {
-                            // 3. MASTER MOVE: Reject call_to if already on a call
-                            if (newData.type === 'call_to' && isOnCallRef.current) {
-                                console.log("🛡️ [Header] MASTER MOVE: Call rejected! Device is already busy.");
-                                fetchPrimaryStatus();
-                                return;
-                            }
-                            // Deduplication A: Check if this was just sent locally (prevent local loop)
-                            const bridgeHistory = window.__bridge_history || {};
-                            const lastLocalMsg = bridgeHistory[newData.type];
-                            const isLocalDuplicate = lastLocalMsg && String(lastLocalMsg.value) === String(newData.value) && Date.now() - lastLocalMsg.time < 5000;
-                            // Deduplication B: Check if this REMOTE command was already processed (prevent double-fire)
-                            const isRemoteDuplicate = lastProcessedRef.current && lastProcessedRef.current.type === newData.type && String(lastProcessedRef.current.value) === String(newData.value) && Date.now() - lastProcessedRef.current.time < 2000; // 2 second window
-                            // Deduplication C: MASTER PERSISTENT CHECKPOINT
-                            // Don't send the same command again until we get a disconnect signal from the bridge
-                            const isStickyDuplicate = lastSentCommandRef.current && lastSentCommandRef.current.type === newData.type && String(lastSentCommandRef.current.value) === String(newData.value);
-                            if (!isLocalDuplicate && !isRemoteDuplicate && !isStickyDuplicate) {
-                                console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
-                                // Update refs BEFORE notifying
-                                lastProcessedRef.current = {
-                                    type: newData.type,
-                                    value: newData.value,
-                                    time: Date.now()
-                                };
-                                lastSentCommandRef.current = {
-                                    type: newData.type,
-                                    value: newData.value
-                                };
-                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["notifyFlutter"])(newData.type, newData.value);
-                            } else if (isStickyDuplicate) {
-                                console.log(`🛡️ [Header] Persistent lock: Command ${newData.type} already sent once. Waiting for disconnect.`);
-                            } else if (isRemoteDuplicate) {
-                                console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
-                            } else {
-                                console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
-                            }
-                        }
-                    }
-                    fetchPrimaryStatus();
-                }
-            }["HeaderComponent.useEffect.channel"]).subscribe({
-                "HeaderComponent.useEffect.channel": (status)=>{
-                    console.log(`📡 [Header] Subscription status for ${displayUser.employeeId}:`, status);
-                }
-            }["HeaderComponent.useEffect.channel"]);
+            // --- REFACTORED: NO REALTIME SUBSCRIPTION (Saves 100% Messaging Quota) ---
+            // Instead, we use a 5s polling loop for absolute responsiveness (REST API - Free Quota)
+            const interval = setInterval(fetchPrimaryStatus, 5000);
             return ({
                 "HeaderComponent.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
+                    clearInterval(interval);
                 }
             })["HeaderComponent.useEffect"];
         }
@@ -2000,12 +1940,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             if (!isBridgeActive || !empId) return;
             // Send initial heartbeat
             (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
-            // Set up interval for every 10 seconds (for 15s timeout)
+            // Set up interval for every 30 seconds (Increased from 10s to save 66% messaging quota)
             const interval = setInterval({
                 "HeaderComponent.useEffect.interval": ()=>{
                     (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
                 }
-            }["HeaderComponent.useEffect.interval"], 10000);
+            }["HeaderComponent.useEffect.interval"], 30000);
             return ({
                 "HeaderComponent.useEffect": ()=>clearInterval(interval)
             })["HeaderComponent.useEffect"];
@@ -2036,8 +1976,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             const lastSeen = new Date(deviceStatus.last_seen).getTime();
             const now = Date.now();
             const diffSeconds = (now - lastSeen) / 1000;
-            // Mark offline if no heartbeat for 15 seconds
-            return diffSeconds < 15 ? 'online' : 'offline';
+            // Mark offline if no heartbeat for 20 seconds (Stable for 5s polling)
+            return diffSeconds < 20 ? 'online' : 'offline';
         }
     }["HeaderComponent.useMemo[deviceOnlineStatus]"], [
         deviceStatus?.last_seen,
@@ -2151,41 +2091,6 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     }
                                 }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                             }
-                        }
-                    }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).on('broadcast', {
-                        event: 'manual_lead_access'
-                    }, {
-                        "HeaderComponent.useEffect.syncNotificationChannel.channel": (payload)=>{
-                            console.log('🔔 [Header] Fast broadcast signal received:', payload);
-                            // 1. Show alert immediately
-                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dialogUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["showWarning"])(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
-                            // 2. MASTER MOVE: Optimistically update local UI state immediately
-                            // This ensures the bell shakes and count increases INSTANTLY
-                            const optimisticNotification = {
-                                id: `temp_${Date.now()}`,
-                                type: 'lead_access',
-                                message: payload.payload.message,
-                                actor_id: payload.payload.actor_id,
-                                is_seen: false,
-                                created_at: new Date().toISOString(),
-                                metadata: payload.payload
-                            };
-                            setNotifications({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (prev)=>{
-                                    // Prevent duplicate if DB insert was somehow faster
-                                    const exists = prev.some({
-                                        "HeaderComponent.useEffect.syncNotificationChannel.channel.exists": (n)=>n.message === optimisticNotification.message && Date.now() - new Date(n.created_at).getTime() < 5000
-                                    }["HeaderComponent.useEffect.syncNotificationChannel.channel.exists"]);
-                                    if (exists) return prev;
-                                    return [
-                                        optimisticNotification,
-                                        ...prev
-                                    ].slice(0, 20);
-                                }
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
-                            setUnreadCount({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (c)=>c + 1
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                         }
                     }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).subscribe();
                     return channel;
@@ -2328,12 +2233,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                 className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 573,
+                                lineNumber: 472,
                                 columnNumber: 15
                             }, this) : initials
                         }, void 0, false, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 564,
+                            lineNumber: 463,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2348,7 +2253,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 585,
+                                    lineNumber: 484,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2360,13 +2265,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 591,
+                                    lineNumber: 490,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 584,
+                            lineNumber: 483,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2383,7 +2288,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 609,
+                                                    lineNumber: 508,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2391,7 +2296,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 610,
+                                                    lineNumber: 509,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -2399,17 +2304,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 514,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 603,
+                                        lineNumber: 502,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 602,
+                                    lineNumber: 501,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2421,35 +2326,35 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-5 h-5 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 627,
+                                        lineNumber: 526,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                         className: "jsx-85a9f6e6ef799593" + " " + "fi flex fi-rr-exit text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 528,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 620,
+                                    lineNumber: 519,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 600,
+                            lineNumber: 499,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 562,
+                    lineNumber: 461,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 558,
+                lineNumber: 457,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
@@ -2481,12 +2386,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 656,
+                                        lineNumber: 555,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 649,
+                                    lineNumber: 548,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2501,7 +2406,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 670,
+                                            lineNumber: 569,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2516,19 +2421,19 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 676,
+                                            lineNumber: 575,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 669,
+                                    lineNumber: 568,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 648,
+                            lineNumber: 547,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2543,12 +2448,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "jsx-85a9f6e6ef799593" + " " + `fi flex ${deviceOnlineStatus === 'online' && deviceStatus.on_call ? 'fi-rr-phone-call animate-pulse' : 'fi-rr-smartphone'} text-sm`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 695,
+                                                lineNumber: 594,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 690,
+                                            lineNumber: 589,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2559,7 +2464,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: deviceStatus.device_model
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 702,
+                                                    lineNumber: 601,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2569,7 +2474,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             className: "jsx-85a9f6e6ef799593" + " " + `w-1 h-1 rounded-full ${deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500' : 'bg-gray-400'}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 706,
+                                                            lineNumber: 605,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2577,25 +2482,25 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'In Call' : 'Online' : 'Offline'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 711,
+                                                            lineNumber: 610,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 705,
+                                                    lineNumber: 604,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 701,
+                                            lineNumber: 600,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 689,
+                                    lineNumber: 588,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2609,7 +2514,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 732,
+                                                    lineNumber: 631,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2617,7 +2522,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount > 20 ? '20+' : unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 733,
+                                                    lineNumber: 632,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -2625,34 +2530,34 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5 group-hover:rotate-12 transition-transform"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 738,
+                                            lineNumber: 637,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 726,
+                                        lineNumber: 625,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 725,
+                                    lineNumber: 624,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 686,
+                            lineNumber: 585,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 646,
+                    lineNumber: 545,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 637,
+                lineNumber: 536,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -2666,7 +2571,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                         className: "jsx-85a9f6e6ef799593" + " " + "fixed inset-0 z-40 bg-black/5"
                     }, void 0, false, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 757,
+                        lineNumber: 656,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2686,7 +2591,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 children: "Notifications"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 769,
+                                                lineNumber: 668,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2698,13 +2603,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 770,
+                                                lineNumber: 669,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 768,
+                                        lineNumber: 667,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2718,12 +2623,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 779,
+                                                    lineNumber: 678,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 774,
+                                                lineNumber: 673,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2733,24 +2638,24 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 786,
+                                                    lineNumber: 685,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 782,
+                                                lineNumber: 681,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 772,
+                                        lineNumber: 671,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 767,
+                                lineNumber: 666,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2766,18 +2671,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 57
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 97
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 801,
+                                                    lineNumber: 700,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2791,7 +2696,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     children: notif.type.replace('_', ' ')
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 809,
+                                                                    lineNumber: 708,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2802,13 +2707,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 812,
+                                                                    lineNumber: 711,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 808,
+                                                            lineNumber: 707,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2816,7 +2721,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: notif.message
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 816,
+                                                            lineNumber: 715,
                                                             columnNumber: 25
                                                         }, this),
                                                         notif.metadata?.employee_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2827,13 +2732,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 820,
+                                                            lineNumber: 719,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 807,
+                                                    lineNumber: 706,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2849,12 +2754,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 836,
+                                                                lineNumber: 735,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 829,
+                                                            lineNumber: 728,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2867,29 +2772,29 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 846,
+                                                                lineNumber: 745,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 839,
+                                                            lineNumber: 738,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 827,
+                                                    lineNumber: 726,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, notif.id, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 796,
+                                            lineNumber: 695,
                                             columnNumber: 21
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 794,
+                                    lineNumber: 693,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "jsx-85a9f6e6ef799593" + " " + "px-6 py-12 flex flex-col items-center justify-center text-center",
@@ -2900,12 +2805,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "w-8 h-8 text-gray-300"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 855,
+                                                lineNumber: 754,
                                                 columnNumber: 23
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 854,
+                                            lineNumber: 753,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -2913,7 +2818,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "No Notifications Yet"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 857,
+                                            lineNumber: 756,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2921,18 +2826,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "We'll notify you when something important happens."
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 858,
+                                            lineNumber: 757,
                                             columnNumber: 20
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 853,
+                                    lineNumber: 752,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 792,
+                                lineNumber: 691,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2943,18 +2848,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: "Close Panel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 865,
+                                    lineNumber: 764,
                                     columnNumber: 16
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 864,
+                                lineNumber: 763,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 762,
+                        lineNumber: 661,
                         columnNumber: 11
                     }, this)
                 ]
@@ -8222,30 +8127,32 @@ function useCallSessionRedirect(userId) {
             const { data: sessions, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').select('*').eq('user_id', userId);
             if (error) throw error;
             if (!sessions || sessions.length === 0) return;
-            // 1. Filter for "HOT" sessions (Active or Pending)
-            const manualHotSessions = sessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
-            const systemHotSessions = sessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
-            console.log(`[Session-Guard] Pulse Check: Manual-Hot=${manualHotSessions.length}, System-Hot=${systemHotSessions.length}`);
+            // --- LATEST ACTIVITY SORT ---
+            const sortedSessions = [
+                ...sessions
+            ].sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+            // 1. Filter for "HOT" sessions (Using the sorted list)
+            const manualHotSessions = sortedSessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
+            const systemHotSessions = sortedSessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
             let sessionToFollow = null;
             let prioritizeManual = false;
-            // PRIORITY RULE: Manual sessions take priority over System sessions
             if (manualHotSessions.length > 0) {
-                // Pick the most recently updated manual session
-                sessionToFollow = manualHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = manualHotSessions[0];
                 prioritizeManual = true;
             } else if (systemHotSessions.length > 0) {
-                // Pick the most recently updated system session
-                sessionToFollow = systemHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = systemHotSessions[0];
             }
             if (sessionToFollow) {
                 const targetCamp = prioritizeManual ? sessionToFollow.manual_campaign_id || sessionToFollow.campaign_id : sessionToFollow.campaign_id;
                 const targetCust = prioritizeManual ? sessionToFollow.manual_customer_id : sessionToFollow.customer_id;
                 if (targetCamp && targetCust) {
                     const { id: currentCamp, customerId: currentCust } = router.query;
+                    // --- SMART CHECK ---
+                    // Is the current page ALREADY matching the LATEST active session?
                     const isAlreadyThere = String(currentCamp) === String(targetCamp) && String(currentCust) === String(targetCust);
                     if (!isAlreadyThere) {
                         const expectedPath = `/portal/campaign/${targetCamp}/${targetCust}`;
-                        console.log(`[Session-Guard] Forced redirection to HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
+                        console.log(`[Session-Guard] Forced redirection to LATEST HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
                         router.push(expectedPath);
                     }
                 }
@@ -8261,38 +8168,31 @@ function useCallSessionRedirect(userId) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "useCallSessionRedirect.useEffect": ()=>{
             if (!userId) return;
+            // 1. Initial Check on Mount
             checkActiveSession();
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`global_session_guard:${userId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'call_sessions',
-                filter: `user_id=eq.${userId}`
-            }, {
-                "useCallSessionRedirect.useEffect.channel": (payload)=>{
-                    console.log(`[Session-Guard] Realtime sync event received:`, payload.eventType);
-                    // Short delay to allow DB propagation
-                    setTimeout(checkActiveSession, 500);
-                }
-            }["useCallSessionRedirect.useEffect.channel"]).subscribe();
+            // 2. Visibility Listener: Check when user returns to tab
             const handleVisibility = {
                 "useCallSessionRedirect.useEffect.handleVisibility": ()=>{
-                    if (document.visibilityState === 'visible') checkActiveSession();
+                    if (document.visibilityState === 'visible') {
+                        console.log("[Session-Guard] Tab visible, polling session...");
+                        checkActiveSession();
+                    }
                 }
             }["useCallSessionRedirect.useEffect.handleVisibility"];
-            // 2000ms Stable Heartbeat (Reduced from aggressive 500ms)
+            // 3. Optimized Heartbeat: 15-second Stable Polling
+            // Using 15s provides a balance between responsiveness and server load.
+            // This consumes ZERO Realtime Messaging quota.
             const heartbeat = setInterval({
                 "useCallSessionRedirect.useEffect.heartbeat": ()=>{
-                    // Check for localized "save-in-progress" lock to prevent race conditions
                     const isSaving = ("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
                     if (!isSaving) {
                         checkActiveSession();
                     }
                 }
-            }["useCallSessionRedirect.useEffect.heartbeat"], 2000);
+            }["useCallSessionRedirect.useEffect.heartbeat"], 15000);
             window.addEventListener('visibilitychange', handleVisibility);
             return ({
                 "useCallSessionRedirect.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
                     clearInterval(heartbeat);
                     window.removeEventListener('visibilitychange', handleVisibility);
                 }

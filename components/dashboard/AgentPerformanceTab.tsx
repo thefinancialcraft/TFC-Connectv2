@@ -160,6 +160,48 @@ export default function AgentPerformanceTab({
     window.print();
   };
 
+  const handleDownloadExcel = () => {
+    if (!agentData || agentData.length === 0) return;
+
+    // Excel-friendly CSV with BOM for special characters
+    const BOM = "\uFEFF";
+    const headers = ["Agent Name", "Employee ID", "Status", "Total Dials", "Connected Calls", "Talk Time (Total)", "Avg Talk Time", "Follow Ups", "Streak/Gap", "Utilization", "Last Active"];
+        
+    const rows = agentData.map(agent => {
+        const { status } = calculateStatus(agent.last_active);
+        const avgTalkTime = agent.connected_count > 0 ? formatDuration(Math.floor(agent.duration / agent.connected_count)) : "0s";
+        
+        return [
+            agent.name,
+            agent.employee_id || "N/A",
+            agent.on_call ? (agent.is_personal ? "PERSONAL CALL" : "ON CALL") : status,
+            agent.count,
+            agent.connected_count,
+            formatDuration(agent.duration || 0),
+            avgTalkTime,
+            agent.follow_ups_count || 0,
+            agent.consecutive_failed_stats || "0/0s",
+            `${((((agent.duration || 0) / 60) * 1.67 + (agent.count || 0)) / 3).toFixed(1)}%`,
+            agent.last_active ? new Date(agent.last_active).toLocaleString() : "Never"
+        ];
+    });
+
+    const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.map(cell => `"${(cell || "").toString().replace(/"/g, '""')}"`).join(","))
+    ].join("\r\n");
+
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Agent_Performance_${new Date().toLocaleDateString()}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       <style>{`
@@ -448,9 +490,20 @@ export default function AgentPerformanceTab({
                       }}
                       disabled={loading}
                       className="group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100 translate-y-[1px]"
+                      title="Refresh Data"
                   >
                       <i className={`fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i>
                       <span>Refresh</span>
+                  </button>
+
+                  <button 
+                      onClick={handleDownloadExcel}
+                      disabled={loading || agentData.length === 0}
+                      className="group flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-all border border-emerald-100 translate-y-[1px]"
+                      title="Download Excel Report"
+                  >
+                      <i className="fi flex fi-rr-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"></i>
+                      <span>Download Excel</span>
                   </button>
                   <div className="flex gap-4 text-xs font-bold">
                       <span className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
@@ -466,22 +519,24 @@ export default function AgentPerformanceTab({
           <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                   <thead>
-                      <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest">
+                      <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest border-b border-gray-100">
                           <th className="px-5 py-4 font-bold">Agent</th>
                           <th className="px-2 py-4 font-bold text-center">Last Active</th>
                           <th className="px-2 py-4 font-bold text-center">Status</th>
-                          <th className="px-2 py-4 font-bold text-center text-[#4b33e8]">Follow Ups</th>
-                          <th className="px-2 py-4 font-bold text-center">Talk Time</th>
+                          <th className="px-2 py-4 font-bold text-center text-[#4b33e8]">Total Dials</th>
                           <th className="px-2 py-4 font-bold text-center">Connected</th>
+                          <th className="px-2 py-4 font-bold text-center">Talk Time</th>
                           <th className="px-2 py-4 font-bold text-center">Avg Talk</th>
+                          <th className="px-2 py-4 font-bold text-center text-indigo-600">Follow Ups</th>
                           <th className="px-2 py-4 font-bold text-center">Streak/Gap</th>
+                          <th className="px-2 py-4 font-bold text-center text-rose-600">Utilization</th>
                           <th className="px-5 py-4 font-bold text-right">Last Call</th>
                       </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                       {agentData.length === 0 ? (
                           <tr>
-                              <td colSpan={9} className="px-8 py-12 text-center">
+                              <td colSpan={10} className="px-8 py-12 text-center">
                                   <div className="flex flex-col items-center gap-2">
                                       <i className="fi fi-rr-search text-3xl text-gray-200"></i>
                                       <p className="text-sm font-bold text-gray-400">No agent activity found for this period</p>
@@ -567,18 +622,34 @@ export default function AgentPerformanceTab({
                                           {agent.count.toLocaleString()} CALLS
                                       </span>
                                   </td>
-                                  <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
-                                      {formatDuration(agent.duration || 0)}
-                                  </td>
                                   <td className="px-2 py-5 text-center">
                                       <p className="text-sm font-bold text-[#263238]">{agent.connected_count}</p>
                                       <p className="text-[10px] text-indigo-500 font-bold">{connectRate}% </p>
                                   </td>
+                                  <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">
+                                      {formatDuration(agent.duration || 0)}
+                                  </td>
                                   <td className="px-2 py-5 text-center text-sm text-gray-600 font-bold">
                                       {avgTalkTime}
                                   </td>
+                                  <td className="px-2 py-5 text-center text-sm text-indigo-600 font-bold">
+                                      {agent.follow_ups_count || 0}
+                                  </td>
                                   <td className="px-2 py-5 text-center text-sm text-amber-600 font-bold">
                                       {agent.consecutive_failed_stats}
+                                  </td>
+                                  <td className="px-2 py-5 text-center">
+                                      <div className="flex flex-col items-center">
+                                          <span className="text-sm font-bold text-rose-600">
+                                              {((((agent.duration || 0) / 60) * 1.67 + (agent.count || 0)) / 3).toFixed(1)}%
+                                          </span>
+                                          <div className="w-12 h-1 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                                              <div 
+                                                  className="h-full bg-rose-500" 
+                                                  style={{ width: `${Math.min(100, (((agent.duration || 0) / 60) * 1.67 + (agent.count || 0)) / 3)}%` }}
+                                              ></div>
+                                          </div>
+                                      </div>
                                   </td>
                                   <td className="px-5 py-5 text-right">
                                       <p className="text-sm font-bold text-[#263238]">{formatTime(agent.last_active)}</p>

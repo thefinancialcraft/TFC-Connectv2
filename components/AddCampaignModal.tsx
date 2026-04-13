@@ -114,7 +114,12 @@ export default function AddCampaignModal({
                 setCampaignDescription("");
                 setCampaignStatus("active");
                 setSelectedUsers([]);
-                setSelectedOrgId("");
+                // Auto-set organization for client users
+                if (currentUser?.isClient && currentUser.organization_id) {
+                    setSelectedOrgId(currentUser.organization_id || "");
+                } else {
+                    setSelectedOrgId("");
+                }
             }
             setSearchTerm("");
             setActiveTab("info");
@@ -147,7 +152,7 @@ export default function AddCampaignModal({
             user.email.toLowerCase().includes(searchTerm.toLowerCase());
         
         // Filter by organization if selected
-        const matchesOrg = selectedOrgId ? user.organization_id === selectedOrgId : true;
+        const matchesOrg = selectedOrgId && user.organization_id === selectedOrgId;
 
         return matchesSearch && matchesOrg;
     });
@@ -230,113 +235,101 @@ export default function AddCampaignModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden backdrop-blur-sm flex items-center justify-center p-4">
-            {/* Overlay */}
-            <div
-                className="fixed inset-0 bg-gray-900/60 transition-opacity"
-                onClick={onClose}
-            />
-
+        <div className="fixed inset-0 z-[120] backdrop-blur-sm bg-black/30 flex items-center justify-center p-4 text-xs font-sans">
             {/* Modal */}
-            <div className="relative w-full max-w-4xl transform rounded-2xl bg-white shadow-2xl transition-all scale-100 opacity-100 border border-gray-100 overflow-hidden">
+            <div className="relative w-full max-w-4xl transform rounded-lg bg-white  flex flex-col border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-200 h-[85vh]">
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-white">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white shrink-0">
                     <div className="flex items-center gap-4">
-                        <div className="w-11 h-11 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                             <i className="fi flex fi-rr-bullhorn text-lg"></i>
-                        </div>
                         <div>
-                            <h2 className="text-lg font-medium text-gray-900" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                            <h2 className="font-bold text-gray-800">
                                 {campaign ? 'Modify Campaign' : 'Initiate Campaign'}
                             </h2>
-                            <p className="text-xs text-gray-500 mt-0.5" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                            <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100 mt-1 inline-block">
                                 {campaign ? 'Configuration Update' : 'Strategic Onboarding Sequence'}
-                            </p>
+                            </span>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors focus:outline-none"
+                        className="text-gray-400 hover:text-gray-600 p-1"
                     >
-                        <i className="fi flex fi-rr-cross text-sm"></i>
+                        <i className="fi fi-rr-cross-small text-xl leading-none"></i>
                     </button>
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex border-b border-gray-100 bg-white sticky top-0 z-10">
+                <div className="flex border-b border-gray-100 bg-white shrink-0">
                     <button 
                         onClick={() => setActiveTab("info")}
-                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'info' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'info' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         <i className={`fi flex ${activeTab === 'info' ? 'fi-sr-info' : 'fi-rr-info'} text-sm`}></i>
-                        Basic Info
-                        {activeTab === 'info' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"></div>}
+                        Basic Information
+                        {activeTab === 'info' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>}
                     </button>
-                    <button 
-                        onClick={() => setActiveTab("org")}
-                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'org' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                        <i className={`fi flex ${activeTab === 'org' ? 'fi-sr-building' : 'fi-rr-building'} text-sm`}></i>
-                        Organization
-                        {activeTab === 'org' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"></div>}
-                    </button>
+                    {!currentUser?.isClient && (
+                        <button 
+                            onClick={() => setActiveTab("org")}
+                            className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'org' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                            <i className={`fi flex ${activeTab === 'org' ? 'fi-sr-building' : 'fi-rr-building'} text-sm`}></i>
+                            Organization
+                            {activeTab === 'org' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>}
+                        </button>
+                    )}
                     <button 
                         onClick={() => setActiveTab("team")}
-                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest transition-all relative ${activeTab === 'team' ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'team' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
                     >
                         <i className={`fi flex ${activeTab === 'team' ? 'fi-sr-users' : 'fi-rr-users'} text-sm`}></i>
-                        Team Members
-                         <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-semibold ${selectedUsers.length > 0 ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-400'}`}>
+                        Team Personnel
+                         <span className={`ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-bold ${selectedUsers.length > 0 ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-400'}`}>
                             {selectedUsers.length}
                         </span>
-                        {activeTab === 'team' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-600 rounded-t-full"></div>}
+                        {activeTab === 'team' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"></div>}
                     </button>
                 </div>
 
                 {/* Body Content */}
-                <div className="h-[55vh] overflow-y-auto custom-scrollbar bg-gray-50/30">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                     
                     {/* INFO TAB */}
                     {activeTab === 'info' && (
-                        <div className="p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-6">
-                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
-                                                <i className="fi fi-rr-fingerprint"></i>
-                                            </div>
-                                            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-widest">Protocol Metadata</h3>
-                                        </div>
+                                    <div className="bg-white p-5 rounded-lg border border-gray-100  space-y-4">
+                                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Protocol Metadata</h3>
                                         
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1">Campaign Identifier</label>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign ID</label>
                                             <div className="relative">
                                                 <input
                                                     type="text"
                                                     value={campaignId}
                                                     readOnly
-                                                    className="w-full h-12 pl-4 pr-10 bg-gray-50 border border-gray-100 rounded-xl text-sm font-mono font-bold text-gray-500 outline-none"
+                                                    className="w-full h-9 px-3 bg-gray-50 border border-gray-200 rounded text-[11px] font-mono font-bold text-gray-500 outline-none"
                                                 />
-                                                <i className="fi fi-rr-lock absolute right-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                                <i className="fi fi-rr-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-300"></i>
                                             </div>
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1">Functional Status</label>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Functional Status</label>
                                             <div 
                                                 onClick={() => setCampaignStatus(prev => prev === 'active' ? 'inactive' : 'active')}
-                                                className={`w-full h-12 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between px-4 ${campaignStatus === 'active' ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}
+                                                className={`w-full h-9 rounded border cursor-pointer transition-all flex items-center justify-between px-3 ${campaignStatus === 'active' ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-2 h-2 rounded-full ${campaignStatus === 'active' ? 'bg-green-500 animate-pulse' : 'bg-orange-500'}`}></div>
-                                                    <span className={`text-xs font-semibold uppercase tracking-widest ${campaignStatus === 'active' ? 'text-green-700' : 'text-orange-700'}`}>
-                                                        {campaignStatus.toUpperCase()}
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-2 h-2 rounded-full ${campaignStatus === 'active' ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+                                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${campaignStatus === 'active' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                                                        {campaignStatus}
                                                     </span>
                                                 </div>
-                                                <div className={`w-10 h-6 rounded-full relative transition-all duration-300 ${campaignStatus === 'active' ? 'bg-green-500' : 'bg-gray-300'}`}>
-                                                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${campaignStatus === 'active' ? 'right-1' : 'left-1'}`}></div>
+                                                <div className={`w-8 h-4 rounded-full relative transition-all ${campaignStatus === 'active' ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                                                    <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${campaignStatus === 'active' ? 'right-0.5' : 'left-0.5'}`}></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -344,40 +337,29 @@ export default function AddCampaignModal({
                                 </div>
 
                                 <div className="space-y-6">
-                                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500">
-                                                <i className="fi fi-rr-edit-alt"></i>
-                                            </div>
-                                            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-widest">Brand Narrative</h3>
+                                    <div className="bg-white p-5 rounded-lg border border-gray-100  space-y-4">
+                                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Identity Details</h3>
+
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign Name *</label>
+                                            <input
+                                                type="text"
+                                                value={campaignName}
+                                                onChange={(e) => setCampaignName(e.target.value)}
+                                                placeholder="e.g. Operation Q4 Growth"
+                                                className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                            />
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1">Campaign Title <span className="text-red-500">*</span></label>
-                                            <div className="relative group">
-                                                <input
-                                                    type="text"
-                                                    value={campaignName}
-                                                    onChange={(e) => setCampaignName(e.target.value)}
-                                                    placeholder="e.g. Operation Q4 Growth"
-                                                    className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-transparent rounded-xl text-sm font-bold text-gray-700 focus:bg-white focus:border-purple-500 focus:shadow-lg focus:shadow-purple-500/5 transition-all outline-none"
-                                                />
-                                                <i className="fi fi-rr-badge absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 transition-colors"></i>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block px-1">Strategic Description</label>
-                                            <div className="relative group">
-                                                <textarea
-                                                    value={campaignDescription}
-                                                    onChange={(e) => setCampaignDescription(e.target.value)}
-                                                    placeholder="Operational objectives and mission parameters..."
-                                                    rows={4}
-                                                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-xl text-sm font-bold text-gray-700 focus:bg-white focus:border-purple-500 transition-all outline-none resize-none"
-                                                />
-                                                <i className="fi fi-rr-align-left absolute left-4 top-5 text-gray-400 group-focus-within:text-purple-500 transition-colors"></i>
-                                            </div>
+                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Strategic Description</label>
+                                            <textarea
+                                                value={campaignDescription}
+                                                onChange={(e) => setCampaignDescription(e.target.value)}
+                                                placeholder="Mission parameters and objectives..."
+                                                rows={4}
+                                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans resize-none"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -386,60 +368,47 @@ export default function AddCampaignModal({
                     )}
 
                     {/* ORGANIZATION TAB */}
-                    {activeTab === 'org' && (
-                        <div className="p-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>Available Organizations</h3>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bind this campaign to a business entity</p>
-                                </div>
-                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm cursor-help" title="Campaign must be linked to one organization">
-                                    <i className="fi fi-rr-info"></i>
-                                </div>
+                    {activeTab === 'org' && !currentUser?.isClient && (
+                        <div className="p-6 space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div>
+                                <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Select Organization Binding</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {loadingOrgs ? (
-                                    <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
-                                        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Scanning Registry...</span>
+                                    <div className="col-span-full py-20 flex flex-col items-center justify-center gap-3">
+                                        <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Scanning Registry...</span>
                                     </div>
                                 ) : organizations.length === 0 ? (
-                                    <div className="col-span-full py-20 bg-white rounded-3xl border border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
-                                        <i className="fi fi-rr-building text-3xl text-gray-300 mb-4"></i>
-                                        <h4 className="text-sm font-semibold text-gray-800 uppercase tracking-widest mb-1">No Active Organizations</h4>
-                                        <p className="text-[10px] font-bold text-gray-400">Register an organization first to proceed</p>
+                                    <div className="col-span-full py-10 bg-gray-50/50 rounded-lg border border-dashed border-gray-200 text-center">
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">No organizations found</p>
                                     </div>
                                 ) : (
-                                    organizations.map((org) => (
+                                    organizations
+                                    .filter(org => !currentUser?.isClient || org.id === currentUser.organization_id)
+                                    .map((org) => (
                                         <div 
                                             key={org.id}
-                                            onClick={() => setSelectedOrgId(org.id)}
-                                            className={`relative overflow-hidden p-5 rounded-2xl border-2 transition-all cursor-pointer group ${selectedOrgId === org.id 
-                                                ? 'bg-purple-50 border-purple-500 shadow-xl shadow-purple-500/10' 
-                                                : 'bg-white border-gray-100 hover:border-purple-200 hover:shadow-lg'}`}
+                                            onClick={() => {
+                                                if (!currentUser?.isClient) {
+                                                    setSelectedOrgId(org.id);
+                                                }
+                                            }}
+                                            className={`relative p-4 rounded-lg border transition-all ${currentUser?.isClient ? 'cursor-default' : 'cursor-pointer'} ${selectedOrgId === org.id 
+                                                ? 'bg-indigo-50 border-indigo-500 ' 
+                                                : 'bg-white border-gray-100 hover:border-indigo-200'}`}
                                         >
-                                            {selectedOrgId === org.id && (
-                                                <div className="absolute top-0 right-0 p-3 text-purple-600">
-                                                    <i className="fi fi-sr-check-circle text-lg"></i>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="w-8 h-8 rounded bg-white border border-gray-100 flex items-center justify-center text-gray-400">
+                                                    <i className="fi fi-rr-building text-sm"></i>
                                                 </div>
-                                            )}
-                                            <div className="flex items-center gap-4 mb-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${selectedOrgId === org.id ? 'bg-purple-600 text-white' : 'bg-gray-50 text-gray-400 group-hover:bg-purple-50 group-hover:text-purple-400'}`}>
-                                                    <i className="fi fi-rr-building"></i>
-                                                </div>
-                                                <div>
-                                                    <h4 className={`text-xs font-semibold uppercase tracking-tight truncate max-w-[120px] ${selectedOrgId === org.id ? 'text-purple-900' : 'text-gray-700'}`}>
-                                                        {org.company_name}
-                                                    </h4>
-                                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                                        <span className="text-[9px] font-mono text-gray-400 group-hover:text-purple-400 transition-colors">#{org.org_code || 'N/A'}</span>
-                                                    </div>
-                                                </div>
+                                                {selectedOrgId === org.id && (
+                                                    <i className="fi fi-sr-check-circle text-indigo-600 text-sm"></i>
+                                                )}
                                             </div>
-                                            <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
-                                                <div className={`h-full transition-all duration-700 ${selectedOrgId === org.id ? 'w-full bg-purple-500' : 'w-0 bg-gray-300'}`}></div>
-                                            </div>
+                                            <h4 className="text-[11px] font-bold text-gray-800 truncate uppercase tracking-tight">{org.company_name}</h4>
+                                            <p className="text-[9px] font-mono text-gray-400 mt-0.5">#{org.org_code || 'N/A'}</p>
                                         </div>
                                     ))
                                 )}
@@ -449,87 +418,35 @@ export default function AddCampaignModal({
 
                     {/* TEAM TAB */}
                     {activeTab === 'team' && (
-                        <div className="h-full flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            
-                            {/* Selected Members Panel */}
-                            <div className="flex-1 p-8 border-r border-gray-100 bg-white/50">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div>
-                                        <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-widest">Operational Team</h3>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Assigned Personnel</p>
-                                    </div>
-                                    <div className="px-3 py-1 rounded-lg bg-purple-100 text-purple-600 text-[10px] font-semibold">
-                                        {selectedUsers.length} MEMBERS
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-h-[200px] content-start">
-                                    {selectedUsers.length === 0 ? (
-                                        <div className="col-span-full h-48 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
-                                            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-300 mb-3">
-                                                <i className="fi fi-rr-users text-xl"></i>
-                                            </div>
-                                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">No team members assigned</p>
-                                            <p className="text-[9px] font-bold text-gray-300 mt-1 uppercase">Select from available pool ➜</p>
-                                        </div>
-                                    ) : (
-                                        selectedUsers.map(uid => {
-                                            const user = users.find(u => u.user_id === uid || u.id === uid);
-                                            return (
-                                                <div key={uid} className="flex items-center gap-3 bg-white border border-gray-100 p-2.5 rounded-xl shadow-sm group animate-in zoom-in-95 duration-200">
-                                                    {user?.profile_pic_url ? (
-                                                        <img src={user.profile_pic_url} className="w-8 h-8 rounded-lg object-cover ring-2 ring-gray-50" alt="" />
-                                                    ) : (
-                                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-[10px] font-semibold text-white shadow-md">
-                                                            {user?.user_name?.charAt(0) || 'U'}
-                                                        </div>
-                                                    )}
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-[11px] font-bold text-gray-800 truncate">{user?.user_name || 'Anonymous'}</h4>
-                                                        <p className="text-[9px] font-medium text-gray-400 truncate">ID: {user?.employee_id || '---'}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => setSelectedUsers(prev => prev.filter(id => id !== uid))}
-                                                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-                                                    >
-                                                        <i className="fi fi-rr-cross-small text-lg"></i>
-                                                    </button>
-                                                </div>
-                                            );
-                                        })
-                                    )}
-                                </div>
-                            </div>
-
+                        <div className="h-full flex flex-col md:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300">
                             {/* Personnel Pool Panel */}
-                            <div className="w-full md:w-[360px] p-6 bg-white space-y-4 flex flex-col h-full">
-                                <div>
-                                    <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-[0.2em] mb-4">Personnel Pool</h3>
-                                    <div className="relative group">
+                            <div className="w-full md:w-[320px] p-5 bg-white border-r border-gray-100 flex flex-col shrink-0">
+                                <div className="mb-4">
+                                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 pl-0.5">Personnel Pool Search</label>
+                                    <div className="relative">
                                         <input
                                             type="text"
-                                            placeholder="Search by ID or Name..."
+                                            placeholder="ID or Name..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="w-full h-11 pl-11 pr-4 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:border-purple-500 transition-all outline-none"
+                                            className="w-full h-8 pl-8 pr-3 bg-white border border-gray-200 rounded text-[10px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                         />
-                                        <i className="fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-500 transition-colors"></i>
+                                        <i className="fi fi-rr-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                                     </div>
                                 </div>
 
                                 <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                     {loadingUsers ? (
-                                        <div className="py-10 flex flex-col items-center justify-center gap-3">
-                                            <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                                            <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest">Fetching Pool...</span>
+                                        <div className="py-10 text-center">
+                                            <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Loading...</span>
                                         </div>
                                     ) : filteredUsers.length === 0 ? (
-                                        <div className="py-10 text-center space-y-2 bg-gray-50 rounded-2xl">
-                                            <i className="fi fi-rr-search-alt text-lg text-gray-300"></i>
-                                            <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest">No matching agents</p>
+                                        <div className="py-10 text-center bg-gray-50/50 rounded-lg">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">No agents found</p>
                                         </div>
                                     ) : (
-                                        filteredUsers.map((user, index) => (
+                                        filteredUsers.map((user) => (
                                             <div 
                                                 key={user.id}
                                                 onClick={() => {
@@ -539,28 +456,64 @@ export default function AddCampaignModal({
                                                         setSelectedUsers([...selectedUsers, user.user_id]);
                                                     }
                                                 }}
-                                                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border ${selectedUsers.includes(user.user_id) 
-                                                    ? 'bg-purple-100/50 border-purple-200' 
-                                                    : 'bg-white border-gray-50 hover:border-gray-200 hover:bg-gray-50/50'}`}
+                                                className={`flex items-center gap-3 p-2 rounded border transition-all cursor-pointer ${selectedUsers.includes(user.user_id) 
+                                                    ? 'bg-indigo-50 border-indigo-300' 
+                                                    : 'bg-white border-gray-50 hover:border-gray-200 hover:bg-gray-50'}`}
                                             >
-                                                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${selectedUsers.includes(user.user_id) ? 'bg-purple-600 border-purple-600 shadow-md' : 'bg-white border-gray-200'}`}>
+                                                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-all ${selectedUsers.includes(user.user_id) ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-gray-300'}`}>
                                                     {selectedUsers.includes(user.user_id) && <i className="fi fi-rr-check text-[8px] text-white"></i>}
                                                 </div>
-                                                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+                                                <div className="w-7 h-7 rounded overflow-hidden shrink-0 border border-gray-100">
                                                     {user.profile_pic_url ? (
                                                         <img src={user.profile_pic_url} className="w-full h-full object-cover" alt="" />
                                                     ) : (
-                                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                                                        <div className="w-full h-full bg-indigo-50 flex items-center justify-center text-[10px] font-bold text-indigo-400">
                                                             {user.user_name?.charAt(0) || 'U'}
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-[11px] font-semibold text-gray-800 truncate">{user.user_name || 'Incomplete Profile'}</h4>
-                                                    <p className="text-[9px] font-bold text-gray-400 uppercase">{user.employee_id || 'ID-TBD'}</p>
+                                                    <h4 className="text-[10px] font-bold text-gray-800 truncate uppercase mt-0.5">{user.user_name || 'N/A'}</h4>
+                                                    <p className="text-[8px] font-mono text-gray-400">ID: {user.employee_id || '--'}</p>
                                                 </div>
                                             </div>
                                         ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Selected Members Panel */}
+                            <div className="flex-1 p-5 bg-gray-50/30 overflow-y-auto custom-scrollbar">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Assigned Sequence Personnel</h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {selectedUsers.length === 0 ? (
+                                        <div className="col-span-full h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg bg-white/50">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No members assigned</p>
+                                        </div>
+                                    ) : (
+                                        selectedUsers.map(uid => {
+                                            const u = users.find(usr => usr.user_id === uid || usr.id === uid);
+                                            return (
+                                                <div key={uid} className="flex items-center gap-3 bg-white border border-gray-100 p-2 rounded-lg  group">
+                                                    <div className="w-8 h-8 rounded border border-gray-100 shrink-0 bg-indigo-50 flex items-center justify-center text-indigo-400 font-bold text-[10px]">
+                                                        {u?.user_name?.charAt(0) || 'U'}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-[10px] font-bold text-gray-800 truncate uppercase">{u?.user_name || 'Anonymous'}</h4>
+                                                        <p className="text-[8px] font-mono text-gray-400">EMP: {u?.employee_id || '---'}</p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => setSelectedUsers(prev => prev.filter(id => id !== uid))}
+                                                        className="p-1 px-1.5 text-gray-300 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                                                    >
+                                                        <i className="fi fi-rr-cross-small text-lg leading-none"></i>
+                                                    </button>
+                                                </div>
+                                            );
+                                        })
                                     )}
                                 </div>
                             </div>
@@ -569,36 +522,24 @@ export default function AddCampaignModal({
                 </div>
 
                 {/* Footer Execution */}
-                <div className="p-6 bg-white border-t border-gray-100 flex gap-4">
+                <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white shrink-0 rounded-b-lg">
                     <button
                         onClick={onClose}
-                        className="flex-1 h-14 rounded-2xl border border-gray-200 text-gray-500 font-semibold uppercase tracking-widest text-[10px] hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
+                        className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
                     >
                         Abort Sequence
                     </button>
                     <button
                         onClick={handleSaveCampaign}
                         disabled={isSubmitting}
-                        className="group relative flex-[2] h-14 rounded-2xl bg-[#1e1b4b] text-white overflow-hidden shadow-2xl shadow-indigo-100 transition-all active:scale-95 disabled:opacity-50"
+                        className="px-6 py-1.5 bg-[#4b33e8] text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all   disabled:opacity-50 flex items-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
-                        <div className="relative z-10 flex items-center justify-center gap-3">
-                            {isSubmitting ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                                    <span className="text-[10px] font-semibold uppercase tracking-widest">Processing Injection...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <i className="fi fi-rr-disk text-lg group-hover:-translate-y-1 transition-transform"></i>
-                                    <span className="text-[10px] font-semibold uppercase tracking-widest">{campaign ? 'Commit Changes' : 'Execute Creation'}</span>
-                                </>
-                            )}
-                        </div>
+                        {isSubmitting ? "Processing..." : campaign ? 'Commit Changes' : 'Execute Creation'}
                     </button>
                 </div>
             </div>
         </div>
+
 
     );
 }

@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { useUser } from "@/context/UserContext"; 
 import { getStoredUserData, storeUserData } from "@/lib/localStorageUtils";
 import { useSessionState } from "@/hooks/useSessionState";
-import { useCallSessionRedirect } from "@/hooks/useCallSessionRedirect";
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
     BarChart, Bar, Cell, 
@@ -85,7 +84,7 @@ export default function CampaignDetails() {
     const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
     const userId = user?.uid;
 
-    useCallSessionRedirect(userId);
+
 
     const [loading, setLoading] = useState(true);
     const [campaign, setCampaign] = useState<Campaign | null>(null);

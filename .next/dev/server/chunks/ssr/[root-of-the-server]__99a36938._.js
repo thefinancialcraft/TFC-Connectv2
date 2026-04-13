@@ -505,7 +505,9 @@ function TeamDetails() {
                     idleMins,
                     onCall: !!syncData?.on_call,
                     isPersonal: !!syncData?.is_personal,
-                    status: syncData?.on_call ? syncData.is_personal ? 'Personal Call' : 'On Call' : isActuallyOnline ? 'Online' : 'Idle'
+                    status: syncData?.on_call ? syncData.is_personal ? 'Personal Call' : 'On Call' : isActuallyOnline ? 'Online' : 'Idle',
+                    utilization: ((totalDuration / 60 * 1.67 + totalCalls) / 3).toFixed(1) + '%',
+                    utilizationRaw: (totalDuration / 60 * 1.67 + totalCalls) / 3
                 };
                 totalCallsAll += totalCalls;
                 totalConnectedAll += connectedCount;
@@ -647,7 +649,7 @@ function TeamDetails() {
                             className: "animate-spin rounded-full h-12 w-12 border-4 border-[#4b33e8] border-t-transparent"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 514,
+                            lineNumber: 516,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -655,18 +657,18 @@ function TeamDetails() {
                             children: "Loading team analytics..."
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 515,
+                            lineNumber: 517,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/team/[id].tsx",
-                    lineNumber: 513,
+                    lineNumber: 515,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/team/[id].tsx",
-                lineNumber: 512,
+                lineNumber: 514,
                 columnNumber: 9
             }, this)
         }, void 0, false);
@@ -684,12 +686,12 @@ function TeamDetails() {
                                 className: "fi fi-rr-exclamation"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                lineNumber: 528,
+                                lineNumber: 530,
                                 columnNumber: 21
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 527,
+                            lineNumber: 529,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -699,7 +701,7 @@ function TeamDetails() {
                                     children: error || "Team Not Found"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 531,
+                                    lineNumber: 533,
                                     columnNumber: 20
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -707,13 +709,13 @@ function TeamDetails() {
                                     children: error ? "There was a problem loading the data." : "The requested team could not be found or you don't have permission to view it."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 532,
+                                    lineNumber: 534,
                                     columnNumber: 20
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 530,
+                            lineNumber: 532,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -722,18 +724,18 @@ function TeamDetails() {
                             children: "Back to Teams"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 536,
+                            lineNumber: 538,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/team/[id].tsx",
-                    lineNumber: 526,
+                    lineNumber: 528,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/team/[id].tsx",
-                lineNumber: 525,
+                lineNumber: 527,
                 columnNumber: 9
             }, this)
         }, void 0, false);
@@ -748,12 +750,12 @@ function TeamDetails() {
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/team/[id].tsx",
-                    lineNumber: 551,
+                    lineNumber: 553,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/team/[id].tsx",
-                lineNumber: 550,
+                lineNumber: 552,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -772,14 +774,14 @@ function TeamDetails() {
                                             className: "fi flex fi-rr-arrow-left"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 563,
+                                            lineNumber: 565,
                                             columnNumber: 21
                                         }, this),
                                         " Back to Teams"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 559,
+                                    lineNumber: 561,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -799,7 +801,7 @@ function TeamDetails() {
                                                             children: team?.name || 'Loading Team...'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 569,
+                                                            lineNumber: 571,
                                                             columnNumber: 28
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -807,13 +809,13 @@ function TeamDetails() {
                                                             children: team?.is_active ? 'Active' : 'Inactive'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 572,
+                                                            lineNumber: 574,
                                                             columnNumber: 28
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 568,
+                                                    lineNumber: 570,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -823,7 +825,7 @@ function TeamDetails() {
                                                             className: "fi flex fi-rr-building"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 577,
+                                                            lineNumber: 579,
                                                             columnNumber: 29
                                                         }, this),
                                                         " ",
@@ -832,7 +834,7 @@ function TeamDetails() {
                                                             className: "w-1 h-1 rounded-full bg-gray-300"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 578,
+                                                            lineNumber: 580,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -843,25 +845,25 @@ function TeamDetails() {
                                                                     children: getSingle(team?.leader)?.user_name || 'N/A'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 579,
+                                                                    lineNumber: 581,
                                                                     columnNumber: 43
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 579,
+                                                            lineNumber: 581,
                                                             columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 576,
+                                                    lineNumber: 578,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 567,
+                                            lineNumber: 569,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -877,7 +879,7 @@ function TeamDetails() {
                                                             children: "Today"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 589,
+                                                            lineNumber: 591,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -885,7 +887,7 @@ function TeamDetails() {
                                                             children: "Yesterday"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 590,
+                                                            lineNumber: 592,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -893,7 +895,7 @@ function TeamDetails() {
                                                             children: "This Week"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 591,
+                                                            lineNumber: 593,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -901,7 +903,7 @@ function TeamDetails() {
                                                             children: "This Month"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 592,
+                                                            lineNumber: 594,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -909,13 +911,13 @@ function TeamDetails() {
                                                             children: "All Time"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 593,
+                                                            lineNumber: 595,
                                                             columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 584,
+                                                    lineNumber: 586,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -923,25 +925,25 @@ function TeamDetails() {
                                                     children: "Download Report"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 595,
+                                                    lineNumber: 597,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 583,
+                                            lineNumber: 585,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 566,
+                                    lineNumber: 568,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 558,
+                            lineNumber: 560,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -991,12 +993,12 @@ function TeamDetails() {
                                                 className: `fi ${stat.icon}`
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 613,
+                                                lineNumber: 615,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 612,
+                                            lineNumber: 614,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1006,7 +1008,7 @@ function TeamDetails() {
                                                     children: stat.label
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 616,
+                                                    lineNumber: 618,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -1014,24 +1016,24 @@ function TeamDetails() {
                                                     children: stat.value
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 617,
+                                                    lineNumber: 619,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 617,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, i, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 611,
+                                    lineNumber: 613,
                                     columnNumber: 21
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 603,
+                            lineNumber: 605,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1045,7 +1047,7 @@ function TeamDetails() {
                                             children: "Call Outcomes"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 627,
+                                            lineNumber: 629,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1068,44 +1070,44 @@ function TeamDetails() {
                                                                     fill: COLORS[index % COLORS.length]
                                                                 }, `cell-${index}`, false, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 642,
+                                                                    lineNumber: 644,
                                                                     columnNumber: 41
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 631,
+                                                            lineNumber: 633,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {}, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 645,
+                                                            lineNumber: 647,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Legend"], {}, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 646,
+                                                            lineNumber: 648,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 630,
+                                                    lineNumber: 632,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 629,
+                                                lineNumber: 631,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 628,
+                                            lineNumber: 630,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 626,
+                                    lineNumber: 628,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1116,7 +1118,7 @@ function TeamDetails() {
                                             children: "Hourly Activity"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 654,
+                                            lineNumber: 656,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1138,7 +1140,7 @@ function TeamDetails() {
                                                             vertical: false
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 666,
+                                                            lineNumber: 668,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1151,7 +1153,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 667,
+                                                            lineNumber: 669,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1163,7 +1165,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 668,
+                                                            lineNumber: 670,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1177,7 +1179,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 669,
+                                                            lineNumber: 671,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Bar"], {
@@ -1192,35 +1194,35 @@ function TeamDetails() {
                                                             barSize: 40
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 670,
+                                                            lineNumber: 672,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 657,
+                                                    lineNumber: 659,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 656,
+                                                lineNumber: 658,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 655,
+                                            lineNumber: 657,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 653,
+                                    lineNumber: 655,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 624,
+                            lineNumber: 626,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1234,7 +1236,7 @@ function TeamDetails() {
                                             children: "Daily Call Trend"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 681,
+                                            lineNumber: 683,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1265,7 +1267,7 @@ function TeamDetails() {
                                                                         stopOpacity: 0.8
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 695,
+                                                                        lineNumber: 697,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("stop", {
@@ -1274,18 +1276,18 @@ function TeamDetails() {
                                                                         stopOpacity: 0
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 696,
+                                                                        lineNumber: 698,
                                                                         columnNumber: 41
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 694,
+                                                                lineNumber: 696,
                                                                 columnNumber: 37
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 693,
+                                                            lineNumber: 695,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1298,7 +1300,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 699,
+                                                            lineNumber: 701,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1310,7 +1312,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 700,
+                                                            lineNumber: 702,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["CartesianGrid"], {
@@ -1318,7 +1320,7 @@ function TeamDetails() {
                                                             vertical: false
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 701,
+                                                            lineNumber: 703,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1332,7 +1334,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 702,
+                                                            lineNumber: 704,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Area"], {
@@ -1343,29 +1345,29 @@ function TeamDetails() {
                                                             fill: "url(#colorCalls)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 703,
+                                                            lineNumber: 705,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 684,
+                                                    lineNumber: 686,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 683,
+                                                lineNumber: 685,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 682,
+                                            lineNumber: 684,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 680,
+                                    lineNumber: 682,
                                     columnNumber: 18
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1376,7 +1378,7 @@ function TeamDetails() {
                                             children: "Lead Status"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 711,
+                                            lineNumber: 713,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1400,7 +1402,7 @@ function TeamDetails() {
                                                             vertical: false
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 724,
+                                                            lineNumber: 726,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1408,7 +1410,7 @@ function TeamDetails() {
                                                             hide: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 725,
+                                                            lineNumber: 727,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1423,7 +1425,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 726,
+                                                            lineNumber: 728,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1437,7 +1439,7 @@ function TeamDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 727,
+                                                            lineNumber: 729,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["Bar"], {
@@ -1452,35 +1454,35 @@ function TeamDetails() {
                                                             barSize: 20
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 728,
+                                                            lineNumber: 730,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 714,
+                                                    lineNumber: 716,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 713,
+                                                lineNumber: 715,
                                                 columnNumber: 25
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 712,
+                                            lineNumber: 714,
                                             columnNumber: 22
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 710,
+                                    lineNumber: 712,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 678,
+                            lineNumber: 680,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1491,7 +1493,7 @@ function TeamDetails() {
                                     children: "Top Performers"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 737,
+                                    lineNumber: 739,
                                     columnNumber: 16
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1508,7 +1510,7 @@ function TeamDetails() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                        lineNumber: 741,
+                                                        lineNumber: 743,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1519,18 +1521,18 @@ function TeamDetails() {
                                                             alt: agent.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 746,
+                                                            lineNumber: 748,
                                                             columnNumber: 33
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
                                                             className: "fi flex fi-rr-user text-2xl text-gray-400"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 748,
+                                                            lineNumber: 750,
                                                             columnNumber: 33
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                        lineNumber: 744,
+                                                        lineNumber: 746,
                                                         columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1541,7 +1543,7 @@ function TeamDetails() {
                                                                 children: agent.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 752,
+                                                                lineNumber: 754,
                                                                 columnNumber: 31
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -1552,19 +1554,19 @@ function TeamDetails() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 753,
+                                                                lineNumber: 755,
                                                                 columnNumber: 31
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                        lineNumber: 751,
+                                                        lineNumber: 753,
                                                         columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, i, true, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 740,
+                                                lineNumber: 742,
                                                 columnNumber: 23
                                             }, this)),
                                         processedData.topAgents.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -1572,19 +1574,19 @@ function TeamDetails() {
                                             children: "No data available for leaderboard."
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 757,
+                                            lineNumber: 759,
                                             columnNumber: 60
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 738,
+                                    lineNumber: 740,
                                     columnNumber: 16
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 736,
+                            lineNumber: 738,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1598,7 +1600,7 @@ function TeamDetails() {
                                             children: "Member Performance"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 764,
+                                            lineNumber: 766,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1613,20 +1615,20 @@ function TeamDetails() {
                                                             className: `fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 771,
+                                                            lineNumber: 773,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             children: "Refresh"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 772,
+                                                            lineNumber: 774,
                                                             columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 766,
+                                                    lineNumber: 768,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1639,14 +1641,14 @@ function TeamDetails() {
                                                                     className: "w-2 h-2 rounded-full bg-green-500"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 775,
+                                                                    lineNumber: 777,
                                                                     columnNumber: 121
                                                                 }, this),
                                                                 " Online"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 775,
+                                                            lineNumber: 777,
                                                             columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -1656,32 +1658,32 @@ function TeamDetails() {
                                                                     className: "w-2 h-2 rounded-full bg-gray-400"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 776,
+                                                                    lineNumber: 778,
                                                                     columnNumber: 119
                                                                 }, this),
                                                                 " Idle"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 776,
+                                                            lineNumber: 778,
                                                             columnNumber: 29
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 774,
+                                                    lineNumber: 776,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                            lineNumber: 765,
+                                            lineNumber: 767,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 763,
+                                    lineNumber: 765,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1698,7 +1700,7 @@ function TeamDetails() {
                                                             children: "Agent"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 785,
+                                                            lineNumber: 787,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1706,7 +1708,7 @@ function TeamDetails() {
                                                             children: "Last Active"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 786,
+                                                            lineNumber: 788,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1714,7 +1716,7 @@ function TeamDetails() {
                                                             children: "Status"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 787,
+                                                            lineNumber: 789,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1722,7 +1724,7 @@ function TeamDetails() {
                                                             children: "Follow Ups"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 788,
+                                                            lineNumber: 790,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1730,7 +1732,7 @@ function TeamDetails() {
                                                             children: "Talk Time"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 789,
+                                                            lineNumber: 791,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1738,7 +1740,7 @@ function TeamDetails() {
                                                             children: "Connected"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 790,
+                                                            lineNumber: 792,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1746,7 +1748,7 @@ function TeamDetails() {
                                                             children: "Avg Talk"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 791,
+                                                            lineNumber: 793,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1754,7 +1756,15 @@ function TeamDetails() {
                                                             children: "Streak/Gap"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 792,
+                                                            lineNumber: 794,
+                                                            columnNumber: 33
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
+                                                            className: "px-2 py-3 font-bold text-center text-rose-600",
+                                                            children: "Utilization"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                            lineNumber: 795,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -1762,18 +1772,18 @@ function TeamDetails() {
                                                             children: "Last Call"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                            lineNumber: 793,
+                                                            lineNumber: 796,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 784,
+                                                    lineNumber: 786,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 783,
+                                                lineNumber: 785,
                                                 columnNumber: 25
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tbody", {
@@ -1785,12 +1795,12 @@ function TeamDetails() {
                                                         children: "No members in this team"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                        lineNumber: 799,
+                                                        lineNumber: 802,
                                                         columnNumber: 37
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                    lineNumber: 798,
+                                                    lineNumber: 801,
                                                     columnNumber: 33
                                                 }, this) : members.map((member)=>{
                                                     const mId = member.user_id;
@@ -1823,18 +1833,18 @@ function TeamDetails() {
                                                                                 className: "w-full h-full object-cover"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                lineNumber: 813,
+                                                                                lineNumber: 816,
                                                                                 columnNumber: 57
                                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
                                                                                 className: "fi flex fi-rr-user text-lg text-gray-400"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                lineNumber: 815,
+                                                                                lineNumber: 818,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                            lineNumber: 811,
+                                                                            lineNumber: 814,
                                                                             columnNumber: 49
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1844,7 +1854,7 @@ function TeamDetails() {
                                                                                     children: member.user_name || 'Unknown'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                    lineNumber: 819,
+                                                                                    lineNumber: 822,
                                                                                     columnNumber: 53
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -1855,24 +1865,24 @@ function TeamDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                    lineNumber: 820,
+                                                                                    lineNumber: 823,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                            lineNumber: 818,
+                                                                            lineNumber: 821,
                                                                             columnNumber: 49
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 810,
+                                                                    lineNumber: 813,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 809,
+                                                                lineNumber: 812,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -1906,7 +1916,7 @@ function TeamDetails() {
                                                                                 children: formatTime(mStats.lastOnline)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                lineNumber: 850,
+                                                                                lineNumber: 853,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1916,20 +1926,20 @@ function TeamDetails() {
                                                                                         className: `w-1 h-1 rounded-full ${dotColor}`
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                        lineNumber: 852,
+                                                                                        lineNumber: 855,
                                                                                         columnNumber: 61
                                                                                     }, this),
                                                                                     statusText
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                                lineNumber: 851,
+                                                                                lineNumber: 854,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 849,
+                                                                        lineNumber: 852,
                                                                         columnNumber: 53
                                                                     }, this);
                                                                 })() : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -1937,12 +1947,12 @@ function TeamDetails() {
                                                                     children: "-"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 858,
+                                                                    lineNumber: 861,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 824,
+                                                                lineNumber: 827,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -1954,14 +1964,14 @@ function TeamDetails() {
                                                                             className: `fi flex ${mStats.isPersonal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                            lineNumber: 864,
+                                                                            lineNumber: 867,
                                                                             columnNumber: 51
                                                                         }, this),
                                                                         mStats.isPersonal ? 'Personal Call' : 'On Call'
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 863,
+                                                                    lineNumber: 866,
                                                                     columnNumber: 47
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                     className: `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`,
@@ -1970,19 +1980,19 @@ function TeamDetails() {
                                                                             className: `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                            lineNumber: 869,
+                                                                            lineNumber: 872,
                                                                             columnNumber: 51
                                                                         }, this),
                                                                         isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 868,
+                                                                    lineNumber: 871,
                                                                     columnNumber: 47
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 861,
+                                                                lineNumber: 864,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -1995,12 +2005,12 @@ function TeamDetails() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                    lineNumber: 875,
+                                                                    lineNumber: 878,
                                                                     columnNumber: 45
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 874,
+                                                                lineNumber: 877,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -2008,7 +2018,7 @@ function TeamDetails() {
                                                                 children: mStats.totalTalkTime
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 879,
+                                                                lineNumber: 882,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -2019,7 +2029,7 @@ function TeamDetails() {
                                                                         children: mStats.connected
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 883,
+                                                                        lineNumber: 886,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -2030,13 +2040,13 @@ function TeamDetails() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 884,
+                                                                        lineNumber: 887,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 882,
+                                                                lineNumber: 885,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -2044,7 +2054,7 @@ function TeamDetails() {
                                                                 children: mStats.avgDuration
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 886,
+                                                                lineNumber: 889,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -2052,7 +2062,48 @@ function TeamDetails() {
                                                                 children: mStats.streakGap
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 889,
+                                                                lineNumber: 892,
+                                                                columnNumber: 41
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
+                                                                className: "px-2 py-4 text-center",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                                    className: "flex flex-col items-center",
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
+                                                                            className: "text-xs font-bold text-rose-600",
+                                                                            children: mStats.utilization
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 897,
+                                                                            columnNumber: 49
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                                            className: "w-12 h-1 bg-gray-100 rounded-full mt-1 overflow-hidden",
+                                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                                                className: "h-full bg-rose-500",
+                                                                                style: {
+                                                                                    width: `${Math.min(100, mStats.utilizationRaw)}%`
+                                                                                }
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                                lineNumber: 901,
+                                                                                columnNumber: 53
+                                                                            }, this)
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                            lineNumber: 900,
+                                                                            columnNumber: 49
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                    lineNumber: 896,
+                                                                    columnNumber: 45
+                                                                }, this)
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/team/[id].tsx",
+                                                                lineNumber: 895,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
@@ -2063,7 +2114,7 @@ function TeamDetails() {
                                                                         children: formatTime(mStats.lastActive)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 893,
+                                                                        lineNumber: 909,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -2071,53 +2122,53 @@ function TeamDetails() {
                                                                         children: mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : 'N/A'
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                        lineNumber: 894,
+                                                                        lineNumber: 910,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                                lineNumber: 892,
+                                                                lineNumber: 908,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, member.user_id, true, {
                                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                                        lineNumber: 808,
+                                                        lineNumber: 811,
                                                         columnNumber: 37
                                                     }, this);
                                                 })
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/team/[id].tsx",
-                                                lineNumber: 796,
+                                                lineNumber: 799,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/team/[id].tsx",
-                                        lineNumber: 782,
+                                        lineNumber: 784,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/team/[id].tsx",
-                                    lineNumber: 781,
+                                    lineNumber: 783,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/team/[id].tsx",
-                            lineNumber: 762,
+                            lineNumber: 764,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/team/[id].tsx",
-                    lineNumber: 555,
+                    lineNumber: 557,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/team/[id].tsx",
-                lineNumber: 554,
+                lineNumber: 556,
                 columnNumber: 7
             }, this)
         ]

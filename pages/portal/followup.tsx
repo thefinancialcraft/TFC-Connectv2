@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/router";
 import { useUser } from "@/components/AppLayout";
+import { useSession } from "@/context/SessionContext";
 import { useFollowUpLeads, FollowUpLead } from "@/hooks/useFollowUpLeads";
 import { formatMaskedPhone } from "@/lib/phoneUtils";
 
@@ -18,16 +19,22 @@ interface Pipeline {
 export default function FollowUp() {
   const router = useRouter();
   const { user } = useUser();
+  const { allSessions, startManualLock } = useSession();
   const {
     loading,
     error,
+    leads,
     filteredLeads,
     searchQuery,
     setSearchQuery,
+    filters,
+    setFilters,
     stats,
     fetchLeads,
     formatDate
   } = useFollowUpLeads();
+
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   const [viewMode, setViewMode] = useState<'table' | 'kanban' | 'calendar'>('table');
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -163,6 +170,45 @@ export default function FollowUp() {
     const timeout = setTimeout(saveSettings, 1000);
     return () => clearTimeout(timeout);
   }, [viewMode, pipelines, user?.uid]);
+  
+  // --- MANUAL NAVIGATION HANDLER ---
+  const handleManualLeadOpen = (campaignId: string, customerId: string) => {
+    console.log("[Follow-up] Manual Lead Open triggered:", customerId);
+    
+    // Check for hot session in unified state
+    const hot = [...allSessions].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .find(s => 
+            s.manual_status === 'active' || s.manual_status === 'disposition_pending' ||
+            s.status === 'active' || s.status === 'disposition_pending'
+        );
+    
+    if (hot) {
+        console.log("[Follow-up] Using unified context to lock snapshot for session:", hot.customer_id);
+        startManualLock(hot);
+    }
+    
+    // Explicitly using the masked path to trigger rewrites correctly
+    router.push(`/campaign/${campaignId}/${customerId}`);
+  };
+
+  // Derive filter options from leads
+  const filterOptions = useMemo(() => {
+    const orgs = new Map();
+    const campaigns = new Map();
+    const agents = new Map();
+
+    leads.forEach((lead: FollowUpLead) => {
+      if (lead.organization_id) orgs.set(lead.organization_id, lead.organization_name);
+      if (lead.campaign_id) campaigns.set(lead.campaign_id, lead.campaign_name);
+      if (lead.assigned_to) agents.set(lead.assigned_to, { name: lead.assigned_name, empId: lead.employee_id });
+    });
+
+    return {
+      organizations: Array.from(orgs.entries()).map(([id, name]) => ({ id, name })),
+      campaigns: Array.from(campaigns.entries()).map(([id, name]) => ({ id, name })),
+      agents: Array.from(agents.entries()).map(([id, info]) => ({ id, name: info.name, empId: info.empId }))
+    };
+  }, [leads]);
 
 
 
@@ -436,6 +482,12 @@ export default function FollowUp() {
                             />
                         </div>
                         <button 
+                             onClick={() => setShowFilterModal(true)}
+                             className={`h-9 w-9 border border-gray-300 rounded-lg transition-colors flex items-center justify-center flex-shrink-0 ${Object.values(filters).some(v => v !== "") ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-white text-gray-600'}`} 
+                        >
+                            <i className="fi flex fi-rr-filter text-sm"></i>
+                        </button>
+                        <button 
                              onClick={() => setShowConfig(!showConfig)}
                              className={`h-9 w-9 border border-gray-300 rounded-lg transition-colors flex items-center justify-center flex-shrink-0 ${showConfig ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white text-gray-600'}`} 
                         >
@@ -455,7 +507,7 @@ export default function FollowUp() {
                             onClick={() => setViewMode('table')}
                             className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
                         >
-                            <i className="fi fi-rr-apps-sort"></i>
+                            <i className="fi flex fi-rr-apps-sort"></i>
                             Table
                         </button>
                         <button 
@@ -469,7 +521,7 @@ export default function FollowUp() {
                             onClick={() => setViewMode('calendar')}
                             className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-xs font-bold transition-all flex flex-row items-center justify-center gap-1.5 whitespace-nowrap ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500'}`}
                         >
-                            <i className="fi fi-rr-calendar"></i>
+                            <i className="fi flex fi-rr-calendar"></i>
                             Calendar
                         </button>
                      </div>
@@ -491,7 +543,7 @@ export default function FollowUp() {
                                 onClick={() => setViewMode('table')}
                                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'table' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                <i className="fi fi-rr-apps-sort mr-2"></i>
+                                <i className="fi flex fi-rr-apps-sort mr-2"></i>
                                 Table
                             </button>
                             <button 
@@ -505,7 +557,7 @@ export default function FollowUp() {
                                 onClick={() => setViewMode('calendar')}
                                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap flex flex-row items-center gap-2 ${viewMode === 'calendar' ? 'bg-white text-[#4b33e8] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                <i className="fi fi-rr-calendar mr-2"></i>
+                                <i className="fi flex fi-rr-calendar mr-2"></i>
                                 Calendar
                             </button>
                         </div>
@@ -521,6 +573,14 @@ export default function FollowUp() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
+                        <button 
+                             onClick={() => setShowFilterModal(true)}
+                             className={`h-10 px-3 border border-gray-300 rounded-lg transition-colors flex items-center justify-center ${Object.values(filters).some(v => v !== "") ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-white hover:bg-gray-50 text-gray-600'}`} 
+                             title="Filter Leads"
+                         >
+                            <i className="fi flex fi-rr-filter text-sm mr-2"></i>
+                            <span className="text-xs font-bold">Filter</span>
+                        </button>
                         {/* Additional Filter Buttons (Visual only for now matching style) */}
                          <button 
                              onClick={() => setShowConfig(!showConfig)}
@@ -671,6 +731,118 @@ export default function FollowUp() {
                     </div>
                 )}
 
+                {/* Structured Filter Modal */}
+                {showFilterModal && (
+                    <div className="fixed inset-0 z-[120] backdrop-blur-sm bg-black/30 flex items-center justify-center p-4 text-xs font-sans">
+                        <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200 border border-gray-100">
+                            {/* Header */}
+                            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="font-bold text-gray-800">Filter Follow-ups</h3>
+                                </div>
+                                <button onClick={() => setShowFilterModal(false)} className="text-gray-400 hover:text-gray-600 p-1">
+                                    <i className="fi fi-rr-cross-small text-xl leading-none"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="p-5 space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* Organization Filter */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Organization</label>
+                                        <select 
+                                            value={filters.organizationId}
+                                            onChange={(e) => setFilters({...filters, organizationId: e.target.value})}
+                                            className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                        >
+                                            <option value="">All Organizations</option>
+                                            {filterOptions.organizations.map((org: any) => (
+                                                <option key={org.id} value={org.id}>{org.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Campaign Filter */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign</label>
+                                        <select 
+                                            value={filters.campaignId}
+                                            onChange={(e) => setFilters({...filters, campaignId: e.target.value})}
+                                            className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                        >
+                                            <option value="">All Campaigns</option>
+                                            {filterOptions.campaigns.map((camp: any) => (
+                                                <option key={camp.id} value={camp.id}>{camp.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* Status Filter */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Sequence Status</label>
+                                        <select 
+                                            value={filters.status}
+                                            onChange={(e) => setFilters({...filters, status: e.target.value})}
+                                            className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                        >
+                                            <option value="">All Statuses</option>
+                                            <option value="overdue">Overdue</option>
+                                            <option value="upcoming">Upcoming</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Assigned To Filter */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Assigned Personnel</label>
+                                        <select 
+                                            value={filters.assignedTo}
+                                            onChange={(e) => setFilters({...filters, assignedTo: e.target.value})}
+                                            className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                        >
+                                            <option value="">Everyone</option>
+                                            {filterOptions.agents.map((agent: any) => (
+                                                <option key={agent.id} value={agent.id}>
+                                                    {agent.name} {agent.empId ? `(${agent.empId})` : ''}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Callback Date Filter */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Execution Date</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="date"
+                                            value={filters.callbackDate}
+                                            onChange={(e) => setFilters({...filters, callbackDate: e.target.value})}
+                                            className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="px-5 py-3 bg-white border-t border-gray-100 flex items-center justify-between shrink-0">
+                                <button 
+                                    onClick={() => setFilters({ organizationId: "", assignedTo: "", status: "", campaignId: "", callbackDate: "" })}
+                                    className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
+                                >
+                                    Clear Config
+                                </button>
+                                <button 
+                                    onClick={() => setShowFilterModal(false)}
+                                    className="px-6 py-1.5 bg-[#4b33e8] text-white rounded font-bold uppercase tracking-widest transition-all hover:bg-indigo-700"
+                                >
+                                    Apply Configuration
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center gap-3">
                         <i className="fi fi-rr-info"></i>
@@ -715,7 +887,7 @@ export default function FollowUp() {
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {filteredLeads.map((lead: any) => (
-                                    <tr key={lead.id} className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0" onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}>
+                                    <tr key={lead.id} className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0" onClick={() => handleManualLeadOpen(lead.campaign_id, lead.id)}>
                                         <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center justify-center">
                                                 <input className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer" type="checkbox" />
@@ -784,7 +956,7 @@ export default function FollowUp() {
                                         <td className="px-4 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                                 <button 
-                                                    onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}
+                                                    onClick={() => handleManualLeadOpen(lead.campaign_id, lead.id)}
                                                     className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#4b33e8] text-white rounded-lg text-[10px] font-bold shadow-md hover:bg-[#3f2bc2] transition-colors"
                                                 >
                                                     <i className="fi fi-rr-phone-call text-xs"></i>
@@ -864,7 +1036,7 @@ export default function FollowUp() {
                                                 leadsInPipeline.map((lead: any) => (
                                                     <div 
                                                         key={lead.id} 
-                                                        onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}
+                                                        onClick={() => handleManualLeadOpen(lead.campaign_id, lead.id)}
                                                         className="bg-white p-2.5 rounded-xl shadow-sm border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group animate-fade-in relative overflow-hidden"
                                                     >
                                                         {/* Status Accent Line */}
@@ -911,7 +1083,7 @@ export default function FollowUp() {
                                                                 className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-indigo-100 shadow-sm"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    router.push(`/campaign/${lead.campaign_id}/${lead.id}`);
+                                                                    handleManualLeadOpen(lead.campaign_id, lead.id);
                                                                 }}
                                                             >
                                                                 <i className="fi fi-rr-phone-call text-[8px]"></i>
@@ -1097,7 +1269,7 @@ export default function FollowUp() {
                                                             slotLeads.map((lead: any) => (
                                                                 <div 
                                                                     key={lead.id}
-                                                                    onClick={(e) => { e.stopPropagation(); router.push(`/campaign/${lead.campaign_id}/${lead.id}`); }}
+                                                                    onClick={(e) => { e.stopPropagation(); handleManualLeadOpen(lead.campaign_id, lead.id); }}
                                                                     className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
                                                                 >
                                                                     <div className={`w-1 h-8 rounded-full flex-shrink-0 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500'}`}></div>
@@ -1195,7 +1367,7 @@ export default function FollowUp() {
                                                                 {groupedByMinute[time].map((lead: any) => (
                                                                     <div 
                                                                         key={lead.id}
-                                                                        onClick={() => router.push(`/campaign/${lead.campaign_id}/${lead.id}`)}
+                                                                        onClick={() => handleManualLeadOpen(lead.campaign_id, lead.id)}
                                                                         className="min-w-[250px] bg-white p-3 rounded-xl border border-gray-200 hover:border-indigo-400 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col gap-2"
                                                                     >
                                                                         <div className="flex items-center gap-2 border-b border-gray-50 pb-2">

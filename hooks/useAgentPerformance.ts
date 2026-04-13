@@ -38,6 +38,9 @@ interface CacheEntry {
 
 const CACHE_TTL = 60 * 1000;
 
+// Global cache to persist across remounts/tab switches
+const globalCache: Record<string, CacheEntry> = {};
+
 export function useAgentPerformance(): UseAgentPerformanceReturn {
   const [agentData, setAgentData] = useState<AgentDataPoint[]>([]);
   const [totalDials, setTotalDials] = useState(0);
@@ -46,7 +49,6 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   const [error, setError] = useState<string | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
-  const cacheRef = useRef<Record<string, CacheEntry>>({});
 
   useEffect(() => {
     return () => {
@@ -60,12 +62,12 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
     async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string) => {
       const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
 
-      const cached = cacheRef.current[cacheKey];
+      const cached = globalCache[cacheKey];
       if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
         setAgentData(cached.data.agentData);
         setTotalDials(cached.data.totalDials);
         setTotalDuration(cached.data.totalDuration);
-        loading && setLoading(false);
+        if (loading) setLoading(false);
         return;
       }
 
@@ -119,7 +121,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
         setTotalDials(data.totalDials);
         setTotalDuration(data.totalDuration);
 
-        cacheRef.current[cacheKey] = {
+        globalCache[cacheKey] = {
            data,
            timestamp: Date.now()
         };

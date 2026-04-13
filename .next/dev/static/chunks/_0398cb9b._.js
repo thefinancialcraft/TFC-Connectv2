@@ -776,37 +776,59 @@ function useCallSessionRedirect(userId) {
             const { data: sessions, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').select('*').eq('user_id', userId);
             if (error) throw error;
             if (!sessions || sessions.length === 0) return;
-            // 1. Filter for "HOT" sessions (Active or Pending)
-            const manualHotSessions = sessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
-            const systemHotSessions = sessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
-            console.log(`[Session-Guard] Pulse Check: Manual-Hot=${manualHotSessions.length}, System-Hot=${systemHotSessions.length}`);
+            // --- LATEST ACTIVITY SORT ---
+            const sortedSessions = [
+                ...sessions
+            ].sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+            // 1. Filter for "HOT" sessions (Using the sorted list)
+            const manualHotSessions = sortedSessions.filter((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending');
+            const systemHotSessions = sortedSessions.filter((s)=>s.status === 'active' || s.status === 'disposition_pending');
             let sessionToFollow = null;
             let prioritizeManual = false;
-            // PRIORITY RULE: Manual sessions take priority over System sessions
             if (manualHotSessions.length > 0) {
-                // Pick the most recently updated manual session
-                sessionToFollow = manualHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = manualHotSessions[0];
                 prioritizeManual = true;
             } else if (systemHotSessions.length > 0) {
-                // Pick the most recently updated system session
-                sessionToFollow = systemHotSessions.sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
+                sessionToFollow = systemHotSessions[0];
             }
             if (sessionToFollow) {
+                // --- MANUAL INSPECTION LOCK ---
+                const snapshotStr = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('manual_inspection_snapshot') : "TURBOPACK unreachable";
+                if (snapshotStr) {
+                    try {
+                        const snapshot = JSON.parse(snapshotStr);
+                        // LOCK Rule: Match based on primary IDs and status. Ignore heartbeat (updated_at).
+                        const isSessionSame = String(sessionToFollow.customer_id) === String(snapshot.customer_id) && String(sessionToFollow.status) === String(snapshot.status);
+                        if (isSessionSame) {
+                            console.log("[Session-Guard] 🔒 Manual Inspection Lock ACTIVE for:", sessionToFollow.customer_id);
+                            return;
+                        } else {
+                            console.log("[Session-Guard] 🔓 Session state change detected (Status or Customer). Breaking lock.");
+                            localStorage.removeItem('manual_inspection_snapshot');
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('manual_inspection_snapshot');
+                    }
+                }
                 const targetCamp = prioritizeManual ? sessionToFollow.manual_campaign_id || sessionToFollow.campaign_id : sessionToFollow.campaign_id;
                 const targetCust = prioritizeManual ? sessionToFollow.manual_customer_id : sessionToFollow.customer_id;
                 if (targetCamp && targetCust) {
                     const { id: currentCamp, customerId: currentCust } = router.query;
+                    // --- SMART CHECK ---
+                    // Is the current page ALREADY matching the LATEST active session?
                     const isAlreadyThere = String(currentCamp) === String(targetCamp) && String(currentCust) === String(targetCust);
                     if (!isAlreadyThere) {
                         const expectedPath = `/portal/campaign/${targetCamp}/${targetCust}`;
-                        console.log(`[Session-Guard] Forced redirection to HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
+                        console.log(`[Session-Guard] Forced redirection to LATEST HOT session (${prioritizeManual ? 'Manual' : 'System'}): ${expectedPath}`);
                         router.push(expectedPath);
                     }
                 }
             } else {
-            // NO HOT SESSIONS FOUND
-            // If the leads are just 'assigned' (call_start_at is null, etc.), we ALLOW navigation.
-            // console.log("[Session-Guard] No active/pending sessions. Navigation allowed.");
+                // NO HOT SESSIONS FOUND
+                // Clear any stale snapshots
+                if (("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('manual_inspection_snapshot')) {
+                    localStorage.removeItem('manual_inspection_snapshot');
+                }
             }
         } catch (err) {
             console.error('[Session-Guard] Error:', err);
@@ -815,38 +837,31 @@ function useCallSessionRedirect(userId) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "useCallSessionRedirect.useEffect": ()=>{
             if (!userId) return;
+            // 1. Initial Check on Mount
             checkActiveSession();
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`global_session_guard:${userId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'call_sessions',
-                filter: `user_id=eq.${userId}`
-            }, {
-                "useCallSessionRedirect.useEffect.channel": (payload)=>{
-                    console.log(`[Session-Guard] Realtime sync event received:`, payload.eventType);
-                    // Short delay to allow DB propagation
-                    setTimeout(checkActiveSession, 500);
-                }
-            }["useCallSessionRedirect.useEffect.channel"]).subscribe();
+            // 2. Visibility Listener: Check when user returns to tab
             const handleVisibility = {
                 "useCallSessionRedirect.useEffect.handleVisibility": ()=>{
-                    if (document.visibilityState === 'visible') checkActiveSession();
+                    if (document.visibilityState === 'visible') {
+                        console.log("[Session-Guard] Tab visible, polling session...");
+                        checkActiveSession();
+                    }
                 }
             }["useCallSessionRedirect.useEffect.handleVisibility"];
-            // 2000ms Stable Heartbeat (Reduced from aggressive 500ms)
+            // 3. Optimized Heartbeat: 15-second Stable Polling
+            // Using 15s provides a balance between responsiveness and server load.
+            // This consumes ZERO Realtime Messaging quota.
             const heartbeat = setInterval({
                 "useCallSessionRedirect.useEffect.heartbeat": ()=>{
-                    // Check for localized "save-in-progress" lock to prevent race conditions
                     const isSaving = ("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('lead_save_in_progress') === 'true';
                     if (!isSaving) {
                         checkActiveSession();
                     }
                 }
-            }["useCallSessionRedirect.useEffect.heartbeat"], 2000);
+            }["useCallSessionRedirect.useEffect.heartbeat"], 15000);
             window.addEventListener('visibilitychange', handleVisibility);
             return ({
                 "useCallSessionRedirect.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
                     clearInterval(heartbeat);
                     window.removeEventListener('visibilitychange', handleVisibility);
                 }
@@ -921,6 +936,12 @@ const NAV_ITEMS = [
         path: "/team",
         icon: "fi-rr-users-alt",
         adminOnly: false
+    },
+    {
+        name: "Call Sessions",
+        path: "/call-sessions",
+        icon: "fi-rr-headset",
+        adminOnly: true
     }
 ];
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {

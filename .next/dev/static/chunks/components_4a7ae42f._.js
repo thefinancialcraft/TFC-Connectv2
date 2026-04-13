@@ -255,6 +255,8 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
             const isAdminState = isAdmin || isInternalStaff;
             const filtered = __TURBOPACK__imported__module__$5b$project$5d2f$config$2f$navigation$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["NAV_ITEMS"].filter({
                 "Sidebar.Sidebar.useMemo[navItems].filtered": (item)=>{
+                    // 0. NXUS-001 Exclusive Check (Hard rejection for Call Sessions)
+                    if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
                     // 1. Admin/Super Admin check
                     if (item.adminOnly && !isAdminState) return false;
                     // 2. Local Storage Cache: If we have cached tabs, use them for immediate rendering
@@ -349,12 +351,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                 },
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 195,
+                    lineNumber: 198,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 194,
+                lineNumber: 197,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
@@ -376,7 +378,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: `fi ${item.icon} flex text-sm`
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 220,
+                                lineNumber: 223,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -387,13 +389,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 children: item.name
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 221,
+                                lineNumber: 224,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, item.path, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 207,
+                        lineNumber: 210,
                         columnNumber: 15
                     }, this);
                 }) : // Skeleton Links - Only shown if cache is completely empty
@@ -410,25 +412,25 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                 className: "w-5 h-5 rounded bg-gray-100"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 234,
+                                lineNumber: 237,
                                 columnNumber: 17
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "h-3 w-24 bg-gray-100 rounded"
                             }, void 0, false, {
                                 fileName: "[project]/components/Sidebar.tsx",
-                                lineNumber: 235,
+                                lineNumber: 238,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, i, true, {
                         fileName: "[project]/components/Sidebar.tsx",
-                        lineNumber: 233,
+                        lineNumber: 236,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 199,
+                lineNumber: 202,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -457,12 +459,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 255,
+                                        lineNumber: 258,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 248,
+                                    lineNumber: 251,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -477,7 +479,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 265,
+                                            lineNumber: 268,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -489,19 +491,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.email || "user@example.com" : "user@example.com"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 271,
+                                            lineNumber: 274,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 264,
+                                    lineNumber: 267,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 247,
+                            lineNumber: 250,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -521,7 +523,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Employee ID:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 285,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -533,13 +535,13 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: mounted ? displayUser?.employeeId || "Not assigned" : "Not assigned"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 285,
+                                            lineNumber: 288,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 284,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -553,7 +555,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: "Last Login:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 293,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -565,19 +567,19 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                             children: formattedLastLogin
                                         }, void 0, false, {
                                             fileName: "[project]/components/Sidebar.tsx",
-                                            lineNumber: 296,
+                                            lineNumber: 299,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 295,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 280,
+                            lineNumber: 283,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -607,12 +609,12 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "fi flex fi-rr-settings text-sm"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 327,
+                                        lineNumber: 330,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 306,
+                                    lineNumber: 309,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -643,7 +645,7 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                         className: "w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Sidebar.tsx",
-                                        lineNumber: 355,
+                                        lineNumber: 358,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                         children: [
@@ -651,44 +653,44 @@ const Sidebar = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$
                                                 className: "fi flex px-1 fi-rr-exit text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 358,
+                                                lineNumber: 361,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Logout"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Sidebar.tsx",
-                                                lineNumber: 359,
+                                                lineNumber: 362,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Sidebar.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 332,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Sidebar.tsx",
-                            lineNumber: 305,
+                            lineNumber: 308,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Sidebar.tsx",
-                    lineNumber: 243,
+                    lineNumber: 246,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Sidebar.tsx",
-                lineNumber: 242,
+                lineNumber: 245,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/Sidebar.tsx",
-        lineNumber: 190,
+        lineNumber: 193,
         columnNumber: 5
     }, this);
 }, "1OKE11HEq0ZJKeU7EOp5Zh/gx6M=", false, function() {
@@ -937,72 +939,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             }["HeaderComponent.useEffect.fetchPrimaryStatus"];
             // Initial fetch
             fetchPrimaryStatus();
-            // Subscribe specifically to THIS device's entry_id
-            // If we don't have entryId yet, we subscribe to all for safety until identity is confirmed
-            const filter = localEntryId ? `entry_id=eq.${localEntryId}` : `employee_id=eq.${displayUser.employeeId}`;
-            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`device_sync_${localEntryId || displayUser.employeeId}`).on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'sync_meta',
-                filter: filter
-            }, {
-                "HeaderComponent.useEffect.channel": (payload)=>{
-                    const newData = payload.new;
-                    if (!newData) return;
-                    // 1. EXPLICIT IDENTITY CHECK
-                    // We only process if the message is explicitly for THIS device's entry_id
-                    const currentEntryId = localEntryId || localStorage.getItem('entry_id');
-                    if (newData.entry_id && newData.entry_id === currentEntryId) {
-                        console.log("⚡ [Header] Valid command for this device received:", newData.entry_id);
-                        // 2. FORWARD COMMANDS TO FLUTTER
-                        if (isBridgeActive && newData.type && newData.value) {
-                            // 3. MASTER MOVE: Reject call_to if already on a call
-                            if (newData.type === 'call_to' && isOnCallRef.current) {
-                                console.log("🛡️ [Header] MASTER MOVE: Call rejected! Device is already busy.");
-                                fetchPrimaryStatus();
-                                return;
-                            }
-                            // Deduplication A: Check if this was just sent locally (prevent local loop)
-                            const bridgeHistory = window.__bridge_history || {};
-                            const lastLocalMsg = bridgeHistory[newData.type];
-                            const isLocalDuplicate = lastLocalMsg && String(lastLocalMsg.value) === String(newData.value) && Date.now() - lastLocalMsg.time < 5000;
-                            // Deduplication B: Check if this REMOTE command was already processed (prevent double-fire)
-                            const isRemoteDuplicate = lastProcessedRef.current && lastProcessedRef.current.type === newData.type && String(lastProcessedRef.current.value) === String(newData.value) && Date.now() - lastProcessedRef.current.time < 2000; // 2 second window
-                            // Deduplication C: MASTER PERSISTENT CHECKPOINT
-                            // Don't send the same command again until we get a disconnect signal from the bridge
-                            const isStickyDuplicate = lastSentCommandRef.current && lastSentCommandRef.current.type === newData.type && String(lastSentCommandRef.current.value) === String(newData.value);
-                            if (!isLocalDuplicate && !isRemoteDuplicate && !isStickyDuplicate) {
-                                console.log(`🚀 [Header] Pushing REMOTE command to Native Bridge: ${newData.type}`);
-                                // Update refs BEFORE notifying
-                                lastProcessedRef.current = {
-                                    type: newData.type,
-                                    value: newData.value,
-                                    time: Date.now()
-                                };
-                                lastSentCommandRef.current = {
-                                    type: newData.type,
-                                    value: newData.value
-                                };
-                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["notifyFlutter"])(newData.type, newData.value);
-                            } else if (isStickyDuplicate) {
-                                console.log(`🛡️ [Header] Persistent lock: Command ${newData.type} already sent once. Waiting for disconnect.`);
-                            } else if (isRemoteDuplicate) {
-                                console.log(`🛡️ [Header] Suppressed duplicate remote firing for: ${newData.type}`);
-                            } else {
-                                console.log(`⌛ [Header] Local trigger detected. Skipping loop for: ${newData.type}`);
-                            }
-                        }
-                    }
-                    fetchPrimaryStatus();
-                }
-            }["HeaderComponent.useEffect.channel"]).subscribe({
-                "HeaderComponent.useEffect.channel": (status)=>{
-                    console.log(`📡 [Header] Subscription status for ${displayUser.employeeId}:`, status);
-                }
-            }["HeaderComponent.useEffect.channel"]);
+            // --- REFACTORED: NO REALTIME SUBSCRIPTION (Saves 100% Messaging Quota) ---
+            // Instead, we use a 5s polling loop for absolute responsiveness (REST API - Free Quota)
+            const interval = setInterval(fetchPrimaryStatus, 5000);
             return ({
                 "HeaderComponent.useEffect": ()=>{
-                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
+                    clearInterval(interval);
                 }
             })["HeaderComponent.useEffect"];
         }
@@ -1019,12 +961,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             if (!isBridgeActive || !empId) return;
             // Send initial heartbeat
             (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
-            // Set up interval for every 10 seconds (for 15s timeout)
+            // Set up interval for every 30 seconds (Increased from 10s to save 66% messaging quota)
             const interval = setInterval({
                 "HeaderComponent.useEffect.interval": ()=>{
                     (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["sendHeartbeat"])(empId);
                 }
-            }["HeaderComponent.useEffect.interval"], 10000);
+            }["HeaderComponent.useEffect.interval"], 30000);
             return ({
                 "HeaderComponent.useEffect": ()=>clearInterval(interval)
             })["HeaderComponent.useEffect"];
@@ -1055,8 +997,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
             const lastSeen = new Date(deviceStatus.last_seen).getTime();
             const now = Date.now();
             const diffSeconds = (now - lastSeen) / 1000;
-            // Mark offline if no heartbeat for 15 seconds
-            return diffSeconds < 15 ? 'online' : 'offline';
+            // Mark offline if no heartbeat for 20 seconds (Stable for 5s polling)
+            return diffSeconds < 20 ? 'online' : 'offline';
         }
     }["HeaderComponent.useMemo[deviceOnlineStatus]"], [
         deviceStatus?.last_seen,
@@ -1170,41 +1112,6 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     }
                                 }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                             }
-                        }
-                    }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).on('broadcast', {
-                        event: 'manual_lead_access'
-                    }, {
-                        "HeaderComponent.useEffect.syncNotificationChannel.channel": (payload)=>{
-                            console.log('🔔 [Header] Fast broadcast signal received:', payload);
-                            // 1. Show alert immediately
-                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dialogUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["showWarning"])(payload.payload.message || "Someone is accessing your lead", "Lead Access Alert");
-                            // 2. MASTER MOVE: Optimistically update local UI state immediately
-                            // This ensures the bell shakes and count increases INSTANTLY
-                            const optimisticNotification = {
-                                id: `temp_${Date.now()}`,
-                                type: 'lead_access',
-                                message: payload.payload.message,
-                                actor_id: payload.payload.actor_id,
-                                is_seen: false,
-                                created_at: new Date().toISOString(),
-                                metadata: payload.payload
-                            };
-                            setNotifications({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (prev)=>{
-                                    // Prevent duplicate if DB insert was somehow faster
-                                    const exists = prev.some({
-                                        "HeaderComponent.useEffect.syncNotificationChannel.channel.exists": (n)=>n.message === optimisticNotification.message && Date.now() - new Date(n.created_at).getTime() < 5000
-                                    }["HeaderComponent.useEffect.syncNotificationChannel.channel.exists"]);
-                                    if (exists) return prev;
-                                    return [
-                                        optimisticNotification,
-                                        ...prev
-                                    ].slice(0, 20);
-                                }
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
-                            setUnreadCount({
-                                "HeaderComponent.useEffect.syncNotificationChannel.channel": (c)=>c + 1
-                            }["HeaderComponent.useEffect.syncNotificationChannel.channel"]);
                         }
                     }["HeaderComponent.useEffect.syncNotificationChannel.channel"]).subscribe();
                     return channel;
@@ -1347,12 +1254,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                 className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 573,
+                                lineNumber: 472,
                                 columnNumber: 15
                             }, this) : initials
                         }, void 0, false, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 564,
+                            lineNumber: 463,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1367,7 +1274,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 585,
+                                    lineNumber: 484,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1379,13 +1286,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: mounted ? displayUser?.email?.split("@")[0] || "User" : "User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 591,
+                                    lineNumber: 490,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 584,
+                            lineNumber: 483,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1402,7 +1309,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 609,
+                                                    lineNumber: 508,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1410,7 +1317,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 610,
+                                                    lineNumber: 509,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -1418,17 +1325,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 514,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 603,
+                                        lineNumber: 502,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 602,
+                                    lineNumber: 501,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1440,35 +1347,35 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-5 h-5 border-2 border-t-transparent border-current rounded-full animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 627,
+                                        lineNumber: 526,
                                         columnNumber: 17
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                         className: "jsx-85a9f6e6ef799593" + " " + "fi flex fi-rr-exit text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 528,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 620,
+                                    lineNumber: 519,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 600,
+                            lineNumber: 499,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 562,
+                    lineNumber: 461,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 558,
+                lineNumber: 457,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
@@ -1500,12 +1407,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                         className: "jsx-85a9f6e6ef799593" + " " + "w-full h-full object-cover"
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 656,
+                                        lineNumber: 555,
                                         columnNumber: 17
                                     }, this) : initials
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 649,
+                                    lineNumber: 548,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1520,7 +1427,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: mounted ? displayUser?.displayName || displayUser?.email?.split("@")[0] || "User" : "User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 670,
+                                            lineNumber: 569,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1535,19 +1442,19 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 676,
+                                            lineNumber: 575,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 669,
+                                    lineNumber: 568,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 648,
+                            lineNumber: 547,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1562,12 +1469,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "jsx-85a9f6e6ef799593" + " " + `fi flex ${deviceOnlineStatus === 'online' && deviceStatus.on_call ? 'fi-rr-phone-call animate-pulse' : 'fi-rr-smartphone'} text-sm`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 695,
+                                                lineNumber: 594,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 690,
+                                            lineNumber: 589,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1578,7 +1485,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: deviceStatus.device_model
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 702,
+                                                    lineNumber: 601,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1588,7 +1495,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             className: "jsx-85a9f6e6ef799593" + " " + `w-1 h-1 rounded-full ${deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500' : 'bg-gray-400'}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 706,
+                                                            lineNumber: 605,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1596,25 +1503,25 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: deviceOnlineStatus === 'online' ? deviceStatus.on_call ? 'In Call' : 'Online' : 'Offline'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 711,
+                                                            lineNumber: 610,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 705,
+                                                    lineNumber: 604,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 701,
+                                            lineNumber: 600,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 689,
+                                    lineNumber: 588,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1628,7 +1535,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-5 h-5 text-indigo-600 animate-[bell_2s_infinite]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 732,
+                                                    lineNumber: 631,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1636,7 +1543,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     children: unreadCount > 20 ? '20+' : unreadCount
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 733,
+                                                    lineNumber: 632,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
@@ -1644,34 +1551,34 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             className: "w-5 h-5 group-hover:rotate-12 transition-transform"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 738,
+                                            lineNumber: 637,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 726,
+                                        lineNumber: 625,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 725,
+                                    lineNumber: 624,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/Header.tsx",
-                            lineNumber: 686,
+                            lineNumber: 585,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/Header.tsx",
-                    lineNumber: 646,
+                    lineNumber: 545,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/Header.tsx",
-                lineNumber: 637,
+                lineNumber: 536,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1685,7 +1592,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                         className: "jsx-85a9f6e6ef799593" + " " + "fixed inset-0 z-40 bg-black/5"
                     }, void 0, false, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 757,
+                        lineNumber: 656,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1705,7 +1612,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 children: "Notifications"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 769,
+                                                lineNumber: 668,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1717,13 +1624,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 770,
+                                                lineNumber: 669,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 768,
+                                        lineNumber: 667,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1737,12 +1644,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 779,
+                                                    lineNumber: 678,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 774,
+                                                lineNumber: 673,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1752,24 +1659,24 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                     className: "w-4 h-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 786,
+                                                    lineNumber: 685,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 782,
+                                                lineNumber: 681,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/Header.tsx",
-                                        lineNumber: 772,
+                                        lineNumber: 671,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 767,
+                                lineNumber: 666,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1785,18 +1692,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 57
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$info$2e$js__$5b$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Info$3e$__["Info"], {
                                                         className: "w-5 h-5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/Header.tsx",
-                                                        lineNumber: 804,
+                                                        lineNumber: 703,
                                                         columnNumber: 97
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 801,
+                                                    lineNumber: 700,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1810,7 +1717,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     children: notif.type.replace('_', ' ')
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 809,
+                                                                    lineNumber: 708,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1821,13 +1728,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/Header.tsx",
-                                                                    lineNumber: 812,
+                                                                    lineNumber: 711,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 808,
+                                                            lineNumber: 707,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1835,7 +1742,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             children: notif.message
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 816,
+                                                            lineNumber: 715,
                                                             columnNumber: 25
                                                         }, this),
                                                         notif.metadata?.employee_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1846,13 +1753,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 820,
+                                                            lineNumber: 719,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 807,
+                                                    lineNumber: 706,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1868,12 +1775,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 836,
+                                                                lineNumber: 735,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 829,
+                                                            lineNumber: 728,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1886,29 +1793,29 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                                 className: "w-3 h-3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/Header.tsx",
-                                                                lineNumber: 846,
+                                                                lineNumber: 745,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/Header.tsx",
-                                                            lineNumber: 839,
+                                                            lineNumber: 738,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/Header.tsx",
-                                                    lineNumber: 827,
+                                                    lineNumber: 726,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, notif.id, true, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 796,
+                                            lineNumber: 695,
                                             columnNumber: 21
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 794,
+                                    lineNumber: 693,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "jsx-85a9f6e6ef799593" + " " + "px-6 py-12 flex flex-col items-center justify-center text-center",
@@ -1919,12 +1826,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                                 className: "w-8 h-8 text-gray-300"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/Header.tsx",
-                                                lineNumber: 855,
+                                                lineNumber: 754,
                                                 columnNumber: 23
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 854,
+                                            lineNumber: 753,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -1932,7 +1839,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "No Notifications Yet"
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 857,
+                                            lineNumber: 756,
                                             columnNumber: 20
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1940,18 +1847,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                             children: "We'll notify you when something important happens."
                                         }, void 0, false, {
                                             fileName: "[project]/components/Header.tsx",
-                                            lineNumber: 858,
+                                            lineNumber: 757,
                                             columnNumber: 20
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 853,
+                                    lineNumber: 752,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 792,
+                                lineNumber: 691,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1962,18 +1869,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }) {
                                     children: "Close Panel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Header.tsx",
-                                    lineNumber: 865,
+                                    lineNumber: 764,
                                     columnNumber: 16
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/Header.tsx",
-                                lineNumber: 864,
+                                lineNumber: 763,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/Header.tsx",
-                        lineNumber: 762,
+                        lineNumber: 661,
                         columnNumber: 11
                     }, this)
                 ]
@@ -7063,10 +6970,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/monitoring.ts [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/UtilitySidebar.tsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/AppLogo.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useCallSessionRedirect$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useCallSessionRedirect.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-;
 ;
 ;
 ;
@@ -7082,8 +6987,6 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const { user, loading: authLoading, error, mounted, statusMessage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
-    // 🛡️ Global Session Guard
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useCallSessionRedirect$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useCallSessionRedirect"])(user?.uid);
     const handleLogoutClick = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "AppLayout.useCallback[handleLogoutClick]": async ()=>{
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["handleLogout"])(router);
@@ -7125,12 +7028,12 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         className: "scale-125 mb-4",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                             fileName: "[project]/components/AppLayout.tsx",
-                            lineNumber: 55,
+                            lineNumber: 51,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 54,
+                        lineNumber: 50,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7140,7 +7043,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 className: "w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 58,
+                                lineNumber: 54,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7151,7 +7054,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: statusMessage || "Retrieving logged details..."
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 59,
+                                lineNumber: 55,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7159,24 +7062,24 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: "Please wait while we sync your session"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 62,
+                                lineNumber: 58,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 57,
+                        lineNumber: 53,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 53,
+                lineNumber: 49,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 52,
+            lineNumber: 48,
             columnNumber: 7
         }, this);
     }
@@ -7195,7 +7098,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 77,
+                        lineNumber: 73,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7206,18 +7109,18 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: "Redirecting to login..."
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 78,
+                        lineNumber: 74,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 76,
+                lineNumber: 72,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 72,
+            lineNumber: 68,
             columnNumber: 7
         }, this);
     }
@@ -7238,7 +7141,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
       `
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 94,
+                lineNumber: 90,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Sidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -7247,7 +7150,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 onLogout: handleLogoutClick
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 102,
+                lineNumber: 98,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7259,7 +7162,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         hideSidebar: hideSidebar
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 114,
+                        lineNumber: 109,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -7270,13 +7173,13 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: children
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 122,
+                        lineNumber: 117,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 111,
+                lineNumber: 106,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$BottomNav$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -7286,26 +7189,25 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 designation: user?.designation
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 132,
+                lineNumber: 127,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 141,
+                lineNumber: 136,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/AppLayout.tsx",
-        lineNumber: 90,
+        lineNumber: 86,
         columnNumber: 5
     }, this);
 }
-_s(AppLayout, "h93QCc9CW5kXxKXmltrGhLtcmfQ=", false, function() {
+_s(AppLayout, "McqxV0YD8MtaNlIX9Gq/YR6Gb18=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useCallSessionRedirect$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useCallSessionRedirect"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
     ];
 });
 _c = AppLayout;
@@ -7380,10 +7282,15 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
         "ImportCustomersModal.useEffect": ()=>{
             setShowImportModal(show);
             if (show) {
-                setSelectedOrgId(preselectedOrgId);
+                if (user?.isClient && user.organization_id) {
+                    setSelectedOrgId(user.organization_id);
+                    fetchCampaigns(user.organization_id);
+                } else {
+                    setSelectedOrgId(preselectedOrgId);
+                    fetchCampaigns(preselectedOrgId);
+                }
                 setSelectedCampaignId(preselectedCampaignId);
                 fetchOrganizations();
-                fetchCampaigns(preselectedOrgId); // Fetch campaigns for the preselected org
             } else {
                 // Reset all internal states when modal is closed
                 setImportFile(null);
@@ -7410,12 +7317,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
     }["ImportCustomersModal.useEffect"], [
         show,
         preselectedOrgId,
-        preselectedCampaignId
+        preselectedCampaignId,
+        user
     ]);
     // Re-fetch campaigns when selected organization changes
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "ImportCustomersModal.useEffect": ()=>{
-            if (showImportModal) {
+            if (showImportModal && selectedOrgId) {
                 fetchCampaigns(selectedOrgId);
                 // If we change org, we should probably clear campaign unless it's the preselected one
                 if (selectedOrgId !== preselectedOrgId) {
@@ -7423,18 +7331,26 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                 } else {
                     setSelectedCampaignId(preselectedCampaignId);
                 }
+            } else if (showImportModal && !selectedOrgId) {
+                setCampaigns([]);
+                setSelectedCampaignId("");
             }
         }
     }["ImportCustomersModal.useEffect"], [
         selectedOrgId
     ]);
     const fetchCampaigns = async (orgId)=>{
+        if (!orgId && !preselectedOrgId) {
+            setCampaigns([]);
+            return;
+        }
         try {
             let query = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("campaigns").select("id, name").eq("status", "active").order("name", {
                 ascending: true
             });
-            if (orgId) {
-                query = query.eq("organization_id", orgId);
+            const targetOrgId = orgId || preselectedOrgId;
+            if (targetOrgId) {
+                query = query.eq("organization_id", targetOrgId);
             }
             const { data, error } = await query;
             if (!error) setCampaigns(data || []);
@@ -8202,7 +8118,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                     children: details
                 }, void 0, false, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 985,
+                    lineNumber: 998,
                     columnNumber: 16
                 }, this);
             }
@@ -8224,7 +8140,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                        lineNumber: 998,
+                        lineNumber: 1011,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -8232,13 +8148,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                         children: String(v)
                     }, void 0, false, {
                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                        lineNumber: 999,
+                        lineNumber: 1012,
                         columnNumber: 9
                     }, this)
                 ]
             }, k, true, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 997,
+                lineNumber: 1010,
                 columnNumber: 7
             }, this));
     };
@@ -8262,7 +8178,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: "Import Customers"
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1013,
+                                    lineNumber: 1026,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8272,18 +8188,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         className: "fi flex fi-rr-cross text-xl"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1015,
+                                        lineNumber: 1028,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1014,
+                                    lineNumber: 1027,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1012,
+                            lineNumber: 1025,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8296,14 +8212,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: "Instructions:"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1020,
+                                            lineNumber: 1033,
                                             columnNumber: 17
                                         }, this),
                                         " Upload a CSV file with customer data."
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1019,
+                                    lineNumber: 1032,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8319,26 +8235,26 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         children: "Select Organization"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1026,
+                                                        lineNumber: 1039,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1025,
+                                                    lineNumber: 1038,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                    value: selectedOrgId,
+                                                    value: selectedOrgId || (user?.isClient ? user.organization_id || "" : ""),
                                                     onChange: (e)=>setSelectedOrgId(e.target.value),
-                                                    disabled: !!preselectedOrgId,
-                                                    className: `w-full px-4 py-2.5 text-gray-500 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedOrgId ? 'opacity-60 cursor-not-allowed' : ''}`,
+                                                    disabled: !!preselectedOrgId || user?.isClient,
+                                                    className: `w-full px-4 py-2.5 text-gray-500 border border-gray-200 rounded-xl text-sm ${preselectedOrgId || user?.isClient ? 'opacity-60 cursor-not-allowed bg-gray-100' : 'bg-gray-50'}`,
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                             value: "",
                                                             children: "Select Organization"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1034,
+                                                            lineNumber: 1047,
                                                             columnNumber: 21
                                                         }, this),
                                                         organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8351,19 +8267,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 ]
                                                             }, org.id, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1035,
+                                                                lineNumber: 1048,
                                                                 columnNumber: 47
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1028,
+                                                    lineNumber: 1041,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1024,
+                                            lineNumber: 1037,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8376,12 +8292,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         children: "Select Campaign"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1040,
+                                                        lineNumber: 1053,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1039,
+                                                    lineNumber: 1052,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -8395,7 +8311,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: "Select Campaign"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1048,
+                                                            lineNumber: 1061,
                                                             columnNumber: 21
                                                         }, this),
                                                         campaigns.map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8403,25 +8319,25 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 children: camp.name
                                                             }, camp.id, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1049,
+                                                                lineNumber: 1062,
                                                                 columnNumber: 44
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1042,
+                                                    lineNumber: 1055,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1038,
+                                            lineNumber: 1051,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1023,
+                                    lineNumber: 1036,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8435,14 +8351,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             className: "absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1055,
+                                            lineNumber: 1068,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                             className: "fi flex fi-rr-upload text-3xl text-gray-400 mb-2 justify-center"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1056,
+                                            lineNumber: 1069,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8450,7 +8366,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: "Click or drag CSV file here"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1057,
+                                            lineNumber: 1070,
                                             columnNumber: 17
                                         }, this),
                                         importFile && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8458,13 +8374,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: importFile.name
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1058,
+                                            lineNumber: 1071,
                                             columnNumber: 32
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1054,
+                                    lineNumber: 1067,
                                     columnNumber: 15
                                 }, this),
                                 importError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8472,7 +8388,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: importError
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1061,
+                                    lineNumber: 1074,
                                     columnNumber: 31
                                 }, this),
                                 importSuccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8480,7 +8396,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: importSuccess
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1062,
+                                    lineNumber: 1075,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8491,29 +8407,29 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         children: "Cancel"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1065,
+                                        lineNumber: 1078,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1064,
+                                    lineNumber: 1077,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1018,
+                            lineNumber: 1031,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 1011,
+                    lineNumber: 1024,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 1010,
+                lineNumber: 1023,
                 columnNumber: 9
             }, this),
             showMappingModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8529,7 +8445,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: "Map CSV Columns"
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1077,
+                                    lineNumber: 1090,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8539,18 +8455,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         className: "fi flex fi-rr-cross text-xl"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1079,
+                                        lineNumber: 1092,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1078,
+                                    lineNumber: 1091,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1076,
+                            lineNumber: 1089,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8573,7 +8489,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: field.replace("_", " ")
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1087,
+                                                            lineNumber: 1100,
                                                             columnNumber: 24
                                                         }, this),
                                                         field === 'expiry_date' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8590,7 +8506,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     className: "w-3 h-3 text-[#4b33e8] border-gray-300 rounded focus:ring-[#4b33e8]"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1090,
+                                                                    lineNumber: 1103,
                                                                     columnNumber: 30
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -8599,19 +8515,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Show in App"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1097,
+                                                                    lineNumber: 1110,
                                                                     columnNumber: 30
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1089,
+                                                            lineNumber: 1102,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1086,
+                                                    lineNumber: 1099,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8633,7 +8549,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                             children: "Select column..."
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1108,
+                                                                            lineNumber: 1121,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         field === 'expiry_date' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8642,7 +8558,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                             children: "✨ Set Custom Date"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1110,
+                                                                            lineNumber: 1123,
                                                                             columnNumber: 33
                                                                         }, this),
                                                                         csvColumns.filter((col)=>!usedColumns.has(col) || col === fieldMapping[field]).map((col)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8650,13 +8566,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                 children: col
                                                                             }, col, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1112,
+                                                                                lineNumber: 1125,
                                                                                 columnNumber: 122
                                                                             }, this))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1103,
+                                                                    lineNumber: 1116,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 field === 'expiry_date' && fieldMapping[field] === '__CUSTOM_DATE__' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -8666,13 +8582,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     className: "w-full px-3 py-2 bg-[#f0f2ff] border border-[#4b33e8] rounded-lg text-sm text-[#4b33e8] font-bold focus:outline-none focus:ring-1 focus:ring-[#4b33e8] animate-in fade-in slide-in-from-top-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1117,
+                                                                    lineNumber: 1130,
                                                                     columnNumber: 33
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1102,
+                                                            lineNumber: 1115,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8683,18 +8599,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 className: "fi fi-rr-plus text-xs"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1130,
+                                                                lineNumber: 1143,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1125,
+                                                            lineNumber: 1138,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1101,
+                                                    lineNumber: 1114,
                                                     columnNumber: 21
                                                 }, this),
                                                 mergedFields[field] && mergedFields[field].map((val, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8704,7 +8620,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 className: "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-px bg-gray-300"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1136,
+                                                                lineNumber: 1149,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -8717,7 +8633,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "Select column to merge..."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1142,
+                                                                        lineNumber: 1155,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     csvColumns.filter((col)=>!usedColumns.has(col) || col === val).map((col)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8725,13 +8641,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                             children: col
                                                                         }, col, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1143,
+                                                                            lineNumber: 1156,
                                                                             columnNumber: 108
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1137,
+                                                                lineNumber: 1150,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8741,29 +8657,29 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     className: "fi fi-rr-trash text-xs"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1149,
+                                                                    lineNumber: 1162,
                                                                     columnNumber: 33
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1145,
+                                                                lineNumber: 1158,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, idx, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1135,
+                                                        lineNumber: 1148,
                                                         columnNumber: 25
                                                     }, this))
                                             ]
                                         }, field, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1085,
+                                            lineNumber: 1098,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1083,
+                                    lineNumber: 1096,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8777,7 +8693,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Additional Columns (Auto-Detected)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1160,
+                                                    lineNumber: 1173,
                                                     columnNumber: 20
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8788,20 +8704,20 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             className: "fi fi-rr-plus"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1165,
+                                                            lineNumber: 1178,
                                                             columnNumber: 22
                                                         }, this),
                                                         " Add Field"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1161,
+                                                    lineNumber: 1174,
                                                     columnNumber: 20
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1159,
+                                            lineNumber: 1172,
                                             columnNumber: 17
                                         }, this),
                                         customFields.length > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8825,12 +8741,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         title: "Show in Customer Details"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1175,
+                                                                        lineNumber: 1188,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1174,
+                                                                    lineNumber: 1187,
                                                                     columnNumber: 28
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -8840,14 +8756,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     onChange: (e)=>updateCustomField(cf.id, "name", e.target.value)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1183,
+                                                                    lineNumber: 1196,
                                                                     columnNumber: 28
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                     className: "fi fi-rr-arrow-right text-gray-300"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1189,
+                                                                    lineNumber: 1202,
                                                                     columnNumber: 28
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8863,7 +8779,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                     children: "Select CSV column..."
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1196,
+                                                                                    lineNumber: 1209,
                                                                                     columnNumber: 37
                                                                                 }, this),
                                                                                 csvColumns.filter((col)=>!usedColumns.has(col) || col === cf.mappedTo).map((col)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8871,13 +8787,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                         children: col
                                                                                     }, col, false, {
                                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                        lineNumber: 1198,
+                                                                                        lineNumber: 1211,
                                                                                         columnNumber: 39
                                                                                     }, this))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1191,
+                                                                            lineNumber: 1204,
                                                                             columnNumber: 32
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8888,18 +8804,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                 className: "fi fi-rr-plus text-xs"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1206,
+                                                                                lineNumber: 1219,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1201,
+                                                                            lineNumber: 1214,
                                                                             columnNumber: 32
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1190,
+                                                                    lineNumber: 1203,
                                                                     columnNumber: 28
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8909,18 +8825,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "fi flex fi-rr-trash text-sm"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1213,
+                                                                        lineNumber: 1226,
                                                                         columnNumber: 30
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1209,
+                                                                    lineNumber: 1222,
                                                                     columnNumber: 28
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1173,
+                                                            lineNumber: 1186,
                                                             columnNumber: 25
                                                         }, this),
                                                         mergedFields[cf.id] && mergedFields[cf.id].map((val, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8930,14 +8846,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "absolute left-[1rem] top-1/2 -translate-y-1/2 w-4 h-px bg-gray-300"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1219,
+                                                                        lineNumber: 1232,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "flex-1"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1220,
+                                                                        lineNumber: 1233,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     " ",
@@ -8954,7 +8870,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                         children: "Select column to merge..."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                        lineNumber: 1227,
+                                                                                        lineNumber: 1240,
                                                                                         columnNumber: 42
                                                                                     }, this),
                                                                                     csvColumns.filter((col)=>!usedColumns.has(col) || col === val).map((col)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -8962,13 +8878,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                             children: col
                                                                                         }, col, false, {
                                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                            lineNumber: 1228,
+                                                                                            lineNumber: 1241,
                                                                                             columnNumber: 117
                                                                                         }, this))
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1222,
+                                                                                lineNumber: 1235,
                                                                                 columnNumber: 38
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8978,56 +8894,56 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                     className: "fi fi-rr-trash text-xs"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1234,
+                                                                                    lineNumber: 1247,
                                                                                     columnNumber: 42
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1230,
+                                                                                lineNumber: 1243,
                                                                                 columnNumber: 38
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                 className: "w-8"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1236,
+                                                                                lineNumber: 1249,
                                                                                 columnNumber: 38
                                                                             }, this),
                                                                             " "
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1221,
+                                                                        lineNumber: 1234,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, idx, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1218,
+                                                                lineNumber: 1231,
                                                                 columnNumber: 29
                                                             }, this))
                                                     ]
                                                 }, cf.id, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1172,
+                                                    lineNumber: 1185,
                                                     columnNumber: 23
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1170,
+                                            lineNumber: 1183,
                                             columnNumber: 19
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "text-sm text-gray-400 italic text-center py-2 bg-gray-50 rounded-lg border border-dashed border-gray-200",
                                             children: "No custom fields added"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1244,
+                                            lineNumber: 1257,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1158,
+                                    lineNumber: 1171,
                                     columnNumber: 15
                                 }, this),
                                 importError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9035,7 +8951,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: importError
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1250,
+                                    lineNumber: 1263,
                                     columnNumber: 31
                                 }, this),
                                 importSuccess && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9043,7 +8959,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: importSuccess
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1251,
+                                    lineNumber: 1264,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9055,7 +8971,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: "Back"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1254,
+                                            lineNumber: 1267,
                                             columnNumber: 17
                                         }, this),
                                         isVerificationComplete ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9068,7 +8984,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         className: "w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1262,
+                                                        lineNumber: 1275,
                                                         columnNumber: 31
                                                     }, this),
                                                     " Checking DB..."
@@ -9079,7 +8995,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         className: "w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1264,
+                                                        lineNumber: 1277,
                                                         columnNumber: 32
                                                     }, this),
                                                     " Finalizing..."
@@ -9090,7 +9006,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         className: "fi fi-rr-upload text-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1266,
+                                                        lineNumber: 1279,
                                                         columnNumber: 31
                                                     }, this),
                                                     " Upload Now"
@@ -9104,7 +9020,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1256,
+                                            lineNumber: 1269,
                                             columnNumber: 21
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: verifyFileData,
@@ -9116,7 +9032,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         className: "w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1277,
+                                                        lineNumber: 1290,
                                                         columnNumber: 40
                                                     }, this),
                                                     " Verifying..."
@@ -9124,30 +9040,30 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             }, void 0, true) : "Verify File Data"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1272,
+                                            lineNumber: 1285,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1253,
+                                    lineNumber: 1266,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1082,
+                            lineNumber: 1095,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 1075,
+                    lineNumber: 1088,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 1074,
+                lineNumber: 1087,
                 columnNumber: 9
             }, this),
             showFileConflictModal && fileConflicts.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9170,12 +9086,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 className: "w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1295,
+                                                lineNumber: 1308,
                                                 columnNumber: 28
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1294,
+                                            lineNumber: 1307,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9184,12 +9100,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 className: "fi flex fi-rr-copy-alt text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1303,
+                                                lineNumber: 1316,
                                                 columnNumber: 28
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1302,
+                                            lineNumber: 1315,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9202,7 +9118,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "File Internal Duplicates"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1306,
+                                                    lineNumber: 1319,
                                                     columnNumber: 27
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9213,7 +9129,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: fileConflicts.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1308,
+                                                            lineNumber: 1321,
                                                             columnNumber: 29
                                                         }, this),
                                                         " repeating numbers found in this CSV ",
@@ -9222,7 +9138,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: "|"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1308,
+                                                            lineNumber: 1321,
                                                             columnNumber: 139
                                                         }, this),
                                                         " Total Records: ",
@@ -9231,25 +9147,25 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: fullyProcessedCustomers.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1308,
+                                                            lineNumber: 1321,
                                                             columnNumber: 200
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1307,
+                                                    lineNumber: 1320,
                                                     columnNumber: 27
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1305,
+                                            lineNumber: 1318,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1293,
+                                    lineNumber: 1306,
                                     columnNumber: 23
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9259,18 +9175,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         className: "fi flex fi-rr-cross-small text-xl"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1317,
+                                        lineNumber: 1330,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1313,
+                                    lineNumber: 1326,
                                     columnNumber: 23
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1292,
+                            lineNumber: 1305,
                             columnNumber: 19
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9292,7 +9208,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 className: "w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1328,
+                                                                lineNumber: 1341,
                                                                 columnNumber: 39
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9303,13 +9219,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1334,
+                                                                lineNumber: 1347,
                                                                 columnNumber: 39
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1327,
+                                                        lineNumber: 1340,
                                                         columnNumber: 35
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9323,14 +9239,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1337,
+                                                                lineNumber: 1350,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "h-4 w-px bg-gray-200"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1338,
+                                                                lineNumber: 1351,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9341,14 +9257,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "fi flex fi-rr-check text-[9px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1343,
+                                                                        lineNumber: 1356,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     " Merge All"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1339,
+                                                                lineNumber: 1352,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9359,26 +9275,26 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "fi flex fi-rr-trash text-[9px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1349,
+                                                                        lineNumber: 1362,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     " Reject"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1345,
+                                                                lineNumber: 1358,
                                                                 columnNumber: 38
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1336,
+                                                        lineNumber: 1349,
                                                         columnNumber: 35
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1326,
+                                                lineNumber: 1339,
                                                 columnNumber: 31
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
@@ -9393,7 +9309,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Name / Info"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1357,
+                                                                    lineNumber: 1370,
                                                                     columnNumber: 43
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -9401,7 +9317,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Mapped Details"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1358,
+                                                                    lineNumber: 1371,
                                                                     columnNumber: 43
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -9409,7 +9325,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Row Index"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1359,
+                                                                    lineNumber: 1372,
                                                                     columnNumber: 43
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -9417,18 +9333,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Status"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1360,
+                                                                    lineNumber: 1373,
                                                                     columnNumber: 43
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1356,
+                                                            lineNumber: 1369,
                                                             columnNumber: 39
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1355,
+                                                        lineNumber: 1368,
                                                         columnNumber: 35
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -9444,7 +9360,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                 children: rec.customer_name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1367,
+                                                                                lineNumber: 1380,
                                                                                 columnNumber: 51
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9452,13 +9368,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                 children: rec.display_phone || 'N/A'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1368,
+                                                                                lineNumber: 1381,
                                                                                 columnNumber: 51
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1366,
+                                                                        lineNumber: 1379,
                                                                         columnNumber: 47
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -9473,7 +9389,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                             children: k.replace('detail_', '').replace(/_/g, ' ')
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                            lineNumber: 1378,
+                                                                                            lineNumber: 1391,
                                                                                             columnNumber: 63
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9481,23 +9397,23 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                             children: String(v) || '—'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                            lineNumber: 1381,
+                                                                                            lineNumber: 1394,
                                                                                             columnNumber: 63
                                                                                         }, this)
                                                                                     ]
                                                                                 }, k, true, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1377,
+                                                                                    lineNumber: 1390,
                                                                                     columnNumber: 59
                                                                                 }, this))
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1373,
+                                                                            lineNumber: 1386,
                                                                             columnNumber: 51
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1372,
+                                                                        lineNumber: 1385,
                                                                         columnNumber: 47
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -9513,12 +9429,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1390,
+                                                                                    lineNumber: 1403,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1389,
+                                                                                lineNumber: 1402,
                                                                                 columnNumber: 51
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9526,13 +9442,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                 children: "Row Num"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                lineNumber: 1392,
+                                                                                lineNumber: 1405,
                                                                                 columnNumber: 51
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1388,
+                                                                        lineNumber: 1401,
                                                                         columnNumber: 47
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -9542,42 +9458,42 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                             children: "PRIMARY"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1396,
+                                                                            lineNumber: 1409,
                                                                             columnNumber: 55
                                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             className: "text-[9px] font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-full border border-amber-100 uppercase tracking-tighter",
                                                                             children: "DUPLICATE"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1398,
+                                                                            lineNumber: 1411,
                                                                             columnNumber: 55
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1394,
+                                                                        lineNumber: 1407,
                                                                         columnNumber: 47
                                                                     }, this)
                                                                 ]
                                                             }, ridx, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1365,
+                                                                lineNumber: 1378,
                                                                 columnNumber: 43
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1363,
+                                                        lineNumber: 1376,
                                                         columnNumber: 35
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1354,
+                                                lineNumber: 1367,
                                                 columnNumber: 31
                                             }, this)
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1324,
+                                        lineNumber: 1337,
                                         columnNumber: 27
                                     }, this)),
                                 fileConflicts.length > 10 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9590,7 +9506,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             " more duplicate clusters...",
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1411,
+                                                lineNumber: 1424,
                                                 columnNumber: 93
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9598,24 +9514,24 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 children: "Please handle these first to proceed."
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1412,
+                                                lineNumber: 1425,
                                                 columnNumber: 35
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1410,
+                                        lineNumber: 1423,
                                         columnNumber: 31
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1409,
+                                    lineNumber: 1422,
                                     columnNumber: 27
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1322,
+                            lineNumber: 1335,
                             columnNumber: 19
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9633,13 +9549,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: fileConflicts.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1422,
+                                                    lineNumber: 1435,
                                                     columnNumber: 43
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1421,
+                                            lineNumber: 1434,
                                             columnNumber: 25
                                         }, this),
                                         selectedFileConflicts.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9649,7 +9565,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     className: "h-4 w-px bg-gray-200"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1426,
+                                                    lineNumber: 1439,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9660,7 +9576,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1427,
+                                                    lineNumber: 1440,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9669,7 +9585,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Reject Selected"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1430,
+                                                    lineNumber: 1443,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9678,19 +9594,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Merge Selected"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1436,
+                                                    lineNumber: 1449,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1425,
+                                            lineNumber: 1438,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1420,
+                                    lineNumber: 1433,
                                     columnNumber: 23
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9701,29 +9617,29 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         children: "Review CSV"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1446,
+                                        lineNumber: 1459,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1445,
+                                    lineNumber: 1458,
                                     columnNumber: 23
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1419,
+                            lineNumber: 1432,
                             columnNumber: 19
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 1289,
+                    lineNumber: 1302,
                     columnNumber: 15
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 1288,
+                lineNumber: 1301,
                 columnNumber: 11
             }, this),
             showDbConflictModal && dbConflicts.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9746,12 +9662,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 className: "w-4 h-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1467,
+                                                lineNumber: 1480,
                                                 columnNumber: 28
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1466,
+                                            lineNumber: 1479,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9760,12 +9676,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 className: "fi flex fi-rr-database text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1475,
+                                                lineNumber: 1488,
                                                 columnNumber: 28
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1474,
+                                            lineNumber: 1487,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9778,7 +9694,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Database Correlation Check"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1478,
+                                                    lineNumber: 1491,
                                                     columnNumber: 27
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9790,7 +9706,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: dbConflicts.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1480,
+                                                            lineNumber: 1493,
                                                             columnNumber: 38
                                                         }, this),
                                                         " records already exist in CRM (out of ",
@@ -9799,26 +9715,26 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                             children: fullyProcessedCustomers.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                            lineNumber: 1480,
+                                                            lineNumber: 1493,
                                                             columnNumber: 147
                                                         }, this),
                                                         " total records)"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1479,
+                                                    lineNumber: 1492,
                                                     columnNumber: 28
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1477,
+                                            lineNumber: 1490,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1465,
+                                    lineNumber: 1478,
                                     columnNumber: 23
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9828,18 +9744,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         className: "fi flex fi-rr-cross-small text-xl"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1489,
+                                        lineNumber: 1502,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1485,
+                                    lineNumber: 1498,
                                     columnNumber: 23
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1464,
+                            lineNumber: 1477,
                             columnNumber: 19
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9861,7 +9777,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 className: "w-3.5 h-3.5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1500,
+                                                                lineNumber: 1513,
                                                                 columnNumber: 39
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9872,13 +9788,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1506,
+                                                                lineNumber: 1519,
                                                                 columnNumber: 39
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1499,
+                                                        lineNumber: 1512,
                                                         columnNumber: 35
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9893,20 +9809,20 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: conflict.fileRecord.display_phone
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1509,
+                                                                        lineNumber: 1522,
                                                                         columnNumber: 101
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1509,
+                                                                lineNumber: 1522,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "h-4 w-px bg-amber-100"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1510,
+                                                                lineNumber: 1523,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9922,14 +9838,14 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "fi flex fi-rr-check text-[9px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1518,
+                                                                        lineNumber: 1531,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     " Merge Choice"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1511,
+                                                                lineNumber: 1524,
                                                                 columnNumber: 38
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9945,26 +9861,26 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         className: "fi flex fi-rr-cross text-[9px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1527,
+                                                                        lineNumber: 1540,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     " Reject New"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1520,
+                                                                lineNumber: 1533,
                                                                 columnNumber: 38
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1508,
+                                                        lineNumber: 1521,
                                                         columnNumber: 35
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1498,
+                                                lineNumber: 1511,
                                                 columnNumber: 31
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9980,12 +9896,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                     children: "Incoming Data"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1537,
+                                                                    lineNumber: 1550,
                                                                     columnNumber: 43
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1536,
+                                                                lineNumber: 1549,
                                                                 columnNumber: 39
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9998,7 +9914,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                             children: conflict.fileRecord.customer_name
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1541,
+                                                                            lineNumber: 1554,
                                                                             columnNumber: 47
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10014,7 +9930,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                            lineNumber: 1547,
+                                                                                            lineNumber: 1560,
                                                                                             columnNumber: 60
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10022,35 +9938,35 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                             children: String(v)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                            lineNumber: 1548,
+                                                                                            lineNumber: 1561,
                                                                                             columnNumber: 60
                                                                                         }, this)
                                                                                     ]
                                                                                 }, k, true, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1546,
+                                                                                    lineNumber: 1559,
                                                                                     columnNumber: 56
                                                                                 }, this))
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1542,
+                                                                            lineNumber: 1555,
                                                                             columnNumber: 47
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1540,
+                                                                    lineNumber: 1553,
                                                                     columnNumber: 43
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1539,
+                                                                lineNumber: 1552,
                                                                 columnNumber: 39
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1535,
+                                                        lineNumber: 1548,
                                                         columnNumber: 35
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10064,7 +9980,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "Database Record"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1559,
+                                                                        lineNumber: 1572,
                                                                         columnNumber: 43
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10072,13 +9988,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "EXISTS IN CRM"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1560,
+                                                                        lineNumber: 1573,
                                                                         columnNumber: 43
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1558,
+                                                                lineNumber: 1571,
                                                                 columnNumber: 39
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10095,13 +10011,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                     children: "(Name Mismatch)"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                    lineNumber: 1567,
+                                                                                    lineNumber: 1580,
                                                                                     columnNumber: 55
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1564,
+                                                                            lineNumber: 1577,
                                                                             columnNumber: 47
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10121,7 +10037,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                                lineNumber: 1581,
+                                                                                                lineNumber: 1594,
                                                                                                 columnNumber: 65
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10129,48 +10045,48 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                                                 children: String(v)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                                lineNumber: 1582,
+                                                                                                lineNumber: 1595,
                                                                                                 columnNumber: 65
                                                                                             }, this)
                                                                                         ]
                                                                                     }, k, true, {
                                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                                        lineNumber: 1580,
+                                                                                        lineNumber: 1593,
                                                                                         columnNumber: 61
                                                                                     }, this));
                                                                             })()
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                            lineNumber: 1570,
+                                                                            lineNumber: 1583,
                                                                             columnNumber: 47
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                    lineNumber: 1563,
+                                                                    lineNumber: 1576,
                                                                     columnNumber: 43
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1562,
+                                                                lineNumber: 1575,
                                                                 columnNumber: 39
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1557,
+                                                        lineNumber: 1570,
                                                         columnNumber: 35
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1533,
+                                                lineNumber: 1546,
                                                 columnNumber: 31
                                             }, this)
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1496,
+                                        lineNumber: 1509,
                                         columnNumber: 27
                                     }, this)),
                                 dbConflicts.length > 10 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10183,7 +10099,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             " more Database matches found...",
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1597,
+                                                lineNumber: 1610,
                                                 columnNumber: 95
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10191,24 +10107,24 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 children: "Conflict strategy must be chosen for all."
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1598,
+                                                lineNumber: 1611,
                                                 columnNumber: 35
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1596,
+                                        lineNumber: 1609,
                                         columnNumber: 31
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1595,
+                                    lineNumber: 1608,
                                     columnNumber: 27
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1494,
+                            lineNumber: 1507,
                             columnNumber: 19
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10226,13 +10142,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: dbConflicts.length
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1608,
+                                                    lineNumber: 1621,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1607,
+                                            lineNumber: 1620,
                                             columnNumber: 25
                                         }, this),
                                         selectedDbConflicts.size > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10242,7 +10158,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     className: "h-4 w-px bg-gray-200"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1612,
+                                                    lineNumber: 1625,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10253,7 +10169,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1613,
+                                                    lineNumber: 1626,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10262,7 +10178,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Reject Selected"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1616,
+                                                    lineNumber: 1629,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10271,19 +10187,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Merge & Update CRM"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1622,
+                                                    lineNumber: 1635,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1611,
+                                            lineNumber: 1624,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1606,
+                                    lineNumber: 1619,
                                     columnNumber: 23
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10294,29 +10210,29 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         children: "Back to Map"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1632,
+                                        lineNumber: 1645,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1631,
+                                    lineNumber: 1644,
                                     columnNumber: 23
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1605,
+                            lineNumber: 1618,
                             columnNumber: 19
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 1461,
+                    lineNumber: 1474,
                     columnNumber: 15
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 1460,
+                lineNumber: 1473,
                 columnNumber: 11
             }, this),
             showConflictModal && duplicates.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10336,12 +10252,12 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                 className: "fi flex fi-rr-triangle-warning text-xl"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1651,
+                                                lineNumber: 1664,
                                                 columnNumber: 20
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1650,
+                                            lineNumber: 1663,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10354,7 +10270,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Duplicate Conflicts Detected"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1654,
+                                                    lineNumber: 1667,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10365,19 +10281,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1655,
+                                                    lineNumber: 1668,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1653,
+                                            lineNumber: 1666,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1649,
+                                    lineNumber: 1662,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10387,18 +10303,18 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                         className: "fi flex fi-rr-cross text-lg"
                                     }, void 0, false, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1659,
+                                        lineNumber: 1672,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1658,
+                                    lineNumber: 1671,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1648,
+                            lineNumber: 1661,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10411,7 +10327,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             className: "fi fi-rr-info mt-0.5"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1665,
+                                            lineNumber: 1678,
                                             columnNumber: 18
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10421,7 +10337,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Merge"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1666,
+                                                    lineNumber: 1679,
                                                     columnNumber: 93
                                                 }, this),
                                                 " the new information (update existing record) or ",
@@ -10429,20 +10345,20 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                     children: "Reject"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                    lineNumber: 1666,
+                                                    lineNumber: 1679,
                                                     columnNumber: 164
                                                 }, this),
                                                 " the new entry (keep existing data)."
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1666,
+                                            lineNumber: 1679,
                                             columnNumber: 18
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1664,
+                                    lineNumber: 1677,
                                     columnNumber: 15
                                 }, this),
                                 duplicates.slice(0, 10).map((dup, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10462,7 +10378,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1673,
+                                                                lineNumber: 1686,
                                                                 columnNumber: 24
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10470,13 +10386,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 children: "Phone Conflict"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1674,
+                                                                lineNumber: 1687,
                                                                 columnNumber: 24
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1672,
+                                                        lineNumber: 1685,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10488,13 +10404,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1676,
+                                                        lineNumber: 1689,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1671,
+                                                lineNumber: 1684,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10511,7 +10427,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "DB"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1682,
+                                                                        lineNumber: 1695,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10519,13 +10435,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "Existing Record"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1683,
+                                                                        lineNumber: 1696,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1681,
+                                                                lineNumber: 1694,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10533,7 +10449,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 children: dup.existing.customer_name || "Unnamed Customer"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1685,
+                                                                lineNumber: 1698,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10545,19 +10461,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "No details available"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1688,
+                                                                        lineNumber: 1701,
                                                                         columnNumber: 60
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1686,
+                                                                lineNumber: 1699,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1680,
+                                                        lineNumber: 1693,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10571,7 +10487,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "CSV"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1694,
+                                                                        lineNumber: 1707,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10579,13 +10495,13 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                         children: "Incoming Row"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                        lineNumber: 1695,
+                                                                        lineNumber: 1708,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1693,
+                                                                lineNumber: 1706,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10593,7 +10509,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 children: dup.new.customer_name || "Unnamed Customer"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1697,
+                                                                lineNumber: 1710,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10601,19 +10517,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                                 children: renderDetailsPreview(dup.new.customer_details)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                                lineNumber: 1698,
+                                                                lineNumber: 1711,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1692,
+                                                        lineNumber: 1705,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1678,
+                                                lineNumber: 1691,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10625,7 +10541,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         children: "Reject Entry"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1704,
+                                                        lineNumber: 1717,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10634,19 +10550,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                                         children: "Merge & Update"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                        lineNumber: 1710,
+                                                        lineNumber: 1723,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                                                lineNumber: 1703,
+                                                lineNumber: 1716,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, idx, true, {
                                         fileName: "[project]/components/ImportCustomersModal.tsx",
-                                        lineNumber: 1670,
+                                        lineNumber: 1683,
                                         columnNumber: 17
                                     }, this)),
                                 duplicates.length > 10 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10661,7 +10577,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1721,
+                                            lineNumber: 1734,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10669,19 +10585,19 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: "Please resolve the visible items to see more."
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1722,
+                                            lineNumber: 1735,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1720,
+                                    lineNumber: 1733,
                                     columnNumber: 18
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1663,
+                            lineNumber: 1676,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10701,7 +10617,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                     children: "Reject All Remaining"
                                 }, void 0, false, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1728,
+                                    lineNumber: 1741,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10715,7 +10631,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1743,
+                                            lineNumber: 1756,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10725,7 +10641,7 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: importing ? "Merging..." : `Merge All (${duplicates.length})`
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1745,
+                                            lineNumber: 1758,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10734,30 +10650,30 @@ function ImportCustomersModal({ show, onClose, onSuccess, preselectedOrgId = "",
                                             children: "Close"
                                         }, void 0, false, {
                                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                                            lineNumber: 1753,
+                                            lineNumber: 1766,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                                    lineNumber: 1742,
+                                    lineNumber: 1755,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/ImportCustomersModal.tsx",
-                            lineNumber: 1727,
+                            lineNumber: 1740,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ImportCustomersModal.tsx",
-                    lineNumber: 1647,
+                    lineNumber: 1660,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/ImportCustomersModal.tsx",
-                lineNumber: 1646,
+                lineNumber: 1659,
                 columnNumber: 9
             }, this)
         ]

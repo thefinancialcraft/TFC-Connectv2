@@ -19,6 +19,7 @@ export interface FollowUpLead {
   isOverdue: boolean;
   isUpcoming: boolean;
   status_label: string;
+  employee_id?: string;
   outcome?: string;
 }
 
@@ -28,6 +29,13 @@ export function useFollowUpLeads() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    organizationId: "",
+    assignedTo: "",
+    status: "", // overdue, upcoming
+    campaignId: "",
+    callbackDate: "" // yyyy-mm-dd
+  });
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchLeads = useCallback(async (isBackground = false) => {
@@ -93,7 +101,7 @@ export function useFollowUpLeads() {
            }
         }
         // Level 3: Client Admin (Organization Wide)
-        else if (['ceo', 'developer'].includes(user.designation || '')) {
+        else if (['ceo', 'developer', 'admin'].includes(user.designation || '')) {
             if (user.organization_id) {
                query = query.eq('organization_id', user.organization_id);
             } else {
@@ -120,13 +128,13 @@ export function useFollowUpLeads() {
         const [campaignsResult, orgsResult, usersResult] = await Promise.all([
           campaignIds.length > 0 ? supabase.from('campaigns').select('id, name').in('id', campaignIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] }),
           orgIds.length > 0 ? supabase.from('organizations').select('id, company_name').in('id', orgIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] }),
-          userIds.length > 0 ? supabase.from('user_profiles').select('user_id, user_name').in('user_id', userIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] })
+          userIds.length > 0 ? supabase.from('user_profiles').select('user_id, user_name, employee_id').in('user_id', userIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] })
         ]);
 
         // Create Lookup Maps
         const campaignMap = Object.fromEntries(campaignsResult.data?.map((c: any) => [c.id, c.name]) || []);
         const orgMap = Object.fromEntries(orgsResult.data?.map((o: any) => [o.id, o.company_name]) || []);
-        const userMap = Object.fromEntries(usersResult.data?.map((u: any) => [u.user_id, u.user_name]) || []);
+        const userMap = Object.fromEntries(usersResult.data?.map((u: any) => [u.user_id, { name: u.user_name, employee_id: u.employee_id }]) || []);
 
         const enrichedLeads = customerData.map((lead: any) => {
           let isOverdue = false;
@@ -143,6 +151,8 @@ export function useFollowUpLeads() {
             isOverdue = true; 
           }
 
+          const userInfo = userMap[lead.assigned_to] || { name: 'Unassigned', employee_id: '' };
+
           return {
             ...lead,
             phone_no: decryptPhone(lead.phone_no),
@@ -150,7 +160,8 @@ export function useFollowUpLeads() {
             isUpcoming,
             campaign_name: campaignMap[lead.campaign_id] || 'Unknown Campaign',
             organization_name: orgMap[lead.organization_id] || '—',
-            assigned_name: userMap[lead.assigned_to] || 'Unassigned',
+            assigned_name: userInfo.name,
+            employee_id: userInfo.employee_id,
             status_label: isOverdue ? 'Overdue' : 'Upcoming'
           };
         });
@@ -174,7 +185,9 @@ export function useFollowUpLeads() {
     let interval: NodeJS.Timeout;
 
     if (mounted && user) {
-        fetchLeads();
+        if (leads.length === 0) {
+            fetchLeads();
+        }
         
         interval = setInterval(() => {
           fetchLeads(true);
@@ -188,29 +201,63 @@ export function useFollowUpLeads() {
       if (interval) clearInterval(interval);
     };
   }, [fetchLeads, mounted, user]);
+  const filteredLeads = useMemo(() => {
+    let result = leads;
+
+    // Search query filter
+    const query = searchQuery.toLowerCase();
+    if (query) {
+      result = result.filter(lead => 
+        lead.customer_name?.toLowerCase().includes(query) || 
+        lead.phone_no?.includes(query) ||
+        lead.disposition?.toLowerCase().includes(query) ||
+        lead.campaign_name?.toLowerCase().includes(query) ||
+        lead.organization_name?.toLowerCase().includes(query) ||
+        lead.assigned_name?.toLowerCase().includes(query) ||
+        lead.employee_id?.toLowerCase().includes(query)
+      );
+    }
+
+    // Structured filters
+    if (filters.organizationId) {
+      result = result.filter(lead => lead.organization_id === filters.organizationId);
+    }
+    
+    if (filters.assignedTo) {
+      result = result.filter(lead => lead.assigned_to === filters.assignedTo);
+    }
+
+    if (filters.status) {
+      if (filters.status === 'overdue') {
+        result = result.filter(lead => lead.isOverdue);
+      } else if (filters.status === 'upcoming') {
+        result = result.filter(lead => lead.isUpcoming);
+      }
+    }
+
+    if (filters.campaignId) {
+      result = result.filter(lead => lead.campaign_id === filters.campaignId);
+    }
+
+    if (filters.callbackDate) {
+      result = result.filter(lead => {
+        if (!lead.next_called_at) return false;
+        const date = new Date(lead.next_called_at).toISOString().split('T')[0];
+        return date === filters.callbackDate;
+      });
+    }
+
+    return result;
+  }, [leads, searchQuery, filters]);
 
   const stats = useMemo(() => {
-    return leads.reduce((acc, lead) => {
+    return filteredLeads.reduce((acc, lead) => {
       acc.total++;
       if (lead.isOverdue) acc.overdue++;
       if (lead.isUpcoming) acc.upcoming++;
       return acc;
     }, { total: 0, overdue: 0, upcoming: 0 });
-  }, [leads]);
-
-  const filteredLeads = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    if (!query) return leads;
-    
-    return leads.filter(lead => 
-      lead.customer_name?.toLowerCase().includes(query) || 
-      lead.phone_no?.includes(query) ||
-      lead.disposition?.toLowerCase().includes(query) ||
-      lead.campaign_name?.toLowerCase().includes(query) ||
-      lead.organization_name?.toLowerCase().includes(query) ||
-      lead.assigned_name?.toLowerCase().includes(query)
-    );
-  }, [leads, searchQuery]);
+  }, [filteredLeads]);
 
   const formatDate = useCallback((dateStr: string) => {
     if (!dateStr) return '—';
@@ -236,6 +283,8 @@ export function useFollowUpLeads() {
     error,
     searchQuery,
     setSearchQuery,
+    filters,
+    setFilters,
     stats,
     fetchLeads,
     formatDate

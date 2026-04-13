@@ -1,7 +1,7 @@
 (globalThis.TURBOPACK_CHUNK_LISTS || (globalThis.TURBOPACK_CHUNK_LISTS = [])).push({
     script: typeof document === "object" ? document.currentScript : undefined,
     chunks: [
-  "static/chunks/lib_1b432ad9._.js",
+  "static/chunks/lib_flutterBridge_ts_88fbe3e2._.js",
   "static/chunks/[root-of-the-server]__0b3d5ec8._.js",
   "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
   "static/chunks/node_modules_next_dist_shared_lib_49f863e2._.js",

@@ -276,11 +276,11 @@ export default function SignupForm({
             ></i>
             <select
               value={selectedOrgId}
+              disabled={!isAuthorised || !!organizationId}
               onChange={(e) => setSelectedOrgId(e.target.value)}
-              className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none appearance-none cursor-pointer"
+              className={`w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none appearance-none ${(!isAuthorised || !!organizationId) ? 'bg-gray-100 cursor-not-allowed text-gray-400' : 'bg-white cursor-pointer'}`}
               style={{
                 borderColor: "#DCDEE3",
-                backgroundColor: "#FFFFFF",
                 color: selectedOrgId ? "rgb(38, 50, 56)" : "#787E9D",
                 fontFamily: "'Roboto', sans-serif",
                 paddingLeft: "45px",

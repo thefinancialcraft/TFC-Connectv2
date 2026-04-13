@@ -104,10 +104,29 @@ function CallSessionsPage() {
     const [isRefetching, setIsRefetching] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [isAuthorized, setIsAuthorized] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
     const [searchQuery, setSearchQuery] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
+    const [selectedKeys, setSelectedKeys] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])([]);
+    // Filter States
+    const [agentFilter, setAgentFilter] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("All Agents");
+    const [campaignFilter, setCampaignFilter] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("All Campaigns");
+    const [statusFilter, setStatusFilter] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("Status");
+    const [orgFilter, setOrgFilter] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("Organization");
+    const [showFilterModal, setShowFilterModal] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const filteredItems = sessions.filter((s)=>{
+        // 1. Search Query Filter
         const q = searchQuery.toLowerCase();
-        return s.agentName?.toLowerCase().includes(q) || s.employeeId?.toLowerCase().includes(q) || s.campaignName?.toLowerCase().includes(q) || s.customerName?.toLowerCase().includes(q) || s.manualCampaignName?.toLowerCase().includes(q) || s.manualCustomerName?.toLowerCase().includes(q) || s.status?.toLowerCase().includes(q);
+        const matchesSearch = !searchQuery || s.agentName?.toLowerCase().includes(q) || s.employeeId?.toLowerCase().includes(q) || s.campaignName?.toLowerCase().includes(q) || s.customerName?.toLowerCase().includes(q) || s.manualCampaignName?.toLowerCase().includes(q) || s.manualCustomerName?.toLowerCase().includes(q) || s.status?.toLowerCase().includes(q);
+        // 2. Dropdown Filters
+        const matchesAgent = agentFilter === "All Agents" || s.agentName === agentFilter;
+        const matchesCampaign = campaignFilter === "All Campaigns" || s.campaignName === campaignFilter;
+        const matchesStatus = statusFilter === "Status" || s.status === statusFilter.toLowerCase().replace(' ', '_');
+        const matchesOrg = orgFilter === "Organization" || s.orgName === orgFilter;
+        return matchesSearch && matchesAgent && matchesCampaign && matchesStatus && matchesOrg;
     });
+    // Extract unique options for dropdowns
+    const availableAgents = Array.from(new Set(sessions.map((s)=>s.agentName))).sort();
+    const availableCampaigns = Array.from(new Set(sessions.map((s)=>s.campaignName))).sort();
+    const availableStatuses = Array.from(new Set(sessions.map((s)=>s.status))).map((st)=>st.charAt(0).toUpperCase() + st.slice(1).replace('_', ' '));
+    const availableOrgs = Array.from(new Set(sessions.map((s)=>s.orgName))).filter((o)=>!!o).sort();
     const formatTimeSafe = (date)=>{
         if (!date) return '--:--:--';
         try {
@@ -179,10 +198,12 @@ function CallSessionsPage() {
                 ...sessionData.map((s)=>s.manual_customer_id).filter((id)=>!!id)
             ]));
             // 3. Fetch related data in parallel
-            const [usersRes, campaignsRes, customersRes] = await Promise.all([
+            const organizationIds = Array.from(new Set(sessionData.map((s)=>s.organization_id).filter((id)=>!!id)));
+            const [usersRes, campaignsRes, customersRes, orgsRes] = await Promise.all([
                 __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('user_id, user_name, employee_id').in('user_id', userIds),
                 __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('campaigns').select('id, name').in('id', campaignIds),
-                __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('customers').select('id, customer_name, phone_no').in('id', customerIds)
+                __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('customers').select('id, customer_name, phone_no').in('id', customerIds),
+                __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('organizations').select('id, company_name').in('id', organizationIds)
             ]);
             // 4. Map names
             const userMap = Object.fromEntries((usersRes.data || []).map((u)=>[
@@ -197,6 +218,10 @@ function CallSessionsPage() {
                     c.id,
                     c
                 ]));
+            const orgMap = Object.fromEntries((orgsRes.data || []).map((o)=>[
+                    o.id,
+                    o.company_name
+                ]));
             // 5. Enrich sessions
             const enriched = sessionData.map((s)=>{
                 const cust = customerMap[s.customer_id];
@@ -208,6 +233,7 @@ function CallSessionsPage() {
                     campaignName: campaignMap[s.campaign_id] || s.campaign_id,
                     customerName: cust?.customer_name || 'N/A',
                     customerPhone: cust?.phone_no ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["decryptPhone"])(cust.phone_no) : '',
+                    orgName: orgMap[s.organization_id] || 'NO_ORG',
                     // Override details
                     manualCampaignName: campaignMap[s.manual_campaign_id] || s.manual_campaign_id || '---',
                     manualCustomerName: manualCust?.customer_name || 'N/A',
@@ -223,6 +249,68 @@ function CallSessionsPage() {
             setLoading(false);
             setIsRefetching(false);
         }
+    };
+    const handleDelete = async (userId, campaignId)=>{
+        if (!window.confirm("Are you sure you want to delete this session? This will force the agent off their current lead session.")) return;
+        try {
+            const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').delete().match({
+                user_id: userId,
+                campaign_id: campaignId
+            });
+            if (error) throw error;
+            // Update local state
+            const updated = sessions.filter((s)=>!(s.user_id === userId && s.campaign_id === campaignId));
+            setSessions(updated);
+            cachedSessions = updated;
+            setSelectedKeys((prev)=>prev.filter((k)=>k !== `${userId}-${campaignId}`));
+        } catch (err) {
+            console.error("Error deleting session:", err);
+            alert("Failed to delete session.");
+        }
+    };
+    const handleBulkDelete = async ()=>{
+        if (selectedKeys.length === 0) return;
+        if (!window.confirm(`Are you sure you want to delete ${selectedKeys.length} selected sessions?`)) return;
+        try {
+            setIsRefetching(true);
+            // Supabase delete doesn't support multiple .match in one go easily for composite keys in a simple way
+            // We can use an RPC or run multiple deletes, or use a filter that matches the combination
+            // For composite keys, the safest/cleanest way without a custom RPC is to run them in parallel or loop
+            const deletePromises = selectedKeys.map((key)=>{
+                const [uId, cId] = key.split('|'); // Using | as separator to avoid - issues in UUIDs
+                return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').delete().match({
+                    user_id: uId,
+                    campaign_id: cId
+                });
+            });
+            const results = await Promise.all(deletePromises);
+            const errors = results.filter((r)=>r.error);
+            if (errors.length > 0) throw errors[0].error;
+            // Update local state
+            const updated = sessions.filter((s)=>!selectedKeys.includes(`${s.user_id}|${s.campaign_id}`));
+            setSessions(updated);
+            cachedSessions = updated;
+            setSelectedKeys([]);
+        } catch (err) {
+            console.error("Error bulk deleting sessions:", err);
+            alert("Failed to delete some sessions.");
+        } finally{
+            setIsRefetching(false);
+        }
+    };
+    const toggleSelectAll = ()=>{
+        if (selectedKeys.length === filteredItems.length && filteredItems.length > 0) {
+            setSelectedKeys([]);
+        } else {
+            setSelectedKeys(filteredItems.map((s)=>`${s.user_id}|${s.campaign_id}`));
+        }
+    };
+    const toggleSelectRow = (uId, cId)=>{
+        const key = `${uId}|${cId}`;
+        setSelectedKeys((prev)=>prev.includes(key) ? prev.filter((k)=>k !== key) : [
+                ...prev,
+                key
+            ]);
     };
     const getStatusColor = (status)=>{
         switch(status){
@@ -247,12 +335,12 @@ function CallSessionsPage() {
                 className: "w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"
             }, void 0, false, {
                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                lineNumber: 164,
+                lineNumber: 267,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/pages/portal/call-sessions.tsx",
-            lineNumber: 163,
+            lineNumber: 266,
             columnNumber: 7
         }, this);
     }
@@ -263,15 +351,15 @@ function CallSessionsPage() {
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                     className: "w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                        className: "fi fi-rr-lock text-2xl"
+                        className: "flex fi fi-rr-lock text-2xl"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 173,
+                        lineNumber: 276,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                    lineNumber: 172,
+                    lineNumber: 275,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h1", {
@@ -279,7 +367,7 @@ function CallSessionsPage() {
                     children: "Access Restricted"
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                    lineNumber: 175,
+                    lineNumber: 278,
                     columnNumber: 11
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -287,13 +375,13 @@ function CallSessionsPage() {
                     children: "This module is reserved for system administrators (NXUS-001). Please contact support if you believe this is an error."
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                    lineNumber: 176,
+                    lineNumber: 279,
                     columnNumber: 11
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/call-sessions.tsx",
-            lineNumber: 171,
+            lineNumber: 274,
             columnNumber: 7
         }, this);
     }
@@ -304,104 +392,16 @@ function CallSessionsPage() {
                 className: "flex flex-wrap items-center justify-between gap-4 mb-6",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                        className: "flex items-center gap-3",
-                        children: [
-                            [
-                                'All Agents',
-                                'All Campaigns',
-                                'Status'
-                            ].map((filter)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: "flex items-center gap-3 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-700 hover:border-indigo-200 cursor-pointer transition-all uppercase tracking-wider",
-                                    children: [
-                                        filter,
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                            className: "fi fi-rr-angle-small-down text-[14px]"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 191,
-                                            columnNumber: 15
-                                        }, this)
-                                    ]
-                                }, filter, true, {
-                                    fileName: "[project]/pages/portal/call-sessions.tsx",
-                                    lineNumber: 189,
-                                    columnNumber: 13
-                                }, this)),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                className: "w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:text-indigo-600 cursor-pointer transition-colors",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                    className: "fi fi-rr-filter text-[16px]"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/call-sessions.tsx",
-                                    lineNumber: 195,
-                                    columnNumber: 14
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 194,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 187,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                        className: "flex items-center gap-3",
-                        children: [
-                            isRefetching && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                className: "text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest mr-2",
-                                children: "Syncing Live..."
-                            }, void 0, false, {
-                                fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 200,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                onClick: ()=>fetchSessions(true),
-                                className: "px-5 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest ",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                        className: `fi fi-rr-refresh text-[10px] ${isRefetching ? 'animate-spin' : ''}`
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 206,
-                                        columnNumber: 15
-                                    }, this),
-                                    "Refresh Panel"
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 202,
-                                columnNumber: 12
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 198,
-                        columnNumber: 9
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/pages/portal/call-sessions.tsx",
-                lineNumber: 186,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: "flex flex-wrap items-center justify-between gap-4 mb-6",
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "flex items-center gap-3 flex-1 max-w-2xl",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                 className: "relative flex-1",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                        className: "fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"
+                                        className: "flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 215,
+                                        lineNumber: 292,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -412,7 +412,7 @@ function CallSessionsPage() {
                                         className: "w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 216,
+                                        lineNumber: 293,
                                         columnNumber: 13
                                     }, this),
                                     searchQuery && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -424,47 +424,344 @@ function CallSessionsPage() {
                                         children: "Clear"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 224,
+                                        lineNumber: 301,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 214,
+                                lineNumber: 291,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                className: "relative",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>setShowFilterModal(!showFilterModal),
+                                        className: `w-12 h-12 rounded-xl flex items-center justify-center transition-all border ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`,
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                            className: "flex fi fi-rr-filter text-[16px]"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                            lineNumber: 317,
+                                            columnNumber: 17
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                        lineNumber: 313,
+                                        columnNumber: 13
+                                    }, this),
+                                    showFilterModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                        className: "absolute top-full mt-2 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                className: "flex items-center justify-between mb-4",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
+                                                        className: "text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none",
+                                                        children: "Global Filters"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 323,
+                                                        columnNumber: 25
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                                        onClick: ()=>{
+                                                            setAgentFilter("All Agents");
+                                                            setCampaignFilter("All Campaigns");
+                                                            setStatusFilter("Status");
+                                                            setOrgFilter("Organization");
+                                                            setSearchQuery("");
+                                                        },
+                                                        className: "text-[10px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-widest",
+                                                        children: "Reset"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 324,
+                                                        columnNumber: 25
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                lineNumber: 322,
+                                                columnNumber: 21
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                className: "flex flex-col gap-4",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                        className: "flex flex-col gap-1.5",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                className: "text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1",
+                                                                children: "Agent"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 341,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                value: agentFilter,
+                                                                onChange: (e)=>setAgentFilter(e.target.value),
+                                                                className: "w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                        children: "All Agents"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                        lineNumber: 347,
+                                                                        columnNumber: 33
+                                                                    }, this),
+                                                                    availableAgents.map((a)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            children: a
+                                                                        }, a, false, {
+                                                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                            lineNumber: 348,
+                                                                            columnNumber: 59
+                                                                        }, this))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 342,
+                                                                columnNumber: 29
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 340,
+                                                        columnNumber: 25
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                        className: "flex flex-col gap-1.5",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                className: "text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1",
+                                                                children: "Campaign"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 354,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                value: campaignFilter,
+                                                                onChange: (e)=>setCampaignFilter(e.target.value),
+                                                                className: "w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                        children: "All Campaigns"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                        lineNumber: 360,
+                                                                        columnNumber: 33
+                                                                    }, this),
+                                                                    availableCampaigns.map((c)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            children: c
+                                                                        }, c, false, {
+                                                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                            lineNumber: 361,
+                                                                            columnNumber: 62
+                                                                        }, this))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 355,
+                                                                columnNumber: 29
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 353,
+                                                        columnNumber: 25
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                        className: "flex flex-col gap-1.5",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                className: "text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1",
+                                                                children: "Status"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 367,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                value: statusFilter,
+                                                                onChange: (e)=>setStatusFilter(e.target.value),
+                                                                className: "w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                        children: "Status"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                        lineNumber: 373,
+                                                                        columnNumber: 33
+                                                                    }, this),
+                                                                    availableStatuses.map((s)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            children: s
+                                                                        }, s, false, {
+                                                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                            lineNumber: 374,
+                                                                            columnNumber: 61
+                                                                        }, this))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 368,
+                                                                columnNumber: 29
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 366,
+                                                        columnNumber: 25
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                        className: "flex flex-col gap-1.5",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                className: "text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1",
+                                                                children: "Organization"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 380,
+                                                                columnNumber: 29
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                value: orgFilter,
+                                                                onChange: (e)=>setOrgFilter(e.target.value),
+                                                                className: "w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none",
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                        children: "Organization"
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                        lineNumber: 386,
+                                                                        columnNumber: 33
+                                                                    }, this),
+                                                                    availableOrgs.map((o)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            children: o
+                                                                        }, o, false, {
+                                                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                            lineNumber: 387,
+                                                                            columnNumber: 57
+                                                                        }, this))
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                                lineNumber: 381,
+                                                                columnNumber: 29
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 379,
+                                                        columnNumber: 25
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                                        onClick: ()=>setShowFilterModal(false),
+                                                        className: "mt-2 w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100",
+                                                        children: "Apply Filters"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 391,
+                                                        columnNumber: 25
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                lineNumber: 338,
+                                                columnNumber: 21
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                        lineNumber: 321,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 312,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                 className: "flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                        className: "fi fi-rr-file-export text-[14px]"
+                                        className: "flex fi fi-rr-file-export text-[14px]"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 235,
+                                        lineNumber: 403,
                                         columnNumber: 13
                                     }, this),
                                     "Export"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 234,
+                                lineNumber: 402,
                                 columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                onClick: ()=>fetchSessions(true),
+                                className: "px-5 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                        className: `flex fi fi-rr-refresh text-[10px] ${isRefetching ? 'animate-spin' : ''}`
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                        lineNumber: 411,
+                                        columnNumber: 13
+                                    }, this),
+                                    "Refresh Panel"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 407,
+                                columnNumber: 11
+                            }, this),
+                            selectedKeys.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                onClick: handleBulkDelete,
+                                className: "px-5 py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                        className: "flex fi fi-rr-trash text-[12px]"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                        lineNumber: 420,
+                                        columnNumber: 17
+                                    }, this),
+                                    "Delete (",
+                                    selectedKeys.length,
+                                    ")"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 416,
+                                columnNumber: 14
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 213,
+                        lineNumber: 290,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "flex flex-col items-end gap-1",
                         children: [
+                            isRefetching && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
+                                className: "text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest leading-none mb-1",
+                                children: "Syncing Live..."
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 428,
+                                columnNumber: 14
+                            }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                 className: "text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none",
                                 children: "Status: Monitoring Enabled"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 241,
+                                lineNumber: 430,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -475,19 +772,19 @@ function CallSessionsPage() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 242,
+                                lineNumber: 431,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 240,
+                        lineNumber: 426,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                lineNumber: 212,
+                lineNumber: 289,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -505,15 +802,17 @@ function CallSessionsPage() {
                                             className: "px-4 py-4 border-b border-gray-100 text-center",
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                                 type: "checkbox",
-                                                className: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                                                className: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer",
+                                                checked: selectedKeys.length === filteredItems.length && filteredItems.length > 0,
+                                                onChange: toggleSelectAll
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 255,
+                                                lineNumber: 444,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 254,
+                                            lineNumber: 443,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -521,7 +820,7 @@ function CallSessionsPage() {
                                             children: "Agent & Org"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 257,
+                                            lineNumber: 451,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -529,7 +828,7 @@ function CallSessionsPage() {
                                             children: "Auto Session"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 258,
+                                            lineNumber: 452,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -537,7 +836,7 @@ function CallSessionsPage() {
                                             children: "Status"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 259,
+                                            lineNumber: 453,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -545,7 +844,7 @@ function CallSessionsPage() {
                                             children: "Overrides"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 260,
+                                            lineNumber: 454,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
@@ -553,42 +852,50 @@ function CallSessionsPage() {
                                             children: "Flags"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 261,
+                                            lineNumber: 455,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
-                                            className: "px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-right",
+                                            className: "px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-right pr-8",
                                             children: "Heartbeat"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 262,
+                                            lineNumber: 456,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("th", {
+                                            className: "px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-center",
+                                            children: "Actions"
+                                        }, void 0, false, {
+                                            fileName: "[project]/pages/portal/call-sessions.tsx",
+                                            lineNumber: 457,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                    lineNumber: 253,
+                                    lineNumber: 442,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 252,
+                                lineNumber: 441,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tbody", {
                                 className: "divide-y divide-gray-50",
                                 children: filteredItems.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tr", {
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
-                                        colSpan: 8,
+                                        colSpan: 9,
                                         className: "px-6 py-24 text-center",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                             className: "flex flex-col items-center gap-3 opacity-30",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                                    className: "fi fi-rr-search-heart text-5xl"
+                                                    className: "flex fi fi-rr-search-heart text-5xl"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 270,
+                                                    lineNumber: 465,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -596,41 +903,46 @@ function CallSessionsPage() {
                                                     children: searchQuery ? `No sessions found for "${searchQuery}"` : 'No active sessions monitored'
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 271,
+                                                    lineNumber: 466,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                            lineNumber: 269,
+                                            lineNumber: 464,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 268,
+                                        lineNumber: 463,
                                         columnNumber: 19
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                    lineNumber: 267,
+                                    lineNumber: 462,
                                     columnNumber: 17
-                                }, this) : filteredItems.map((session, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tr", {
-                                        className: "hover:bg-slate-50 transition-colors group",
+                                }, this) : filteredItems.map((session, i)=>{
+                                    const key = `${session.user_id}|${session.campaign_id}`;
+                                    const isSelected = selectedKeys.includes(key);
+                                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("tr", {
+                                        className: `hover:bg-slate-50 transition-colors group ${isSelected ? 'bg-indigo-50/30' : ''}`,
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4 text-center",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                                     type: "checkbox",
-                                                    className: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                                                    className: "rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer",
+                                                    checked: isSelected,
+                                                    onChange: ()=>toggleSelectRow(session.user_id, session.campaign_id)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 281,
-                                                    columnNumber: 24
+                                                    lineNumber: 479,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 280,
-                                                columnNumber: 21
+                                                lineNumber: 478,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4",
@@ -645,8 +957,8 @@ function CallSessionsPage() {
                                                                     children: session.agentName.charAt(0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 286,
-                                                                    columnNumber: 27
+                                                                    lineNumber: 489,
+                                                                    columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                                     className: "flex flex-col",
@@ -656,47 +968,47 @@ function CallSessionsPage() {
                                                                             children: session.agentName
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                            lineNumber: 290,
-                                                                            columnNumber: 29
+                                                                            lineNumber: 493,
+                                                                            columnNumber: 31
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                                             className: "text-[11px] font-bold text-indigo-500 leading-none mt-1 uppercase tracking-wider",
                                                                             children: session.employeeId || 'ID_ERR'
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                            lineNumber: 291,
-                                                                            columnNumber: 29
+                                                                            lineNumber: 494,
+                                                                            columnNumber: 31
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 289,
-                                                                    columnNumber: 27
+                                                                    lineNumber: 492,
+                                                                    columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 285,
-                                                            columnNumber: 25
+                                                            lineNumber: 488,
+                                                            columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             className: "text-[10px] font-black text-gray-400 pl-2 uppercase tracking-widest",
-                                                            children: session.organization_id || 'NO_ORGANIZATION'
+                                                            children: session.orgName || 'NO_ORGANIZATION'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 294,
-                                                            columnNumber: 25
+                                                            lineNumber: 497,
+                                                            columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 284,
-                                                    columnNumber: 23
+                                                    lineNumber: 487,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 283,
-                                                columnNumber: 21
+                                                lineNumber: 486,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4",
@@ -710,16 +1022,16 @@ function CallSessionsPage() {
                                                                     className: "fi fi-rr-bullhorn text-[12px] text-gray-400 flex"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 299,
-                                                                    columnNumber: 116
+                                                                    lineNumber: 502,
+                                                                    columnNumber: 118
                                                                 }, this),
                                                                 " ",
                                                                 session.campaignName
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 299,
-                                                            columnNumber: 27
+                                                            lineNumber: 502,
+                                                            columnNumber: 29
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                             className: "text-[12px] font-semibold text-indigo-600 leading-none flex items-center gap-2",
@@ -728,35 +1040,35 @@ function CallSessionsPage() {
                                                                     className: "fi fi-rr-user-md text-[12px] flex"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 300,
-                                                                    columnNumber: 121
+                                                                    lineNumber: 503,
+                                                                    columnNumber: 123
                                                                 }, this),
                                                                 " ",
                                                                 session.customerName !== 'N/A' ? `${session.customerName}` : 'IDLE'
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 300,
-                                                            columnNumber: 27
+                                                            lineNumber: 503,
+                                                            columnNumber: 29
                                                         }, this),
                                                         session.customerPhone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                             className: "text-[11px] font-bold text-gray-400 pl-5 flex items-center gap-2 italic",
                                                             children: session.customerPhone
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 302,
-                                                            columnNumber: 30
+                                                            lineNumber: 505,
+                                                            columnNumber: 31
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 298,
-                                                    columnNumber: 24
+                                                    lineNumber: 501,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 297,
-                                                columnNumber: 21
+                                                lineNumber: 500,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4 text-center",
@@ -765,13 +1077,13 @@ function CallSessionsPage() {
                                                     children: session.status.replace('_', ' ')
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 307,
-                                                    columnNumber: 23
+                                                    lineNumber: 510,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 306,
-                                                columnNumber: 21
+                                                lineNumber: 509,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4",
@@ -786,13 +1098,13 @@ function CallSessionsPage() {
                                                                     children: session.manual_status || 'MANUAL'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 321,
-                                                                    columnNumber: 33
+                                                                    lineNumber: 524,
+                                                                    columnNumber: 35
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                lineNumber: 320,
-                                                                columnNumber: 31
+                                                                lineNumber: 523,
+                                                                columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                 className: "text-[13px] font-black text-gray-800 leading-none flex items-center gap-2",
@@ -801,16 +1113,16 @@ function CallSessionsPage() {
                                                                         className: "fi fi-rr-bullhorn text-[12px] text-purple-400 flex"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                        lineNumber: 323,
-                                                                        columnNumber: 120
+                                                                        lineNumber: 526,
+                                                                        columnNumber: 122
                                                                     }, this),
                                                                     " ",
                                                                     session.manualCampaignName
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                lineNumber: 323,
-                                                                columnNumber: 31
+                                                                lineNumber: 526,
+                                                                columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                 className: "text-[12px] font-semibold text-purple-600 leading-none flex items-center gap-2",
@@ -819,24 +1131,24 @@ function CallSessionsPage() {
                                                                         className: "fi fi-rr-user-md text-[12px] flex"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                        lineNumber: 324,
-                                                                        columnNumber: 125
+                                                                        lineNumber: 527,
+                                                                        columnNumber: 127
                                                                     }, this),
                                                                     " ",
                                                                     session.manualCustomerName
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                lineNumber: 324,
-                                                                columnNumber: 31
+                                                                lineNumber: 527,
+                                                                columnNumber: 33
                                                             }, this),
                                                             session.manualCustomerPhone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                                 className: "text-[11px] font-bold text-gray-400 pl-5 flex items-center gap-2 italic",
                                                                 children: session.manualCustomerPhone
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                lineNumber: 326,
-                                                                columnNumber: 33
+                                                                lineNumber: 529,
+                                                                columnNumber: 35
                                                             }, this)
                                                         ]
                                                     }, void 0, true) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -846,23 +1158,23 @@ function CallSessionsPage() {
                                                             children: "NO OVERRIDE"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 331,
-                                                            columnNumber: 32
+                                                            lineNumber: 534,
+                                                            columnNumber: 33
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                        lineNumber: 330,
-                                                        columnNumber: 29
+                                                        lineNumber: 533,
+                                                        columnNumber: 31
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 317,
-                                                    columnNumber: 24
+                                                    lineNumber: 520,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 316,
-                                                columnNumber: 21
+                                                lineNumber: 519,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
                                                 className: "px-4 py-4 text-center",
@@ -874,30 +1186,30 @@ function CallSessionsPage() {
                                                             children: session.is_manual ? 'M-MODE' : 'A-SYNC'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 338,
-                                                            columnNumber: 27
+                                                            lineNumber: 541,
+                                                            columnNumber: 29
                                                         }, this),
                                                         session.is_unassigned && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                                             className: "bg-red-50 text-red-500 px-3 py-1.5 rounded-xl text-[10px] font-black border border-red-100 flex",
                                                             children: "UNASGND"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 342,
-                                                            columnNumber: 29
+                                                            lineNumber: 545,
+                                                            columnNumber: 31
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 337,
-                                                    columnNumber: 24
+                                                    lineNumber: 540,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 336,
-                                                columnNumber: 21
+                                                lineNumber: 539,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
-                                                className: "px-4 py-4 text-right",
+                                                className: "px-4 py-4 text-right pr-8",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     className: "flex flex-col items-end gap-1.5",
                                                     children: [
@@ -908,118 +1220,159 @@ function CallSessionsPage() {
                                                                     className: "fi fi-rr-bolt animate-pulse flex text-[14px]"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                                    lineNumber: 348,
-                                                                    columnNumber: 103
+                                                                    lineNumber: 551,
+                                                                    columnNumber: 105
                                                                 }, this),
                                                                 " ",
                                                                 formatTimeSafe(session.updated_at)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 348,
-                                                            columnNumber: 25
+                                                            lineNumber: 551,
+                                                            columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                                                             className: "text-[11px] font-bold text-gray-300 leading-none",
                                                             children: formatDateSafe(session.updated_at)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                            lineNumber: 349,
-                                                            columnNumber: 25
+                                                            lineNumber: 552,
+                                                            columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                    lineNumber: 347,
-                                                    columnNumber: 23
+                                                    lineNumber: 550,
+                                                    columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                                lineNumber: 346,
-                                                columnNumber: 21
+                                                lineNumber: 549,
+                                                columnNumber: 23
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("td", {
+                                                className: "px-4 py-4 text-center",
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>handleDelete(session.user_id, session.campaign_id),
+                                                    className: "w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center group/del",
+                                                    title: "Delete Session",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                                        className: "flex fi fi-rr-trash text-[14px] group-hover/del:scale-110 transition-transform"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                        lineNumber: 561,
+                                                        columnNumber: 27
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                    lineNumber: 556,
+                                                    columnNumber: 25
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                                lineNumber: 555,
+                                                columnNumber: 23
                                             }, this)
                                         ]
-                                    }, `${session.user_id}-${session.campaign_id}`, true, {
+                                    }, key, true, {
                                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                                        lineNumber: 279,
-                                        columnNumber: 19
-                                    }, this))
+                                        lineNumber: 477,
+                                        columnNumber: 21
+                                    }, this);
+                                })
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 265,
+                                lineNumber: 460,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 251,
+                        lineNumber: 440,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/call-sessions.tsx",
-                    lineNumber: 250,
+                    lineNumber: 439,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                lineNumber: 249,
+                lineNumber: 438,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: "flex items-center justify-center gap-2 mt-4",
+                className: "flex items-center justify-center gap-3 mt-8 pb-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                        className: "px-3 py-1 bg-white border border-gray-100 rounded text-[10px] font-bold text-gray-400",
+                        className: "flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                className: "fi fi-rr-angle-left"
+                                className: "flex fi fi-rr-arrow-small-left text-[14px]"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 362,
-                                columnNumber: 115
+                                lineNumber: 576,
+                                columnNumber: 13
                             }, this),
-                            " Previous"
+                            "Previous"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 362,
+                        lineNumber: 575,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                        className: "w-6 h-6 flex items-center justify-center bg-indigo-600 text-white rounded text-[10px] font-bold",
-                        children: "1"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 363,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                        className: "px-3 py-1 bg-white border border-gray-100 rounded text-[10px] font-bold text-gray-400 font-bold",
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                        className: "flex items-center gap-2",
                         children: [
-                            "Next ",
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                className: "fi fi-rr-angle-right"
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                className: "w-9 h-9 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[11px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90",
+                                children: "1"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                                lineNumber: 364,
-                                columnNumber: 130
+                                lineNumber: 581,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                className: "w-9 h-9 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[11px] font-black hover:border-indigo-100 hover:text-indigo-600 transition-all active:scale-90",
+                                children: "2"
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 582,
+                                columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/call-sessions.tsx",
-                        lineNumber: 364,
+                        lineNumber: 580,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                        className: "flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest",
+                        children: [
+                            "Next",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                className: "flex fi fi-rr-arrow-small-right text-[14px]"
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/call-sessions.tsx",
+                                lineNumber: 587,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/pages/portal/call-sessions.tsx",
+                        lineNumber: 585,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/call-sessions.tsx",
-                lineNumber: 361,
+                lineNumber: 574,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/pages/portal/call-sessions.tsx",
-        lineNumber: 184,
+        lineNumber: 287,
         columnNumber: 5
     }, this);
 }

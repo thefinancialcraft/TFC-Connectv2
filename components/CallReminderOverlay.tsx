@@ -313,10 +313,19 @@ export default function CallReminderOverlay() {
     useEffect(() => {
         if (!mounted || !storageLoaded) return;
         
-        checkUpcomingCalls();
-        const interval = setInterval(checkUpcomingCalls, 10000); // Check every 10s for smoother queue handling
+        // Initial check and immediate check when call ends
+        if (!isCallingActive) {
+            checkUpcomingCalls();
+        }
+
+        const interval = setInterval(() => {
+            if (!isCallingActive) {
+                checkUpcomingCalls();
+            }
+        }, 30000); // Increased to 30s to save egress/requests
+
         return () => clearInterval(interval);
-    }, [mounted, checkUpcomingCalls, storageLoaded]);
+    }, [mounted, checkUpcomingCalls, storageLoaded, isCallingActive]);
 
     // Auto-dismiss after 5 minutes
     useEffect(() => {

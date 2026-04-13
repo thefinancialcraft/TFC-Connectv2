@@ -398,7 +398,9 @@ export default function TeamDetails() {
           idleMins,
           onCall: !!syncData?.on_call,
           isPersonal: !!syncData?.is_personal,
-          status: syncData?.on_call ? (syncData.is_personal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle')
+          status: syncData?.on_call ? (syncData.is_personal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
+          utilization: ((((totalDuration / 60) * 1.67) + totalCalls) / 3).toFixed(1) + '%',
+          utilizationRaw: (((totalDuration / 60) * 1.67) + totalCalls) / 3
         };
 
         totalCallsAll += totalCalls;
@@ -790,6 +792,7 @@ export default function TeamDetails() {
                                 <th className="px-2 py-3 font-bold text-center">Connected</th>
                                 <th className="px-2 py-3 font-bold text-center">Avg Talk</th>
                                 <th className="px-2 py-3 font-bold text-center">Streak/Gap</th>
+                                <th className="px-2 py-3 font-bold text-center text-rose-600">Utilization</th>
                                 <th className="px-4 py-3 font-bold text-right">Last Call</th>
                             </tr>
                         </thead>
@@ -888,6 +891,19 @@ export default function TeamDetails() {
                                         </td>
                                         <td className="px-2 py-4 text-center text-xs text-amber-600 font-bold">
                                             {mStats.streakGap}
+                                        </td>
+                                        <td className="px-2 py-4 text-center">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-xs font-bold text-rose-600">
+                                                    {mStats.utilization}
+                                                </span>
+                                                <div className="w-12 h-1 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                                                    <div 
+                                                        className="h-full bg-rose-500" 
+                                                        style={{ width: `${Math.min(100, mStats.utilizationRaw)}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-4 py-4 text-right">
                                             <p className="text-xs font-bold text-gray-800">{formatTime(mStats.lastActive)}</p>

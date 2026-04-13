@@ -586,54 +586,7 @@ const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsIn
 const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
 if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
 ;
-// Global flag to prevent recursive logging
-let isLoggingInternal = false;
-// Custom Fetch Wrapper for Logging
-const customFetch = async (url, options)=>{
-    const urlStr = typeof url === 'string' ? url : url instanceof Request ? url.url : url.toString();
-    // CRITICAL: Immediately identify if this is an Auth or internal monitoring request
-    // We skip EVERYTHING for these to ensure no interference with login
-    const isExcluded = isLoggingInternal || urlStr.includes('system_monitoring_logs') || urlStr.includes('rpc/get_monitoring_stats') || urlStr.includes('/auth/v1/') || urlStr.includes('/rest/v1/utility_data') || urlStr.includes('/rest/v1/user_profiles?select=user_name');
-    // If excluded, just return the standard fetch immediately
-    if (isExcluded) {
-        return fetch(url, options);
-    }
-    try {
-        // 1. Execute the original request
-        const response = await fetch(url, options);
-        // 2. Schedule logging in the background (post-response, non-blocking)
-        if ("TURBOPACK compile-time truthy", 1) {
-            (async ()=>{
-                try {
-                    isLoggingInternal = true;
-                    const { logSystemEvent, estimateSize } = await __turbopack_context__.A("[project]/lib/monitoring.ts [client] (ecmascript, async loader)");
-                    const path = urlStr.split('.co')[1] || urlStr;
-                    const method = options?.method || (url instanceof Request ? url.method : 'GET');
-                    await logSystemEvent({
-                        event_type: method === 'GET' ? 'READ' : 'WRITE',
-                        description: `API_HIT: ${method} ${path}`,
-                        path: path,
-                        payload_size: options?.body ? estimateSize(options.body) : 0,
-                        response_size: 1024
-                    });
-                } catch (logErr) {
-                // Ignore background logging errors
-                } finally{
-                    isLoggingInternal = false;
-                }
-            })();
-        }
-        return response;
-    } catch (err) {
-        console.error('[Sentinel] API Request Failed:', urlStr, err);
-        throw err; // Re-throw so the app can handle it
-    }
-};
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey, {
-    global: {
-        fetch: customFetch
-    }
-});
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
 const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         autoRefreshToken: false,
@@ -1749,66 +1702,21 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "[project]/lib/monitoring.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.s([
+/**
+ * Sentinel Monitoring - DISABLED
+ * This file is kept as an empty shell to avoid breaking existing imports.
+ */ __turbopack_context__.s([
     "estimateSize",
     ()=>estimateSize,
     "logSystemEvent",
     ()=>logSystemEvent
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-;
-// Cache to store user profile name during the session to avoid redundant queries
-let cachedUserName = null;
-const logSystemEvent = async (log)=>{
-    try {
-        let finalUserId = log.user_id;
-        let finalUserName = log.user_name;
-        let finalOrgId = log.organization_id;
-        // 1. Resolve User ID and Name
-        if (!finalUserId || !finalUserName) {
-            const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
-            if (user) {
-                finalUserId = finalUserId || user.id;
-                if (!finalUserName) {
-                    // Check cache first
-                    if (cachedUserName) {
-                        finalUserName = cachedUserName;
-                    } else {
-                        // Attempt to get name from profile table
-                        // Use maybeSingle to prevent error if profile doesn't exist yet
-                        const { data: profile } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('user_profiles').select('user_name').eq('id', user.id).maybeSingle();
-                        if (profile?.user_name) {
-                            finalUserName = profile.user_name;
-                            cachedUserName = profile.user_name; // Cache it
-                        }
-                    }
-                }
-            }
-        }
-        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('system_monitoring_logs').insert({
-            user_id: finalUserId,
-            user_name: finalUserName || 'System/Anonymous',
-            event_type: log.event_type,
-            description: log.description,
-            path: log.path || (("TURBOPACK compile-time truthy", 1) ? window.location.pathname : "TURBOPACK unreachable"),
-            metadata: log.metadata || {},
-            payload_size: log.payload_size || 0,
-            response_size: log.response_size || 0,
-            organization_id: finalOrgId
-        });
-        if (error) {
-            console.error('[Sentinel] Failed to log event:', error);
-        }
-    } catch (err) {
-        console.warn('[Sentinel] Logging error:', err);
-    }
+const logSystemEvent = async (_log)=>{
+    // Monitoring completely disabled by user request.
+    return;
 };
-const estimateSize = (obj)=>{
-    try {
-        return JSON.stringify(obj).length;
-    } catch  {
-        return 0;
-    }
+const estimateSize = (_obj)=>{
+    return 0;
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);

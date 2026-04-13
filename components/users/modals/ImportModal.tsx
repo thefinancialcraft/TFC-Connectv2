@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { supabase } from "../../../lib/supabase";
+import { useUser } from "../../AppLayout";
 
 interface Organization {
   id: string;
@@ -19,7 +20,14 @@ export function ImportModal({
   onSuccess,
   organizations,
 }: ImportModalProps) {
+  const { user } = useUser();
   const [selectedImportOrgId, setSelectedImportOrgId] = useState("");
+
+  React.useEffect(() => {
+    if (show && user?.isClient && user.organization_id) {
+      setSelectedImportOrgId(user.organization_id);
+    }
+  }, [show, user]);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState("");
@@ -175,12 +183,15 @@ Jane Smith,TFC-002,jane.smith@example.com,0987654321,posp_agent,password123`;
             </label>
             <select
               value={selectedImportOrgId}
+              disabled={user?.isClient}
               onChange={(e) => setSelectedImportOrgId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+              className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8] ${user?.isClient ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700'}`}
               style={{ fontFamily: "'Roboto', sans-serif" }}
             >
               <option value="">Select an organization</option>
-              {organizations.map((org) => (
+              {organizations
+                .filter(org => !user?.isClient || org.id === user.organization_id)
+                .map((org) => (
                 <option key={org.id} value={org.id}>
                   {org.company_name}
                 </option>

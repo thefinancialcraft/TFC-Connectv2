@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 // Removed AppLayout import as it's now handled globally in PortalContainer
 import { useActivityData } from "@/hooks/useActivityData";
 
@@ -16,12 +17,31 @@ export default function Activity() {
     formatTime,
     formatDisplayDate,
     source,
-    setSource
+    setSource,
+    activities,
+    mobileActivities,
+    orgFilter, setOrgFilter,
+    agentFilter, setAgentFilter,
+    campaignFilter, setCampaignFilter,
+    dispositionFilter, setDispositionFilter,
+    callTypeFilter, setCallTypeFilter,
+    filterOptions
   } = useActivityData();
 
   const [activeNav] = useState("activity");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  
+  // Combined filtration logic - Consolidated into useActivityData hook
+  // Reset all filters
+  const resetFilters = () => {
+     setAgentFilter("All Agents");
+     setCampaignFilter("All Campaigns");
+     setDispositionFilter("All Dispositions");
+     setOrgFilter("All Organizations");
+     setCallTypeFilter("All Types");
+  };
 
   const getDaysInMonth = useCallback((date: Date) => {
     const year = date.getFullYear();
@@ -621,12 +641,98 @@ export default function Activity() {
                           style={{ fontFamily: "'Roboto', sans-serif" }}
                         />
                       </div>
-                      <button
-                        className="h-9 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        <i className="fi flex fi-rr-filter text-sm text-gray-600"></i>
-                      </button>
+                      
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowFilterModal(!showFilterModal)}
+                          className={`h-9 w-9 border rounded-lg transition-all flex items-center justify-center ${showFilterModal ? 'bg-[#4b33e8] border-[#4b33e8] text-white shadow-lg' : 'bg-white border-gray-300 text-gray-600 hover:border-[#4b33e8] hover:text-[#4b33e8]'}`}
+                        >
+                           <i className="fi flex fi-rr-filter text-sm"></i>
+                        </button>
+
+                        {showFilterModal && (
+                          <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-4 animate-in fade-in slide-in-from-top-2">
+                             <div className="mb-3 flex items-center justify-between">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Filters</h3>
+                                <button onClick={resetFilters} className="text-[10px] font-black text-indigo-600 uppercase">Reset</button>
+                             </div>
+                             
+                             <div className="space-y-3">
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Organization</label>
+                                   <select 
+                                      value={orgFilter}
+                                      onChange={(e) => setOrgFilter(e.target.value)}
+                                      className="w-full h-10 px-3 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                                   >
+                                      <option>All Organizations</option>
+                                      {filterOptions.organizations.map(org => (
+                                        <option key={org.id} value={org.id}>{org.name}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Select Agent</label>
+                                   <select 
+                                      value={agentFilter}
+                                      onChange={(e) => setAgentFilter(e.target.value)}
+                                      className="w-full h-10 px-3 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                                   >
+                                      <option>All Agents</option>
+                                      {filterOptions.agents.map(agent => (
+                                        <option key={agent.id} value={agent.id}>{agent.name} ({agent.id})</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Campaign</label>
+                                   <select 
+                                      value={campaignFilter}
+                                      onChange={(e) => setCampaignFilter(e.target.value)}
+                                      className="w-full h-10 px-3 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                                   >
+                                      <option>All Campaigns</option>
+                                      {filterOptions.campaigns.map(camp => (
+                                        <option key={camp} value={camp}>{camp}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Disposition</label>
+                                   <select 
+                                      value={dispositionFilter}
+                                      onChange={(e) => setDispositionFilter(e.target.value)}
+                                      className="w-full h-10 px-3 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                                   >
+                                      <option>All Dispositions</option>
+                                      {filterOptions.dispositions.map(disp => (
+                                        <option key={disp} value={disp}>{disp}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                 {source === 'mobile' && (
+                                   <div>
+                                      <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Call Type</label>
+                                      <select 
+                                         value={callTypeFilter}
+                                         onChange={(e) => setCallTypeFilter(e.target.value)}
+                                         className="w-full h-10 px-3 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-sans"
+                                      >
+                                         <option value="All Types">All Types</option>
+                                         <option value="Outgoing">Outgoing</option>
+                                         <option value="Incoming">Incoming</option>
+                                         <option value="Missed">Missed / Reject</option>
+                                      </select>
+                                   </div>
+                                 )}
+                             </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                    
                   </div>
@@ -691,12 +797,98 @@ export default function Activity() {
                           style={{ fontFamily: "'Roboto', sans-serif" }}
                         />
                       </div>
-                      <button
-                        className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        <i className="fi flex fi-rr-filter text-sm text-gray-600"></i>
-                      </button>
+                      
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowFilterModal(!showFilterModal)}
+                          className={`h-10 w-10 border rounded-xl transition-all flex items-center justify-center ${showFilterModal ? 'bg-[#4b33e8] border-[#4b33e8] text-white shadow-lg' : 'bg-white border-gray-300 text-gray-600 hover:border-[#4b33e8] hover:text-[#4b33e8]'}`}
+                        >
+                           <i className="fi flex fi-rr-filter text-base"></i>
+                        </button>
+
+                        {showFilterModal && (
+                          <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-5 animate-in fade-in slide-in-from-top-2">
+                             <div className="mb-4 flex items-center justify-between">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Advanced Filters</h3>
+                                <button onClick={resetFilters} className="text-[10px] font-black text-indigo-600 hover:underline uppercase">Reset All</button>
+                             </div>
+                             
+                             <div className="space-y-4">
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Organization Name</label>
+                                   <select 
+                                      value={orgFilter}
+                                      onChange={(e) => setOrgFilter(e.target.value)}
+                                      className="w-full h-11 px-4 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                                   >
+                                      <option>All Organizations</option>
+                                      {filterOptions.organizations.map(org => (
+                                        <option key={org.id} value={org.id}>{org.name}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Select Agent Name / ID</label>
+                                   <select 
+                                      value={agentFilter}
+                                      onChange={(e) => setAgentFilter(e.target.value)}
+                                      className="w-full h-11 px-4 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                                   >
+                                      <option>All Agents</option>
+                                      {filterOptions.agents.map(agent => (
+                                        <option key={agent.id} value={agent.id}>{agent.name} ({agent.id})</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Campaign Filter</label>
+                                   <select 
+                                      value={campaignFilter}
+                                      onChange={(e) => setCampaignFilter(e.target.value)}
+                                      className="w-full h-11 px-4 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                                   >
+                                      <option>All Campaigns</option>
+                                      {filterOptions.campaigns.map(camp => (
+                                        <option key={camp} value={camp}>{camp}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                <div>
+                                   <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Disposition Filter</label>
+                                   <select 
+                                      value={dispositionFilter}
+                                      onChange={(e) => setDispositionFilter(e.target.value)}
+                                      className="w-full h-11 px-4 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                                   >
+                                      <option>All Dispositions</option>
+                                      {filterOptions.dispositions.map(disp => (
+                                        <option key={disp} value={disp}>{disp}</option>
+                                      ))}
+                                   </select>
+                                </div>
+
+                                {source === 'mobile' && (
+                                   <div>
+                                      <label className="text-[10px] font-bold text-gray-500 mb-1 block uppercase">Call Type Filter</label>
+                                      <select 
+                                         value={callTypeFilter}
+                                         onChange={(e) => setCallTypeFilter(e.target.value)}
+                                         className="w-full h-11 px-4 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                                      >
+                                         <option value="All Types">All Types</option>
+                                         <option value="Outgoing">Outgoing</option>
+                                         <option value="Incoming">Incoming</option>
+                                         <option value="Missed">Missed / Reject</option>
+                                      </select>
+                                   </div>
+                                )}
+                             </div>
+                          </div>
+                        )}
+                      </div>
                       <div className="relative">
                         <button
                           onClick={() => setShowDatePicker(!showDatePicker)}
@@ -764,87 +956,41 @@ export default function Activity() {
 
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-[#e4ebf5] sticky top-0 z-10">
+                      <thead className="bg-[#e4ebf5] sticky top-0 z-10 text-[10px] md:text-xs">
                         <tr>
                           {source === 'mobile' ? (
                             <>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Emp. ID
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Emp. Name
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Time
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Type
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Customer
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Number
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Duration
-                                </th>
-                                <th
-                                  className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                                >
-                                  Device
-                                </th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Emp. ID</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Emp. Name</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Time</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Number</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Duration</th>
+                                <th className="px-4 py-3 text-left font-semibold text-gray-600 uppercase tracking-wider">Device</th>
                             </>
                           ) : (
-                           // CRM Columns (Reverting to original style)
-                           <>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Emp. ID</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Emp Name</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Customer</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Callback</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[180px]">Disposition</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Campaign</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Last Call</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Talk Time</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Dialed</th>
-                           <th className="px-2 md:px-6 py-3 md:py-4 text-left text-[10px] md:text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[200px]">Remark</th>
-                           </>
+                            <>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Emp. ID</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Emp Name</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[180px]">Customer</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Callback</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[180px]">Disposition</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Campaign</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[120px] md:min-w-[150px]">Last Call</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Talk Time</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[100px] md:min-w-[120px]">Dialed</th>
+                                <th className="px-2 md:px-6 py-3 md:py-4 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] md:min-w-[200px]">Remark</th>
+                            </>
                           )}
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-white divide-y divide-gray-100">
                         {filteredActivities.length === 0 ? (
                            <tr>
-                             <td colSpan={source === 'mobile' ? 8 : 10} className="px-6 py-12 text-center">
-                               <div className="flex flex-col items-center justify-center">
-                                 <div className="flex h-16 w-16 items-center justify-center rounded-full mx-auto mb-4" style={{ background: "linear-gradient(to bottom right, rgba(75, 51, 232, 0.1), rgba(75, 51, 232, 0.05))" }}>
-                                  <i className="fi fi-rr-search text-2xl text-purple-600"></i>
-                                 </div>
-                                 <h3 className="text-lg font-medium text-gray-900 mb-1">No activities found</h3>
-                                 <p className="text-sm text-gray-500">Try adjusting your search or date filter</p>
-                               </div>
+                             <td colSpan={source === 'mobile' ? 8 : 10} className="px-6 py-20 text-center opacity-40">
+                               <i className="fi flex fi-rr-search-heart text-5xl mb-3 text-gray-300 justify-center"></i>
+                               <p className="text-sm font-bold uppercase tracking-widest text-gray-400">No activities found</p>
                              </td>
                            </tr>
                         ) : (

@@ -105,9 +105,12 @@ async function handler(req, res) {
             };
             return res.status(200).json(responseData);
         }
+        // 0. FETCH ORGANIZATION ID FOR SESSION TRACKING
+        const { data: campaignMeta } = await client.from('campaigns').select('organization_id').eq('id', campaign_id).maybeSingle();
         let updatePayload = {
             user_id: user.id,
             campaign_id: campaign_id,
+            organization_id: campaignMeta?.organization_id || null,
             updated_at: new Date().toISOString()
         };
         if (manual_override) {

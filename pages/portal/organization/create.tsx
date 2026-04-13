@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { logSystemEvent, estimateSize } from '@/lib/monitoring';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
+import { useUser } from "@/components/AppLayout";
 import { getStoredUserData } from "@/lib/localStorageUtils";
 
 const companyTypes = [
@@ -30,34 +30,7 @@ const formatDate = (dateString: string | null) => {
 
 export default function CreateOrganization() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    if (typeof window === 'undefined') return null;
-    const cachedData = getStoredUserData();
-    if (cachedData) {
-      return {
-        uid: cachedData.user_id || "",
-        displayName: cachedData.user_name || cachedData.displayName || null,
-        email: cachedData.email || "",
-        phone: null,
-        providers: [],
-        providerType: null,
-        createdAt: "",
-        lastSignInAt: null,
-        employeeId: cachedData.employee_id || null,
-        role: cachedData.role || null,
-        approvalStatus: null,
-        accountStatus: null,
-        updatedAt: null,
-        profilePicUrl: cachedData.profile_pic_url || null,
-        isClient: cachedData.is_client,
-        designation: cachedData.designation,
-        googleCalendarConnected: cachedData.google_calendar_connected ?? false,
-        googleCalendarSkipped: cachedData.google_calendar_skipped ?? false,
-      };
-    }
-    return null;
-  });
+  const { user, mounted, loading: authLoading } = useUser();
 
   const [form, setForm] = useState({
     company_name: '',
@@ -91,20 +64,8 @@ export default function CreateOrganization() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchAuth = async () => {
-    const result = await checkAuthAndFetchProfile();
-    setMounted(true);
-    if (result.shouldRedirect) {
-      router.push("/login");
-      return;
-    }
-    if (result.user) {
-      setUser(result.user);
-    }
-  };
-
   const handleLogoutClick = async () => {
-    await handleLogout(router);
+    // router.push already handled by AppLayout logout but we can keep the callback if needed for consistency
   };
 
   // Page level protection logic (Strict: Hidden by default)
@@ -121,7 +82,6 @@ export default function CreateOrganization() {
   }, [mounted, user, router]);
 
   useEffect(() => {
-    fetchAuth();
     fetchUnassignedUsers();
   }, []);
 
@@ -285,8 +245,10 @@ export default function CreateOrganization() {
 
 
 
+  if (!mounted || authLoading) return null;
+
   return (
-    <div className="flex min-h-screen w-full overflow-x-hidden bg-[#f8f9fc]">
+    <>
       <Head>
         <title>Onboard Asset • TFC Nexus</title>
       </Head>
@@ -305,40 +267,28 @@ export default function CreateOrganization() {
         }
       `}</style>
 
-      <Sidebar
-        user={{
-          displayName: user?.displayName || null,
-          email: user?.email || "",
-          employeeId: user?.employeeId || null,
-          lastSignInAt: user?.lastSignInAt || null,
-          profilePicUrl: user?.profilePicUrl || null,
-        }}
-        activeNav="organization"
-        onNavChange={() => {}}
-        userRole={user?.role || null}
-        onLogout={handleLogoutClick}
-      />
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
+            {/* Breadcrumbs */}
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
+              <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push("/dashboard")}>
+                Dashboard
+              </span>
+              <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
+              <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push("/organization")}>
+                Organizations
+              </span>
+              <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
+              <span className="text-gray-600 font-bold">Onboard New</span>
+            </div>
 
-      <div className="flex-1 flex flex-col lg:ml-56 w-full min-w-0 font-poppins">
-        <Header
-          user={{
-            displayName: user?.displayName || null,
-            email: user?.email || "",
-            employeeId: user?.employeeId || null,
-            profilePicUrl: user?.profilePicUrl || null,
-          }}
-          onLogout={handleLogoutClick}
-        />
-
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 lg:pt-16 pb-12">
           {/* Dynamic Interactive Header */}
-          <div className="relative w-full overflow-hidden px-4 md:px-8 pt-12 pb-32">
+          <div className="relative w-full overflow-hidden rounded-3xl pt-12 pb-32 mb-8 shadow-xl">
              <div className="absolute inset-0 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4338ca] z-0"></div>
              {/* Decorative Elements */}
              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px] -mr-64 -mt-64 animate-pulse"></div>
              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[80px] -ml-40 -mb-40"></div>
              
-             <div className="container mx-auto max-w-6xl relative z-10">
+             <div className="px-8 relative z-10">
                 <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-8">
                    <div className="text-center md:text-left">
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white/70 text-[10px] font-semibold uppercase tracking-[0.2em] mb-6">
@@ -372,8 +322,7 @@ export default function CreateOrganization() {
              </div>
           </div>
 
-          {/* Form Content */}
-          <div className="container mx-auto px-4 md:px-8 -mt-20 relative z-20">
+          <div className="px-0 sm:px-4 -mt-20 relative z-20">
             <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-10 max-w-6xl mx-auto">
               
               {/* Left Column: Input Sections */}
@@ -930,8 +879,7 @@ export default function CreateOrganization() {
               </div>
             </form>
           </div>
-        </main>
       </div>
-    </div>
+    </>
   );
 }

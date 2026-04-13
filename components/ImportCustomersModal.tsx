@@ -67,10 +67,15 @@ export default function ImportCustomersModal({
   useEffect(() => {
     setShowImportModal(show);
     if (show) {
-      setSelectedOrgId(preselectedOrgId);
+      if (user?.isClient && user.organization_id) {
+        setSelectedOrgId(user.organization_id);
+        fetchCampaigns(user.organization_id);
+      } else {
+        setSelectedOrgId(preselectedOrgId);
+        fetchCampaigns(preselectedOrgId);
+      }
       setSelectedCampaignId(preselectedCampaignId);
       fetchOrganizations();
-      fetchCampaigns(preselectedOrgId); // Fetch campaigns for the preselected org
     } else {
       // Reset all internal states when modal is closed
       setImportFile(null);
@@ -93,11 +98,11 @@ export default function ImportCustomersModal({
       setInitialRecordCount(0);
       setSelectedDbConflicts(new Set());
     }
-  }, [show, preselectedOrgId, preselectedCampaignId]);
+  }, [show, preselectedOrgId, preselectedCampaignId, user]);
 
   // Re-fetch campaigns when selected organization changes
   useEffect(() => {
-    if (showImportModal) {
+    if (showImportModal && selectedOrgId) {
       fetchCampaigns(selectedOrgId);
       // If we change org, we should probably clear campaign unless it's the preselected one
       if (selectedOrgId !== preselectedOrgId) {
@@ -105,10 +110,17 @@ export default function ImportCustomersModal({
       } else {
         setSelectedCampaignId(preselectedCampaignId);
       }
+    } else if (showImportModal && !selectedOrgId) {
+        setCampaigns([]);
+        setSelectedCampaignId("");
     }
   }, [selectedOrgId]);
 
   const fetchCampaigns = async (orgId?: string) => {
+    if (!orgId && !preselectedOrgId) {
+        setCampaigns([]);
+        return;
+    }
     try {
       let query = supabase
         .from("campaigns")
@@ -116,8 +128,9 @@ export default function ImportCustomersModal({
         .eq("status", "active")
         .order("name", { ascending: true });
       
-      if (orgId) {
-        query = query.eq("organization_id", orgId);
+      const targetOrgId = orgId || preselectedOrgId;
+      if (targetOrgId) {
+        query = query.eq("organization_id", targetOrgId);
       }
 
       const { data, error } = await query;
@@ -1026,10 +1039,10 @@ export default function ImportCustomersModal({
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Organization</label>
                   </div>
                   <select 
-                    value={selectedOrgId} 
+                    value={selectedOrgId || (user?.isClient ? (user.organization_id || "") : "")} 
                     onChange={(e) => setSelectedOrgId(e.target.value)}
-                    disabled={!!preselectedOrgId}
-                    className={`w-full px-4 py-2.5 text-gray-500 bg-gray-50 border border-gray-200 rounded-xl text-sm ${preselectedOrgId ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    disabled={!!preselectedOrgId || user?.isClient}
+                    className={`w-full px-4 py-2.5 text-gray-500 border border-gray-200 rounded-xl text-sm ${(preselectedOrgId || user?.isClient) ? 'opacity-60 cursor-not-allowed bg-gray-100' : 'bg-gray-50'}`}
                   >
                     <option value="">Select Organization</option>
                     {organizations.map(org => <option key={org.id} value={org.id}>{org.company_name} ({org.org_code})</option>)}

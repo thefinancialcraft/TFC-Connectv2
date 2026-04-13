@@ -377,12 +377,14 @@ export default function Customer() {
   });
 
   // Bulk Action States
-  const [showBulkOrgModal, setShowBulkOrgModal] = useState(false);
-  const [showBulkCampaignModal, setShowBulkCampaignModal] = useState(false);
-  const [showBulkAssignedModal, setShowBulkAssignedModal] = useState(false);
-  const [showBulkDispositionModal, setShowBulkDispositionModal] = useState(false);
+  const [showBulkActionModal, setShowBulkActionModal] = useState(false);
   const [isUpdatingBulk, setIsUpdatingBulk] = useState(false);
-  const [bulkValue, setBulkValue] = useState("");
+  const [bulkUpdates, setBulkUpdates] = useState({
+    organization_id: "",
+    campaign_id: "",
+    assigned_to: "",
+    disposition: ""
+  });
 
 
 
@@ -499,6 +501,29 @@ export default function Customer() {
             freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
         freshCountQuery = applyUserFilters(freshCountQuery);
+
+        if (filters.organization) {
+            pendingQuery = pendingQuery.eq("organization_id", filters.organization);
+            overdueQuery = overdueQuery.eq("organization_id", filters.organization);
+            freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
+        }
+        if (filters.campaign) {
+            pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
+            overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
+            freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
+        }
+        if (filters.assignedTo) {
+            const agentCol = dataSource === 'live' ? 'assigned_to' : 'agent_id';
+            if (filters.assignedTo === "unassigned") {
+                pendingQuery = pendingQuery.is(agentCol, null);
+                overdueQuery = overdueQuery.is(agentCol, null);
+                freshCountQuery = freshCountQuery.is(agentCol, null);
+            } else {
+                pendingQuery = pendingQuery.eq(agentCol, filters.assignedTo);
+                overdueQuery = overdueQuery.eq(agentCol, filters.assignedTo);
+                freshCountQuery = freshCountQuery.eq(agentCol, filters.assignedTo);
+            }
+        }
 
         if (filters.startDate) {
             pendingQuery = pendingQuery.gte(dateField, `${filters.startDate}T00:00:00`);
@@ -685,6 +710,12 @@ export default function Customer() {
       setSelectedCustomers(new Set());
       setSearchQuery("");
       setTempSearchQuery("");
+
+      // Initialize filters for clients
+      if (user?.isClient && user.organization_id) {
+        setFilters(prev => ({ ...prev, organization: user.organization_id || "" }));
+        setBulkUpdates(prev => ({ ...prev, organization_id: user.organization_id || "" }));
+      }
     }
   }, [user?.uid, userLoaded, mounted]); // Dependency on user?.uid is more stable than the whole user object
 
@@ -711,16 +742,37 @@ export default function Customer() {
     } catch (err) { console.error("Error fetching filter metadata:", err); }
   };
 
-  const handleBulkUpdate = async (field: string, value: string | null) => {
-    if (!selectedCustomers.size || !value) return;
+  const handleBulkUpdate = async (updates: Record<string, any>) => {
+    if (!selectedCustomers.size || Object.keys(updates).length === 0) return;
     
     setIsUpdatingBulk(true);
     try {
       const ids = Array.from(selectedCustomers);
 
-      if (field === "disposition") {
-        if (["Wrong NO", "DND", "Language barrier"].includes(value)) {
-          // Move to rejected_leads
+      // Check for special "Move Fresh" action
+      if (updates.action === "Move Fresh") {
+        const { error: resetError } = await supabase
+          .from("customers")
+          .update({
+            disposition: null,
+            sub_disposition: null,
+            assigned_to: null,
+            status: "active",
+            last_called_at: null,
+            last_updated_by: null,
+            is_connected: null,
+            attempt_count: 0,
+            last_attempt_at: null,
+            managed_by: null
+          })
+          .in("id", ids);
+
+        if (resetError) throw resetError;
+      } else {
+        // Check for Rejected Disposition move
+        const rejectedValue = updates.disposition;
+        if (rejectedValue && ["Wrong NO", "DND", "Language barrier"].includes(rejectedValue)) {
+          // 1. Fetch the leads first to move them
           const { data: leads, error: fetchError } = await supabase
             .from("customers")
             .select("*")
@@ -734,21 +786,23 @@ export default function Customer() {
               customer_name: lead.customer_name,
               phone_no: lead.phone_no,
               phone_search_hash: lead.phone_search_hash || computePhoneHash(decryptPhone(lead.phone_no)),
-              campaign_id: lead.campaign_id,
-              disposition: value,
+              campaign_id: updates.campaign_id || lead.campaign_id,
+              disposition: updates.disposition || lead.disposition,
               sub_disposition: lead.sub_disposition,
-              agent_id: lead.assigned_to,
+              agent_id: updates.assigned_to || lead.assigned_to,
               rejected_at: new Date().toISOString(),
               managed_by: lead.managed_by,
-              organization_id: lead.organization_id
+              organization_id: updates.organization_id || lead.organization_id
             }));
 
+            // 2. Insert into rejected
             const { error: insertError } = await supabase
               .from("rejected_leads")
               .insert(rejectedLeads);
 
             if (insertError) throw insertError;
 
+            // 3. Delete from customers
             const { error: deleteError } = await supabase
               .from("customers")
               .delete()
@@ -756,42 +810,15 @@ export default function Customer() {
 
             if (deleteError) throw deleteError;
           }
-        } else if (value === "Move Fresh") {
-          // Reset lead fields to fresh state
-          const { error: resetError } = await supabase
-            .from("customers")
-            .update({
-              disposition: null,
-              sub_disposition: null,
-              assigned_to: null,
-              status: "active",
-              last_called_at: null,
-              last_updated_by: null,
-              is_connected: null,
-              attempt_count: 0,
-              last_attempt_at: null,
-              managed_by: null
-            })
-            .in("id", ids);
-
-          if (resetError) throw resetError;
         } else {
-          // Standard disposition update
+          // Standard bulk update for any fields provided
           const { error } = await supabase
             .from("customers")
-            .update({ [field]: value })
+            .update(updates)
             .in("id", ids);
 
           if (error) throw error;
         }
-      } else {
-        // Standard field update for organization, campaign, assigned_to
-        const { error } = await supabase
-          .from("customers")
-          .update({ [field]: value })
-          .in("id", ids);
-
-        if (error) throw error;
       }
 
       setSelectedCustomers(new Set());
@@ -799,21 +826,22 @@ export default function Customer() {
 
       logSystemEvent({
           event_type: 'WRITE',
-          description: `Bulk Update: Field "${field}" set to "${value}" for ${ids.length} records.`,
-          metadata: { field, value, record_count: ids.length },
-          payload_size: estimateSize({ field, value, ids }),
+          description: `Bulk Update: Applied changes ${JSON.stringify(updates)} to ${ids.length} records.`,
+          metadata: { updates, record_count: ids.length },
+          payload_size: estimateSize({ updates, ids }),
           user_name: user?.displayName || 'Admin',
           organization_id: user?.organization_id || undefined
       });
       
-      // Close all bulk modals
-      setShowBulkOrgModal(false);
-      setShowBulkCampaignModal(false);
-      setShowBulkAssignedModal(false);
-      setShowBulkDispositionModal(false);
-      setBulkValue("");
+      setShowBulkActionModal(false);
+      setBulkUpdates({
+        organization_id: "",
+        campaign_id: "",
+        assigned_to: "",
+        disposition: ""
+      });
     } catch (err) {
-      console.error("Error updated customers:", err);
+      console.error("Error updating customers:", err);
       alert("Failed to update customers. Please try again.");
     } finally {
       setIsUpdatingBulk(false);
@@ -1510,41 +1538,16 @@ export default function Customer() {
                       <>
                         {dataSource !== 'rejected' && (
                           <>
+                          <>
                             <button
-                              onClick={() => setShowBulkOrgModal(true)}
-                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
-                              title="Change Organization"
+                              onClick={() => setShowBulkActionModal(true)}
+                              className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
+                              title="Bulk Actions"
                             >
-                              <i className="fi flex fi-rr-building text-sm"></i>
+                              <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
+                              <span className="text-xs font-bold uppercase tracking-wider">Actions ({selectedCustomers.size})</span>
                             </button>
-                            <button
-                              onClick={() => setShowBulkCampaignModal(true)}
-                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
-                              title="Change Campaign"
-                            >
-                              <i className="fi flex fi-rr-megaphone text-sm"></i>
-                            </button>
-                            <button
-                              onClick={() => setShowBulkAssignedModal(true)}
-                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
-                              title="Change Assigned"
-                            >
-                              <i className="fi flex fi-rr-user-pen text-sm"></i>
-                            </button>
-                            <button
-                              onClick={() => setShowBulkDispositionModal(true)}
-                              className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
-                              title="Change Disposition"
-                            >
-                              <i className="fi flex fi-rr-list-check text-sm"></i>
-                            </button>
-                              <button
-                                onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
-                                title="Move Fresh"
-                              >
-                                <i className="fi flex fi-rr-refresh text-sm"></i>
-                              </button>
+                          </>
                           </>
                         )}
                       </>
@@ -1895,39 +1898,12 @@ export default function Customer() {
                           {dataSource !== 'rejected' && (
                             <>
                               <button
-                                onClick={() => setShowBulkOrgModal(true)}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeOrganizationButtonVisible ? 'hidden' : ''}`}
-                                title="Change Organization"
+                                onClick={() => setShowBulkActionModal(true)}
+                                className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
+                                title="Bulk Actions"
                               >
-                                <i className="fi flex fi-rr-building text-sm"></i>
-                              </button>
-                              <button
-                                onClick={() => setShowBulkCampaignModal(true)}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeCampaginButtonVisible ? 'hidden' : ''}`}
-                                title="Change Campaign"
-                              >
-                                <i className="fi flex fi-rr-megaphone text-sm"></i>
-                              </button>
-                              <button
-                                onClick={() => setShowBulkAssignedModal(true)}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeAssignedButtonVisible ? 'hidden' : ''}`}
-                                title="Change Assigned"
-                              >
-                                <i className="fi flex fi-rr-user-pen text-sm"></i>
-                              </button>
-                              <button
-                                onClick={() => setShowBulkDispositionModal(true)}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isChangeDispostionButtonVisible ? 'hidden' : ''}`}
-                                title="Change Disposition"
-                              >
-                                <i className="fi flex fi-rr-list-check text-sm"></i>
-                              </button>
-                              <button
-                                onClick={() => handleBulkUpdate("disposition", "Move Fresh")}
-                                className={`h-10 px-3 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 ${!permissionFlags.isMoveFreshButtonVisible ? 'hidden' : ''}`}
-                                title="Move Fresh"
-                              >
-                                <i className="fi flex fi-rr-refresh text-sm"></i>
+                                <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
+                                <span className="text-xs font-bold uppercase tracking-widest">Bulk Actions ({selectedCustomers.size})</span>
                               </button>
                             </>
                           )}
@@ -3124,41 +3100,47 @@ export default function Customer() {
         </div>
       )}
 
-      {/* Filter Modal */}
+      {/* Compact Filter Modal */}
       {showFilterModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Filter Customers
-              </h3>
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs font-sans">
+          <div className="bg-white rounded-lg w-full max-w-md shadow-2xl flex flex-col border border-gray-100">
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-gray-800">Filter Customers</h3>
+                {(Object.values(filters).some(v => v) || filters.createdStartDate || filters.createdEndDate) && (
+                  <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100">
+                    Active Filters
+                  </span>
+                )}
+              </div>
               <button 
                 onClick={() => setShowFilterModal(false)}
-                className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
-                <i className="fi flex fi-rr-cross-small"></i>
+                <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
-
-            <div className="p-6 space-y-4">
-              {/* Organization Filter */}
+ 
+            <div className="p-5 space-y-4">
+              {/* Organization */}
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
                   Organization
                 </label>
                 <select
-                  value={filters.organization}
+                  value={filters.organization || (user?.isClient ? (user.organization_id || "") : "")}
+                  disabled={user?.isClient}
                   onChange={(e) => {
                     const newOrg = e.target.value;
                     setFilters(prev => ({ 
                       ...prev, 
                       organization: newOrg,
-                      // Reset dependent filters if they don't match the new organization
                       campaign: "",
                       assignedTo: ""
                     }));
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  className={`w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white cursor-pointer text-gray-700'}`}
                 >
                   <option value="">All Organizations</option>
                   {filterStats.organizations.map(org => (
@@ -3166,10 +3148,10 @@ export default function Customer() {
                   ))}
                 </select>
               </div>
-
-              {/* Campaign Filter */}
+ 
+              {/* Campaign */}
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
                   Campaign
                 </label>
                 <select
@@ -3179,141 +3161,110 @@ export default function Customer() {
                     setFilters(prev => ({ 
                       ...prev, 
                       campaign: newCamp,
-                      // Reset assigned to if it doesn't match the new campaign
                       assignedTo: ""
                     }));
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
                 >
                   <option value="">All Campaigns</option>
                   {filterStats.campaigns
-                    .filter(camp => !filters.organization || camp.organization_id === filters.organization)
+                    .filter(camp => filters.organization && camp.organization_id === filters.organization)
                     .map(camp => (
                       <option key={camp.id} value={camp.id}>{camp.name}</option>
                     ))}
                 </select>
               </div>
-
-              {/* Assigned To Filter */}
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                  Assigned To
-                </label>
-                <select
-                  value={filters.assignedTo}
-                  onChange={(e) => setFilters(prev => ({ ...prev, assignedTo: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                >
-                  <option value="">All Agents</option>
-                  <option value="unassigned">Unassigned Only</option>
-                  {(() => {
-                    const selectedCampaign = filterStats.campaigns.find(c => c.id === filters.campaign);
-                    const campaignUserIds = selectedCampaign?.users?.map((u: any) => u.user_id) || [];
-                    
-                    return filterStats.agents
-                      .filter(agent => {
-                        const orgMatch = !filters.organization || agent.organization_id === filters.organization;
-                        const campaignMatch = !filters.campaign || campaignUserIds.includes(agent.user_id);
-                        return orgMatch && campaignMatch;
-                      })
-                      .map(agent => (
-                        <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
-                      ));
-                  })()}
-                </select>
-              </div>
-
-              {/* Disposition Filter */}
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                  Disposition
-                </label>
-                <select
-                  value={filters.disposition}
-                  onChange={(e) => setFilters(prev => ({ ...prev, disposition: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                >
-                  <option value="">All Dispositions</option>
-                  {filterStats.dispositions.map(disp => (
-                    <option key={disp} value={disp}>{disp}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Created Date Range Filter */}
-              <div className="grid grid-cols-2 gap-4 mt-2">
+ 
+              {/* Assigned To & Disposition */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                    Created Start
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
+                    Assigned To
                   </label>
-                  <div className="relative group">
+                  <select
+                    value={filters.assignedTo}
+                    onChange={(e) => setFilters(prev => ({ ...prev, assignedTo: e.target.value }))}
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                  >
+                    <option value="">All Agents</option>
+                    <option value="unassigned">Unassigned</option>
+                    {(() => {
+                      const selectedCampaign = filterStats.campaigns.find(c => c.id === filters.campaign);
+                      const campaignUserIds = selectedCampaign?.users?.map((u: any) => u.user_id) || [];
+                      
+                      return filterStats.agents
+                        .filter(agent => {
+                          const orgMatch = filters.organization && agent.organization_id === filters.organization;
+                          const campaignMatch = !filters.campaign || campaignUserIds.includes(agent.user_id);
+                          return orgMatch && campaignMatch;
+                        })
+                        .map(agent => (
+                          <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
+                        ));
+                    })()}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
+                    Disposition
+                  </label>
+                  <select
+                    value={filters.disposition}
+                    onChange={(e) => setFilters(prev => ({ ...prev, disposition: e.target.value }))}
+                    className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
+                  >
+                    <option value="">All Stats</option>
+                    {filterStats.dispositions.map(disp => (
+                      <option key={disp} value={disp}>{disp}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+ 
+              {/* Date Ranges */}
+              <div className="pt-3 border-t border-gray-100 space-y-4">
+                {/* Lead Generation Date */}
+                <div>
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Lead Generation Date</p>
+                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="date"
                       value={filters.createdStartDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, createdStartDate: e.target.value }))}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
-                      <i className="fi fi-rr-calendar text-xs"></i>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                    Created End
-                  </label>
-                  <div className="relative group">
                     <input
                       type="date"
                       value={filters.createdEndDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, createdEndDate: e.target.value }))}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
-                      <i className="fi fi-rr-calendar text-xs"></i>
-                    </div>
-                  </div>
+                   </div>
                 </div>
-              </div>
 
-              {/* Date Range Filter */}
-              <div className="grid grid-cols-2 gap-4 mt-2">
+                {/* Expiry Date */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                    Expiry Start
-                  </label>
-                  <div className="relative group">
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Policy Expiry Window</p>
+                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="date"
                       value={filters.startDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
-                      <i className="fi fi-rr-calendar text-xs"></i>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2" style={{ fontFamily: "'Roboto', sans-serif" }}>
-                    Expiry End
-                  </label>
-                  <div className="relative group">
                     <input
                       type="date"
                       value={filters.endDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all hover:bg-white"
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none opacity-20">
-                      <i className="fi fi-rr-calendar text-xs"></i>
-                    </div>
-                  </div>
+                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
+ 
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
               <button
                 onClick={() => {
                   setFilters({ 
@@ -3327,7 +3278,7 @@ export default function Customer() {
                     createdEndDate: ""
                   });
                 }}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
+                className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
               >
                 Reset
               </button>
@@ -3336,9 +3287,9 @@ export default function Customer() {
                   setShowFilterModal(false);
                   fetchCustomers(1);
                 }}
-                className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                className="px-6 py-1.5 bg-[#1e1b4b] text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-900 transition-all shadow-sm shadow-indigo-100"
               >
-                Apply Filters
+                Apply Records
               </button>
             </div>
           </div>
@@ -3559,212 +3510,143 @@ export default function Customer() {
           </div>
         </div>
       )}
-      {/* Bulk Update Organization Modal */}
-      {showBulkOrgModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Update Organization ({selectedCustomers.size})
-              </h3>
+      {/* Unified Bulk Action Modal */}
+      {showBulkActionModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs font-sans">
+          <div className="bg-white rounded-lg w-full max-w-lg shadow-2xl flex flex-col border border-gray-100">
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h3 className="font-bold text-gray-800">Bulk Update Records</h3>
+                <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-widest border border-indigo-100">
+                  {selectedCustomers.size} Items
+                </span>
+              </div>
               <button 
-                onClick={() => {
-                  setShowBulkOrgModal(false);
-                  setBulkValue("");
-                }}
-                className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowBulkActionModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
-                <i className="fi flex fi-rr-cross-small"></i>
+                <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
-            <div className="p-6">
-              <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Select New Organization</label>
-              <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-              >
-                <option value="">Select Organization</option>
-                {filterStats.organizations.map(org => (
-                  <option key={org.id} value={org.id}>{org.company_name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
-              <button
-                onClick={() => {
-                  setShowBulkOrgModal(false);
-                  setBulkValue("");
-                }}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={isUpdatingBulk || !bulkValue}
-                onClick={() => handleBulkUpdate("organization_id", bulkValue)}
-                className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
-              >
-                {isUpdatingBulk ? "Updating..." : "Update Organization"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Bulk Update Campaign Modal */}
-      {showBulkCampaignModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Update Campaign ({selectedCustomers.size})
-              </h3>
-              <button 
-                onClick={() => {
-                  setShowBulkCampaignModal(false);
-                  setBulkValue("");
-                }}
-                className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <i className="fi flex fi-rr-cross-small"></i>
-              </button>
-            </div>
-            <div className="p-6">
-              <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Select New Campaign</label>
-              <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-              >
-                <option value="">Select Campaign</option>
-                {filterStats.campaigns.map(camp => (
-                  <option key={camp.id} value={camp.id}>{camp.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
-              <button
-                onClick={() => {
-                  setShowBulkCampaignModal(false);
-                  setBulkValue("");
-                }}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={isUpdatingBulk || !bulkValue}
-                onClick={() => handleBulkUpdate("campaign_id", bulkValue)}
-                className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
-              >
-                {isUpdatingBulk ? "Updating..." : "Update Campaign"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            
+            <div className="p-6 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Organization Field */}
+                {permissionFlags.isChangeOrganizationButtonVisible && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Organization</label>
+                    <select
+                      value={bulkUpdates.organization_id || (user?.isClient ? (user.organization_id || "") : "")}
+                      disabled={user?.isClient}
+                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, organization_id: e.target.value }))}
+                      className={`w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white text-gray-700'}`}
+                    >
+                      <option value="">No Change</option>
+                      {filterStats.organizations.map(org => (
+                        <option key={org.id} value={org.id}>{org.company_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-      {/* Bulk Update Assigned To Modal */}
-      {showBulkAssignedModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Update Assignment ({selectedCustomers.size})
-              </h3>
-              <button 
-                onClick={() => {
-                  setShowBulkAssignedModal(false);
-                  setBulkValue("");
-                }}
-                className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <i className="fi flex fi-rr-cross-small"></i>
-              </button>
-            </div>
-            <div className="p-6">
-              <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Select Agent</label>
-              <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-              >
-                <option value="">Select Agent</option>
-                <option value="unassigned">Unassigned</option>
-                {filterStats.agents.map(agent => (
-                  <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
-              <button
-                onClick={() => {
-                  setShowBulkAssignedModal(false);
-                  setBulkValue("");
-                }}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={isUpdatingBulk || !bulkValue}
-                onClick={() => handleBulkUpdate("assigned_to", bulkValue === "unassigned" ? null : bulkValue)}
-                className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
-              >
-                {isUpdatingBulk ? "Updating..." : "Update Assignment"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                {/* Campaign Field */}
+                {permissionFlags.isChangeCampaginButtonVisible && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign</label>
+                    <select
+                      value={bulkUpdates.campaign_id}
+                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, campaign_id: e.target.value }))}
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    >
+                      <option value="">No Change</option>
+                      {filterStats.campaigns
+                        .filter(camp => bulkUpdates.organization_id && camp.organization_id === bulkUpdates.organization_id)
+                        .map(camp => (
+                        <option key={camp.id} value={camp.id}>{camp.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
 
-      {/* Bulk Update Disposition Modal */}
-      {showBulkDispositionModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Update Disposition ({selectedCustomers.size})
-              </h3>
-              <button 
-                onClick={() => {
-                  setShowBulkDispositionModal(false);
-                  setBulkValue("");
-                }}
-                className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <i className="fi flex fi-rr-cross-small"></i>
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Assigned To Field */}
+                {permissionFlags.isChangeAssignedButtonVisible && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Assign To</label>
+                    <select
+                      value={bulkUpdates.assigned_to}
+                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, assigned_to: e.target.value }))}
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    >
+                      <option value="">No Change</option>
+                      <option value="unassigned">Unassigned (Clear Agent)</option>
+                      {filterStats.agents
+                        .filter(a => bulkUpdates.organization_id && a.organization_id === bulkUpdates.organization_id)
+                        .map(agent => (
+                        <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Disposition Field */}
+                {permissionFlags.isChangeDispostionButtonVisible && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Disposition</label>
+                    <select
+                      value={bulkUpdates.disposition}
+                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, disposition: e.target.value }))}
+                      className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                    >
+                      <option value="">No Change</option>
+                      {filterStats.dispositions.map(disp => (
+                        <option key={disp} value={disp}>{disp}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Special Action: Move to Fresh */}
+              {permissionFlags.isMoveFreshButtonVisible && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                        if(confirm(`Are you sure you want to reset ${selectedCustomers.size} leads to Fresh state? This will clear all history and assignments.`)) {
+                           handleBulkUpdate({ action: "Move Fresh" });
+                        }
+                    }}
+                    className="w-full h-9 flex items-center justify-center gap-2 border border-rose-200 bg-rose-50 text-rose-600 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all"
+                  >
+                    <i className="fi flex fi-rr-refresh"></i>
+                    Reset to Fresh Leads
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="p-6">
-              <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Select Disposition</label>
-              <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-              >
-                <option value="">Select Disposition</option>
-                {filterStats.dispositions.map(disp => (
-                  <option key={disp} value={disp}>{disp}</option>
-                ))}
-              </select>
-            </div>
-            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
+
+            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
               <button
-                onClick={() => {
-                  setShowBulkDispositionModal(false);
-                  setBulkValue("");
-                }}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors"
+                onClick={() => setShowBulkActionModal(false)}
+                className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
               >
                 Cancel
               </button>
               <button
-                disabled={isUpdatingBulk || !bulkValue}
-                onClick={() => handleBulkUpdate("disposition", bulkValue)}
-                className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+                disabled={isUpdatingBulk || !Object.entries(bulkUpdates).some(([k,v]) => v !== "")}
+                onClick={() => {
+                   const cleanUpdates: any = {};
+                   if (bulkUpdates.organization_id) cleanUpdates.organization_id = bulkUpdates.organization_id;
+                   if (bulkUpdates.campaign_id) cleanUpdates.campaign_id = bulkUpdates.campaign_id;
+                   if (bulkUpdates.assigned_to) cleanUpdates.assigned_to = (bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to);
+                   if (bulkUpdates.disposition) cleanUpdates.disposition = bulkUpdates.disposition;
+                   handleBulkUpdate(cleanUpdates);
+                }}
+                className="px-6 py-1.5 bg-indigo-600 text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 disabled:opacity-50"
               >
-                {isUpdatingBulk ? "Updating..." : "Update Disposition"}
+                {isUpdatingBulk ? "Updating..." : `Apply Changes (${selectedCustomers.size})`}
               </button>
             </div>
           </div>
