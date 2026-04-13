@@ -901,7 +901,7 @@ function CallSessionsPage() {
             const updated = sessions.filter((s)=>!(s.user_id === userId && s.campaign_id === campaignId));
             setSessions(updated);
             cachedSessions = updated;
-            setSelectedKeys((prev)=>prev.filter((k)=>k !== `${userId}-${campaignId}`));
+            setSelectedKeys((prev)=>prev.filter((k)=>k !== `${userId}|${campaignId}`));
         } catch (err) {
             console.error("Error deleting session:", err);
             alert("Failed to delete session.");

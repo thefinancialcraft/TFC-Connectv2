@@ -190,7 +190,7 @@ export default function CallSessionsPage() {
         const updated = sessions.filter(s => !(s.user_id === userId && s.campaign_id === campaignId));
         setSessions(updated);
         cachedSessions = updated;
-        setSelectedKeys((prev: string[]) => prev.filter((k: string) => k !== `${userId}-${campaignId}`));
+        setSelectedKeys((prev: string[]) => prev.filter((k: string) => k !== `${userId}|${campaignId}`));
         
     } catch (err) {
         console.error("Error deleting session:", err);

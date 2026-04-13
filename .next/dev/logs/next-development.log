@@ -14788,3 +14788,599 @@ Import traces:
 [17:26:26.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [17:26:36.906] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
 [17:26:37.183] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 498ms
+[17:27:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:27:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:27:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:28:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:28:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:28:19.398] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:28:19.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:28:19.689] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 507ms
+[17:29:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:29:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:29:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:30:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:30:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:30:18.382] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:30:18.772] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 605ms
+[17:30:20.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:34.753] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:31:34.753] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:31:34.753] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:31:35.258] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:36.651] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:31:36.975] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 581ms
+[17:31:39.208] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[17:31:41.224] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[17:31:41.224] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[17:31:41.224] Browser LOG     [App] Logger and Interceptors initialized.
+[17:31:42.325] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:31:42.325] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[17:31:42.325] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:31:42.325] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[17:31:42.503] Server  LOG     Using date-holidays fallback
+[17:31:42.752] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:31:42.753] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[17:31:42.900] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:31:42.992] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[17:31:43.166] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[17:31:43.289] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[17:31:43.569] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[17:31:43.573] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[17:31:43.577] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:31:43.982] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 665ms
+[17:31:43.993] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[17:31:43.994] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1001ms
+[17:31:44.798] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:31:45.176] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 792ms
+[17:31:46.089] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2796ms
+[17:32:12.329] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:32:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:32:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:32:34.600] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:32:34.600] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:32:34.600] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:32:43.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:33:06.621] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:33:06.898] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 493ms
+[17:33:13.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:33:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:33:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:33:43.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:34:13.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:34:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:34:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:34:36.657] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:34:36.933] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 491ms
+[17:34:43.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:34:52.876] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:34:52.876] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:34:52.876] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:35:13.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:35:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:35:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:35:43.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:36:02.148] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:36:02.149] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:36:02.149] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:36:06.314] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:36:06.314] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:36:06.314] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:36:06.737] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:36:07.033] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 496ms
+[17:36:13.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:36:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:36:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:36:43.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:37:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:37:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:37:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:38:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:38:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:38:17.880] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:38:18.153] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 482ms
+[17:38:18.728] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:39:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:39:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:39:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:40:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:40:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:40:17.832] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:40:18.127] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 512ms
+[17:40:18.664] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:41:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:41:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:41:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:41:39.448] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:41:39.448] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:41:39.448] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:41:39.707] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:42:08.074] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:42:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:42:17.821] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:42:18.101] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 494ms
+[17:42:18.732] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:42:37.040] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:42:37.040] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:42:37.040] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:42:39.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:43:09.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:43:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:43:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:44:17.666] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:44:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:44:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:44:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:44:17.950] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 488ms
+[17:45:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:45:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:45:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:46:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:46:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:46:17.916] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:46:18.191] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 505ms
+[17:46:18.664] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:47:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:47:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:47:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:48:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:48:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:48:17.993] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:48:18.258] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 472ms
+[17:48:18.778] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:49:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:49:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:49:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:50:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:50:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:50:17.811] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:50:18.082] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 476ms
+[17:50:18.664] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:51:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:51:17.668] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[17:51:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:51:18.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:52:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:52:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:52:18.016] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:52:18.285] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 474ms
+[17:52:18.891] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:53:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:53:17.668] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[17:53:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:53:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:53:50.829] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:53:50.829] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:53:50.829] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:53:51.153] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:53:52.781] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:53:52.821] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[17:53:52.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[17:53:52.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[17:53:52.943] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[17:53:53.088] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[17:53:53.291] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:53:53.318] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[17:53:53.362] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[17:53:53.581] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 506ms
+[17:53:53.628] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[17:53:53.630] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 809ms
+[17:53:55.384] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[17:53:55.819] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2668ms
+[17:54:09.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:54:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:54:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:54:17.687] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:54:17.968] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 490ms
+[17:54:33.935] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[17:54:33.935] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[17:54:33.935] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:54:34.877] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[17:54:38.074] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:55:08.058] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:55:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:55:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:55:38.061] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:56:09.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:56:17.666] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:56:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:56:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:56:17.935] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 475ms
+[17:56:39.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:57:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:57:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:57:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:58:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:58:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:58:18.095] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[17:58:18.375] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 489ms
+[17:58:18.947] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:59:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:59:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[17:59:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:00:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:00:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:00:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:00:17.783] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:00:18.053] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 474ms
+[18:01:17.702] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:01:17.702] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:01:17.702] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:02:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:02:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:02:18.058] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:02:18.335] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 500ms
+[18:02:18.824] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:03:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:03:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:03:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:04:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:04:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:04:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:04:17.771] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:04:18.062] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 507ms
+[18:05:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:05:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:05:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:06:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:06:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:06:17.998] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:06:18.276] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 481ms
+[18:06:18.784] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:07:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:07:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:07:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:12.649] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:08:12.649] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:08:12.649] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:08:13.003] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:18.112] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:08:18.166] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:08:18.166] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:08:18.166] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:08:18.387] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 493ms
+[18:08:18.849] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:27.937] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:08:27.937] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:08:27.937] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:08:30.152] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[18:08:30.152] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:08:39.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:44.171] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:08:49.925] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:08:49.925] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:08:49.925] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:08:50.361] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:08:50.361] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:08:50.361] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:09:09.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:09:13.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:09:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:09:39.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:09:43.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:09:57.751] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:09:57.751] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:09:57.751] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:10:09.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:10:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:10:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:10:39.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:43.607] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:11:43.607] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:11:43.607] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:11:43.993] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:45.978] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:11:45.978] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:11:45.978] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:11:46.255] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:11:47.004] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:11:47.004] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:11:47.004] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:11:49.341] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:11:49.341] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:11:49.341] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:12:09.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:12:13.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:12:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:12:39.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:12:43.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:13:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:13:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:13:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:14:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:14:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:14:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:15:00.626] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:15:00.626] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:15:00.626] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:15:00.948] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:15:03.653] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:15:12.308] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:15:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:15:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:15:42.308] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:16:12.311] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:16:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:16:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:16:42.299] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:16:51.882] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:16:51.882] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:16:51.882] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:17:04.593] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:17:04.593] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:17:04.593] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:17:13.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:17:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:17:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:17:43.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:18:17.691] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:18:17.692] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:18:17.692] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:18:55.067] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:18:55.067] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:18:55.067] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:18:55.690] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:19:01.660] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:19:01.660] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:19:01.660] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:19:13.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:19:17.671] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[18:19:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:19:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:19:43.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:20:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:20:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:20:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:20:52.023] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:20:52.023] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:20:52.023] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:20:52.285] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:21:13.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:21:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:21:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:21:43.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:22:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:22:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:22:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:23:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:23:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:23:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:24:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:24:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:24:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:24:18.901] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:24:18.901] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:24:18.901] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:24:43.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:25:13.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:25:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:25:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:25:58.553] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:25:58.553] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:25:58.554] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:25:58.855] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:26:01.639] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:26:12.311] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:26:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:26:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:26:42.309] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:27:12.329] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:27:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:27:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:27:43.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:27:52.386] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:27:52.386] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:27:52.386] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:28:12.303] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:28:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:28:18.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:28:43.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:28:45.931] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:28:45.931] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:28:45.931] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:28:48.780] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[18:28:48.780] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:28:49.028] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[18:28:55.515] Browser LOG     👥 [Campaign] Fetching all user profiles...
+[18:28:55.861] Browser LOG     ✅ [Campaign] Fetched 74 user profiles.
+[18:29:06.721] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:29:12.313] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:29:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:29:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:29:26.649] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:29:26.948] Browser ERROR   Error fetching teams: {"code":"","details":"AbortError: signal is aborted without reason\n    at Team.useEffect (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__7983796a._.js:9178:90)\n    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:13856:17)\n    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:886:74)\n    at commitHookEffectListUnmount (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7052:166)\n    at commitHookPassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7065:60)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8236:46)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)","hint":"","message":"AbortError: signal is aborted without reason"}
+[18:29:27.918] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:29:42.328] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:30:13.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:30:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:30:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:30:43.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:31:16.424] Server  LOG      ✓ Compiled in 1993ms
+[18:31:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:31:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:31:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:31:31.674] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:31:31.674] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:31:31.674] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:31:37.745] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:31:37.934] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[18:31:37.977] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[18:31:37.977] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[18:31:37.977] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[18:31:38.212] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[18:31:38.466] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:31:38.479] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[18:31:38.486] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[18:31:38.782] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 584ms
+[18:31:38.796] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[18:31:38.798] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 864ms
+[18:31:41.140] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2930ms
+[18:31:42.314] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:32:13.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:32:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:32:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:32:43.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:33:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:33:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:33:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:33:32.733] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:33:32.733] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:33:32.733] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:33:43.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:33:45.800] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:33:45.800] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:33:45.800] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:33:49.635] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:33:49.635] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:33:49.635] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:33:58.789] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:33:58.789] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:33:58.789] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:34:03.949] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:34:03.950] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:34:03.950] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:34:13.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:34:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:34:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:34:24.261] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:34:24.261] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:34:24.261] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:34:43.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:35:03.360] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:35:03.360] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:35:03.360] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:35:04.889] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:35:04.889] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:35:04.889] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:35:06.921] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:35:06.921] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:35:06.921] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:35:09.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[18:35:09.508] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:35:09.776] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 483ms
+[18:35:12.315] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:35:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:35:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:35:43.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:35:45.500] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:35:45.500] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:35:45.500] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:36:13.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:36:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:36:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:36:18.634] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:36:18.634] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:36:18.634] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:36:40.844] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:36:41.128] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 497ms
+[18:36:43.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:37:01.597] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:37:01.597] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:37:01.597] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:37:08.450] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:37:08.451] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:37:08.451] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:37:13.030] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[18:37:13.030] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[18:37:13.030] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[18:37:13.160] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:37:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:37:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:37:43.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:38:10.594] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:38:10.865] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 484ms
+[18:38:13.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:38:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:38:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:39:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:39:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:39:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:39:17.760] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:39:18.053] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 497ms
+[18:40:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:40:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:40:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:41:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:41:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:41:18.018] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:41:18.287] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 489ms
+[18:41:18.825] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:42:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:42:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:42:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:43:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:43:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:43:17.908] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:43:18.206] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 515ms
+[18:43:18.785] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:44:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:44:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:44:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:45:17.666] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:45:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:45:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:45:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:45:17.943] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 484ms
+[18:46:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:46:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:46:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:47:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:47:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:47:17.798] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:47:18.070] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 482ms
+[18:47:18.664] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:48:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:48:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:48:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:49:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:49:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:49:17.754] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:49:18.028] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 486ms
+[18:49:18.664] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:50:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:50:17.675] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[18:50:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:50:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:51:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:51:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:51:18.322] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[18:51:18.602] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 503ms
+[18:51:19.262] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:52:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:52:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[18:52:17.681] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[18:52:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

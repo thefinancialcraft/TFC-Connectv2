@@ -44,7 +44,7 @@
       "static/chunks/turbopack-pages_portal_activity_tsx_e67dc058._.js"
     ],
     "/portal/call-sessions": [
-      "static/chunks/[root-of-the-server]__29b47c60._.js",
+      "static/chunks/[root-of-the-server]__15e65461._.js",
       "static/chunks/node_modules_next_dist_compiled_ebbb8748._.js",
       "static/chunks/node_modules_next_dist_shared_lib_49f863e2._.js",
       "static/chunks/node_modules_next_dist_client_d0aa886c._.js",
@@ -52,9 +52,9 @@
       "static/chunks/node_modules_react-dom_4411d9bd._.js",
       "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
-      "static/chunks/node_modules_494f421b._.js",
+      "static/chunks/node_modules_26c981b5._.js",
       "static/chunks/pages_portal_call-sessions_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_call-sessions_tsx_9daee2d2._.js"
+      "static/chunks/turbopack-pages_portal_call-sessions_tsx_3f91734d._.js"
     ],
     "/portal/campaign": [
       "static/chunks/[root-of-the-server]__cfe117d7._.js",
@@ -124,7 +124,7 @@
       "static/chunks/turbopack-pages_portal_customer_tsx_ab630f0f._.js"
     ],
     "/portal/dashboard": [
-      "static/chunks/_31a2a838._.js",
+      "static/chunks/_1f565449._.js",
       "static/chunks/[root-of-the-server]__9a18fefd._.js",
       "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
       "static/chunks/node_modules_next_dist_shared_lib_41d42037._.js",
@@ -136,7 +136,7 @@
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_b0c9384a._.js",
       "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_dashboard_tsx_af17d781._.js"
+      "static/chunks/turbopack-pages_portal_dashboard_tsx_2ed72d7b._.js"
     ],
     "/portal/followup": [
       "static/chunks/[root-of-the-server]__1159d318._.js",
