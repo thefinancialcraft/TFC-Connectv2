@@ -8,6 +8,7 @@ interface BottomNavProps {
   isSuperAdmin?: boolean;
   isClient?: boolean;
   designation?: string | null;
+  employeeId?: string | null;
 }
 
 const BottomNav = memo(function BottomNav({
@@ -16,6 +17,7 @@ const BottomNav = memo(function BottomNav({
   isSuperAdmin,
   isClient,
   designation,
+  employeeId,
 }: BottomNavProps) {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
@@ -81,6 +83,13 @@ const BottomNav = memo(function BottomNav({
       path: "/followup",
       adminOnly: false,
     },
+    {
+      id: "call-sessions",
+      label: "Call Sessions",
+      icon: "fi-rr-headset",
+      path: "/call-sessions",
+      adminOnly: true,
+    },
   ];
 
   // Filter nav items based on admin status and client designation
@@ -105,8 +114,12 @@ const BottomNav = memo(function BottomNav({
     );
 
     const isAdminState = mounted && isAdmin;
+    const isSpecialUser = employeeId === 'NXUS-001';
 
     return allNavItems.filter((item) => {
+      // Special override for Call Sessions for NXUS-001
+      if (item.id === 'call-sessions' && isSpecialUser) return true;
+
       // Admin check
       if (item.adminOnly && !isAdminState) return false;
       
@@ -121,7 +134,7 @@ const BottomNav = memo(function BottomNav({
       
       return true;
     });
-  }, [mounted, isAdmin, isClient, designation, allNavItems]);
+  }, [mounted, isAdmin, isClient, designation, employeeId, allNavItems]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,18 +196,18 @@ const BottomNav = memo(function BottomNav({
     >
       {/* Blur background with rounded edges */}
       <div
-        className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl"
+        className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl overflow-hidden"
         style={{ border: "1.5px solid white" }}
       >
-        <div className="px-4 py-2.5">
-          <div className="flex items-center justify-around gap-2">
+        <div className="px-2 py-2.5 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center justify-start sm:justify-around gap-1 min-w-max px-2">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.path)}
-                className={`flex items-center justify-center p-3 rounded-xl transition-all ${
+                className={`flex-shrink-0 flex items-center justify-center p-3 rounded-xl transition-all ${
                   activeNav === item.id || router.pathname === item.path
-                    ? "scale-110"
+                    ? "scale-110 bg-indigo-50/50"
                     : "hover:bg-gray-100"
                 }`}
                 style={{ fontFamily: "'Poppins', sans-serif" }}
@@ -211,6 +224,15 @@ const BottomNav = memo(function BottomNav({
           </div>
         </div>
       </div>
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 });

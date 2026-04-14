@@ -2891,13 +2891,15 @@ __turbopack_context__.s([
     ()=>__TURBOPACK__default__export__
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/styled-jsx/style.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
 ;
-const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation }) {
+;
+const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const [isVisible, setIsVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
@@ -2956,6 +2958,13 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
             icon: "fi-rr-calendar-clock",
             path: "/followup",
             adminOnly: false
+        },
+        {
+            id: "call-sessions",
+            label: "Call Sessions",
+            icon: "fi-rr-headset",
+            path: "/call-sessions",
+            adminOnly: true
         }
     ];
     // Filter nav items based on admin status and client designation
@@ -2981,8 +2990,11 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                 'developer'
             ].includes(currentDesignation));
             const isAdminState = mounted && isAdmin;
+            const isSpecialUser = employeeId === 'NXUS-001';
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
+                    // Special override for Call Sessions for NXUS-001
+                    if (item.id === 'call-sessions' && isSpecialUser) return true;
                     // Admin check
                     if (item.adminOnly && !isAdminState) return false;
                     // User page visibility check
@@ -3000,6 +3012,7 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
         isAdmin,
         isClient,
         designation,
+        employeeId,
         allNavItems
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -3059,56 +3072,62 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
         router.push(path);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: `lg:hidden fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${isVisible ? "bottom-8" : "-bottom-24"}`,
         style: {
             width: "90%",
             maxWidth: "400px"
         },
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-            className: "backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl",
-            style: {
-                border: "1.5px solid white"
-            },
-            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "px-4 py-2.5",
+        className: "jsx-83037452c623c470" + " " + `lg:hidden fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${isVisible ? "bottom-8" : "-bottom-24"}`,
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                style: {
+                    border: "1.5px solid white"
+                },
+                className: "jsx-83037452c623c470" + " " + "backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl overflow-hidden",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "flex items-center justify-around gap-2",
-                    children: navItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            onClick: ()=>handleNavClick(item.path),
-                            className: `flex items-center justify-center p-3 rounded-xl transition-all ${activeNav === item.id || router.pathname === item.path ? "scale-110" : "hover:bg-gray-100"}`,
-                            style: {
-                                fontFamily: "'Poppins', sans-serif"
-                            },
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
-                            }, void 0, false, {
+                    className: "jsx-83037452c623c470" + " " + "px-2 py-2.5 overflow-x-auto scrollbar-hide",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "jsx-83037452c623c470" + " " + "flex items-center justify-start sm:justify-around gap-1 min-w-max px-2",
+                        children: navItems.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>handleNavClick(item.path),
+                                style: {
+                                    fontFamily: "'Poppins', sans-serif"
+                                },
+                                className: "jsx-83037452c623c470" + " " + `flex-shrink-0 flex items-center justify-center p-3 rounded-xl transition-all ${activeNav === item.id || router.pathname === item.path ? "scale-110 bg-indigo-50/50" : "hover:bg-gray-100"}`,
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "jsx-83037452c623c470" + " " + `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
+                                }, void 0, false, {
+                                    fileName: "[project]/components/BottomNav.tsx",
+                                    lineNumber: 215,
+                                    columnNumber: 17
+                                }, this)
+                            }, item.id, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 202,
-                                columnNumber: 17
-                            }, this)
-                        }, item.id, false, {
-                            fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 192,
-                            columnNumber: 15
-                        }, this))
+                                lineNumber: 205,
+                                columnNumber: 15
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/components/BottomNav.tsx",
+                        lineNumber: 203,
+                        columnNumber: 11
+                    }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 190,
-                    columnNumber: 11
+                    lineNumber: 202,
+                    columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 189,
-                columnNumber: 9
-            }, this)
-        }, void 0, false, {
-            fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 185,
-            columnNumber: 7
-        }, this)
-    }, void 0, false, {
+                lineNumber: 198,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                id: "83037452c623c470",
+                children: ".scrollbar-hide.jsx-83037452c623c470::-webkit-scrollbar{display:none}.scrollbar-hide.jsx-83037452c623c470{-ms-overflow-style:none;scrollbar-width:none}"
+            }, void 0, false, void 0, this)
+        ]
+    }, void 0, true, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 178,
+        lineNumber: 191,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {
@@ -8329,7 +8348,8 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 activeNav: router.pathname.replace('/portal', '').replace('/', '') || 'dashboard',
                 userRole: userRole,
                 isClient: user?.isClient,
-                designation: user?.designation
+                designation: user?.designation,
+                employeeId: user?.employeeId
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
                 lineNumber: 127,
@@ -8337,7 +8357,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 136,
+                lineNumber: 137,
                 columnNumber: 7
             }, this)
         ]

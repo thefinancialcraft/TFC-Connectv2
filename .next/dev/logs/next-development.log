@@ -17657,3 +17657,203 @@ Import traces:
 [41:33:44.009] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
 [41:33:44.009] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
 [41:33:47.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:34:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:34:18.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:34:48.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:35:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:36:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:36:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:37:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:37:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:38:17.684] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:38:17.685] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:39:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:39:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:40:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:40:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:41:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:41:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:04:21.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:04:21.710] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:05:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:05:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:06:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:06:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:07:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:07:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:08:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:08:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:09:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:09:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:10:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:10:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:25:40.881] Browser ERROR   {}
+[42:25:40.883] Browser ERROR   {}
+[42:25:40.970] Browser ERROR   {}
+[42:25:40.970] Browser ERROR   {}
+[42:25:40.970] Browser ERROR   {}
+[42:29:32.881] Browser ERROR   {}
+[42:29:32.882] Browser LOG     ❌ [Status] Offline Event
+[42:29:32.882] Browser LOG     🌐 [Status] Online Event
+[42:29:33.171] Browser ERROR   {}
+[42:29:33.172] Browser LOG     ❌ [Status] Offline Event
+[42:29:33.172] Browser LOG     🌐 [Status] Online Event
+[42:29:34.029] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[42:29:34.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:37.665] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[42:29:37.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:37.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:37.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:50.242] Browser LOG     [AutoReload] Returning after 56 mins. Refreshing lead data.
+[42:29:50.649] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:29:50.649] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:29:50.649] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:29:50.987] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:51.347] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[42:29:52.083] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[42:29:52.083] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[42:29:52.083] Browser LOG     [App] Logger and Interceptors initialized.
+[42:29:52.735] Server  LOG     Using date-holidays fallback
+[42:29:52.873] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:29:52.873] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[42:29:52.873] Browser LOG     🚀 [Bridge] Requesting Device Info
+[42:29:52.873] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:29:52.873] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[42:29:52.873] Browser LOG     🚀 [Bridge] Requesting Device Info
+[42:29:52.873] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:29:53.178] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:29:53.178] Browser LOG     🚀 [Bridge] Requesting Device Info
+[42:29:53.782] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[42:29:53.783] Browser LOG     🚀 [Bridge] Requesting Device Info
+[42:29:54.290] Browser LOG     [Fetch] Found 0 history records via API.
+[42:29:55.172] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[42:29:55.317] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[42:29:59.526] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[42:29:59.526] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:30:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:30:22.932] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:30:53.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:31:00.608] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:31:00.608] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:31:00.608] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:31:16.877] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:31:16.877] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:31:16.877] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:31:17.726] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:31:25.167] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:31:44.412] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[42:31:45.335] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[42:31:45.336] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[42:31:45.336] Browser LOG     [App] Logger and Interceptors initialized.
+[42:31:49.179] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[42:31:50.007] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[42:31:50.008] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[42:31:50.008] Browser LOG     [App] Logger and Interceptors initialized.
+[42:31:50.757] Server  LOG     Using date-holidays fallback
+[42:31:51.001] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:31:51.001] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[42:31:51.001] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:31:51.001] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[42:31:51.001] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:31:51.001] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[42:31:51.395] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:31:51.395] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[42:31:51.395] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:31:51.395] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[42:31:51.969] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[42:32:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:32:21.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:32:27.105] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:32:27.105] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:32:27.105] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:32:27.463] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:32:51.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:32:55.834] Server  LOG      ✓ Compiled in 1056ms
+[42:33:07.429] Server  LOG      ✓ Compiled in 882ms
+[42:33:15.185] Server  LOG      ✓ Compiled in 290ms
+[42:33:17.684] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:33:21.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:33:29.895] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:33:29.895] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:33:29.895] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:33:30.275] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:33:34.404] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:33:34.692] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[42:33:34.692] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[42:33:34.693] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[42:33:35.475] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[42:33:36.012] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[42:33:36.416] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[42:33:36.451] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[42:33:36.462] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[42:33:36.730] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[42:33:36.734] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1258ms
+[42:33:36.977] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 993ms
+[42:33:39.288] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3274ms
+[42:33:48.609] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:33:48.609] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:33:48.609] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:33:48.744] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:33:51.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:34:09.051] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:34:09.051] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:34:09.051] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:34:09.234] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:34:18.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:34:21.084] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:34:26.956] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:34:26.956] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:34:26.956] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:34:27.302] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:34:28.306] Server  LOG      ✓ Compiled in 4.4s
+[42:34:28.533] Browser ERROR   ./components/BottomNav.tsx:236:17
+Parsing ecmascript source code failed
+  234 |         }
+  235 |       `}</style>
+> 236 |               </button>
+      |                 ^^^^^^
+  237 |             ))}
+  238 |           </div>
+  239 |         </div>
+
+Expected corresponding JSX closing tag for <div>
+
+Import trace:
+  SSR:
+    ./components/BottomNav.tsx
+    ./components/AppLayout.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[42:34:29.676] Browser ERROR   ./components/BottomNav.tsx:236:17
+Parsing ecmascript source code failed
+  234 |         }
+  235 |       `}</style>
+> 236 |               </button>
+      |                 ^^^^^^
+  237 |             ))}
+  238 |           </div>
+  239 |         </div>
+
+Expected corresponding JSX closing tag for <div>
+
+Import trace:
+  SSR:
+    ./components/BottomNav.tsx
+    ./components/AppLayout.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[42:34:38.223] Server  LOG      ✓ Compiled in 917ms
+[42:34:51.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[42:34:56.741] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[42:34:56.741] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[42:34:56.741] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[42:34:56.931] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.

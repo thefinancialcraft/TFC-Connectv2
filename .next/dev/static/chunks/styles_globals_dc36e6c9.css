@@ -2740,6 +2740,10 @@
     min-width: 100%;
   }
 
+  .min-w-max {
+    min-width: max-content;
+  }
+
   .flex-1 {
     flex: 1;
   }
@@ -11438,6 +11442,12 @@
   @media (min-width: 40rem) {
     .sm\:items-start {
       align-items: flex-start;
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:justify-around {
+      justify-content: space-around;
     }
   }
 

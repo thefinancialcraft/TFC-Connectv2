@@ -129,6 +129,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
           userRole={userRole} 
           isClient={user?.isClient}
           designation={user?.designation}
+          employeeId={user?.employeeId}
         />
       )}
 
