@@ -626,7 +626,7 @@ function FollowUp() {
             });
         }
         // Explicitly using the masked path to trigger rewrites correctly
-        router.push(`/portal/campaign/${campaignId}/${customerId}`);
+        router.push(`/portal/campaign/${campaignId}/${customerId}?isManual=true`);
     };
     // Derive filter options from leads
     const filterOptions = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useMemo"])(()=>{

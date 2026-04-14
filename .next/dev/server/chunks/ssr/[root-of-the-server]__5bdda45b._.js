@@ -10169,7 +10169,21 @@ const SessionProvider = ({ children })=>{
         }
         const hot = targetSession;
         setCurrentSession(hot);
-        // Check for Manual Lock
+        // NEW: URL-based Manual Mode Handling
+        const isManualInUrl = router.query.isManual === 'true';
+        if (isManualInUrl) {
+            const status = hot.manual_status || hot.status;
+            const isGenuinelyHot = status === 'active' || status === 'disposition_pending';
+            const currentCustomerId = router.query.customerId;
+            // If we are on a different CUSTOMER than the server's 'hot' session
+            // AND that server session is NOT active/pending, we STAY on the manual lead.
+            if (String(hot.customer_id) !== String(currentCustomerId) && !isGenuinelyHot) {
+                setIsLocked(true);
+                console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session:", hot.id);
+                return;
+            }
+        }
+        // FALLBACK: Heritage Manual Lock (LocalStorage)
         const snapshotStr = ("TURBOPACK compile-time falsy", 0) ? "TURBOPACK unreachable" : null;
         if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
         ;
@@ -10268,7 +10282,7 @@ const SessionProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/SessionContext.tsx",
-        lineNumber: 212,
+        lineNumber: 228,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

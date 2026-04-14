@@ -8429,27 +8429,38 @@ const SessionProvider = ({ children })=>{
             }
             const hot = targetSession;
             setCurrentSession(hot);
-            // Check for Manual Lock
+            // NEW: URL-based Manual Mode Handling
+            const isManualInUrl = router.query.isManual === 'true';
+            if (isManualInUrl) {
+                const status = hot.manual_status || hot.status;
+                const isGenuinelyHot = status === 'active' || status === 'disposition_pending';
+                const currentCustomerId = router.query.customerId;
+                // If we are on a different CUSTOMER than the server's 'hot' session
+                // AND that server session is NOT active/pending, we STAY on the manual lead.
+                if (String(hot.customer_id) !== String(currentCustomerId) && !isGenuinelyHot) {
+                    setIsLocked(true);
+                    console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session:", hot.id);
+                    return;
+                }
+            }
+            // FALLBACK: Heritage Manual Lock (LocalStorage)
             const snapshotStr = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('manual_inspection_snapshot') : "TURBOPACK unreachable";
             if (snapshotStr) {
                 try {
                     const snapshot = JSON.parse(snapshotStr);
                     const currentCampaignId = router.query.id;
                     const currentCustomerId = router.query.customerId;
-                    // If we are currently ON the lead we manually locked, suppress all redirection
                     if (String(currentCampaignId) === String(snapshot.campaign_id) && String(currentCustomerId) === String(snapshot.customer_id)) {
-                        setIsLocked(true);
-                        console.log("[Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.");
-                        return;
-                    } else {
-                        // If we are NOT on the locked lead anymore, it means we navigated away manually
-                        console.log("[Session-Context] 🔓 Navigated away from manual lock. Breaking lock.");
-                        localStorage.removeItem('manual_inspection_snapshot');
-                        setIsLocked(false);
+                        // Re-verify if server session has overtaken this lead with higher priority
+                        const hotStatus = hot.manual_status || hot.status;
+                        const isServerOvertaken = (hotStatus === 'active' || hotStatus === 'disposition_pending') && String(hot.customer_id) !== String(currentCustomerId);
+                        if (!isServerOvertaken) {
+                            setIsLocked(true);
+                            return;
+                        }
                     }
                 } catch (e) {
                     localStorage.removeItem('manual_inspection_snapshot');
-                    setIsLocked(false);
                 }
             }
             // Perform Redirection logic
@@ -8560,7 +8571,7 @@ const SessionProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/SessionContext.tsx",
-        lineNumber: 212,
+        lineNumber: 228,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -9259,7 +9270,7 @@ function FollowUp() {
             });
         }
         // Explicitly using the masked path to trigger rewrites correctly
-        router.push(`/portal/campaign/${campaignId}/${customerId}`);
+        router.push(`/portal/campaign/${campaignId}/${customerId}?isManual=true`);
     };
     // Derive filter options from leads
     const filterOptions = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({

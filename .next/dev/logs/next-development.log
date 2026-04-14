@@ -17248,3 +17248,412 @@ Import traces:
 [40:56:01.672] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
 [40:56:06.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
 [40:56:09.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:56:11.675] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:16.455] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:16.621] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:56:16.621] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:56:16.621] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:56:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:56:20.878] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:25.874] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:27.932] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:56:38.068] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:57:09.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:57:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:57:39.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:58:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:58:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:58:20.510] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:58:20.510] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:58:20.510] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:58:23.433] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:58:23.433] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:58:23.433] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:58:39.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:59:09.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:59:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:00:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:00:17.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:01:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:01:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:01:52.470] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:01:52.470] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:01:52.471] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:01:52.725] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:01:55.135] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:00.058] Browser LOG     [Follow-up] Manual Lead Open triggered for: e0195980-7683-431d-aa9c-d5563ed7e90a
+[41:02:00.213] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:00.213] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:00.423] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:00.668] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0005/90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[41:02:00.668] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:00.668] Browser LOG     [Lead-Change] New lead detected, showing alert
+[41:02:00.668] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:00.940] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:02:00.940] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:01.175] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:01.328] Browser LOG     [Fetch] Found 1 history records via API.
+[41:02:01.504] Browser LOG     [Fetch] Found 26 history records via API.
+[41:02:02.618] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:02:02.953] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:02:09.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:02:16.900] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:02:16.900] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:02:16.900] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:02:21.239] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:26.155] Browser LOG     [Follow-up] Manual Lead Open triggered for: a47bd5cd-7eae-4300-ba95-ee22e9f53d1c
+[41:02:26.342] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:26.342] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:26.569] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:26.802] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0005/90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[41:02:26.802] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:26.802] Browser LOG     [Lead-Change] New lead detected, showing alert
+[41:02:26.802] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:02:27.054] Browser WARN    [Guard] Lead assigned to another user: f4cab02a-ee7a-4413-ad25-60e1398e2218. Restricting access.
+[41:02:27.054] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:27.273] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:02:27.382] Browser LOG     [Fetch] Found 2 history records via API.
+[41:02:27.555] Browser LOG     [Fetch] Found 26 history records via API.
+[41:02:28.743] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:02:28.884] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:02:38.055] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:03:08.078] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:03:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:03:25.290] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:03:28.624] Browser LOG     [Follow-up] Manual Lead Open triggered for: a10201ad-3d0f-40c0-88a9-83feb5cf8de5
+[41:03:28.786] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:28.786] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:03:29.023] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:03:29.023] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:29.490] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:03:29.490] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:29.824] Browser LOG     [Fetch] Found 1 history records via API.
+[41:03:30.854] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:03:34.002] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:03:34.271] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:03:38.141] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:03:39.091] Browser LOG     [Follow-up] Manual Lead Open triggered for: 34ef0930-14af-4e9f-b4fc-2ee5fc7ef74c
+[41:03:39.243] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:39.243] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:03:39.478] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:03:39.478] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:39.928] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:03:39.928] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:03:40.270] Browser LOG     [Fetch] Found 8 history records via API.
+[41:03:41.555] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:03:45.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:03:50.680] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:03:55.679] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:00.667] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:05.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:09.668] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:04:10.669] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:15.675] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:04:20.676] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:25.666] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:30.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:35.674] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:04:39.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:04:40.676] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:05:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:05:17.672] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:05:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:06:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:06:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:06:17.680] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:06:58.943] Server  LOG      ✓ Compiled in 1239ms
+[41:07:17.669] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:07:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:07:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:07:52.233] Server  LOG      ✓ Compiled in 330ms
+[41:08:07.367] Server  LOG      ✓ Compiled in 234ms
+[41:08:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:08:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:08:17.677] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[41:08:27.126] Server  LOG     Using date-holidays fallback
+[41:08:27.182] Server  LOG      ✓ Compiled in 252ms
+[41:08:27.375] Server  LOG     Using date-holidays fallback
+[41:08:27.761] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:27.761] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:27.761] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:08:27.761] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:27.761] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:27.761] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:08:27.761] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:27.761] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:27.767] Server  LOG     Using date-holidays fallback
+[41:08:27.794] Server  LOG     Using date-holidays fallback
+[41:08:27.808] Server  LOG     Using date-holidays fallback
+[41:08:28.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:28.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[41:08:28.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:28.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[41:08:28.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:08:28.673] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:29.670] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:08:29.670] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:29.670] Browser LOG     [Fetch] Found 8 history records via API.
+[41:08:31.666] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:08:40.110] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:08:40.110] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:08:40.110] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:40.331] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:08:41.965] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:46.738] Browser LOG     [Follow-up] Manual Lead Open triggered for: ce1a8c03-da79-4400-b7a4-1cd4ffd36028
+[41:08:46.898] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:46.898] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:47.124] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:08:47.124] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:47.636] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:08:47.636] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:08:48.209] Browser LOG     [Fetch] Found 1 history records via API.
+[41:08:49.315] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:08:51.086] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:57.181] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[41:08:57.181] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:08:57.416] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[41:09:01.699] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:06.274] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:06.274] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:06.842] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:09:06.842] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:07.372] Browser WARN    [Guard] Lead assigned to another user: 43b59d68-a850-43c5-9852-a2a5dc41965e. Restricting access.
+[41:09:07.372] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:07.834] Browser LOG     [Fetch] Found 4 history records via API.
+[41:09:08.051] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:09:09.439] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:09:11.503] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:09:14.266] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:09:14.266] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:09:14.266] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:16.507] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:09:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:09:18.334] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:19.651] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:24.120] Browser LOG     [Follow-up] Manual Lead Open triggered for: 2b20c42d-f448-46d0-9ee9-badd2ece8a98
+[41:09:24.270] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:24.270] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:24.526] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:09:24.526] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:25.001] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:09:25.001] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:25.341] Browser LOG     [Fetch] Found 1 history records via API.
+[41:09:26.416] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:09:29.489] Browser LOG     [Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session: undefined
+[41:09:32.870] Browser LOG     🤙 [EndCall] Initiated. Source: User UI
+[41:09:32.870] Browser LOG     🤙 [EndCall] Call never connected. Forcing Talk Time to 0.
+[41:09:32.870] Browser LOG     🤙 [EndCall] State flags updated: isCalling=false, postCall=true, callAlive=false, localStatus=null
+[41:09:32.870] Browser LOG     🤙 [EndCall] Customer phone: 8168203998
+[41:09:32.870] Browser LOG     🤙 [EndCall] Notifying Flutter to disconnect...
+[41:09:32.870] Browser LOG     🤙 [EndCall] Updating SyncMeta with call_disconnect for: NXUS-001
+[41:09:32.870] Browser LOG     🤙 [EndCall] Fetching auth session for API update...
+[41:09:32.870] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[41:09:32.870] Browser LOG     🤙 [EndCall] Auth session found. Updating session status for campaign CAM-0005, customer 2b20c42d-f448-46d0-9ee9-badd2ece8a98
+[41:09:33.037] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0005, Manual=undefined, Terminate=undefined, Unassigned=undefined
+[41:09:33.100] Browser WARN    ⚠️ [Bridge] Device is OFFLINE (27s ago). Skipping call_disconnect update.
+[41:09:33.585] Browser LOG     🤙 [EndCall] API Update Response: {"server_now":"2026-04-14T04:59:40.259Z","session":{"call_start_at":null,"campaign_id":"CAM-0005","customer_id":"2b20c42d-f448-46d0-9ee9-badd2ece8a98","is_manual":false,"is_unassigned":false,"manual_campaign_id":null,"manual_customer_id":null,"manual_status":null,"organization_id":"5fda76df-9265-46e0-a602-0c5301c8084c","status":"disposition_pending","updated_at":"2026-04-14T04:59:41.301284+00:00","user_id":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"},"success":true}
+[41:09:33.585] Browser LOG     🤙 [EndCall] Process complete.
+[41:09:33.974] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:09:37.097] Browser LOG     ⚡ [Pre-fetch] Background fetching next lead & data...
+[41:09:37.680] Browser LOG     ⚡ [Pre-fetch] Ready for: 90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[41:09:38.060] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:09:44.271] Browser WARN    ⚠️ [Calendar] No provider_token found in session or storage.
+[41:09:44.946] Browser LOG     [Disposition] Session Match Check: {"isManualCall":false,"manualCustId":null,"preservedCustomerId":"2b20c42d-f448-46d0-9ee9-badd2ece8a98","savingId":"2b20c42d-f448-46d0-9ee9-badd2ece8a98"}
+[41:09:44.946] Browser LOG     [Disposition] Final check: {"currentIsInterruption":false,"isManualCall":false,"isUnassignedCall":false}
+[41:09:44.946] Browser LOG     [Disposition] Flow Exit Path: IsAccessDeniedManual=true, IsManual=false, IsUnassigned=false, IsAuthorized=true.
+[41:09:44.946] Browser LOG     [Disposition] Cleaning up unauthorized/unassigned session: CAM-0005
+[41:09:45.099] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0005, Manual=undefined, Terminate=true, Unassigned=undefined
+[41:09:45.647] Browser LOG     [Disposition] Redirecting to another available session: 2f79b5e2-a282-47f5-b7f8-71d2323420ac
+[41:09:45.783] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:45.783] Browser LOG     [Lead-Change] New lead detected, showing alert
+[41:09:45.783] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:09:45.783] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:46.237] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:09:46.536] Browser LOG     [Fetch] Found 2 history records via API.
+[41:09:47.800] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:09:47.800] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:10:09.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:10:13.576] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:10:13.576] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:10:13.576] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:10:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:10:39.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:11:09.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:11:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:11:18.130] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:11:18.130] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:11:18.130] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:11:19.648] Browser LOG     🤙 [EndCall] Initiated. Source: User UI
+[41:11:19.648] Browser LOG     🤙 [EndCall] Call never connected. Forcing Talk Time to 0.
+[41:11:19.648] Browser LOG     🤙 [EndCall] State flags updated: isCalling=false, postCall=true, callAlive=false, localStatus=null
+[41:11:19.648] Browser LOG     🤙 [EndCall] Customer phone: 7985825817
+[41:11:19.648] Browser LOG     🤙 [EndCall] Notifying Flutter to disconnect...
+[41:11:19.648] Browser LOG     🤙 [EndCall] Updating SyncMeta with call_disconnect for: NXUS-001
+[41:11:19.648] Browser LOG     🤙 [EndCall] Fetching auth session for API update...
+[41:11:19.648] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[41:11:19.648] Browser LOG     🤙 [EndCall] Auth session found. Updating session status for campaign CAM-0009, customer 2f79b5e2-a282-47f5-b7f8-71d2323420ac
+[41:11:19.799] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0009, Manual=undefined, Terminate=undefined, Unassigned=undefined
+[41:11:19.862] Browser WARN    ⚠️ [Bridge] Device is OFFLINE (134s ago). Skipping call_disconnect update.
+[41:11:20.313] Browser LOG     🤙 [EndCall] API Update Response: {"server_now":"2026-04-14T05:01:26.991Z","session":{"call_start_at":null,"campaign_id":"CAM-0009","customer_id":"2f79b5e2-a282-47f5-b7f8-71d2323420ac","is_manual":false,"is_unassigned":false,"manual_campaign_id":null,"manual_customer_id":null,"manual_status":null,"organization_id":"5fda76df-9265-46e0-a602-0c5301c8084c","status":"disposition_pending","updated_at":"2026-04-14T05:01:28.039525+00:00","user_id":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"},"success":true}
+[41:11:20.313] Browser LOG     🤙 [EndCall] Process complete.
+[41:11:20.599] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:11:24.214] Browser LOG     ⚡ [Pre-fetch] Background fetching next lead & data...
+[41:11:24.891] Browser LOG     ⚡ [Pre-fetch] Ready for: ee39a2af-85ae-4f32-ada4-c40ab755c66e
+[41:11:29.606] Browser LOG     [Disposition] Session Match Check: {"isManualCall":false,"manualCustId":null,"preservedCustomerId":"2f79b5e2-a282-47f5-b7f8-71d2323420ac","savingId":"2f79b5e2-a282-47f5-b7f8-71d2323420ac"}
+[41:11:29.606] Browser LOG     [Disposition] Final check: {"currentIsInterruption":false,"isManualCall":false,"isUnassignedCall":false}
+[41:11:29.606] Browser LOG     [Disposition] CRM/Primary lead disposed. Handling next step...
+[41:11:29.606] Browser LOG     [Disposition] Redirecting to next lead: ee39a2af-85ae-4f32-ada4-c40ab755c66e
+[41:11:30.269] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:11:30.700] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0009/ee39a2af-85ae-4f32-ada4-c40ab755c66e
+[41:11:30.700] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[41:11:30.700] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:11:30.700] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:11:30.700] Browser LOG     [Lead-Change] New lead detected, showing alert
+[41:11:30.700] Browser LOG     ⚡ [Pre-fetch] Sync complete!
+[41:11:30.700] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:11:30.700] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:11:31.097] Browser LOG     [Fetch] Found 2 history records via API.
+[41:11:32.349] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:11:39.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:12:09.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:12:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:13:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:13:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:14:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:14:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:15:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:15:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:16:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:16:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:17:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:17:17.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:17:44.502] Browser LOG     [AutoReload] Returning after 6 mins. Refreshing lead data.
+[41:17:44.757] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[41:17:44.758] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:17:44.758] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:17:45.965] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[41:17:46.000] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:17:46.533] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[41:17:46.533] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[41:17:46.533] Browser LOG     [App] Logger and Interceptors initialized.
+[41:17:47.043] Server  LOG     Using date-holidays fallback
+[41:17:47.180] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[41:17:47.180] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[41:17:47.180] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:17:47.180] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:17:47.180] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:17:47.180] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:17:47.181] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:17:47.447] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:17:47.447] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:17:47.907] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:17:48.007] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[41:17:48.296] Browser LOG     [Fetch] Found 2 history records via API.
+[41:17:49.722] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:17:49.722] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:17:51.813] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[41:17:51.813] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:17:53.397] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[41:17:53.397] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:17:53.659] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[41:17:59.258] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:18:02.084] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:02.084] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:18:02.366] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:02.366] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:18:02.866] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:03.233] Browser LOG     [Fetch] Found 0 history records via API.
+[41:18:03.974] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:18:03.974] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:18:08.664] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:18:14.628] Browser LOG     [Follow-up] Manual Lead Open triggered for: 687db46b-1144-4cd9-b717-5bc20d796abe
+[41:18:14.781] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:14.781] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:18:15.020] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:15.497] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[41:18:15.497] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:18:15.820] Browser LOG     [Fetch] Found 6 history records via API.
+[41:18:16.896] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:18:17.234] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:18:17.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:18:47.214] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:19:16.915] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[41:19:17.225] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:19:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:19:47.214] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:20:17.213] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:20:17.671] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[41:20:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:20:47.217] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:21:17.242] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:21:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:21:47.229] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:22:17.216] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:22:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:22:47.220] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:23:17.223] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:23:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:23:47.222] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:24:17.226] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:24:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:24:47.217] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:25:17.222] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:25:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:25:47.210] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:26:17.218] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:26:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:26:47.226] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:27:17.211] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:27:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:27:47.216] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:28:17.229] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:28:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:28:47.223] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:29:17.215] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:29:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:29:47.233] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:30:17.231] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:30:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:30:47.229] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:31:17.215] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:31:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:31:47.240] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:32:17.220] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:32:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:32:47.225] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:33:17.218] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:33:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[41:33:35.303] Browser LOG     🤙 [EndCall] Initiated. Source: User UI
+[41:33:35.303] Browser LOG     🤙 [EndCall] Call never connected. Forcing Talk Time to 0.
+[41:33:35.303] Browser LOG     🤙 [EndCall] State flags updated: isCalling=false, postCall=true, callAlive=false, localStatus=null
+[41:33:35.303] Browser LOG     🤙 [EndCall] Customer phone: 9356818039
+[41:33:35.303] Browser LOG     🤙 [EndCall] Notifying Flutter to disconnect...
+[41:33:35.303] Browser LOG     🤙 [EndCall] Updating SyncMeta with call_disconnect for: NXUS-001
+[41:33:35.303] Browser LOG     🤙 [EndCall] Fetching auth session for API update...
+[41:33:35.303] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[41:33:35.303] Browser LOG     🤙 [EndCall] Auth session found. Updating session status for campaign CAM-0005, customer 687db46b-1144-4cd9-b717-5bc20d796abe
+[41:33:35.516] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0005, Manual=undefined, Terminate=undefined, Unassigned=undefined
+[41:33:35.535] Browser WARN    ⚠️ [Bridge] Device is OFFLINE (1469s ago). Skipping call_disconnect update.
+[41:33:36.087] Browser LOG     🤙 [EndCall] API Update Response: {"server_now":"2026-04-14T05:23:42.755Z","session":{"call_start_at":null,"campaign_id":"CAM-0005","customer_id":"687db46b-1144-4cd9-b717-5bc20d796abe","is_manual":false,"is_unassigned":false,"manual_campaign_id":null,"manual_customer_id":null,"manual_status":null,"organization_id":"5fda76df-9265-46e0-a602-0c5301c8084c","status":"disposition_pending","updated_at":"2026-04-14T05:23:42.515+00:00","user_id":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"},"success":true}
+[41:33:36.087] Browser LOG     🤙 [EndCall] Process complete.
+[41:33:36.472] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:33:37.709] Browser LOG     ⚡ [Pre-fetch] Background fetching next lead & data...
+[41:33:38.318] Browser LOG     ⚡ [Pre-fetch] Ready for: 90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[41:33:41.560] Browser LOG     [Disposition] Session Match Check: {"isManualCall":false,"manualCustId":null,"preservedCustomerId":"687db46b-1144-4cd9-b717-5bc20d796abe","savingId":"687db46b-1144-4cd9-b717-5bc20d796abe"}
+[41:33:41.560] Browser LOG     [Disposition] Final check: {"currentIsInterruption":false,"isManualCall":false,"isUnassignedCall":false}
+[41:33:41.560] Browser LOG     [Disposition] Flow Exit Path: IsAccessDeniedManual=true, IsManual=false, IsUnassigned=false, IsAuthorized=true.
+[41:33:41.560] Browser LOG     [Disposition] Cleaning up unauthorized/unassigned session: CAM-0005
+[41:33:41.683] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0005, Manual=undefined, Terminate=true, Unassigned=undefined
+[41:33:42.362] Browser LOG     [Disposition] Redirecting to another available session: 1acc2237-f9a2-45c3-a70f-a79aa7ae070a
+[41:33:42.362] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[41:33:42.362] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:33:42.362] Browser LOG     [Lead-Change] New lead detected, showing alert
+[41:33:42.362] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[41:33:42.362] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:33:42.844] Browser LOG     🚀 [Bridge] Requesting Device Info
+[41:33:43.145] Browser LOG     [Fetch] Found 0 history records via API.
+[41:33:44.009] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[41:33:44.009] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[41:33:47.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

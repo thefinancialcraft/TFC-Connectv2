@@ -189,7 +189,7 @@ export default function FollowUp() {
     }
     
     // Explicitly using the masked path to trigger rewrites correctly
-    router.push(`/portal/campaign/${campaignId}/${customerId}`);
+    router.push(`/portal/campaign/${campaignId}/${customerId}?isManual=true`);
   };
 
   // Derive filter options from leads

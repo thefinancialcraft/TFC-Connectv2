@@ -6788,7 +6788,7 @@ function CampaignDetails() {
                                                                         created_at: new Date().toISOString(),
                                                                         updated_at: new Date().toISOString()
                                                                     });
-                                                                    router.push(`/portal/campaign/${id}/${item.customer_id}`);
+                                                                    router.push(`/portal/campaign/${id}/${item.customer_id}?isManual=true`);
                                                                 }
                                                             },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-gray-400 hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-gray-100",
@@ -7051,7 +7051,7 @@ function CampaignDetails() {
                                                                         created_at: new Date().toISOString(),
                                                                         updated_at: new Date().toISOString()
                                                                     });
-                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                    router.push(`/portal/campaign/${id}/${item.id}?isManual=true`);
                                                                 }
                                                             },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-red-100",
@@ -7315,7 +7315,7 @@ function CampaignDetails() {
                                                                         created_at: new Date().toISOString(),
                                                                         updated_at: new Date().toISOString()
                                                                     });
-                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                    router.push(`/portal/campaign/${id}/${item.id}?isManual=true`);
                                                                 }
                                                             },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-blue-100",
@@ -7574,7 +7574,7 @@ function CampaignDetails() {
                                                                         created_at: new Date().toISOString(),
                                                                         updated_at: new Date().toISOString()
                                                                     });
-                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                    router.push(`/portal/campaign/${id}/${item.id}?isManual=true`);
                                                                 }
                                                             },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-teal-100",
@@ -8126,7 +8126,7 @@ function CampaignDetails() {
                                                             created_at: new Date().toISOString(),
                                                             updated_at: new Date().toISOString()
                                                         });
-                                                        router.push(`/portal/campaign/${id}/${lead.id}`);
+                                                        router.push(`/portal/campaign/${id}/${lead.id}?isManual=true`);
                                                     }
                                                 },
                                                 className: "group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0",

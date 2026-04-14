@@ -7,7 +7,7 @@ interface CallSession {
   id: string;
   user_id: string;
   campaign_id: string;
-  customer_id: string;
+  customer_id: string;  
   status: 'assigned' | 'active' | 'disposition_pending' | 'closed';
   manual_status?: string;
   manual_customer_id?: string;
@@ -83,7 +83,23 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
     const hot = targetSession;
     setCurrentSession(hot);
 
-    // Check for Manual Lock
+    // NEW: URL-based Manual Mode Handling
+    const isManualInUrl = router.query.isManual === 'true';
+    if (isManualInUrl) {
+      const status = hot.manual_status || hot.status;
+      const isGenuinelyHot = status === 'active' || status === 'disposition_pending';
+      const currentCustomerId = router.query.customerId;
+
+      // If we are on a different CUSTOMER than the server's 'hot' session
+      // AND that server session is NOT active/pending, we STAY on the manual lead.
+      if (String(hot.customer_id) !== String(currentCustomerId) && !isGenuinelyHot) {
+        setIsLocked(true);
+        console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session:", hot.id);
+        return; 
+      }
+    }
+
+    // FALLBACK: Heritage Manual Lock (LocalStorage)
     const snapshotStr = typeof window !== 'undefined' ? localStorage.getItem('manual_inspection_snapshot') : null;
     if (snapshotStr) {
       try {
@@ -91,21 +107,21 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
         const currentCampaignId = router.query.id;
         const currentCustomerId = router.query.customerId;
 
-        // If we are currently ON the lead we manually locked, suppress all redirection
         if (String(currentCampaignId) === String(snapshot.campaign_id) && 
             String(currentCustomerId) === String(snapshot.customer_id)) {
-          setIsLocked(true);
-          console.log("[Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.");
-          return; 
-        } else {
-          // If we are NOT on the locked lead anymore, it means we navigated away manually
-          console.log("[Session-Context] 🔓 Navigated away from manual lock. Breaking lock.");
-          localStorage.removeItem('manual_inspection_snapshot');
-          setIsLocked(false);
+          
+          // Re-verify if server session has overtaken this lead with higher priority
+          const hotStatus = hot.manual_status || hot.status;
+          const isServerOvertaken = (hotStatus === 'active' || hotStatus === 'disposition_pending') && 
+                                   String(hot.customer_id) !== String(currentCustomerId);
+
+          if (!isServerOvertaken) {
+            setIsLocked(true);
+            return; 
+          }
         }
       } catch (e) {
         localStorage.removeItem('manual_inspection_snapshot');
-        setIsLocked(false);
       }
     }
 
