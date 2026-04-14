@@ -17247,3 +17247,4 @@ Import traces:
 [40:55:57.768] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
 [40:56:01.672] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
 [40:56:06.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:09.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
