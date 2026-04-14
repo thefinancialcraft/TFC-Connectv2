@@ -8434,18 +8434,22 @@ const SessionProvider = ({ children })=>{
             if (snapshotStr) {
                 try {
                     const snapshot = JSON.parse(snapshotStr);
-                    const isSame = String(hot.customer_id) === String(snapshot.customer_id) && String(hot.status) === String(snapshot.status);
-                    if (isSame) {
+                    const currentCampaignId = router.query.id;
+                    const currentCustomerId = router.query.customerId;
+                    // If we are currently ON the lead we manually locked, suppress all redirection
+                    if (String(currentCampaignId) === String(snapshot.campaign_id) && String(currentCustomerId) === String(snapshot.customer_id)) {
                         setIsLocked(true);
-                        console.log("[Session-Context] 🔒 Manual Lock Active. Skipping redirection.");
+                        console.log("[Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.");
                         return;
                     } else {
-                        console.log("[Session-Context] 🔓 State change detected. Breaking lock.");
+                        // If we are NOT on the locked lead anymore, it means we navigated away manually
+                        console.log("[Session-Context] 🔓 Navigated away from manual lock. Breaking lock.");
                         localStorage.removeItem('manual_inspection_snapshot');
                         setIsLocked(false);
                     }
                 } catch (e) {
                     localStorage.removeItem('manual_inspection_snapshot');
+                    setIsLocked(false);
                 }
             }
             // Perform Redirection logic
@@ -8556,7 +8560,7 @@ const SessionProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/SessionContext.tsx",
-        lineNumber: 207,
+        lineNumber: 212,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -9241,17 +9245,21 @@ function FollowUp() {
     ]);
     // --- MANUAL NAVIGATION HANDLER ---
     const handleManualLeadOpen = (campaignId, customerId)=>{
-        console.log("[Follow-up] Manual Lead Open triggered:", customerId);
-        // Check for hot session in unified state
-        const hot = [
-            ...allSessions
-        ].sort((a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).find((s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending' || s.status === 'active' || s.status === 'disposition_pending');
-        if (hot) {
-            console.log("[Follow-up] Using unified context to lock snapshot for session:", hot.customer_id);
-            startManualLock(hot);
+        console.log("[Follow-up] Manual Lead Open triggered for:", customerId);
+        // Create a mock session to lock the target lead for manual inspection
+        if (user?.uid) {
+            startManualLock({
+                id: 'manual-' + Date.now(),
+                user_id: user.uid,
+                campaign_id: campaignId,
+                customer_id: customerId,
+                status: 'active',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            });
         }
         // Explicitly using the masked path to trigger rewrites correctly
-        router.push(`/campaign/${campaignId}/${customerId}`);
+        router.push(`/portal/campaign/${campaignId}/${customerId}`);
     };
     // Derive filter options from leads
     const filterOptions = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
@@ -9310,7 +9318,7 @@ function FollowUp() {
                             children: "Follow Up Scheduler"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 221,
+                            lineNumber: 222,
                             columnNumber: 15
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9321,13 +9329,13 @@ function FollowUp() {
                             children: "Manage upcoming calls and overdue tasks spanning all your campaigns."
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 224,
+                            lineNumber: 225,
                             columnNumber: 15
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 220,
+                    lineNumber: 221,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9346,28 +9354,28 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 236,
+                                    lineNumber: 237,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-indigo-100/30 blur-2xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 243,
+                                    lineNumber: 244,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-indigo-200/20 blur-xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 244,
+                                    lineNumber: 245,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-indigo-300/15 blur-lg"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 245,
+                                    lineNumber: 246,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9379,12 +9387,12 @@ function FollowUp() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 247,
+                                        lineNumber: 248,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 246,
+                                    lineNumber: 247,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9395,7 +9403,7 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 252,
+                                    lineNumber: 253,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9413,7 +9421,7 @@ function FollowUp() {
                                                     children: "Total Follow Ups"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 262,
+                                                    lineNumber: 263,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9428,18 +9436,18 @@ function FollowUp() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 277,
+                                                        lineNumber: 278,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 271,
+                                                    lineNumber: 272,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 261,
+                                            lineNumber: 262,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9454,7 +9462,7 @@ function FollowUp() {
                                                     children: stats.total
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 284,
+                                                    lineNumber: 285,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9466,25 +9474,25 @@ function FollowUp() {
                                                     children: "Active Callbacks"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 293,
+                                                    lineNumber: 294,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 283,
+                                            lineNumber: 284,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 260,
+                                    lineNumber: 261,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 232,
+                            lineNumber: 233,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9500,28 +9508,28 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 311,
+                                    lineNumber: 312,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-red-100/30 blur-2xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 318,
+                                    lineNumber: 319,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-red-200/20 blur-xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 319,
+                                    lineNumber: 320,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-red-300/15 blur-lg"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 320,
+                                    lineNumber: 321,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9533,12 +9541,12 @@ function FollowUp() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 322,
+                                        lineNumber: 323,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 321,
+                                    lineNumber: 322,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9549,7 +9557,7 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 327,
+                                    lineNumber: 328,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9567,7 +9575,7 @@ function FollowUp() {
                                                     children: "Overdue"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 337,
+                                                    lineNumber: 338,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9582,18 +9590,18 @@ function FollowUp() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 352,
+                                                        lineNumber: 353,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 346,
+                                                    lineNumber: 347,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 336,
+                                            lineNumber: 337,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9608,7 +9616,7 @@ function FollowUp() {
                                                     children: stats.overdue
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 359,
+                                                    lineNumber: 360,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9620,25 +9628,25 @@ function FollowUp() {
                                                     children: "Action Required"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 368,
+                                                    lineNumber: 369,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 358,
+                                            lineNumber: 359,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 335,
+                                    lineNumber: 336,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 307,
+                            lineNumber: 308,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9654,28 +9662,28 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 386,
+                                    lineNumber: 387,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-blue-100/30 blur-2xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 393,
+                                    lineNumber: 394,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-0 left-0 w-32 h-32 rounded-full bg-blue-200/20 blur-xl"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 394,
+                                    lineNumber: 395,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "absolute top-8 right-8 w-16 h-16 rounded-full bg-blue-300/15 blur-lg"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 395,
+                                    lineNumber: 396,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9687,12 +9695,12 @@ function FollowUp() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 397,
+                                        lineNumber: 398,
                                         columnNumber: 21
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 396,
+                                    lineNumber: 397,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9703,7 +9711,7 @@ function FollowUp() {
                                     }
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 402,
+                                    lineNumber: 403,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9721,7 +9729,7 @@ function FollowUp() {
                                                     children: "Upcoming"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 412,
+                                                    lineNumber: 413,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9736,18 +9744,18 @@ function FollowUp() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 427,
+                                                        lineNumber: 428,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 421,
+                                                    lineNumber: 422,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 411,
+                                            lineNumber: 412,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9762,7 +9770,7 @@ function FollowUp() {
                                                     children: stats.upcoming
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 434,
+                                                    lineNumber: 435,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9774,31 +9782,31 @@ function FollowUp() {
                                                     children: "Scheduled for Later"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 443,
+                                                    lineNumber: 444,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 433,
+                                            lineNumber: 434,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 410,
+                                    lineNumber: 411,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 382,
+                            lineNumber: 383,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 230,
+                    lineNumber: 231,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9816,7 +9824,7 @@ function FollowUp() {
                                     children: "Scheduled Leads"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 462,
+                                    lineNumber: 463,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9828,13 +9836,13 @@ function FollowUp() {
                                     children: "Manage upcoming and overdue calls"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 465,
+                                    lineNumber: 466,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 461,
+                            lineNumber: 462,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9850,7 +9858,7 @@ function FollowUp() {
                                                     className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 474,
+                                                    lineNumber: 475,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -9864,13 +9872,13 @@ function FollowUp() {
                                                     onChange: (e)=>setSearchQuery(e.target.value)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 475,
+                                                    lineNumber: 476,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 473,
+                                            lineNumber: 474,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9880,12 +9888,12 @@ function FollowUp() {
                                                 className: "fi flex fi-rr-filter text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 488,
+                                                lineNumber: 489,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 484,
+                                            lineNumber: 485,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9895,12 +9903,12 @@ function FollowUp() {
                                                 className: "fi flex fi-rr-settings-sliders text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 494,
+                                                lineNumber: 495,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 490,
+                                            lineNumber: 491,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9911,18 +9919,18 @@ function FollowUp() {
                                                 className: `fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 501,
+                                                lineNumber: 502,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 496,
+                                            lineNumber: 497,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 472,
+                                    lineNumber: 473,
                                     columnNumber: 22
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9936,14 +9944,14 @@ function FollowUp() {
                                                     className: "fi flex fi-rr-apps-sort"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 510,
+                                                    lineNumber: 511,
                                                     columnNumber: 29
                                                 }, this),
                                                 "Table"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 506,
+                                            lineNumber: 507,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9954,14 +9962,14 @@ function FollowUp() {
                                                     className: "fi fi-rr-layout-fluid flex"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 517,
+                                                    lineNumber: 518,
                                                     columnNumber: 29
                                                 }, this),
                                                 "Kanban"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 513,
+                                            lineNumber: 514,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -9972,26 +9980,26 @@ function FollowUp() {
                                                     className: "fi flex fi-rr-calendar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 524,
+                                                    lineNumber: 525,
                                                     columnNumber: 29
                                                 }, this),
                                                 "Calendar"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 520,
+                                            lineNumber: 521,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 505,
+                                    lineNumber: 506,
                                     columnNumber: 22
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 471,
+                            lineNumber: 472,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10008,7 +10016,7 @@ function FollowUp() {
                                             children: "Scheduled Leads"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 533,
+                                            lineNumber: 534,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10020,13 +10028,13 @@ function FollowUp() {
                                             children: "Manage upcoming and overdue calls"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 536,
+                                            lineNumber: 537,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 532,
+                                    lineNumber: 533,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10043,14 +10051,14 @@ function FollowUp() {
                                                             className: "fi flex fi-rr-apps-sort mr-2"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 546,
+                                                            lineNumber: 547,
                                                             columnNumber: 33
                                                         }, this),
                                                         "Table"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 542,
+                                                    lineNumber: 543,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10061,14 +10069,14 @@ function FollowUp() {
                                                             className: "fi fi-rr-layout-fluid flex mr-2"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 553,
+                                                            lineNumber: 554,
                                                             columnNumber: 33
                                                         }, this),
                                                         "Kanban"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 549,
+                                                    lineNumber: 550,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10079,20 +10087,20 @@ function FollowUp() {
                                                             className: "fi flex fi-rr-calendar mr-2"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 560,
+                                                            lineNumber: 561,
                                                             columnNumber: 33
                                                         }, this),
                                                         "Calendar"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 556,
+                                                    lineNumber: 557,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 541,
+                                            lineNumber: 542,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10102,7 +10110,7 @@ function FollowUp() {
                                                     className: "fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 566,
+                                                    lineNumber: 567,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -10116,13 +10124,13 @@ function FollowUp() {
                                                     onChange: (e)=>setSearchQuery(e.target.value)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 567,
+                                                    lineNumber: 568,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 565,
+                                            lineNumber: 566,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10134,7 +10142,7 @@ function FollowUp() {
                                                     className: "fi flex fi-rr-filter text-sm mr-2"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 581,
+                                                    lineNumber: 582,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10142,13 +10150,13 @@ function FollowUp() {
                                                     children: "Filter"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 582,
+                                                    lineNumber: 583,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 576,
+                                            lineNumber: 577,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10159,12 +10167,12 @@ function FollowUp() {
                                                 className: "fi flex fi-rr-settings-sliders text-sm"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 590,
+                                                lineNumber: 591,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 585,
+                                            lineNumber: 586,
                                             columnNumber: 26
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10176,24 +10184,24 @@ function FollowUp() {
                                                 className: `fi flex fi-rr-refresh text-sm text-gray-600 ${loading ? 'animate-spin' : ''}`
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 598,
+                                                lineNumber: 599,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 592,
+                                            lineNumber: 593,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 540,
+                                    lineNumber: 541,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 531,
+                            lineNumber: 532,
                             columnNumber: 17
                         }, this),
                         showConfig && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10206,12 +10214,12 @@ function FollowUp() {
                                         className: "fi fi-rr-cross-small"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 607,
+                                        lineNumber: 608,
                                         columnNumber: 30
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 606,
+                                    lineNumber: 607,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -10221,14 +10229,14 @@ function FollowUp() {
                                             className: "fi fi-rr-settings text-indigo-600"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 610,
+                                            lineNumber: 611,
                                             columnNumber: 29
                                         }, this),
                                         "Configure Kanban Pipelines"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 609,
+                                    lineNumber: 610,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10242,7 +10250,7 @@ function FollowUp() {
                                                     children: editingPipelineId ? 'Update Pipeline Name' : 'Pipeline Name'
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 616,
+                                                    lineNumber: 617,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -10255,13 +10263,13 @@ function FollowUp() {
                                                         })
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 619,
+                                                    lineNumber: 620,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 616,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10275,7 +10283,7 @@ function FollowUp() {
                                                             children: "Dispositions (Multiple)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 629,
+                                                            lineNumber: 630,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10289,18 +10297,18 @@ function FollowUp() {
                                                                     children: d
                                                                 }, d, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 632,
+                                                                    lineNumber: 633,
                                                                     columnNumber: 45
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 630,
+                                                            lineNumber: 631,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 628,
+                                                    lineNumber: 629,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10311,7 +10319,7 @@ function FollowUp() {
                                                             children: "Sub-Dispositions (Multiple)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 644,
+                                                            lineNumber: 645,
                                                             columnNumber: 37
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10325,31 +10333,31 @@ function FollowUp() {
                                                                     children: s
                                                                 }, s, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 649,
+                                                                    lineNumber: 650,
                                                                     columnNumber: 49
                                                                 }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                 className: "text-[10px] text-gray-400 italic",
                                                                 children: "Select disposition first"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 658,
+                                                                lineNumber: 659,
                                                                 columnNumber: 45
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 645,
+                                                            lineNumber: 646,
                                                             columnNumber: 37
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 643,
+                                                    lineNumber: 644,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 627,
+                                            lineNumber: 628,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10360,7 +10368,7 @@ function FollowUp() {
                                                     children: "Outcomes (Multiple)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 665,
+                                                    lineNumber: 666,
                                                     columnNumber: 33
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10384,27 +10392,27 @@ function FollowUp() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 677,
+                                                                        lineNumber: 678,
                                                                         columnNumber: 73
                                                                     }, this)
                                                                 ]
                                                             }, out.id, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 672,
+                                                                lineNumber: 673,
                                                                 columnNumber: 49
                                                             }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-[10px] text-gray-400 italic",
                                                             children: "No custom outcomes found. Add them from the calling page."
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 681,
+                                                            lineNumber: 682,
                                                             columnNumber: 45
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-[10px] text-gray-400 italic",
                                                             children: "Select sub-disposition first to view outcomes"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 684,
+                                                            lineNumber: 685,
                                                             columnNumber: 41
                                                         }, this),
                                                         newPipeline.sub_dispositions.length > 0 && userOutcomes.filter((out)=>newPipeline.sub_dispositions.includes(out.parent_category)).length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10412,19 +10420,19 @@ function FollowUp() {
                                                             children: "No outcomes found for selected sub-dispositions."
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 688,
+                                                            lineNumber: 689,
                                                             columnNumber: 42
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 666,
+                                                    lineNumber: 667,
                                                     columnNumber: 33
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 664,
+                                            lineNumber: 665,
                                             columnNumber: 29
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10438,14 +10446,14 @@ function FollowUp() {
                                                             className: editingPipelineId ? "fi fi-rr-check" : "fi fi-rr-plus"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 698,
+                                                            lineNumber: 699,
                                                             columnNumber: 37
                                                         }, this),
                                                         editingPipelineId ? 'Update Pipeline' : 'Create Pipeline'
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 694,
+                                                    lineNumber: 695,
                                                     columnNumber: 33
                                                 }, this),
                                                 editingPipelineId && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10463,19 +10471,19 @@ function FollowUp() {
                                                     children: "Cancel"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 702,
+                                                    lineNumber: 703,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 693,
+                                            lineNumber: 694,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 614,
+                                    lineNumber: 615,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10487,7 +10495,7 @@ function FollowUp() {
                                                     children: p.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 719,
+                                                    lineNumber: 720,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10499,7 +10507,7 @@ function FollowUp() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 720,
+                                                    lineNumber: 721,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10509,29 +10517,29 @@ function FollowUp() {
                                                         className: "fi fi-rr-cross-circle"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 726,
+                                                        lineNumber: 727,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 725,
+                                                    lineNumber: 726,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, p.id, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 718,
+                                            lineNumber: 719,
                                             columnNumber: 33
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 716,
+                                    lineNumber: 717,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 605,
+                            lineNumber: 606,
                             columnNumber: 21
                         }, this),
                         showFilterModal && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10549,12 +10557,12 @@ function FollowUp() {
                                                     children: "Filter Follow-ups"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 741,
+                                                    lineNumber: 742,
                                                     columnNumber: 37
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 740,
+                                                lineNumber: 741,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10564,18 +10572,18 @@ function FollowUp() {
                                                     className: "fi fi-rr-cross-small text-xl leading-none"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 744,
+                                                    lineNumber: 745,
                                                     columnNumber: 37
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 743,
+                                                lineNumber: 744,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 739,
+                                        lineNumber: 740,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10592,7 +10600,7 @@ function FollowUp() {
                                                                 children: "Organization"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 752,
+                                                                lineNumber: 753,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -10608,7 +10616,7 @@ function FollowUp() {
                                                                         children: "All Organizations"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 758,
+                                                                        lineNumber: 759,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     filterOptions.organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -10616,19 +10624,19 @@ function FollowUp() {
                                                                             children: org.name
                                                                         }, org.id, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 760,
+                                                                            lineNumber: 761,
                                                                             columnNumber: 49
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 753,
+                                                                lineNumber: 754,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 751,
+                                                        lineNumber: 752,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10639,7 +10647,7 @@ function FollowUp() {
                                                                 children: "Campaign"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 767,
+                                                                lineNumber: 768,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -10655,7 +10663,7 @@ function FollowUp() {
                                                                         children: "All Campaigns"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 773,
+                                                                        lineNumber: 774,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     filterOptions.campaigns.map((camp)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -10663,25 +10671,25 @@ function FollowUp() {
                                                                             children: camp.name
                                                                         }, camp.id, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 775,
+                                                                            lineNumber: 776,
                                                                             columnNumber: 49
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 768,
+                                                                lineNumber: 769,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 766,
+                                                        lineNumber: 767,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 749,
+                                                lineNumber: 750,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10695,7 +10703,7 @@ function FollowUp() {
                                                                 children: "Sequence Status"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 784,
+                                                                lineNumber: 785,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -10711,7 +10719,7 @@ function FollowUp() {
                                                                         children: "All Statuses"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 790,
+                                                                        lineNumber: 791,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -10719,7 +10727,7 @@ function FollowUp() {
                                                                         children: "Overdue"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 791,
+                                                                        lineNumber: 792,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -10727,19 +10735,19 @@ function FollowUp() {
                                                                         children: "Upcoming"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 792,
+                                                                        lineNumber: 793,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 785,
+                                                                lineNumber: 786,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 783,
+                                                        lineNumber: 784,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10750,7 +10758,7 @@ function FollowUp() {
                                                                 children: "Assigned Personnel"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 798,
+                                                                lineNumber: 799,
                                                                 columnNumber: 41
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -10766,7 +10774,7 @@ function FollowUp() {
                                                                         children: "Everyone"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 804,
+                                                                        lineNumber: 805,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     filterOptions.agents.map((agent)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -10778,25 +10786,25 @@ function FollowUp() {
                                                                             ]
                                                                         }, agent.id, true, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 806,
+                                                                            lineNumber: 807,
                                                                             columnNumber: 49
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 799,
+                                                                lineNumber: 800,
                                                                 columnNumber: 41
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 797,
+                                                        lineNumber: 798,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 781,
+                                                lineNumber: 782,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10807,7 +10815,7 @@ function FollowUp() {
                                                         children: "Execution Date"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 816,
+                                                        lineNumber: 817,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10822,24 +10830,24 @@ function FollowUp() {
                                                             className: "w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 818,
+                                                            lineNumber: 819,
                                                             columnNumber: 41
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 817,
+                                                        lineNumber: 818,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 815,
+                                                lineNumber: 816,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 748,
+                                        lineNumber: 749,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10857,7 +10865,7 @@ function FollowUp() {
                                                 children: "Clear Config"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 829,
+                                                lineNumber: 830,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -10866,24 +10874,24 @@ function FollowUp() {
                                                 children: "Apply Configuration"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 835,
+                                                lineNumber: 836,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 828,
+                                        lineNumber: 829,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 737,
+                                lineNumber: 738,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 736,
+                            lineNumber: 737,
                             columnNumber: 21
                         }, this),
                         error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10893,14 +10901,14 @@ function FollowUp() {
                                     className: "fi fi-rr-info"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 848,
+                                    lineNumber: 849,
                                     columnNumber: 25
                                 }, this),
                                 error
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 847,
+                            lineNumber: 848,
                             columnNumber: 21
                         }, this),
                         loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10910,7 +10918,7 @@ function FollowUp() {
                                     className: "animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-[#4b33e8] mb-4"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 855,
+                                    lineNumber: 856,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10918,13 +10926,13 @@ function FollowUp() {
                                     children: "Syncing schedule..."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 856,
+                                    lineNumber: 857,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 854,
+                            lineNumber: 855,
                             columnNumber: 21
                         }, this) : filteredLeads.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex flex-col items-center justify-center py-16 text-center",
@@ -10935,12 +10943,12 @@ function FollowUp() {
                                         className: "fi fi-rr-calendar-check text-2xl text-gray-300"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 861,
+                                        lineNumber: 862,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 860,
+                                    lineNumber: 861,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -10948,7 +10956,7 @@ function FollowUp() {
                                     children: "All Caught Up!"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 863,
+                                    lineNumber: 864,
                                     columnNumber: 25
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10956,13 +10964,13 @@ function FollowUp() {
                                     children: "You have no pending follow-up calls matching your criteria."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 864,
+                                    lineNumber: 865,
                                     columnNumber: 25
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 859,
+                            lineNumber: 860,
                             columnNumber: 21
                         }, this) : viewMode === 'table' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "overflow-x-auto -mx-2 sm:mx-0",
@@ -10982,17 +10990,17 @@ function FollowUp() {
                                                             type: "checkbox"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 874,
+                                                            lineNumber: 875,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 873,
+                                                        lineNumber: 874,
                                                         columnNumber: 41
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 872,
+                                                    lineNumber: 873,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11000,7 +11008,7 @@ function FollowUp() {
                                                     children: "Customer Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 877,
+                                                    lineNumber: 878,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11008,7 +11016,7 @@ function FollowUp() {
                                                     children: "Contact Info"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 878,
+                                                    lineNumber: 879,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11016,7 +11024,7 @@ function FollowUp() {
                                                     children: "Status"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 879,
+                                                    lineNumber: 880,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11024,7 +11032,7 @@ function FollowUp() {
                                                     children: "Disposition"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 880,
+                                                    lineNumber: 881,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11032,7 +11040,7 @@ function FollowUp() {
                                                     children: "Organization"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 881,
+                                                    lineNumber: 882,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11040,7 +11048,7 @@ function FollowUp() {
                                                     children: "Campaign"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 882,
+                                                    lineNumber: 883,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11048,7 +11056,7 @@ function FollowUp() {
                                                     children: "Scheduled Time"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 883,
+                                                    lineNumber: 884,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11056,7 +11064,7 @@ function FollowUp() {
                                                     children: "Assigned To"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 884,
+                                                    lineNumber: 885,
                                                     columnNumber: 37
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -11064,18 +11072,18 @@ function FollowUp() {
                                                     children: "Action"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 885,
+                                                    lineNumber: 886,
                                                     columnNumber: 37
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 871,
+                                            lineNumber: 872,
                                             columnNumber: 33
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 870,
+                                        lineNumber: 871,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -11094,17 +11102,17 @@ function FollowUp() {
                                                                 type: "checkbox"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 893,
+                                                                lineNumber: 894,
                                                                 columnNumber: 49
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 892,
+                                                            lineNumber: 893,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 891,
+                                                        lineNumber: 892,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11117,7 +11125,7 @@ function FollowUp() {
                                                                     children: lead.customer_name?.charAt(0) || 'C'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 898,
+                                                                    lineNumber: 899,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11129,18 +11137,18 @@ function FollowUp() {
                                                                     children: lead.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 901,
+                                                                    lineNumber: 902,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 897,
+                                                            lineNumber: 898,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 896,
+                                                        lineNumber: 897,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11153,7 +11161,7 @@ function FollowUp() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 908,
+                                                                    lineNumber: 909,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11161,18 +11169,18 @@ function FollowUp() {
                                                                     children: "Verified Lead"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 909,
+                                                                    lineNumber: 910,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 907,
+                                                            lineNumber: 908,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 906,
+                                                        lineNumber: 907,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11184,24 +11192,24 @@ function FollowUp() {
                                                                 children: "Overdue"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 915,
+                                                                lineNumber: 916,
                                                                 columnNumber: 53
                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 bg-blue-50 text-blue-600 border border-blue-100",
                                                                 children: "Upcoming"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 919,
+                                                                lineNumber: 920,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 913,
+                                                            lineNumber: 914,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 912,
+                                                        lineNumber: 913,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11211,12 +11219,12 @@ function FollowUp() {
                                                             children: lead.disposition || 'Call Back'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 926,
+                                                            lineNumber: 927,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 925,
+                                                        lineNumber: 926,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11228,7 +11236,7 @@ function FollowUp() {
                                                                     className: "fi flex fi-rr-building text-[#4b33e8] text-xs"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 932,
+                                                                    lineNumber: 933,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11239,18 +11247,18 @@ function FollowUp() {
                                                                     children: lead.organization_name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 933,
+                                                                    lineNumber: 934,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 931,
+                                                            lineNumber: 932,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 930,
+                                                        lineNumber: 931,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11260,12 +11268,12 @@ function FollowUp() {
                                                             children: lead.campaign_name
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 939,
+                                                            lineNumber: 940,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 938,
+                                                        lineNumber: 939,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11278,7 +11286,7 @@ function FollowUp() {
                                                                     children: formatDate(lead.next_called_at)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 945,
+                                                                    lineNumber: 946,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11286,18 +11294,18 @@ function FollowUp() {
                                                                     children: "Scheduled"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 948,
+                                                                    lineNumber: 949,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 944,
+                                                            lineNumber: 945,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 943,
+                                                        lineNumber: 944,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11307,12 +11315,12 @@ function FollowUp() {
                                                             children: lead.assigned_name || 'Unassigned'
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 952,
+                                                            lineNumber: 953,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 951,
+                                                        lineNumber: 952,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -11328,52 +11336,52 @@ function FollowUp() {
                                                                         className: "fi fi-rr-phone-call text-xs"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 962,
+                                                                        lineNumber: 963,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                         children: "Call"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 963,
+                                                                        lineNumber: 964,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 958,
+                                                                lineNumber: 959,
                                                                 columnNumber: 49
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 957,
+                                                            lineNumber: 958,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 956,
+                                                        lineNumber: 957,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, lead.id, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 890,
+                                                lineNumber: 891,
                                                 columnNumber: 37
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 888,
+                                        lineNumber: 889,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 868,
+                                lineNumber: 869,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 867,
+                            lineNumber: 868,
                             columnNumber: 21
                         }, this) : viewMode === 'kanban' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide min-h-[500px] snap-x",
@@ -11384,7 +11392,7 @@ function FollowUp() {
                                         className: "fi fi-rr-plus text-3xl mb-2"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 976,
+                                        lineNumber: 977,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11392,7 +11400,7 @@ function FollowUp() {
                                         children: "No pipelines configured."
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 977,
+                                        lineNumber: 978,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11400,13 +11408,13 @@ function FollowUp() {
                                         children: "Click the gear icon to add pipelines."
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 978,
+                                        lineNumber: 979,
                                         columnNumber: 33
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 975,
+                                lineNumber: 976,
                                 columnNumber: 29
                             }, this) : pipelines.map((pipeline)=>{
                                 const leadsInPipeline = filteredLeads.filter((l)=>{
@@ -11429,7 +11437,7 @@ function FollowUp() {
                                                             children: pipeline.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 994,
+                                                            lineNumber: 995,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11437,13 +11445,13 @@ function FollowUp() {
                                                             children: leadsInPipeline.length
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 995,
+                                                            lineNumber: 996,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 993,
+                                                    lineNumber: 994,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11456,12 +11464,12 @@ function FollowUp() {
                                                                 className: "fi fi-rr-menu-dots-vertical"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1004,
+                                                                lineNumber: 1005,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1000,
+                                                            lineNumber: 1001,
                                                             columnNumber: 49
                                                         }, this),
                                                         showMenuId === pipeline.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11475,21 +11483,21 @@ function FollowUp() {
                                                                             className: "fi fi-rr-edit text-indigo-500"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1013,
+                                                                            lineNumber: 1014,
                                                                             columnNumber: 61
                                                                         }, this),
                                                                         "Edit Pipeline"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1009,
+                                                                    lineNumber: 1010,
                                                                     columnNumber: 57
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "h-px bg-gray-50 my-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1016,
+                                                                    lineNumber: 1017,
                                                                     columnNumber: 57
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11500,32 +11508,32 @@ function FollowUp() {
                                                                             className: "fi fi-rr-trash"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1021,
+                                                                            lineNumber: 1022,
                                                                             columnNumber: 61
                                                                         }, this),
                                                                         "Delete"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1017,
+                                                                    lineNumber: 1018,
                                                                     columnNumber: 57
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1008,
+                                                            lineNumber: 1009,
                                                             columnNumber: 53
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 999,
+                                                    lineNumber: 1000,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 992,
+                                            lineNumber: 993,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11537,7 +11545,7 @@ function FollowUp() {
                                                         className: "fi fi-rr-box-open text-2xl mb-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1032,
+                                                        lineNumber: 1033,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11545,13 +11553,13 @@ function FollowUp() {
                                                         children: "No leads"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1033,
+                                                        lineNumber: 1034,
                                                         columnNumber: 54
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1031,
+                                                lineNumber: 1032,
                                                 columnNumber: 49
                                             }, this) : leadsInPipeline.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     onClick: ()=>handleManualLeadOpen(lead.campaign_id, lead.id),
@@ -11561,7 +11569,7 @@ function FollowUp() {
                                                             className: `absolute left-0 top-0 bottom-0 w-1 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500 opacity-20'}`
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1043,
+                                                            lineNumber: 1044,
                                                             columnNumber: 57
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11575,7 +11583,7 @@ function FollowUp() {
                                                                             children: lead.customer_name?.charAt(0) || 'C'
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1047,
+                                                                            lineNumber: 1048,
                                                                             columnNumber: 65
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11586,7 +11594,7 @@ function FollowUp() {
                                                                                     children: lead.customer_name || 'Anonymous'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 1051,
+                                                                                    lineNumber: 1052,
                                                                                     columnNumber: 69
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11596,37 +11604,37 @@ function FollowUp() {
                                                                                         children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                        lineNumber: 1055,
+                                                                                        lineNumber: 1056,
                                                                                         columnNumber: 73
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 1054,
+                                                                                    lineNumber: 1055,
                                                                                     columnNumber: 69
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1050,
+                                                                            lineNumber: 1051,
                                                                             columnNumber: 65
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1046,
+                                                                    lineNumber: 1047,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 lead.isOverdue && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                     className: "fi fi-rr-time-past text-red-500 text-[10px] animate-pulse"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1059,
+                                                                    lineNumber: 1060,
                                                                     columnNumber: 80
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1045,
+                                                            lineNumber: 1046,
                                                             columnNumber: 57
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11637,7 +11645,7 @@ function FollowUp() {
                                                                     children: lead.campaign_name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1063,
+                                                                    lineNumber: 1064,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 lead.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11645,7 +11653,7 @@ function FollowUp() {
                                                                     children: lead.sub_disposition
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1067,
+                                                                    lineNumber: 1068,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 lead.outcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11653,13 +11661,13 @@ function FollowUp() {
                                                                     children: lead.outcome
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1072,
+                                                                    lineNumber: 1073,
                                                                     columnNumber: 65
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1062,
+                                                            lineNumber: 1063,
                                                             columnNumber: 57
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11670,7 +11678,7 @@ function FollowUp() {
                                                                     children: formatDate(lead.next_called_at)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1079,
+                                                                    lineNumber: 1080,
                                                                     columnNumber: 61
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11683,41 +11691,41 @@ function FollowUp() {
                                                                         className: "fi fi-rr-phone-call text-[8px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1089,
+                                                                        lineNumber: 1090,
                                                                         columnNumber: 65
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1082,
+                                                                    lineNumber: 1083,
                                                                     columnNumber: 61
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1078,
+                                                            lineNumber: 1079,
                                                             columnNumber: 57
                                                         }, this)
                                                     ]
                                                 }, lead.id, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 1037,
+                                                    lineNumber: 1038,
                                                     columnNumber: 53
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/followup.tsx",
-                                            lineNumber: 1029,
+                                            lineNumber: 1030,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, pipeline.id, true, {
                                     fileName: "[project]/pages/portal/followup.tsx",
-                                    lineNumber: 991,
+                                    lineNumber: 992,
                                     columnNumber: 37
                                 }, this);
                             })
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 973,
+                            lineNumber: 974,
                             columnNumber: 21
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "bg-white p-4 rounded-xl border border-gray-200",
@@ -11734,7 +11742,7 @@ function FollowUp() {
                                                 })
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1107,
+                                                lineNumber: 1108,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11747,12 +11755,12 @@ function FollowUp() {
                                                             className: "fi fi-rr-angle-left text-sm mt-1"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1115,
+                                                            lineNumber: 1116,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1111,
+                                                        lineNumber: 1112,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11761,7 +11769,7 @@ function FollowUp() {
                                                         children: "Today"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1117,
+                                                        lineNumber: 1118,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -11771,24 +11779,24 @@ function FollowUp() {
                                                             className: "fi fi-rr-angle-right text-sm mt-1"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1127,
+                                                            lineNumber: 1128,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1123,
+                                                        lineNumber: 1124,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1110,
+                                                lineNumber: 1111,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1106,
+                                        lineNumber: 1107,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11806,12 +11814,12 @@ function FollowUp() {
                                                 children: day
                                             }, day, false, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1135,
+                                                lineNumber: 1136,
                                                 columnNumber: 41
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1133,
+                                        lineNumber: 1134,
                                         columnNumber: 33
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11823,7 +11831,7 @@ function FollowUp() {
                                                     className: "min-h-[120px] bg-gray-50/30 rounded-lg"
                                                 }, `empty-${i}`, false, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 1145,
+                                                    lineNumber: 1146,
                                                     columnNumber: 41
                                                 }, this)),
                                             Array.from({
@@ -11849,7 +11857,7 @@ function FollowUp() {
                                                                     children: day
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1167,
+                                                                    lineNumber: 1168,
                                                                     columnNumber: 53
                                                                 }, this),
                                                                 dayLeads.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -11857,13 +11865,13 @@ function FollowUp() {
                                                                     children: dayLeads.length
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1171,
+                                                                    lineNumber: 1172,
                                                                     columnNumber: 57
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1166,
+                                                            lineNumber: 1167,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11875,7 +11883,7 @@ function FollowUp() {
                                                                         children: lead.customer_name || 'Anonymous'
                                                                     }, lead.id, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1179,
+                                                                        lineNumber: 1180,
                                                                         columnNumber: 57
                                                                     }, this)),
                                                                 dayLeads.length > 3 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11887,13 +11895,13 @@ function FollowUp() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1188,
+                                                                    lineNumber: 1189,
                                                                     columnNumber: 57
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1177,
+                                                            lineNumber: 1178,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11903,25 +11911,25 @@ function FollowUp() {
                                                                 children: "View Day"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1196,
+                                                                lineNumber: 1197,
                                                                 columnNumber: 53
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1195,
+                                                            lineNumber: 1196,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, day, true, {
                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                    lineNumber: 1161,
+                                                    lineNumber: 1162,
                                                     columnNumber: 45
                                                 }, this);
                                             })
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1142,
+                                        lineNumber: 1143,
                                         columnNumber: 33
                                     }, this)
                                 ]
@@ -11941,12 +11949,12 @@ function FollowUp() {
                                                             className: "fi fi-rr-arrow-small-left text-xl"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1212,
+                                                            lineNumber: 1213,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1208,
+                                                        lineNumber: 1209,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11960,7 +11968,7 @@ function FollowUp() {
                                                                 })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1215,
+                                                                lineNumber: 1216,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -11968,19 +11976,19 @@ function FollowUp() {
                                                                 children: "Hourly Schedule"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1218,
+                                                                lineNumber: 1219,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1214,
+                                                        lineNumber: 1215,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1207,
+                                                lineNumber: 1208,
                                                 columnNumber: 37
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -11991,7 +11999,7 @@ function FollowUp() {
                                                         children: "Day View"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1222,
+                                                        lineNumber: 1223,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -12000,19 +12008,19 @@ function FollowUp() {
                                                         children: "Month View"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1225,
+                                                        lineNumber: 1226,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1221,
+                                                lineNumber: 1222,
                                                 columnNumber: 37
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1206,
+                                        lineNumber: 1207,
                                         columnNumber: 33
                                     }, this),
                                     !selectedHour ? /* Hourly Slots Grid */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12044,7 +12052,7 @@ function FollowUp() {
                                                                 children: timeLabel
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1259,
+                                                                lineNumber: 1260,
                                                                 columnNumber: 57
                                                             }, this),
                                                             slotLeads.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -12055,13 +12063,13 @@ function FollowUp() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1261,
+                                                                lineNumber: 1262,
                                                                 columnNumber: 61
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1258,
+                                                        lineNumber: 1259,
                                                         columnNumber: 53
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12077,7 +12085,7 @@ function FollowUp() {
                                                                         className: `w-1 h-8 rounded-full flex-shrink-0 ${lead.isOverdue ? 'bg-red-500' : 'bg-indigo-500'}`
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1275,
+                                                                        lineNumber: 1276,
                                                                         columnNumber: 69
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12089,7 +12097,7 @@ function FollowUp() {
                                                                                 children: lead.customer_name || 'Anonymous'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1277,
+                                                                                lineNumber: 1278,
                                                                                 columnNumber: 73
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -12097,26 +12105,26 @@ function FollowUp() {
                                                                                 children: lead.campaign_name
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1278,
+                                                                                lineNumber: 1279,
                                                                                 columnNumber: 73
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1276,
+                                                                        lineNumber: 1277,
                                                                         columnNumber: 69
                                                                     }, this),
                                                                     lead.isOverdue && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                         className: "fi fi-rr-time-past text-red-500 text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1280,
+                                                                        lineNumber: 1281,
                                                                         columnNumber: 88
                                                                     }, this)
                                                                 ]
                                                             }, lead.id, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1270,
+                                                                lineNumber: 1271,
                                                                 columnNumber: 65
                                                             }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "h-full flex flex-col items-center justify-center opacity-30 mt-2",
@@ -12125,7 +12133,7 @@ function FollowUp() {
                                                                     className: "fi fi-rr-minus-circle text-2xl text-gray-300 mb-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1285,
+                                                                    lineNumber: 1286,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -12133,30 +12141,30 @@ function FollowUp() {
                                                                     children: "Free Slot"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                    lineNumber: 1286,
+                                                                    lineNumber: 1287,
                                                                     columnNumber: 65
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1284,
+                                                            lineNumber: 1285,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1267,
+                                                        lineNumber: 1268,
                                                         columnNumber: 53
                                                     }, this)
                                                 ]
                                             }, hour, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1253,
+                                                lineNumber: 1254,
                                                 columnNumber: 49
                                             }, this);
                                         })
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1236,
+                                        lineNumber: 1237,
                                         columnNumber: 37
                                     }, this) : /* Timeline View for Selected Hour */ /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "animate-fade-in",
@@ -12171,12 +12179,12 @@ function FollowUp() {
                                                             className: "fi fi-rr-arrow-small-left text-xl"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                            lineNumber: 1302,
+                                                            lineNumber: 1303,
                                                             columnNumber: 49
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1298,
+                                                        lineNumber: 1299,
                                                         columnNumber: 46
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12196,7 +12204,7 @@ function FollowUp() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1305,
+                                                                lineNumber: 1306,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -12204,19 +12212,19 @@ function FollowUp() {
                                                                 children: "Timeline view"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1308,
+                                                                lineNumber: 1309,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1304,
+                                                        lineNumber: 1305,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1297,
+                                                lineNumber: 1298,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12226,7 +12234,7 @@ function FollowUp() {
                                                         className: "absolute left-[85px] top-0 bottom-0 w-px bg-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                        lineNumber: 1314,
+                                                        lineNumber: 1315,
                                                         columnNumber: 45
                                                     }, this),
                                                     (()=>{
@@ -12261,7 +12269,7 @@ function FollowUp() {
                                                                         className: "fi fi-rr-time-forward text-4xl text-indigo-200 mb-3"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1340,
+                                                                        lineNumber: 1341,
                                                                         columnNumber: 61
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -12269,13 +12277,13 @@ function FollowUp() {
                                                                         children: "No calls scheduled for this hour"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1341,
+                                                                        lineNumber: 1342,
                                                                         columnNumber: 61
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1339,
+                                                                lineNumber: 1340,
                                                                 columnNumber: 57
                                                             }, this);
                                                         }
@@ -12291,19 +12299,19 @@ function FollowUp() {
                                                                             children: time
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                            lineNumber: 1353,
+                                                                            lineNumber: 1354,
                                                                             columnNumber: 61
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1352,
+                                                                        lineNumber: 1353,
                                                                         columnNumber: 57
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "absolute left-[80.5px] top-3 w-2.5 h-2.5 rounded-full bg-white border-2 border-indigo-500 z-10"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1357,
+                                                                        lineNumber: 1358,
                                                                         columnNumber: 57
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12320,12 +12328,12 @@ function FollowUp() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/followup.tsx",
-                                                                                    lineNumber: 1362,
+                                                                                    lineNumber: 1363,
                                                                                     columnNumber: 65
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1361,
+                                                                                lineNumber: 1362,
                                                                                 columnNumber: 61
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12342,7 +12350,7 @@ function FollowUp() {
                                                                                                         children: lead.customer_name?.charAt(0)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1374,
+                                                                                                        lineNumber: 1375,
                                                                                                         columnNumber: 78
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12353,7 +12361,7 @@ function FollowUp() {
                                                                                                                 children: lead.customer_name || 'Anonymous'
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1378,
+                                                                                                                lineNumber: 1379,
                                                                                                                 columnNumber: 82
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -12361,19 +12369,19 @@ function FollowUp() {
                                                                                                                 children: lead.campaign_name
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1379,
+                                                                                                                lineNumber: 1380,
                                                                                                                 columnNumber: 82
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1377,
+                                                                                                        lineNumber: 1378,
                                                                                                         columnNumber: 78
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                lineNumber: 1373,
+                                                                                                lineNumber: 1374,
                                                                                                 columnNumber: 73
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -12386,14 +12394,14 @@ function FollowUp() {
                                                                                                                 className: "fi fi-rr-smartphone"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                                lineNumber: 1384,
+                                                                                                                lineNumber: 1385,
                                                                                                                 columnNumber: 81
                                                                                                             }, this),
                                                                                                             (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1383,
+                                                                                                        lineNumber: 1384,
                                                                                                         columnNumber: 77
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -12402,77 +12410,77 @@ function FollowUp() {
                                                                                                             className: "fi fi-rr-arrow-right text-[10px]"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                            lineNumber: 1388,
+                                                                                                            lineNumber: 1389,
                                                                                                             columnNumber: 81
                                                                                                         }, this)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                        lineNumber: 1387,
+                                                                                                        lineNumber: 1388,
                                                                                                         columnNumber: 77
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                                lineNumber: 1382,
+                                                                                                lineNumber: 1383,
                                                                                                 columnNumber: 73
                                                                                             }, this)
                                                                                         ]
                                                                                     }, lead.id, true, {
                                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                                        lineNumber: 1368,
+                                                                                        lineNumber: 1369,
                                                                                         columnNumber: 69
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                                lineNumber: 1366,
+                                                                                lineNumber: 1367,
                                                                                 columnNumber: 61
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/followup.tsx",
-                                                                        lineNumber: 1360,
+                                                                        lineNumber: 1361,
                                                                         columnNumber: 57
                                                                     }, this)
                                                                 ]
                                                             }, time, true, {
                                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                                lineNumber: 1350,
+                                                                lineNumber: 1351,
                                                                 columnNumber: 53
                                                             }, this));
                                                     })()
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/followup.tsx",
-                                                lineNumber: 1312,
+                                                lineNumber: 1313,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/followup.tsx",
-                                        lineNumber: 1296,
+                                        lineNumber: 1297,
                                         columnNumber: 37
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/followup.tsx",
-                                lineNumber: 1204,
+                                lineNumber: 1205,
                                 columnNumber: 29
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/followup.tsx",
-                            lineNumber: 1102,
+                            lineNumber: 1103,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/followup.tsx",
-                    lineNumber: 458,
+                    lineNumber: 459,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/followup.tsx",
-            lineNumber: 217,
+            lineNumber: 218,
             columnNumber: 11
         }, this)
     }, void 0, false);

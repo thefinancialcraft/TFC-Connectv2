@@ -173,22 +173,23 @@ export default function FollowUp() {
   
   // --- MANUAL NAVIGATION HANDLER ---
   const handleManualLeadOpen = (campaignId: string, customerId: string) => {
-    console.log("[Follow-up] Manual Lead Open triggered:", customerId);
+    console.log("[Follow-up] Manual Lead Open triggered for:", customerId);
     
-    // Check for hot session in unified state
-    const hot = [...allSessions].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-        .find(s => 
-            s.manual_status === 'active' || s.manual_status === 'disposition_pending' ||
-            s.status === 'active' || s.status === 'disposition_pending'
-        );
-    
-    if (hot) {
-        console.log("[Follow-up] Using unified context to lock snapshot for session:", hot.customer_id);
-        startManualLock(hot);
+    // Create a mock session to lock the target lead for manual inspection
+    if (user?.uid) {
+        startManualLock({
+            id: 'manual-' + Date.now(),
+            user_id: user.uid,
+            campaign_id: campaignId,
+            customer_id: customerId,
+            status: 'active',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
     }
     
     // Explicitly using the masked path to trigger rewrites correctly
-    router.push(`/campaign/${campaignId}/${customerId}`);
+    router.push(`/portal/campaign/${campaignId}/${customerId}`);
   };
 
   // Derive filter options from leads

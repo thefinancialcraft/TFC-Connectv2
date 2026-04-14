@@ -10268,7 +10268,7 @@ const SessionProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/SessionContext.tsx",
-        lineNumber: 207,
+        lineNumber: 212,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

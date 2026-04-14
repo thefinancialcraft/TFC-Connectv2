@@ -14,6 +14,7 @@ interface CallSession {
   manual_campaign_id?: string;
   is_manual?: boolean;
   updated_at: string;
+  created_at?: string;
   call_start_at?: string;
 }
 
@@ -87,20 +88,24 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (snapshotStr) {
       try {
         const snapshot = JSON.parse(snapshotStr);
-        const isSame = String(hot.customer_id) === String(snapshot.customer_id) && 
-                       String(hot.status) === String(snapshot.status);
-        
-        if (isSame) {
+        const currentCampaignId = router.query.id;
+        const currentCustomerId = router.query.customerId;
+
+        // If we are currently ON the lead we manually locked, suppress all redirection
+        if (String(currentCampaignId) === String(snapshot.campaign_id) && 
+            String(currentCustomerId) === String(snapshot.customer_id)) {
           setIsLocked(true);
-          console.log("[Session-Context] 🔒 Manual Lock Active. Skipping redirection.");
+          console.log("[Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.");
           return; 
         } else {
-          console.log("[Session-Context] 🔓 State change detected. Breaking lock.");
+          // If we are NOT on the locked lead anymore, it means we navigated away manually
+          console.log("[Session-Context] 🔓 Navigated away from manual lock. Breaking lock.");
           localStorage.removeItem('manual_inspection_snapshot');
           setIsLocked(false);
         }
       } catch (e) {
         localStorage.removeItem('manual_inspection_snapshot');
+        setIsLocked(false);
       }
     }
 

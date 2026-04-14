@@ -3,7 +3,7 @@
     chunks: [
   "static/chunks/components_4a7ae42f._.js",
   "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
-  "static/chunks/_87566831._.js",
+  "static/chunks/_3d6531a5._.js",
   "static/chunks/[root-of-the-server]__78abed1d._.js",
   "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
   "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",

@@ -12,6 +12,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$rout
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/authService.ts [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$SessionContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/SessionContext.tsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useSessionState.ts [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$AreaChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/AreaChart.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/Area.js [client] (ecmascript)");
@@ -43,6 +44,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+;
 const COLORS = [
     '#4b33e8',
     '#00C49F',
@@ -56,6 +58,7 @@ function CampaignDetails() {
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const { id } = router.query;
     const { user, loading: authLoading, mounted: userMounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const { startManualLock } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$SessionContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useSession"])();
     // Permission Flags using the global user
     const isLevel1User = user?.isClient === true && (user?.designation?.toLowerCase() === 'agent' || !user?.designation);
     const isLevel2User = user?.isClient === true && (user?.designation?.toLowerCase() === 'team_leader' || user?.designation?.toLowerCase() === 'manager');
@@ -761,33 +764,33 @@ function CampaignDetails() {
                                     className: "w-10 h-10 rounded-xl bg-gray-100"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 843,
+                                    lineNumber: 845,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "h-4 w-24 bg-gray-100 rounded"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 844,
+                                    lineNumber: 846,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 842,
+                            lineNumber: 844,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "w-7 h-7 rounded-full bg-gray-100"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 846,
+                            lineNumber: 848,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 841,
+                    lineNumber: 843,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -800,18 +803,18 @@ function CampaignDetails() {
                             className: "h-16 bg-gray-50 rounded-2xl"
                         }, i, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 850,
+                            lineNumber: 852,
                             columnNumber: 21
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 848,
+                    lineNumber: 850,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id].tsx",
-            lineNumber: 840,
+            lineNumber: 842,
             columnNumber: 9
         }, this);
     const SkeletonTable = ()=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -823,12 +826,12 @@ function CampaignDetails() {
                         className: "h-4 w-48 bg-gray-100 rounded"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 859,
+                        lineNumber: 861,
                         columnNumber: 17
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 858,
+                    lineNumber: 860,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -843,18 +846,18 @@ function CampaignDetails() {
                             className: "h-10 bg-gray-50 rounded"
                         }, i, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 863,
+                            lineNumber: 865,
                             columnNumber: 21
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 861,
+                    lineNumber: 863,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id].tsx",
-            lineNumber: 857,
+            lineNumber: 859,
             columnNumber: 9
         }, this);
     if ((loading || authLoading) && !campaign) {
@@ -865,7 +868,7 @@ function CampaignDetails() {
                     className: "h-32 bg-white rounded-3xl border border-gray-100 animate-pulse"
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 873,
+                    lineNumber: 875,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -882,12 +885,12 @@ function CampaignDetails() {
                             className: "h-24 bg-white rounded-2xl border border-gray-100 animate-pulse"
                         }, i, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 878,
+                            lineNumber: 880,
                             columnNumber: 25
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 876,
+                    lineNumber: 878,
                     columnNumber: 17
                 }, this),
                 userMounted && !isLevel1User && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -900,17 +903,17 @@ function CampaignDetails() {
                             className: "h-[300px] bg-white rounded-2xl border border-gray-100 animate-pulse"
                         }, i, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 886,
+                            lineNumber: 888,
                             columnNumber: 29
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 884,
+                    lineNumber: 886,
                     columnNumber: 21
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SkeletonTable, {}, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 892,
+                    lineNumber: 894,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -918,24 +921,24 @@ function CampaignDetails() {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SkeletonTile, {}, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 896,
+                            lineNumber: 898,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SkeletonTile, {}, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 897,
+                            lineNumber: 899,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 895,
+                    lineNumber: 897,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id].tsx",
-            lineNumber: 871,
+            lineNumber: 873,
             columnNumber: 13
         }, this);
     }
@@ -949,7 +952,7 @@ function CampaignDetails() {
                         className: "fi flex fi-rr-cross-circle text-4xl text-red-500 mb-4 justify-center"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 907,
+                        lineNumber: 909,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -957,7 +960,7 @@ function CampaignDetails() {
                         children: "Error Occurred"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 908,
+                        lineNumber: 910,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -965,7 +968,7 @@ function CampaignDetails() {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 909,
+                        lineNumber: 911,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -974,18 +977,18 @@ function CampaignDetails() {
                         children: "Back to Campaigns"
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 910,
+                        lineNumber: 912,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                lineNumber: 906,
+                lineNumber: 908,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/pages/portal/campaign/[id].tsx",
-            lineNumber: 905,
+            lineNumber: 907,
             columnNumber: 13
         }, this);
     }
@@ -1002,14 +1005,14 @@ function CampaignDetails() {
                             children: "Campaigns"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 926,
+                            lineNumber: 928,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                             className: "fi flex fi-rr-angle-small-right text-[10px]"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 927,
+                            lineNumber: 929,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1017,13 +1020,13 @@ function CampaignDetails() {
                             children: campaign?.name
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 928,
+                            lineNumber: 930,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 925,
+                    lineNumber: 927,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$campaign$2f$CampaignHeader$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -1034,14 +1037,14 @@ function CampaignDetails() {
                     onStartCalling: handleStartCalling
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 932,
+                    lineNumber: 934,
                     columnNumber: 17
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$campaign$2f$CampaignStatsGrid$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
                     stats: stats
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 941,
+                    lineNumber: 943,
                     columnNumber: 17
                 }, this),
                 (isLevel2User || !isLevel1User) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -1058,7 +1061,7 @@ function CampaignDetails() {
                                                 className: "fi fi-rr-chart-histogram text-[#4b33e8]"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 953,
+                                                lineNumber: 955,
                                                 columnNumber: 41
                                             }, this),
                                             "Hourly Activity (Today) ",
@@ -1067,13 +1070,13 @@ function CampaignDetails() {
                                                 children: "Team Mode"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 954,
+                                                lineNumber: 956,
                                                 columnNumber: 82
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 952,
+                                        lineNumber: 954,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1098,7 +1101,7 @@ function CampaignDetails() {
                                                                     stopOpacity: 0.3
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 961,
+                                                                    lineNumber: 963,
                                                                     columnNumber: 62
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("stop", {
@@ -1107,18 +1110,18 @@ function CampaignDetails() {
                                                                     stopOpacity: 0
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 962,
+                                                                    lineNumber: 964,
                                                                     columnNumber: 62
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 960,
+                                                            lineNumber: 962,
                                                             columnNumber: 53
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 959,
+                                                        lineNumber: 961,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$client$5d$__$28$ecmascript$29$__["CartesianGrid"], {
@@ -1127,7 +1130,7 @@ function CampaignDetails() {
                                                         stroke: "#f0f0f0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 965,
+                                                        lineNumber: 967,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1141,14 +1144,14 @@ function CampaignDetails() {
                                                         tickFormatter: (tick)=>`${tick}:00`
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 966,
+                                                        lineNumber: 968,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
                                                         hide: true
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 973,
+                                                        lineNumber: 975,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1164,7 +1167,7 @@ function CampaignDetails() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 974,
+                                                        lineNumber: 976,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Area"], {
@@ -1176,23 +1179,23 @@ function CampaignDetails() {
                                                         fill: "url(#colorCount)"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 978,
+                                                        lineNumber: 980,
                                                         columnNumber: 54
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 958,
+                                                lineNumber: 960,
                                                 columnNumber: 45
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 957,
+                                            lineNumber: 959,
                                             columnNumber: 41
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 956,
+                                        lineNumber: 958,
                                         columnNumber: 37
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1202,18 +1205,18 @@ function CampaignDetails() {
                                             className: `fi ${expandedChart === 'hourly' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 993,
+                                            lineNumber: 995,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 989,
+                                        lineNumber: 991,
                                         columnNumber: 42
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 949,
+                                lineNumber: 951,
                                 columnNumber: 33
                             }, this),
                             (campaign?.istopagentvwidgetvisible || isLevel2User) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1226,7 +1229,7 @@ function CampaignDetails() {
                                                 className: "fi fi-rr-trophy text-yellow-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1004,
+                                                lineNumber: 1006,
                                                 columnNumber: 46
                                             }, this),
                                             "Top Agents (Today) ",
@@ -1235,13 +1238,13 @@ function CampaignDetails() {
                                                 children: "Team Mode"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1005,
+                                                lineNumber: 1007,
                                                 columnNumber: 82
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1003,
+                                        lineNumber: 1005,
                                         columnNumber: 42
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1267,7 +1270,7 @@ function CampaignDetails() {
                                                         stroke: "#f0f0f0"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1022,
+                                                        lineNumber: 1024,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1275,7 +1278,7 @@ function CampaignDetails() {
                                                         hide: true
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1023,
+                                                        lineNumber: 1025,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1292,7 +1295,7 @@ function CampaignDetails() {
                                                         tickFormatter: (val)=>val.split(' ')[0]
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1024,
+                                                        lineNumber: 1026,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1304,7 +1307,7 @@ function CampaignDetails() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1033,
+                                                        lineNumber: 1035,
                                                         columnNumber: 54
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -1322,23 +1325,23 @@ function CampaignDetails() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1034,
+                                                        lineNumber: 1036,
                                                         columnNumber: 54
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1009,
+                                                lineNumber: 1011,
                                                 columnNumber: 50
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1008,
+                                            lineNumber: 1010,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1007,
+                                        lineNumber: 1009,
                                         columnNumber: 42
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1348,18 +1351,18 @@ function CampaignDetails() {
                                             className: `fi ${expandedChart === 'users' ? 'fi-rr-compress' : 'fi-rr-expand'} text-xs`
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1042,
+                                            lineNumber: 1044,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1038,
+                                        lineNumber: 1040,
                                         columnNumber: 42
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1000,
+                                lineNumber: 1002,
                                 columnNumber: 38
                             }, this),
                             (campaign?.iscalloutcomeswidgetvisible || isLevel2User) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1372,7 +1375,7 @@ function CampaignDetails() {
                                                 className: "fi fi-rr-pie-chart text-pink-500"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1051,
+                                                lineNumber: 1053,
                                                 columnNumber: 46
                                             }, this),
                                             "Call Outcomes ",
@@ -1381,13 +1384,13 @@ function CampaignDetails() {
                                                 children: "Team Mode"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1052,
+                                                lineNumber: 1054,
                                                 columnNumber: 77
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1050,
+                                        lineNumber: 1052,
                                         columnNumber: 42
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1411,12 +1414,12 @@ function CampaignDetails() {
                                                                     strokeWidth: 0
                                                                 }, `cell-${index}`, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1067,
+                                                                    lineNumber: 1069,
                                                                     columnNumber: 62
                                                                 }, this))
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1057,
+                                                            lineNumber: 1059,
                                                             columnNumber: 54
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1425,7 +1428,7 @@ function CampaignDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1070,
+                                                            lineNumber: 1072,
                                                             columnNumber: 54
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Legend"], {
@@ -1439,18 +1442,18 @@ function CampaignDetails() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1071,
+                                                            lineNumber: 1073,
                                                             columnNumber: 54
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1056,
+                                                    lineNumber: 1058,
                                                     columnNumber: 50
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1055,
+                                                lineNumber: 1057,
                                                 columnNumber: 46
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1463,7 +1466,7 @@ function CampaignDetails() {
                                                             children: "TOTAL"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1077,
+                                                            lineNumber: 1079,
                                                             columnNumber: 54
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1471,36 +1474,36 @@ function CampaignDetails() {
                                                             children: analytics.disposition_stats.reduce((acc, curr)=>acc + curr.value, 0)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1078,
+                                                            lineNumber: 1080,
                                                             columnNumber: 54
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1076,
+                                                    lineNumber: 1078,
                                                     columnNumber: 50
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1075,
+                                                lineNumber: 1077,
                                                 columnNumber: 46
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1054,
+                                        lineNumber: 1056,
                                         columnNumber: 42
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1049,
+                                lineNumber: 1051,
                                 columnNumber: 38
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 946,
+                        lineNumber: 948,
                         columnNumber: 25
                     }, this)
                 }, void 0, false),
@@ -1520,14 +1523,14 @@ function CampaignDetails() {
                                                     className: "fi fi-rr-time-check text-[#4b33e8]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1096,
+                                                    lineNumber: 1098,
                                                     columnNumber: 45
                                                 }, this),
                                                 "Hourly Performance Breakdown"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1095,
+                                            lineNumber: 1097,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1543,7 +1546,7 @@ function CampaignDetails() {
                                                                 className: "fi fi-rr-calendar text-indigo-500 text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1105,
+                                                                lineNumber: 1107,
                                                                 columnNumber: 53
                                                             }, this),
                                                             new Date(selectedDate).toLocaleDateString('en-IN', {
@@ -1554,7 +1557,7 @@ function CampaignDetails() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1101,
+                                                        lineNumber: 1103,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1565,24 +1568,24 @@ function CampaignDetails() {
                                                         className: "absolute inset-0 opacity-0 pointer-events-none w-full"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1108,
+                                                        lineNumber: 1110,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1100,
+                                                lineNumber: 1102,
                                                 columnNumber: 45
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1099,
+                                            lineNumber: 1101,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1094,
+                                    lineNumber: 1096,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1599,7 +1602,7 @@ function CampaignDetails() {
                                                             children: "Hour"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1122,
+                                                            lineNumber: 1124,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1607,7 +1610,7 @@ function CampaignDetails() {
                                                             children: "Total Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1123,
+                                                            lineNumber: 1125,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1615,7 +1618,7 @@ function CampaignDetails() {
                                                             children: "Connected Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1124,
+                                                            lineNumber: 1126,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1623,7 +1626,7 @@ function CampaignDetails() {
                                                             children: "Outgoing Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1125,
+                                                            lineNumber: 1127,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1631,7 +1634,7 @@ function CampaignDetails() {
                                                             children: "Incoming Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1126,
+                                                            lineNumber: 1128,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1639,7 +1642,7 @@ function CampaignDetails() {
                                                             children: "Missed Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1127,
+                                                            lineNumber: 1129,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1647,18 +1650,18 @@ function CampaignDetails() {
                                                             children: "Talktime"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1128,
+                                                            lineNumber: 1130,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1121,
+                                                    lineNumber: 1123,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1120,
+                                                lineNumber: 1122,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1676,7 +1679,7 @@ function CampaignDetails() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1135,
+                                                                lineNumber: 1137,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1684,7 +1687,7 @@ function CampaignDetails() {
                                                                 children: row.total_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1138,
+                                                                lineNumber: 1140,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1692,7 +1695,7 @@ function CampaignDetails() {
                                                                 children: row.connected_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1139,
+                                                                lineNumber: 1141,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1700,7 +1703,7 @@ function CampaignDetails() {
                                                                 children: row.outgoing_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1140,
+                                                                lineNumber: 1142,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1708,7 +1711,7 @@ function CampaignDetails() {
                                                                 children: row.incoming_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1141,
+                                                                lineNumber: 1143,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1716,7 +1719,7 @@ function CampaignDetails() {
                                                                 children: row.missed_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1142,
+                                                                lineNumber: 1144,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1724,13 +1727,13 @@ function CampaignDetails() {
                                                                 children: new Date(row.total_duration * 1000).toISOString().substr(11, 8)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1143,
+                                                                lineNumber: 1145,
                                                                 columnNumber: 61
                                                             }, this)
                                                         ]
                                                     }, index, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1134,
+                                                        lineNumber: 1136,
                                                         columnNumber: 57
                                                     }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1739,34 +1742,34 @@ function CampaignDetails() {
                                                         children: "No data available for today"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1150,
+                                                        lineNumber: 1152,
                                                         columnNumber: 53
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1149,
+                                                    lineNumber: 1151,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1131,
+                                                lineNumber: 1133,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1119,
+                                        lineNumber: 1121,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1118,
+                                    lineNumber: 1120,
                                     columnNumber: 37
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1093,
+                            lineNumber: 1095,
                             columnNumber: 30
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1782,14 +1785,14 @@ function CampaignDetails() {
                                                     className: "fi fi-rr-headset text-[#4b33e8]"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1164,
+                                                    lineNumber: 1166,
                                                     columnNumber: 45
                                                 }, this),
                                                 "Caller Performance Breakdown"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1163,
+                                            lineNumber: 1165,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1805,7 +1808,7 @@ function CampaignDetails() {
                                                                 className: "fi fi-rr-calendar text-indigo-500 text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1173,
+                                                                lineNumber: 1175,
                                                                 columnNumber: 53
                                                             }, this),
                                                             new Date(selectedDate).toLocaleDateString('en-IN', {
@@ -1816,7 +1819,7 @@ function CampaignDetails() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1169,
+                                                        lineNumber: 1171,
                                                         columnNumber: 49
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1827,24 +1830,24 @@ function CampaignDetails() {
                                                         className: "absolute inset-0 opacity-0 pointer-events-none w-full"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1176,
+                                                        lineNumber: 1178,
                                                         columnNumber: 49
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1168,
+                                                lineNumber: 1170,
                                                 columnNumber: 45
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1167,
+                                            lineNumber: 1169,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1162,
+                                    lineNumber: 1164,
                                     columnNumber: 33
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1861,7 +1864,7 @@ function CampaignDetails() {
                                                             children: "Caller"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1190,
+                                                            lineNumber: 1192,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1869,7 +1872,7 @@ function CampaignDetails() {
                                                             children: "Total Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1191,
+                                                            lineNumber: 1193,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1877,7 +1880,7 @@ function CampaignDetails() {
                                                             children: "Connected Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1192,
+                                                            lineNumber: 1194,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1885,7 +1888,7 @@ function CampaignDetails() {
                                                             children: "Outgoing Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1193,
+                                                            lineNumber: 1195,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1893,7 +1896,7 @@ function CampaignDetails() {
                                                             children: "Incoming Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1194,
+                                                            lineNumber: 1196,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1901,7 +1904,7 @@ function CampaignDetails() {
                                                             children: "Missed Calls"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1195,
+                                                            lineNumber: 1197,
                                                             columnNumber: 49
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1909,18 +1912,18 @@ function CampaignDetails() {
                                                             children: "Talktime"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1196,
+                                                            lineNumber: 1198,
                                                             columnNumber: 49
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1189,
+                                                    lineNumber: 1191,
                                                     columnNumber: 45
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1188,
+                                                lineNumber: 1190,
                                                 columnNumber: 41
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1933,7 +1936,7 @@ function CampaignDetails() {
                                                                 children: row.caller || 'Unknown Agent'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1217,
+                                                                lineNumber: 1219,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1941,7 +1944,7 @@ function CampaignDetails() {
                                                                 children: row.total_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1220,
+                                                                lineNumber: 1222,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1949,7 +1952,7 @@ function CampaignDetails() {
                                                                 children: row.connected_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1221,
+                                                                lineNumber: 1223,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1957,7 +1960,7 @@ function CampaignDetails() {
                                                                 children: row.outgoing_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1222,
+                                                                lineNumber: 1224,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1965,7 +1968,7 @@ function CampaignDetails() {
                                                                 children: row.incoming_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1223,
+                                                                lineNumber: 1225,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1973,7 +1976,7 @@ function CampaignDetails() {
                                                                 children: row.missed_calls
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1224,
+                                                                lineNumber: 1226,
                                                                 columnNumber: 61
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1981,13 +1984,13 @@ function CampaignDetails() {
                                                                 children: new Date((row.total_duration || 0) * 1000).toISOString().substr(11, 8)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1225,
+                                                                lineNumber: 1227,
                                                                 columnNumber: 61
                                                             }, this)
                                                         ]
                                                     }, index, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1216,
+                                                        lineNumber: 1218,
                                                         columnNumber: 57
                                                     }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1996,40 +1999,40 @@ function CampaignDetails() {
                                                         children: "No data available for today"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1232,
+                                                        lineNumber: 1234,
                                                         columnNumber: 53
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1231,
+                                                    lineNumber: 1233,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1199,
+                                                lineNumber: 1201,
                                                 columnNumber: 41
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1187,
+                                        lineNumber: 1189,
                                         columnNumber: 37
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1186,
+                                    lineNumber: 1188,
                                     columnNumber: 33
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1161,
+                            lineNumber: 1163,
                             columnNumber: 29
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 1091,
+                    lineNumber: 1093,
                     columnNumber: 25
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2047,7 +2050,7 @@ function CampaignDetails() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1251,
+                                        lineNumber: 1253,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2062,12 +2065,12 @@ function CampaignDetails() {
                                                             className: "fi flex fi-rr-time-past text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1255,
+                                                            lineNumber: 1257,
                                                             columnNumber: 50
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1254,
+                                                        lineNumber: 1256,
                                                         columnNumber: 46
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2081,7 +2084,7 @@ function CampaignDetails() {
                                                                 children: "Recent Calls"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1258,
+                                                                lineNumber: 1260,
                                                                 columnNumber: 50
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2089,19 +2092,19 @@ function CampaignDetails() {
                                                                 children: "Last 24 Hours"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1259,
+                                                                lineNumber: 1261,
                                                                 columnNumber: 50
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1257,
+                                                        lineNumber: 1259,
                                                         columnNumber: 46
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1253,
+                                                lineNumber: 1255,
                                                 columnNumber: 42
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2109,13 +2112,13 @@ function CampaignDetails() {
                                                 children: stats.recentCount
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1262,
+                                                lineNumber: 1264,
                                                 columnNumber: 42
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1252,
+                                        lineNumber: 1254,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2129,12 +2132,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-time-past text-gray-300 text-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1270,
+                                                        lineNumber: 1272,
                                                         columnNumber: 54
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1269,
+                                                    lineNumber: 1271,
                                                     columnNumber: 50
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2142,13 +2145,13 @@ function CampaignDetails() {
                                                     children: "No recent records"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1272,
+                                                    lineNumber: 1274,
                                                     columnNumber: 50
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1268,
+                                            lineNumber: 1270,
                                             columnNumber: 46
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
@@ -2163,7 +2166,7 @@ function CampaignDetails() {
                                                                     children: item.customers?.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1279,
+                                                                    lineNumber: 1281,
                                                                     columnNumber: 62
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2182,7 +2185,7 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1282,
+                                                                                    lineNumber: 1284,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2193,13 +2196,13 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1285,
+                                                                                    lineNumber: 1287,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1281,
+                                                                            lineNumber: 1283,
                                                                             columnNumber: 66
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2209,7 +2212,7 @@ function CampaignDetails() {
                                                                                     className: "fi fi-rr-clock text-[8px]"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1291,
+                                                                                    lineNumber: 1293,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2217,7 +2220,7 @@ function CampaignDetails() {
                                                                                     children: formatDate(item.created_at)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1292,
+                                                                                    lineNumber: 1294,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2228,31 +2231,40 @@ function CampaignDetails() {
                                                                                     })
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1293,
+                                                                                    lineNumber: 1295,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1290,
+                                                                            lineNumber: 1292,
                                                                             columnNumber: 66
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1280,
+                                                                    lineNumber: 1282,
                                                                     columnNumber: 63
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1278,
+                                                            lineNumber: 1280,
                                                             columnNumber: 58
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                             onClick: ()=>{
-                                                                if (id && item.customer_id) {
-                                                                    router.push(`/campaign/${id}/${item.customer_id}`);
+                                                                if (id && item.customer_id && user?.uid) {
+                                                                    startManualLock({
+                                                                        id: "manual-" + Date.now(),
+                                                                        user_id: user.uid,
+                                                                        campaign_id: String(id),
+                                                                        customer_id: item.customer_id,
+                                                                        status: "active",
+                                                                        created_at: new Date().toISOString(),
+                                                                        updated_at: new Date().toISOString()
+                                                                    });
+                                                                    router.push(`/portal/campaign/${id}/${item.customer_id}`);
                                                                 }
                                                             },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-gray-400 hover:bg-[#4b33e8] hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-gray-100",
@@ -2260,34 +2272,34 @@ function CampaignDetails() {
                                                                 className: "fi flex fi-rr-phone-call text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1305,
+                                                                lineNumber: 1307,
                                                                 columnNumber: 62
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1297,
+                                                            lineNumber: 1299,
                                                             columnNumber: 58
                                                         }, this)
                                                     ]
                                                 }, item.id, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1277,
+                                                    lineNumber: 1279,
                                                     columnNumber: 54
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1275,
+                                            lineNumber: 1277,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1266,
+                                        lineNumber: 1268,
                                         columnNumber: 38
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1250,
+                                lineNumber: 1252,
                                 columnNumber: 34
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2301,7 +2313,7 @@ function CampaignDetails() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1316,
+                                        lineNumber: 1318,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2316,12 +2328,12 @@ function CampaignDetails() {
                                                             className: "fi flex fi-rr-pending text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1320,
+                                                            lineNumber: 1322,
                                                             columnNumber: 50
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1319,
+                                                        lineNumber: 1321,
                                                         columnNumber: 46
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2335,7 +2347,7 @@ function CampaignDetails() {
                                                                 children: "Overdue"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1323,
+                                                                lineNumber: 1325,
                                                                 columnNumber: 50
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2343,19 +2355,19 @@ function CampaignDetails() {
                                                                 children: "Action Required"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1324,
+                                                                lineNumber: 1326,
                                                                 columnNumber: 50
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1322,
+                                                        lineNumber: 1324,
                                                         columnNumber: 46
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1318,
+                                                lineNumber: 1320,
                                                 columnNumber: 42
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2363,13 +2375,13 @@ function CampaignDetails() {
                                                 children: stats.overdueCount
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1327,
+                                                lineNumber: 1329,
                                                 columnNumber: 42
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1317,
+                                        lineNumber: 1319,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2383,12 +2395,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-check opacity-50 text-red-500 text-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1335,
+                                                        lineNumber: 1337,
                                                         columnNumber: 54
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1334,
+                                                    lineNumber: 1336,
                                                     columnNumber: 50
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2396,13 +2408,13 @@ function CampaignDetails() {
                                                     children: "All caught up"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1337,
+                                                    lineNumber: 1339,
                                                     columnNumber: 50
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1333,
+                                            lineNumber: 1335,
                                             columnNumber: 46
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
@@ -2417,7 +2429,7 @@ function CampaignDetails() {
                                                                     children: item.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1344,
+                                                                    lineNumber: 1346,
                                                                     columnNumber: 62
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2436,7 +2448,7 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1347,
+                                                                                    lineNumber: 1349,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2447,13 +2459,13 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1350,
+                                                                                    lineNumber: 1352,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1346,
+                                                                            lineNumber: 1348,
                                                                             columnNumber: 66
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2463,7 +2475,7 @@ function CampaignDetails() {
                                                                                     className: "fi fi-rr-calendar-clock text-[9px]"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1356,
+                                                                                    lineNumber: 1358,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2471,7 +2483,7 @@ function CampaignDetails() {
                                                                                     children: formatDate(item.expiry_date)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1357,
+                                                                                    lineNumber: 1359,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2482,62 +2494,75 @@ function CampaignDetails() {
                                                                                     }) : 'No Time'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1358,
+                                                                                    lineNumber: 1360,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1355,
+                                                                            lineNumber: 1357,
                                                                             columnNumber: 66
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1345,
+                                                                    lineNumber: 1347,
                                                                     columnNumber: 63
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1343,
+                                                            lineNumber: 1345,
                                                             columnNumber: 58
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>router.push(`/campaign/${id}/${item.id}`),
+                                                            onClick: ()=>{
+                                                                if (id && item.id && user?.uid) {
+                                                                    startManualLock({
+                                                                        id: 'manual-' + Date.now(),
+                                                                        user_id: user.uid,
+                                                                        campaign_id: String(id),
+                                                                        customer_id: item.id,
+                                                                        status: 'active',
+                                                                        created_at: new Date().toISOString(),
+                                                                        updated_at: new Date().toISOString()
+                                                                    });
+                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                }
+                                                            },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-red-100",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                 className: "fi flex fi-rr-phone-call text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1366,
+                                                                lineNumber: 1381,
                                                                 columnNumber: 62
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1362,
+                                                            lineNumber: 1364,
                                                             columnNumber: 58
                                                         }, this)
                                                     ]
                                                 }, item.id, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1342,
+                                                    lineNumber: 1344,
                                                     columnNumber: 54
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1340,
+                                            lineNumber: 1342,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1331,
+                                        lineNumber: 1333,
                                         columnNumber: 38
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1315,
+                                lineNumber: 1317,
                                 columnNumber: 34
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2551,7 +2576,7 @@ function CampaignDetails() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1377,
+                                        lineNumber: 1392,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2566,12 +2591,12 @@ function CampaignDetails() {
                                                             className: "fi flex fi-rr-clock text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1381,
+                                                            lineNumber: 1396,
                                                             columnNumber: 50
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1380,
+                                                        lineNumber: 1395,
                                                         columnNumber: 46
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2585,7 +2610,7 @@ function CampaignDetails() {
                                                                 children: "Upcoming"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1384,
+                                                                lineNumber: 1399,
                                                                 columnNumber: 50
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2593,19 +2618,19 @@ function CampaignDetails() {
                                                                 children: "Scheduled Tasks"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1385,
+                                                                lineNumber: 1400,
                                                                 columnNumber: 50
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1383,
+                                                        lineNumber: 1398,
                                                         columnNumber: 46
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1379,
+                                                lineNumber: 1394,
                                                 columnNumber: 42
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2613,13 +2638,13 @@ function CampaignDetails() {
                                                 children: stats.upcomingProspects
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1388,
+                                                lineNumber: 1403,
                                                 columnNumber: 42
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1378,
+                                        lineNumber: 1393,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2633,12 +2658,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-clock text-blue-300 text-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1396,
+                                                        lineNumber: 1411,
                                                         columnNumber: 54
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1395,
+                                                    lineNumber: 1410,
                                                     columnNumber: 50
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2646,13 +2671,13 @@ function CampaignDetails() {
                                                     children: "No scheduled tasks"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1398,
+                                                    lineNumber: 1413,
                                                     columnNumber: 50
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1394,
+                                            lineNumber: 1409,
                                             columnNumber: 46
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
@@ -2667,7 +2692,7 @@ function CampaignDetails() {
                                                                     children: item.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1405,
+                                                                    lineNumber: 1420,
                                                                     columnNumber: 62
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2687,7 +2712,7 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1408,
+                                                                                    lineNumber: 1423,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2698,13 +2723,13 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1411,
+                                                                                    lineNumber: 1426,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1407,
+                                                                            lineNumber: 1422,
                                                                             columnNumber: 66
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2714,7 +2739,7 @@ function CampaignDetails() {
                                                                                     className: "fi fi-rr-calendar-clock text-[9px]"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1417,
+                                                                                    lineNumber: 1432,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2722,7 +2747,7 @@ function CampaignDetails() {
                                                                                     children: formatDate(item.expiry_date)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1418,
+                                                                                    lineNumber: 1433,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2733,62 +2758,75 @@ function CampaignDetails() {
                                                                                     }) : 'No Time'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1419,
+                                                                                    lineNumber: 1434,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1416,
+                                                                            lineNumber: 1431,
                                                                             columnNumber: 66
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1406,
+                                                                    lineNumber: 1421,
                                                                     columnNumber: 63
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1404,
+                                                            lineNumber: 1419,
                                                             columnNumber: 58
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>router.push(`/campaign/${id}/${item.id}`),
+                                                            onClick: ()=>{
+                                                                if (id && item.id && user?.uid) {
+                                                                    startManualLock({
+                                                                        id: 'manual-' + Date.now(),
+                                                                        user_id: user.uid,
+                                                                        campaign_id: String(id),
+                                                                        customer_id: item.id,
+                                                                        status: 'active',
+                                                                        created_at: new Date().toISOString(),
+                                                                        updated_at: new Date().toISOString()
+                                                                    });
+                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                }
+                                                            },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-blue-400 hover:bg-blue-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-blue-100",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                 className: "fi flex fi-rr-phone-call text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1427,
+                                                                lineNumber: 1455,
                                                                 columnNumber: 62
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1423,
+                                                            lineNumber: 1438,
                                                             columnNumber: 58
                                                         }, this)
                                                     ]
                                                 }, item.id, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1403,
+                                                    lineNumber: 1418,
                                                     columnNumber: 54
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1401,
+                                            lineNumber: 1416,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1392,
+                                        lineNumber: 1407,
                                         columnNumber: 38
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1376,
+                                lineNumber: 1391,
                                 columnNumber: 34
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2802,7 +2840,7 @@ function CampaignDetails() {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1438,
+                                        lineNumber: 1466,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2817,12 +2855,12 @@ function CampaignDetails() {
                                                             className: "fi flex fi-rr-briefcase text-sm"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1442,
+                                                            lineNumber: 1470,
                                                             columnNumber: 50
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1441,
+                                                        lineNumber: 1469,
                                                         columnNumber: 46
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2836,7 +2874,7 @@ function CampaignDetails() {
                                                                 children: "Managed By"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1445,
+                                                                lineNumber: 1473,
                                                                 columnNumber: 50
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2844,19 +2882,19 @@ function CampaignDetails() {
                                                                 children: "Assigned Leads"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1446,
+                                                                lineNumber: 1474,
                                                                 columnNumber: 50
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1444,
+                                                        lineNumber: 1472,
                                                         columnNumber: 46
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1440,
+                                                lineNumber: 1468,
                                                 columnNumber: 42
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2864,13 +2902,13 @@ function CampaignDetails() {
                                                 children: stats.managedCount
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1449,
+                                                lineNumber: 1477,
                                                 columnNumber: 42
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1439,
+                                        lineNumber: 1467,
                                         columnNumber: 38
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2884,12 +2922,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-user-add text-teal-300 text-lg"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1457,
+                                                        lineNumber: 1485,
                                                         columnNumber: 54
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1456,
+                                                    lineNumber: 1484,
                                                     columnNumber: 50
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2897,13 +2935,13 @@ function CampaignDetails() {
                                                     children: "No managed leads"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1459,
+                                                    lineNumber: 1487,
                                                     columnNumber: 50
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1455,
+                                            lineNumber: 1483,
                                             columnNumber: 46
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "space-y-3",
@@ -2918,7 +2956,7 @@ function CampaignDetails() {
                                                                     children: item.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1466,
+                                                                    lineNumber: 1494,
                                                                     columnNumber: 62
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2935,7 +2973,7 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1470,
+                                                                                    lineNumber: 1498,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2947,13 +2985,13 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1473,
+                                                                                    lineNumber: 1501,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1469,
+                                                                            lineNumber: 1497,
                                                                             columnNumber: 66
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2967,7 +3005,7 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1477,
+                                                                                    lineNumber: 1505,
                                                                                     columnNumber: 70
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2979,73 +3017,86 @@ function CampaignDetails() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                                    lineNumber: 1480,
+                                                                                    lineNumber: 1508,
                                                                                     columnNumber: 70
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1476,
+                                                                            lineNumber: 1504,
                                                                             columnNumber: 66
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1467,
+                                                                    lineNumber: 1495,
                                                                     columnNumber: 62
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1465,
+                                                            lineNumber: 1493,
                                                             columnNumber: 58
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                            onClick: ()=>router.push(`/campaign/${id}/${item.id}`),
+                                                            onClick: ()=>{
+                                                                if (id && item.id && user?.uid) {
+                                                                    startManualLock({
+                                                                        id: 'manual-' + Date.now(),
+                                                                        user_id: user.uid,
+                                                                        campaign_id: String(id),
+                                                                        customer_id: item.id,
+                                                                        status: 'active',
+                                                                        created_at: new Date().toISOString(),
+                                                                        updated_at: new Date().toISOString()
+                                                                    });
+                                                                    router.push(`/portal/campaign/${id}/${item.id}`);
+                                                                }
+                                                            },
                                                             className: "w-8 h-8 rounded-lg bg-white flex items-center justify-center text-teal-400 hover:bg-teal-500 hover:text-white transition-all shadow-sm group-hover/item:scale-110 active:scale-95 border border-teal-100",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                                 className: "fi flex fi-rr-phone-call text-[10px]"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1488,
+                                                                lineNumber: 1529,
                                                                 columnNumber: 62
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1484,
+                                                            lineNumber: 1512,
                                                             columnNumber: 58
                                                         }, this)
                                                     ]
                                                 }, item.id, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1464,
+                                                    lineNumber: 1492,
                                                     columnNumber: 54
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1462,
+                                            lineNumber: 1490,
                                             columnNumber: 46
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1453,
+                                        lineNumber: 1481,
                                         columnNumber: 38
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1437,
+                                lineNumber: 1465,
                                 columnNumber: 34
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                        lineNumber: 1248,
+                        lineNumber: 1250,
                         columnNumber: 29
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 1246,
+                    lineNumber: 1248,
                     columnNumber: 25
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3055,7 +3106,7 @@ function CampaignDetails() {
                             className: "absolute top-0 right-0 w-64 h-64 bg-indigo-50/20 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1501,
+                            lineNumber: 1542,
                             columnNumber: 33
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3070,12 +3121,12 @@ function CampaignDetails() {
                                                 className: "fi flex fi-rr-users text-lg font-bold"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1506,
+                                                lineNumber: 1547,
                                                 columnNumber: 45
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1505,
+                                            lineNumber: 1546,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3089,7 +3140,7 @@ function CampaignDetails() {
                                                     children: "All Leads"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1509,
+                                                    lineNumber: 1550,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3104,7 +3155,7 @@ function CampaignDetails() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1511,
+                                                            lineNumber: 1552,
                                                             columnNumber: 49
                                                         }, this),
                                                         selectedLeads.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3115,25 +3166,25 @@ function CampaignDetails() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1513,
+                                                            lineNumber: 1554,
                                                             columnNumber: 53
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1510,
+                                                    lineNumber: 1551,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1508,
+                                            lineNumber: 1549,
                                             columnNumber: 41
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1504,
+                                    lineNumber: 1545,
                                     columnNumber: 37
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3148,12 +3199,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-user text-gray-400 text-xs"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1525,
+                                                        lineNumber: 1566,
                                                         columnNumber: 49
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1524,
+                                                    lineNumber: 1565,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3166,7 +3217,7 @@ function CampaignDetails() {
                                                             children: "All Users"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1532,
+                                                            lineNumber: 1573,
                                                             columnNumber: 49
                                                         }, this),
                                                         campaign?.users?.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -3174,13 +3225,13 @@ function CampaignDetails() {
                                                                 children: u.name || u.displayName || 'User'
                                                             }, u.id, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1534,
+                                                                lineNumber: 1575,
                                                                 columnNumber: 53
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1527,
+                                                    lineNumber: 1568,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3189,18 +3240,18 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-angle-small-down text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1538,
+                                                        lineNumber: 1579,
                                                         columnNumber: 49
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1537,
+                                                    lineNumber: 1578,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1523,
+                                            lineNumber: 1564,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3212,12 +3263,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-filter text-gray-400 text-xs"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1545,
+                                                        lineNumber: 1586,
                                                         columnNumber: 49
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1544,
+                                                    lineNumber: 1585,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -3230,7 +3281,7 @@ function CampaignDetails() {
                                                             children: "All Status"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1552,
+                                                            lineNumber: 1593,
                                                             columnNumber: 49
                                                         }, this),
                                                         [
@@ -3250,13 +3301,13 @@ function CampaignDetails() {
                                                                 children: d
                                                             }, d, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1554,
+                                                                lineNumber: 1595,
                                                                 columnNumber: 53
                                                             }, this))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1547,
+                                                    lineNumber: 1588,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3265,18 +3316,18 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-angle-small-down text-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1558,
+                                                        lineNumber: 1599,
                                                         columnNumber: 49
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1557,
+                                                    lineNumber: 1598,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1543,
+                                            lineNumber: 1584,
                                             columnNumber: 41
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3288,12 +3339,12 @@ function CampaignDetails() {
                                                         className: "fi flex fi-rr-search text-gray-400 text-xs group-focus-within/search:text-[#4b33e8] transition-colors"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1564,
+                                                        lineNumber: 1605,
                                                         columnNumber: 49
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1563,
+                                                    lineNumber: 1604,
                                                     columnNumber: 45
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3304,13 +3355,13 @@ function CampaignDetails() {
                                                     className: "w-full h-[42px] pl-10 pr-4 rounded-xl bg-gray-50 border border-gray-100 text-[10px] font-black text-gray-600 focus:bg-white focus:border-[#4b33e8]/30 focus:ring-4 focus:ring-[#4b33e8]/5 outline-none transition-all placeholder:text-gray-300 tracking-widest uppercase"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1566,
+                                                    lineNumber: 1607,
                                                     columnNumber: 45
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1562,
+                                            lineNumber: 1603,
                                             columnNumber: 41
                                         }, this),
                                         !isLevel1User && !isLevel2User && campaign?.isaddbulkbuttonvisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3321,14 +3372,14 @@ function CampaignDetails() {
                                                     className: "fi flex fi-rr-upload"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1584,
+                                                    lineNumber: 1625,
                                                     columnNumber: 50
                                                 }, this),
                                                 "Add Bulk"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1580,
+                                            lineNumber: 1621,
                                             columnNumber: 46
                                         }, this),
                                         !isLevel1User && !isLevel2User && campaign?.isaddleadbuttonvisible && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3338,26 +3389,26 @@ function CampaignDetails() {
                                                     className: "fi flex fi-rr-plus"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1592,
+                                                    lineNumber: 1633,
                                                     columnNumber: 50
                                                 }, this),
                                                 "Add Lead"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1591,
+                                            lineNumber: 1632,
                                             columnNumber: 46
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1521,
+                                    lineNumber: 1562,
                                     columnNumber: 37
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1503,
+                            lineNumber: 1544,
                             columnNumber: 33
                         }, this),
                         loadingLeads ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3367,7 +3418,7 @@ function CampaignDetails() {
                                     className: "animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-[#4b33e8] mb-4"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1602,
+                                    lineNumber: 1643,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3375,13 +3426,13 @@ function CampaignDetails() {
                                     children: "Fetching leads..."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1603,
+                                    lineNumber: 1644,
                                     columnNumber: 41
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1601,
+                            lineNumber: 1642,
                             columnNumber: 37
                         }, this) : leads.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex-1 flex flex-col items-center justify-center py-12",
@@ -3392,12 +3443,12 @@ function CampaignDetails() {
                                         className: "fi flex fi-rr-phone-call text-gray-200 text-3xl"
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1608,
+                                        lineNumber: 1649,
                                         columnNumber: 45
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1607,
+                                    lineNumber: 1648,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
@@ -3405,7 +3456,7 @@ function CampaignDetails() {
                                     children: "No leads found"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1610,
+                                    lineNumber: 1651,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3413,13 +3464,13 @@ function CampaignDetails() {
                                     children: "There are no leads assigned to this campaign yet."
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1611,
+                                    lineNumber: 1652,
                                     columnNumber: 41
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1606,
+                            lineNumber: 1647,
                             columnNumber: 37
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "overflow-x-auto -mx-2",
@@ -3441,17 +3492,17 @@ function CampaignDetails() {
                                                             className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1620,
+                                                            lineNumber: 1661,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1619,
+                                                        lineNumber: 1660,
                                                         columnNumber: 57
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1618,
+                                                    lineNumber: 1659,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3459,7 +3510,7 @@ function CampaignDetails() {
                                                     children: "Customer Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1628,
+                                                    lineNumber: 1669,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3467,7 +3518,7 @@ function CampaignDetails() {
                                                     children: "Contact Info"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1629,
+                                                    lineNumber: 1670,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3475,7 +3526,7 @@ function CampaignDetails() {
                                                     children: "Status"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1630,
+                                                    lineNumber: 1671,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3483,7 +3534,7 @@ function CampaignDetails() {
                                                     children: "Disposition/Sub"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1631,
+                                                    lineNumber: 1672,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3491,7 +3542,7 @@ function CampaignDetails() {
                                                     children: "Expiry Date"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1632,
+                                                    lineNumber: 1673,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3499,7 +3550,7 @@ function CampaignDetails() {
                                                     children: "Assigned To"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1633,
+                                                    lineNumber: 1674,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3507,7 +3558,7 @@ function CampaignDetails() {
                                                     children: "Manage By"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1634,
+                                                    lineNumber: 1675,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3515,7 +3566,7 @@ function CampaignDetails() {
                                                     children: "Last Called"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1635,
+                                                    lineNumber: 1676,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -3523,26 +3574,35 @@ function CampaignDetails() {
                                                     children: "Last Updated By"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                    lineNumber: 1636,
+                                                    lineNumber: 1677,
                                                     columnNumber: 53
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1617,
+                                            lineNumber: 1658,
                                             columnNumber: 49
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1616,
+                                        lineNumber: 1657,
                                         columnNumber: 45
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
                                         className: "divide-y divide-gray-50",
                                         children: leads.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                                 onClick: ()=>{
-                                                    if (id && lead.id) {
-                                                        router.push(`/campaign/${id}/${lead.id}`);
+                                                    if (id && lead.id && user?.uid) {
+                                                        startManualLock({
+                                                            id: 'manual-' + Date.now(),
+                                                            user_id: user.uid,
+                                                            campaign_id: String(id),
+                                                            customer_id: lead.id,
+                                                            status: 'active',
+                                                            created_at: new Date().toISOString(),
+                                                            updated_at: new Date().toISOString()
+                                                        });
+                                                        router.push(`/portal/campaign/${id}/${lead.id}`);
                                                     }
                                                 },
                                                 className: "group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0",
@@ -3559,17 +3619,17 @@ function CampaignDetails() {
                                                                 className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1652,
+                                                                lineNumber: 1702,
                                                                 columnNumber: 65
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1651,
+                                                            lineNumber: 1701,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1650,
+                                                        lineNumber: 1700,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3582,7 +3642,7 @@ function CampaignDetails() {
                                                                     children: lead.customer_name?.charAt(0) || 'C'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1662,
+                                                                    lineNumber: 1712,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3594,18 +3654,18 @@ function CampaignDetails() {
                                                                     children: lead.customer_name || 'Anonymous'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1665,
+                                                                    lineNumber: 1715,
                                                                     columnNumber: 65
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1661,
+                                                            lineNumber: 1711,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1660,
+                                                        lineNumber: 1710,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3618,7 +3678,7 @@ function CampaignDetails() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$phoneUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["formatMaskedPhone"])(lead.phone_no)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1670,
+                                                                    lineNumber: 1720,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3626,18 +3686,18 @@ function CampaignDetails() {
                                                                     children: "Verified Lead"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1671,
+                                                                    lineNumber: 1721,
                                                                     columnNumber: 65
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1669,
+                                                            lineNumber: 1719,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1668,
+                                                        lineNumber: 1718,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3651,24 +3711,24 @@ function CampaignDetails() {
                                                                         className: "fi fi-rr-check-circle flex text-[10px]"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                        lineNumber: 1682,
+                                                                        lineNumber: 1732,
                                                                         columnNumber: 98
                                                                     }, this),
                                                                     lead.status
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                lineNumber: 1676,
+                                                                lineNumber: 1726,
                                                                 columnNumber: 65
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1675,
+                                                            lineNumber: 1725,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1674,
+                                                        lineNumber: 1724,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3681,7 +3741,7 @@ function CampaignDetails() {
                                                                     children: lead.disposition || 'Fresh'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1689,
+                                                                    lineNumber: 1739,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3689,18 +3749,18 @@ function CampaignDetails() {
                                                                     children: lead.sub_disposition || '---'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1692,
+                                                                    lineNumber: 1742,
                                                                     columnNumber: 65
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1688,
+                                                            lineNumber: 1738,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1687,
+                                                        lineNumber: 1737,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3713,7 +3773,7 @@ function CampaignDetails() {
                                                                     children: formatDate(lead.expiry_date)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1699,
+                                                                    lineNumber: 1749,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 lead.expiry_date && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3724,18 +3784,18 @@ function CampaignDetails() {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1701,
+                                                                    lineNumber: 1751,
                                                                     columnNumber: 69
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1698,
+                                                            lineNumber: 1748,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1697,
+                                                        lineNumber: 1747,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3747,7 +3807,7 @@ function CampaignDetails() {
                                                                     className: `w-1.5 h-1.5 rounded-full ${lead.assigned_user_name === 'Unassigned' ? 'bg-gray-300' : 'bg-indigo-400'}`
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1709,
+                                                                    lineNumber: 1759,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 lead.assigned_user_info ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3758,7 +3818,7 @@ function CampaignDetails() {
                                                                             children: lead.assigned_user_info.name
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1712,
+                                                                            lineNumber: 1762,
                                                                             columnNumber: 73
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3769,31 +3829,31 @@ function CampaignDetails() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                            lineNumber: 1715,
+                                                                            lineNumber: 1765,
                                                                             columnNumber: 73
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1711,
+                                                                    lineNumber: 1761,
                                                                     columnNumber: 69
                                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                     className: "text-[10px] font-medium text-gray-600 uppercase tracking-tighter",
                                                                     children: lead.assigned_user_name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1720,
+                                                                    lineNumber: 1770,
                                                                     columnNumber: 70
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1708,
+                                                            lineNumber: 1758,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1707,
+                                                        lineNumber: 1757,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3808,12 +3868,12 @@ function CampaignDetails() {
                                                                         children: lead.managed_by_name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                        lineNumber: 1729,
+                                                                        lineNumber: 1779,
                                                                         columnNumber: 69
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1728,
+                                                                    lineNumber: 1778,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 lead.managed_by_id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3824,18 +3884,18 @@ function CampaignDetails() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1732,
+                                                                    lineNumber: 1782,
                                                                     columnNumber: 69
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1727,
+                                                            lineNumber: 1777,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1726,
+                                                        lineNumber: 1776,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3848,7 +3908,7 @@ function CampaignDetails() {
                                                                     children: formatDate(lead.last_called_at)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1738,
+                                                                    lineNumber: 1788,
                                                                     columnNumber: 65
                                                                 }, this),
                                                                 lead.last_called_at && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3859,18 +3919,18 @@ function CampaignDetails() {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1740,
+                                                                    lineNumber: 1790,
                                                                     columnNumber: 69
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1737,
+                                                            lineNumber: 1787,
                                                             columnNumber: 61
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1736,
+                                                        lineNumber: 1786,
                                                         columnNumber: 57
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3883,7 +3943,7 @@ function CampaignDetails() {
                                                                     children: lead.last_updated_by_info.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1749,
+                                                                    lineNumber: 1799,
                                                                     columnNumber: 69
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3894,47 +3954,47 @@ function CampaignDetails() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                                    lineNumber: 1750,
+                                                                    lineNumber: 1800,
                                                                     columnNumber: 69
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1748,
+                                                            lineNumber: 1798,
                                                             columnNumber: 65
                                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "text-[10px] text-gray-300 italic",
                                                             children: "No Updates"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                            lineNumber: 1753,
+                                                            lineNumber: 1803,
                                                             columnNumber: 65
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1746,
+                                                        lineNumber: 1796,
                                                         columnNumber: 57
                                                     }, this)
                                                 ]
                                             }, lead.id, true, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1641,
+                                                lineNumber: 1682,
                                                 columnNumber: 53
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                        lineNumber: 1639,
+                                        lineNumber: 1680,
                                         columnNumber: 45
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                lineNumber: 1615,
+                                lineNumber: 1656,
                                 columnNumber: 41
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1614,
+                            lineNumber: 1655,
                             columnNumber: 37
                         }, this),
                         !loadingLeads && totalLeadsCount > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3949,7 +4009,7 @@ function CampaignDetails() {
                                             children: (currentPage - 1) * leadsPerPage + 1
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1767,
+                                            lineNumber: 1817,
                                             columnNumber: 53
                                         }, this),
                                         " to ",
@@ -3958,7 +4018,7 @@ function CampaignDetails() {
                                             children: Math.min(currentPage * leadsPerPage, totalLeadsCount)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1767,
+                                            lineNumber: 1817,
                                             columnNumber: 134
                                         }, this),
                                         " of ",
@@ -3967,14 +4027,14 @@ function CampaignDetails() {
                                             children: totalLeadsCount
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1767,
+                                            lineNumber: 1817,
                                             columnNumber: 232
                                         }, this),
                                         " Leads"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1766,
+                                    lineNumber: 1816,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3988,12 +4048,12 @@ function CampaignDetails() {
                                                 className: "fi fi-rr-angle-small-left text-lg"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1780,
+                                                lineNumber: 1830,
                                                 columnNumber: 49
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1771,
+                                            lineNumber: 1821,
                                             columnNumber: 45
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4010,7 +4070,7 @@ function CampaignDetails() {
                                                         children: pgNum
                                                     }, pgNum, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1793,
+                                                        lineNumber: 1843,
                                                         columnNumber: 61
                                                     }, this);
                                                 } else if (pgNum === currentPage - 2 && pgNum > 1 || pgNum === currentPage + 2 && pgNum < Math.ceil(totalLeadsCount / leadsPerPage)) {
@@ -4019,7 +4079,7 @@ function CampaignDetails() {
                                                         children: "..."
                                                     }, pgNum, false, {
                                                         fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                        lineNumber: 1809,
+                                                        lineNumber: 1859,
                                                         columnNumber: 64
                                                     }, this);
                                                 }
@@ -4027,7 +4087,7 @@ function CampaignDetails() {
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1783,
+                                            lineNumber: 1833,
                                             columnNumber: 45
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -4038,30 +4098,30 @@ function CampaignDetails() {
                                                 className: "fi fi-rr-angle-small-right text-lg"
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                                lineNumber: 1824,
+                                                lineNumber: 1874,
                                                 columnNumber: 49
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                            lineNumber: 1815,
+                                            lineNumber: 1865,
                                             columnNumber: 45
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                                    lineNumber: 1770,
+                                    lineNumber: 1820,
                                     columnNumber: 41
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/campaign/[id].tsx",
-                            lineNumber: 1765,
+                            lineNumber: 1815,
                             columnNumber: 37
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 1500,
+                    lineNumber: 1541,
                     columnNumber: 29
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ImportCustomersModal$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -4075,21 +4135,22 @@ function CampaignDetails() {
                     preselectedCampaignId: id
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/campaign/[id].tsx",
-                    lineNumber: 1832,
+                    lineNumber: 1882,
                     columnNumber: 29
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/pages/portal/campaign/[id].tsx",
-            lineNumber: 923,
+            lineNumber: 925,
             columnNumber: 13
         }, this)
     }, void 0, false);
 }
-_s(CampaignDetails, "wa7s3BKPVHjftPWQh5OtJ2PRpNo=", false, function() {
+_s(CampaignDetails, "4B7olw3mi7kOOq+oIpQX9PiRKzg=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$SessionContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useSession"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],

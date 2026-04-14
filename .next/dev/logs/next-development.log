@@ -16690,3 +16690,560 @@ Import traces:
 [40:21:33.660] Browser LOG     🚀 [Bridge] Requesting Device Info
 [40:21:40.793] Browser LOG     [Fetch] Found 15 history records via API.
 [40:21:40.793] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[40:21:57.156] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:21:57.156] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:21:57.157] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:04.251] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:22:04.251] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:22:04.251] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:07.179] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[40:22:07.179] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:09.472] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:09.472] Browser ERROR   Error fetching organizations: {"code":"","details":"AbortError: signal is aborted without reason\n    at useOrganizationData.useEffect (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__92165a0a._.js:8575:52)\n    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:13856:17)\n    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:886:74)\n    at commitHookEffectListUnmount (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7052:166)\n    at commitHookPassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7065:60)\n    at commitPassiveUnmountEffectsInsideOfDeletedTree_begin (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8304:21)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8221:17)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)","hint":"","message":"AbortError: signal is aborted without reason"}
+[40:22:09.472] Browser ERROR   Error fetching users: {"code":"","details":"AbortError: signal is aborted without reason\n    at OrganizationPage.useEffect (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__92165a0a._.js:8749:68)\n    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:13856:17)\n    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:886:74)\n    at commitHookEffectListUnmount (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7052:166)\n    at commitHookPassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7065:60)\n    at commitPassiveUnmountEffectsInsideOfDeletedTree_begin (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8304:21)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8221:17)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)","hint":"","message":"AbortError: signal is aborted without reason"}
+[40:22:12.083] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[40:22:12.483] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[40:22:12.483] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[40:22:12.483] Browser LOG     [App] Logger and Interceptors initialized.
+[40:22:12.776] Server  LOG     Using date-holidays fallback
+[40:22:12.900] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:22:12.900] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[40:22:12.900] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:12.900] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:22:12.900] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:13.785] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[40:22:21.846] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[40:22:21.860] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[40:22:21.860] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:21.860] Browser ERROR   Error fetching teams: {"code":"","details":"AbortError: signal is aborted without reason\n    at Team.useEffect (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__7983796a._.js:9178:90)\n    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:13856:17)\n    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:886:74)\n    at commitHookEffectListUnmount (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7052:166)\n    at commitHookPassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:7065:60)\n    at commitPassiveUnmountEffectsInsideOfDeletedTree_begin (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8304:21)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8221:17)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8235:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)\n    at recursivelyTraversePassiveUnmountEffects (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8227:106)\n    at commitPassiveUnmountOnFiber (http://localhost:3000/_next/static/chunks/node_modules_react-dom_4411d9bd._.js:8253:17)","hint":"","message":"AbortError: signal is aborted without reason"}
+[40:22:22.139] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[40:22:22.139] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[40:22:22.139] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[40:22:24.494] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:28.040] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:28.872] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1946:52)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9892:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   [Dashboard] Error fetching users: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async Dashboard.useEffect.fetchUsers (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__9a18fefd._.js:9334:56)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching category stats: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchCategoryStats (http://localhost:3000/_next/static/chunks/_6937d256._.js:1191:37)\n    at async Promise.all (index 3)\n    at async refreshData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1824:9)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error checking expired holds: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async checkAndApproveExpiredHolds (http://localhost:3000/_next/static/chunks/_6937d256._.js:957:63)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching all users: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchAllUsers (http://localhost:3000/_next/static/chunks/_6937d256._.js:895:37)\n    at async Promise.all (index 0)\n    at async refreshData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1824:9)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching user stats: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchUserStats (http://localhost:3000/_next/static/chunks/_6937d256._.js:1062:63)\n    at async Promise.all (index 1)\n    at async refreshData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1824:9)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching pending users: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchPendingUsers (http://localhost:3000/_next/static/chunks/_6937d256._.js:941:37)\n    at async Promise.all (index 2)\n    at async refreshData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1824:9)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching monthly data: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchMonthlyUserData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1122:63)\n    at async Promise.all (index 4)\n    at async refreshData (http://localhost:3000/_next/static/chunks/_6937d256._.js:1824:9)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:28.872] Browser ERROR   Error fetching customer count: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async fetchCustomers (http://localhost:3000/_next/static/chunks/pages_portal_customer_tsx_dc8978d9._.js:455:50)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:29.693] Browser LOG     ❌ [Status] Offline Event
+[40:22:30.691] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1946:52)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:30.691] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:30.691] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:30.691] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9892:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:30.691] Browser LOG     ❌ [Status] Offline Event
+[40:22:32.591] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\lib\fetch.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.592] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\GoTrueClient.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.594] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\[root-of-the-server]__45d52ae9._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.602] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.605] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\node_modules_next_dist_958b1c1c._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.608] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.612] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.616] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.617] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.618] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.620] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.623] Server  ERROR   TypeError: fetch failed
+[40:22:32.629] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\lib\fetch.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.630] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\GoTrueClient.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.631] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\[root-of-the-server]__ba93ceb3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.631] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.632] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\node_modules_next_dist_d6550cd3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.633] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.633] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.633] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.634] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.635] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.639] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.640] Server  ERROR   TypeError: fetch failed
+[40:22:32.643] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\lib\fetch.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.644] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\@supabase\auth-js\dist\main\GoTrueClient.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.645] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\[root-of-the-server]__f589ea4e._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.646] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.647] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\.next\dev\server\chunks\node_modules_next_dist_67ce3a7c._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.647] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.647] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.648] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.648] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.648] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.649] Server  ERROR   E:\Clone Repo From Git\TFC-Connectv2-3\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[40:22:32.650] Server  ERROR   TypeError: fetch failed
+[40:22:32.667] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:34.674] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:34.674] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:34.674] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:34.674] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:34.674] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:35.550] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:22:35.550] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:22:35.550] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:22:35.550] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:35.550] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:36.910] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:36.910] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:37.548] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:37.672] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:37.672] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at window.fetch (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1010:16)\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7893:23\n    at http://localhost:3000/_next/static/chunks/node_modules_5bf20ce7._.js:7907:16\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:37.834] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:38.059] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:39.944] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:39.944] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:42.839] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:42.839] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:43.057] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:43.057] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:46.040] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:22:47.828] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:48.047] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:49.737] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:52.840] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:53.058] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:57.843] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:22:58.061] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:02.831] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:03.049] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:05.546] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:07.824] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:08.052] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:09.744] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:12.843] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:12.843] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:13.061] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:17.676] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:17.677] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:17.677] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:17.677] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:17.825] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:18.047] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:22.837] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:23.053] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:27.841] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:28.059] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:29.736] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:32.828] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:33.043] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:35.554] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:37.840] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:38.055] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:42.162] Browser LOG     🌐 [Status] Online Event
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.162] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.671] Browser LOG     🌐 [Status] Online Event
+[40:23:42.671] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.671] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.671] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:42.671] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:43.076] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[40:23:43.076] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[40:23:43.076] Browser LOG     🌐 [Status] Connection Restored (Ping Success)
+[40:23:43.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:23:44.017] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:23:44.017] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:23:44.017] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:23:44.017] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0007/14a2bdb3-1951-453f-b709-1d35059d35bb
+[40:23:44.162] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:23:44.163] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:23:44.163] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[40:23:44.427] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:23:44.427] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[40:23:44.428] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[40:23:44.865] Browser WARN    [Guard] Lead assigned to another user: 111bf59c-01da-4a98-922d-4d2c10c066af. Restricting access.
+[40:23:44.865] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:23:45.178] Browser LOG     [Fetch] Found 15 history records via API.
+[40:23:46.223] Browser LOG     [Fetch-Session] Active session found for this lead: disposition_pending
+[40:23:46.441] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:23:55.167] Browser LOG     ❌ [Status] Offline Event
+[40:23:55.668] Browser LOG     ❌ [Status] Offline Event
+[40:23:56.185] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:23:56.356] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:57.835] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:59.219] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[40:23:59.219] Browser LOG     🌐 [Status] Online Event
+[40:23:59.219] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:59.219] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:59.219] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[40:23:59.571] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:23:59.571] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11813:41)","hint":"","message":"TypeError: Failed to fetch"}
+[40:23:59.571] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:3170:39)","hint":"","message":"TypeError: Failed to fetch"}
+[40:23:59.680] Browser LOG     🌐 [Status] Online Event
+[40:24:06.963] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[40:24:07.428] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[40:24:07.428] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[40:24:07.428] Browser LOG     [App] Logger and Interceptors initialized.
+[40:24:07.823] Server  LOG     Using date-holidays fallback
+[40:24:07.972] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:24:07.972] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[40:24:07.972] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:07.972] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[40:24:07.972] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:24:07.972] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:24:07.972] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:07.972] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:24:08.291] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:24:08.291] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[40:24:08.641] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:08.641] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[40:24:08.855] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[40:24:09.198] Browser WARN    [Guard] Lead assigned to another user: 111bf59c-01da-4a98-922d-4d2c10c066af. Restricting access.
+[40:24:09.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:09.885] Browser LOG     [Fetch] Found 15 history records via API.
+[40:24:10.978] Browser LOG     [Fetch-Session] Active session found for this lead: disposition_pending
+[40:24:10.978] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[40:24:10.978] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:24:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:24:20.152] Browser LOG     ⚡ [Pre-fetch] Background fetching next lead & data...
+[40:24:20.874] Browser LOG     ⚡ [Pre-fetch] Ready for: 1acc2237-f9a2-45c3-a70f-a79aa7ae070a
+[40:24:38.075] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:24:53.593] Browser WARN    ⚠️ [Calendar] No provider_token found in session or storage.
+[40:24:54.463] Browser LOG     [Disposition] Session Match Check: {"isManualCall":true,"manualCustId":"14a2bdb3-1951-453f-b709-1d35059d35bb","preservedCustomerId":"14a2bdb3-1951-453f-b709-1d35059d35bb","savingId":"14a2bdb3-1951-453f-b709-1d35059d35bb"}
+[40:24:54.463] Browser LOG     [Disposition] Final check: {"currentIsInterruption":false,"isManualCall":true,"isUnassignedCall":false}
+[40:24:54.463] Browser LOG     [Disposition] Flow Exit Path: IsAccessDeniedManual=true, IsManual=true, IsUnassigned=false, IsAuthorized=true.
+[40:24:54.463] Browser LOG     [Disposition] Cleaning up unauthorized/unassigned session: CAM-0007
+[40:24:54.645] Server  LOG     [API-Session] Request Target: User=ff144635-44d2-40eb-bb57-f5dc6640cc3d, Campaign=CAM-0007, Manual=undefined, Terminate=true, Unassigned=undefined
+[40:24:55.096] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[40:24:55.210] Browser LOG     [Disposition] Redirecting to another available session: 2f79b5e2-a282-47f5-b7f8-71d2323420ac
+[40:24:55.447] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[40:24:55.447] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:55.447] Browser LOG     [Lead-Change] New lead detected, showing alert
+[40:24:55.447] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:24:55.447] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:55.963] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:24:56.212] Browser LOG     [Fetch] Found 2 history records via API.
+[40:24:57.393] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:24:57.393] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:25:08.058] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:25:14.510] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[40:25:14.510] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:14.761] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[40:25:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:25:32.603] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:37.274] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:38.055] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:25:41.636] Browser LOG     [Follow-up] Manual Lead Open triggered: a10201ad-3d0f-40c0-88a9-83feb5cf8de5
+[40:25:41.636] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:41.636] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:41.900] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0005/90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[40:25:41.900] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:41.900] Browser LOG     [Lead-Change] New lead detected, showing alert
+[40:25:41.900] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:41.900] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:42.385] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:43.060] Browser LOG     [Fetch] Found 26 history records via API.
+[40:25:44.258] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:25:44.397] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:25:48.080] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:54.037] Browser LOG     [Follow-up] Manual Lead Open triggered: 687db46b-1144-4cd9-b717-5bc20d796abe
+[40:25:54.037] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:54.037] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:54.305] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0005/90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[40:25:54.305] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:54.305] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:54.305] Browser LOG     [Lead-Change] New lead detected, showing alert
+[40:25:54.305] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:25:54.790] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[40:25:54.790] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:55.072] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:25:55.072] Browser LOG     [Fetch] Found 6 history records via API.
+[40:25:55.305] Browser LOG     [Fetch] Found 26 history records via API.
+[40:25:56.131] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:25:56.602] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:26:01.261] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:26:06.379] Browser LOG     [Follow-up] Manual Lead Open triggered: b54bdc4a-8304-4df2-bcf0-b96360e23609
+[40:26:06.379] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:26:06.379] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:26:06.721] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:26:06.721] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0005/90a1aa5c-8aa6-4806-8cd7-a09dc14a4aad
+[40:26:06.721] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:26:06.721] Browser LOG     [Lead-Change] New lead detected, showing alert
+[40:26:06.721] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:26:07.122] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[40:26:07.122] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:26:07.294] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:26:07.592] Browser LOG     [Fetch] Found 26 history records via API.
+[40:26:08.069] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:26:08.689] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:26:08.874] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:26:08.874] Browser LOG     [Fetch] Found 1 history records via API.
+[40:26:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:26:39.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:26:53.013] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:26:53.013] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:26:53.013] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:26:55.296] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:26:55.296] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:26:55.296] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:27:00.007] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:27:00.007] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:27:00.007] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:27:09.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:27:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:27:39.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:28:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:28:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:29:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:29:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:30:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:30:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:31:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:31:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:31:33.961] Server  LOG      ✓ Compiled in 4.6s
+[40:32:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:32:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:33:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:33:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:34:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:34:17.682] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:35:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:35:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:36:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:36:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:37:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:37:17.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:37:34.573] Server  LOG      ✓ Compiled in 1252ms
+[40:38:03.190] Server  LOG      ✓ Compiled in 1592ms
+[40:38:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:38:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:39:07.487] Server  LOG      ✓ Compiled in 622ms
+[40:39:17.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:39:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:40:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:40:17.677] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:41:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:41:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:42:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:42:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:43:17.669] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:43:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:44:17.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:44:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:45:17.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:45:17.681] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:46:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:46:19.676] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:46:59.338] Server  LOG      ✓ Compiled in 298ms
+[40:46:59.698] Server  LOG     Using date-holidays fallback
+[40:47:00.018] Server  LOG     Using date-holidays fallback
+[40:47:00.045] Server  LOG     Using date-holidays fallback
+[40:47:00.666] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:47:00.666] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[40:47:00.679] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:47:00.679] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:47:00.679] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:47:00.679] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:47:00.679] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:47:00.679] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:47:01.687] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:47:01.687] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:47:02.672] Browser LOG     [Fetch] Found 26 history records via API.
+[40:47:03.667] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:47:03.667] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:47:17.674] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:47:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:48:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:48:17.672] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:49:17.680] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:49:17.683] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:50:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:50:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:51:02.311] Server  LOG     Using date-holidays fallback
+[40:51:02.477] Server  LOG     Using date-holidays fallback
+[40:51:02.512] Server  LOG      ✓ Compiled in 246ms
+[40:51:02.534] Server  LOG     Using date-holidays fallback
+[40:51:02.575] Server  LOG     Using date-holidays fallback
+[40:51:03.668] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:51:03.668] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:51:03.668] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:51:03.668] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:51:03.668] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:51:03.668] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:51:03.668] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:51:03.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:51:03.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[40:51:03.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:51:03.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[40:51:04.672] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:51:04.672] Browser LOG     [Fetch] Found 26 history records via API.
+[40:51:05.673] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[40:51:05.673] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:51:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:51:17.665] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:52:17.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:52:17.675] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:52:18.188] Server  LOG      ✓ Compiled in 573ms
+[40:52:21.301] Server  LOG      ✓ Compiled in 236ms
+[40:52:27.597] Server  LOG      ✓ Compiled in 344ms
+[40:52:44.299] Server  LOG      ✓ Compiled in 562ms
+[40:52:44.471] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:52:44.471] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:52:44.471] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:52:45.174] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:52:50.228] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:52:56.038] Browser LOG     [Follow-up] Manual Lead Open triggered for: 53c31e9e-adca-4547-ac23-b44afeeb6a47
+[40:52:56.215] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:52:56.215] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:52:56.459] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:52:56.459] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:52:57.023] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[40:52:57.023] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:52:57.362] Browser LOG     [Fetch] Found 3 history records via API.
+[40:52:58.473] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:53:01.429] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:01.718] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:53:07.589] Browser LOG     [Follow-up] Manual Lead Open triggered for: 1401b928-859e-4439-99b2-484bfb0a5b2d
+[40:53:07.739] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:53:07.739] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:53:08.063] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:08.063] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:53:08.063] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:53:08.452] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[40:53:08.452] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:53:08.781] Browser LOG     [Fetch] Found 1 history records via API.
+[40:53:09.873] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:53:13.675] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:53:18.679] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:23.677] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:28.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:33.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:38.668] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:39.432] Server  LOG      ✓ Compiled in 299ms
+[40:53:39.679] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:53:43.668] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:48.458] Server  LOG      ✓ Compiled in 358ms
+[40:53:48.674] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:53.671] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:53:58.671] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:01.284] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:54:01.285] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:54:01.285] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:54:03.666] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:08.669] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:09.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:54:13.666] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:17.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:54:18.669] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:23.665] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:28.679] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:33.671] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:38.681] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:39.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:54:43.673] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:48.672] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:53.665] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:56.362] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:54:56.362] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:54:56.362] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:54:57.960] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:54:59.195] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:03.595] Browser LOG     [Follow-up] Manual Lead Open triggered for: d0437e70-9f2d-4f32-8e88-27c42dafb25b
+[40:55:03.751] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:03.751] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:03.970] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:55:03.970] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:04.433] Browser WARN    [Guard] Lead assigned to another user: 9e77c75a-6641-4bc2-8efb-db0614540951. Restricting access.
+[40:55:04.433] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:04.735] Browser LOG     [Fetch] Found 2 history records via API.
+[40:55:05.586] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:55:08.066] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:55:08.363] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:14.584] Browser LOG     [Follow-up] Manual Lead Open triggered for: 6d9f1a98-dc21-437f-b9f4-0c183afc8927
+[40:55:14.754] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:14.754] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:14.987] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:55:14.987] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:15.457] Browser WARN    [Guard] Lead assigned to another user: 18c356af-d91e-4eaf-9378-cd1f3c07a1af. Restricting access.
+[40:55:15.457] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:15.740] Browser LOG     [Fetch] Found 1 history records via API.
+[40:55:16.841] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:55:17.683] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:55:19.323] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:20.108] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[40:55:20.108] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:20.338] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[40:55:25.574] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:30.246] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:30.246] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:30.510] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:55:30.510] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:31.039] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:31.321] Browser LOG     [Fetch] Found 19 history records via API.
+[40:55:32.551] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:55:35.505] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:55:37.053] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"agent","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"agent","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[40:55:37.053] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:37.288] Browser LOG     ✅ [Campaign] Query returned 8 campaigns.
+[40:55:38.052] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[40:55:42.415] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:46.998] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:55:46.998] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:55:46.998] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:49.892] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:55:49.892] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:55:49.892] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:53.530] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[40:55:53.531] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[40:55:53.531] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:55.641] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:55.641] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[40:55:55.886] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:55:55.886] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:56.352] Browser WARN    [Guard] Lead assigned to another user: 43b59d68-a850-43c5-9852-a2a5dc41965e. Restricting access.
+[40:55:56.352] Browser LOG     🚀 [Bridge] Requesting Device Info
+[40:55:56.617] Browser LOG     [Fetch] Found 3 history records via API.
+[40:55:57.768] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[40:56:01.672] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.
+[40:56:06.678] Browser LOG     [Session-Context] 🔒 Manual Inspection Active. Redirection Suppressed.

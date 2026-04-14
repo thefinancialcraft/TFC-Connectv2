@@ -1,7 +1,7 @@
 __turbopack_load_page_chunks__("/portal/campaign/[id]", [
   "static/chunks/components_4a7ae42f._.js",
   "static/chunks/pages_portal_campaign_[id]_tsx_a83e75d8._.js",
-  "static/chunks/_87566831._.js",
+  "static/chunks/_3d6531a5._.js",
   "static/chunks/[root-of-the-server]__78abed1d._.js",
   "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
   "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
@@ -18,5 +18,5 @@ __turbopack_load_page_chunks__("/portal/campaign/[id]", [
   "static/chunks/node_modules_recharts_es6_cf321d8d._.js",
   "static/chunks/node_modules_0dd507ff._.js",
   "static/chunks/pages_portal_campaign_[id]_tsx_2da965e7._.js",
-  "static/chunks/turbopack-pages_portal_campaign_[id]_tsx_6efcbf60._.js"
+  "static/chunks/turbopack-pages_portal_campaign_[id]_tsx_b6538064._.js"
 ])
