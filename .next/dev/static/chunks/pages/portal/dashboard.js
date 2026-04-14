@@ -1,5 +1,5 @@
 __turbopack_load_page_chunks__("/portal/dashboard", [
-  "static/chunks/_1f565449._.js",
+  "static/chunks/_31a2a838._.js",
   "static/chunks/[root-of-the-server]__9a18fefd._.js",
   "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
   "static/chunks/node_modules_next_dist_shared_lib_41d42037._.js",
@@ -11,5 +11,5 @@ __turbopack_load_page_chunks__("/portal/dashboard", [
   "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
   "static/chunks/node_modules_b0c9384a._.js",
   "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
-  "static/chunks/turbopack-pages_portal_dashboard_tsx_2ed72d7b._.js"
+  "static/chunks/turbopack-pages_portal_dashboard_tsx_af17d781._.js"
 ])

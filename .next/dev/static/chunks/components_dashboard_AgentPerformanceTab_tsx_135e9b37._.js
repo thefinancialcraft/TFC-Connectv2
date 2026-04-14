@@ -19,38 +19,60 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$LabelList$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/LabelList.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/component/Legend.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useAgentPerformance.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
 ;
-function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialTotal, selectedOrgId, selectedUserId, dateFilter: propDateFilter = "today", loading = false }) {
+;
+function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDateFilter = "today", loading = false }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     // Date states for local filtration
-    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+    const todayStr = new Date().toLocaleDateString('en-CA');
     const [startDate, setStartDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(todayStr);
     const [endDate, setEndDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(todayStr);
     const [isFiltered, setIsFiltered] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const dateFilter = propDateFilter;
-    const { agentData, fetchAgentPerformance, loading: internalLoading, totalDuration } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"])();
+    // Helper to format duration (Must be defined before use)
+    const formatDuration = (seconds)=>{
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor(seconds % 3600 / 60);
+        const secs = seconds % 60;
+        if (hours > 0) return `${hours}h ${mins}m`;
+        if (mins > 0) return `${mins}m ${secs}s`;
+        return `${secs}s`;
+    };
+    const { agentData: hookAgentData, fetchAgentPerformance, loading: hookLoading } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"])();
+    const [rpcData, setRpcData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [rpcLoading, setRpcLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const fetchRpcPerformance = async (start, end)=>{
+        try {
+            setRpcLoading(true);
+            const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].rpc('get_org_performance_report', {
+                p_start_date: start,
+                p_end_date: end
+            });
+            if (error) throw error;
+            setRpcData(data || []);
+        } catch (err) {
+            console.error("RPC Fetch Error:", err);
+        } finally{
+            setRpcLoading(false);
+        }
+    };
     const handleApplyFilter = ()=>{
         if (startDate && endDate) {
             const start = new Date(startDate);
             start.setHours(0, 0, 0, 0);
             const end = new Date(endDate);
             end.setHours(23, 59, 59, 999);
-            const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-            const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
             setIsFiltered(true);
-            fetchAgentPerformance(orgFilter, "custom", {
-                start: start.toISOString(),
-                end: end.toISOString()
-            }, false, userFilter);
+            fetchRpcPerformance(start.toISOString(), end.toISOString());
         }
     };
-    // Reset local filter if parent dateFilter changes
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AgentPerformanceTab.useEffect": ()=>{
             setIsFiltered(false);
@@ -58,7 +80,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
     }["AgentPerformanceTab.useEffect"], [
         dateFilter
     ]);
-    const isLoading = loading || internalLoading;
+    const isLoading = loading || hookLoading || rpcLoading;
     const [mounted, setMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [metric, setMetric] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('dials');
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -71,86 +93,62 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
             })["AgentPerformanceTab.useEffect"];
         }
     }["AgentPerformanceTab.useEffect"], []);
-    // Helper to format duration (seconds to HH:MM:SS)
-    const formatDuration = (seconds)=>{
-        const hours = Math.floor(seconds / 3600);
-        const mins = Math.floor(seconds % 3600 / 60);
-        const secs = seconds % 60;
-        if (hours > 0) return `${hours}h ${mins}m`;
-        if (mins > 0) return `${mins}m ${secs}s`;
-        return `${secs}s`;
-    };
-    const formatTime = (dateStr)=>{
-        if (!dateStr) return "Never";
-        const d = new Date(dateStr);
-        return d.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
-    const calculateStatus = (lastActive)=>{
-        if (!lastActive) return {
-            status: 'Idle',
-            idleTime: 'N/A',
-            isOnline: false
-        };
-        const now = new Date();
-        const active = new Date(lastActive);
-        const diffMs = now.getTime() - active.getTime();
-        // Convert to seconds for precision
-        const diffSec = Math.floor(diffMs / 1000);
-        let idleTimeStr = "N/A";
-        if (diffSec < 60) {
-            idleTimeStr = `${diffSec}s`;
-        } else if (diffSec < 3600) {
-            idleTimeStr = `${Math.floor(diffSec / 60)}m`;
-        } else {
-            const h = Math.floor(diffSec / 3600);
-            const m = Math.floor(diffSec % 3600 / 60);
-            idleTimeStr = `${h}h ${m}m`;
-        }
-        // New 30 second threshold for Active vs Idle
-        const isOnline = diffSec >= 0 && diffSec < 30;
-        return {
-            status: isOnline ? 'Active' : 'Idle',
-            idleTime: idleTimeStr,
-            isOnline
-        };
-    };
-    // Fetch data when filter changes (Only if not using local custom filter)
+    // Transform RPC data for UI compatibility
+    const displayData = rpcData.map((item)=>({
+            id: item.user_id_val,
+            name: item.agent_name,
+            employee_id: item.employee_id_val,
+            count: item.total_dials,
+            connected_count: item.connected_calls,
+            duration: Number(item.duration_raw),
+            utilization_str: item.utilization,
+            utilization_num: Number(item.util_raw_num),
+            status_fmt: item.status,
+            login_status_fmt: item.login_status,
+            follow_ups: item.follow_ups,
+            last_active: item.last_call_at
+        }));
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AgentPerformanceTab.useEffect": ()=>{
             if (!isFiltered) {
-                const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-                fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
+                let start = new Date();
+                let end = new Date();
+                if (dateFilter === "today") {
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(23, 59, 59, 999);
+                } else if (dateFilter === "yesterday") {
+                    start.setDate(start.getDate() - 1);
+                    start.setHours(0, 0, 0, 0);
+                    end.setDate(end.getDate() - 1);
+                    end.setHours(23, 59, 59, 999);
+                } else {
+                    start.setHours(start.getHours() - 24);
+                }
+                fetchRpcPerformance(start.toISOString(), end.toISOString());
             }
         }
     }["AgentPerformanceTab.useEffect"], [
         dateFilter,
-        selectedOrgId,
-        selectedUserId,
-        fetchAgentPerformance,
         isFiltered
     ]);
-    // Auto-refresh every 30 seconds
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AgentPerformanceTab.useEffect": ()=>{
             const interval = setInterval({
                 "AgentPerformanceTab.useEffect.interval": ()=>{
-                    const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                    const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
                     if (isFiltered && startDate && endDate) {
                         const start = new Date(startDate);
                         start.setHours(0, 0, 0, 0);
                         const end = new Date(endDate);
                         end.setHours(23, 59, 59, 999);
-                        fetchAgentPerformance(orgFilter, "custom", {
-                            start: start.toISOString(),
-                            end: end.toISOString()
-                        }, false, userFilter);
+                        fetchRpcPerformance(start.toISOString(), end.toISOString());
                     } else {
-                        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter);
+                        let start = new Date();
+                        let end = new Date();
+                        if (dateFilter === "today") {
+                            start.setHours(0, 0, 0, 0);
+                            end.setHours(23, 59, 59, 999);
+                        }
+                        fetchRpcPerformance(start.toISOString(), end.toISOString());
                     }
                 }
             }["AgentPerformanceTab.useEffect.interval"], 30000);
@@ -160,20 +158,16 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
         }
     }["AgentPerformanceTab.useEffect"], [
         dateFilter,
-        selectedOrgId,
-        selectedUserId,
-        fetchAgentPerformance,
         isFiltered,
         startDate,
         endDate
     ]);
-    const totalDials = agentData.reduce((acc, curr)=>acc + curr.count, 0);
+    const totalDials = displayData.reduce((acc, curr)=>acc + curr.count, 0);
     const handlePrint = ()=>{
         window.print();
     };
     const handleDownloadExcel = ()=>{
-        if (!agentData || agentData.length === 0) return;
-        // Excel-friendly CSV with BOM for special characters
+        if (!displayData || displayData.length === 0) return;
         const BOM = "\uFEFF";
         const headers = [
             "Agent Name",
@@ -182,29 +176,21 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
             "Total Dials",
             "Connected Calls",
             "Talk Time (Total)",
-            "Avg Talk Time",
             "Follow Ups",
-            "Streak/Gap",
             "Utilization",
             "Last Active"
         ];
-        const rows = agentData.map((agent)=>{
-            const { status } = calculateStatus(agent.last_active);
-            const avgTalkTime = agent.connected_count > 0 ? formatDuration(Math.floor(agent.duration / agent.connected_count)) : "0s";
-            return [
+        const rows = displayData.map((agent)=>[
                 agent.name,
                 agent.employee_id || "N/A",
-                agent.on_call ? agent.is_personal ? "PERSONAL CALL" : "ON CALL" : status,
+                agent.status_fmt,
                 agent.count,
                 agent.connected_count,
                 formatDuration(agent.duration || 0),
-                avgTalkTime,
-                agent.follow_ups_count || 0,
-                agent.consecutive_failed_stats || "0/0s",
-                `${(((agent.duration || 0) / 60 * 1.67 + (agent.count || 0)) / 3).toFixed(1)}%`,
+                agent.follow_ups || 0,
+                agent.utilization_str,
                 agent.last_active ? new Date(agent.last_active).toLocaleString() : "Never"
-            ];
-        });
+            ]);
         const csvContent = [
             headers.join(","),
             ...rows.map((row)=>row.map((cell)=>`"${(cell || "").toString().replace(/"/g, '""')}"`).join(","))
@@ -229,35 +215,15 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
                 children: `
         @media print {
-          /* Hide everything by default */
-          body * {
-            visibility: hidden;
-          }
-          
-          /* Only show the leaderboard chart container */
-          #agent-leaderboard-print-area, #agent-leaderboard-print-area * {
-            visibility: visible;
-          }
-          
-          /* Position the container at the top left */
-          #agent-leaderboard-print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            border: none;
-            box-shadow: none;
-          }
-
-          /* Hide UI elements within the container that shouldn't print */
-          .no-print {
-            display: none !important;
-          }
+          body * { visibility: hidden; }
+          #agent-leaderboard-print-area, #agent-leaderboard-print-area * { visibility: visible; }
+          #agent-leaderboard-print-area { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; }
+          .no-print { display: none !important; }
         }
       `
             }, void 0, false, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 207,
+                lineNumber: 198,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -273,7 +239,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                 className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 239,
+                                lineNumber: 209,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -281,7 +247,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                 children: "-"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 245,
+                                lineNumber: 210,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -291,13 +257,13 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                 className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 246,
+                                lineNumber: 211,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 238,
+                        lineNumber: 208,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -308,35 +274,35 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                             className: "w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                            lineNumber: 259,
-                            columnNumber: 13
+                            lineNumber: 214,
+                            columnNumber: 24
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                     className: "fi fi-rr-filter flex text-xs"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 262,
-                                    columnNumber: 15
+                                    lineNumber: 214,
+                                    columnNumber: 126
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     children: "Apply Filter"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 263,
-                                    columnNumber: 15
+                                    lineNumber: 214,
+                                    columnNumber: 174
                                 }, this)
                             ]
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 253,
+                        lineNumber: 213,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 237,
+                lineNumber: 207,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -352,13 +318,13 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                     className: "animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 277,
-                                    columnNumber: 15
+                                    lineNumber: 220,
+                                    columnNumber: 133
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 276,
-                                columnNumber: 13
+                                lineNumber: 220,
+                                columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex items-center justify-between mb-6",
@@ -370,21 +336,21 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Agent Productivity Leaderboard"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 282,
-                                                columnNumber: 15
+                                                lineNumber: 222,
+                                                columnNumber: 18
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold",
                                                 children: "Dials & Talktime per agent"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 285,
-                                                columnNumber: 15
+                                                lineNumber: 222,
+                                                columnNumber: 102
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 281,
+                                        lineNumber: 222,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -399,8 +365,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         children: "Dials"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 291,
-                                                        columnNumber: 19
+                                                        lineNumber: 225,
+                                                        columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                         onClick: ()=>setMetric('talktime'),
@@ -408,48 +374,47 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         children: "Talktime"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 301,
-                                                        columnNumber: 19
+                                                        lineNumber: 226,
+                                                        columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 290,
-                                                columnNumber: 17
+                                                lineNumber: 224,
+                                                columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: handlePrint,
                                                 className: "w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-[#4b33e8] transition-colors",
-                                                title: "Print Chart",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                                     className: "fi flex fi-rr-print text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 317,
-                                                    columnNumber: 19
+                                                    lineNumber: 228,
+                                                    columnNumber: 191
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 312,
-                                                columnNumber: 17
+                                                lineNumber: 228,
+                                                columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 289,
-                                        columnNumber: 15
+                                        lineNumber: 223,
+                                        columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 280,
+                                lineNumber: 221,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-indigo-100 scrollbar-track-transparent no-print-scroll",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     style: {
-                                        height: `${Math.max(400, agentData.length * 40)}px`,
+                                        height: `${Math.max(400, displayData.length * 40)}px`,
                                         width: '100%',
                                         position: 'relative'
                                     },
@@ -458,7 +423,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                         height: "100%",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["BarChart"], {
                                             layout: "vertical",
-                                            data: agentData,
+                                            data: displayData,
                                             margin: {
                                                 top: 0,
                                                 right: 40,
@@ -473,7 +438,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     stroke: "#F1F1F1"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 332,
+                                                    lineNumber: 236,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -482,7 +447,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     xAxisId: "cnt"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 338,
+                                                    lineNumber: 237,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -491,8 +456,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     xAxisId: "dur"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 339,
-                                                    columnNumber: 19
+                                                    lineNumber: 237,
+                                                    columnNumber: 61
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Legend"], {
                                                     verticalAlign: "top",
@@ -505,7 +470,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 340,
+                                                    lineNumber: 238,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -524,8 +489,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     dx: -8
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 346,
-                                                    columnNumber: 20
+                                                    lineNumber: 239,
+                                                    columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
                                                     cursor: {
@@ -543,8 +508,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                         children: data.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 368,
-                                                                        columnNumber: 29
+                                                                        lineNumber: 243,
+                                                                        columnNumber: 97
                                                                     }, void 0),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "flex flex-col gap-0.5",
@@ -557,8 +522,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                                lineNumber: 370,
-                                                                                columnNumber: 31
+                                                                                lineNumber: 243,
+                                                                                columnNumber: 200
                                                                             }, void 0),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                                 className: "text-green-400 text-[10px] font-bold",
@@ -568,27 +533,27 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                                lineNumber: 371,
-                                                                                columnNumber: 31
+                                                                                lineNumber: 243,
+                                                                                columnNumber: 275
                                                                             }, void 0)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 369,
-                                                                        columnNumber: 29
+                                                                        lineNumber: 243,
+                                                                        columnNumber: 161
                                                                     }, void 0)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 367,
-                                                                columnNumber: 27
+                                                                lineNumber: 243,
+                                                                columnNumber: 30
                                                             }, void 0);
                                                         }
                                                         return null;
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 361,
+                                                    lineNumber: 240,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -617,197 +582,164 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                 children: metric === 'dials' ? value : formatDuration(value)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 393,
-                                                                columnNumber: 27
+                                                                lineNumber: 250,
+                                                                columnNumber: 30
                                                             }, void 0);
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 387,
+                                                        lineNumber: 248,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 379,
+                                                    lineNumber: 247,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 327,
+                                            lineNumber: 235,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 325,
+                                        lineNumber: 234,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 323,
+                                    lineNumber: 232,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 322,
+                                lineNumber: 231,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 271,
+                        lineNumber: 219,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "lg:col-span-4 bg-white rounded-[24px] p-8 flex flex-col relative h-[550px]",
                         children: [
-                            isLoading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px]"
-                            }, void 0, false, {
-                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 416,
-                                columnNumber: 13
-                            }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                 className: "font-bold text-[#263238] mb-6",
                                 children: "Activity Contribution"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 420,
+                                lineNumber: 261,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-6 flex-1 overflow-y-auto max-h-[450px] pr-2",
-                                children: [
-                                    agentData.map((agent, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-center justify-between group",
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "flex items-center gap-3",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#4b33e8] font-bold text-xs border border-gray-100 group-hover:bg-[#4b33e8] group-hover:text-white transition-all",
-                                                            children: (agent.name || "Unknown").charAt(0)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 430,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: "text-sm font-bold text-[#263238]",
-                                                                    children: agent.name
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 434,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: "text-[10px] text-gray-400 font-medium",
-                                                                    children: [
-                                                                        "Rank #",
-                                                                        i + 1,
-                                                                        " in team"
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 437,
-                                                                    columnNumber: 21
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 433,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 429,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "text-right",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-sm font-bold text-[#263238]",
-                                                            children: [
-                                                                (agent.count || 0).toLocaleString(),
-                                                                " ",
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                    className: "text-[10px] text-gray-400 font-medium ml-1",
-                                                                    children: "dials"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 444,
-                                                                    columnNumber: 59
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 443,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[11px] font-bold text-[#4b33e8]",
-                                                            children: formatDuration(agent.duration || 0)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 446,
-                                                            columnNumber: 19
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-[9px] text-green-500 font-bold uppercase tracking-tighter",
-                                                            children: [
-                                                                ((agent.count || 0) / (totalDials || 1) * 100).toFixed(1),
-                                                                "% share"
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 449,
-                                                            columnNumber: 19
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 442,
-                                                    columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, i, true, {
-                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 425,
-                                            columnNumber: 15
-                                        }, this)),
-                                    agentData.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-center py-10",
+                                children: displayData.map((agent, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center justify-between group",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: "fi fi-rr-user-robot text-4xl text-gray-200"
-                                            }, void 0, false, {
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "flex items-center gap-3",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#4b33e8] font-bold text-xs border border-gray-100 group-hover:bg-[#4b33e8] group-hover:text-white transition-all",
+                                                        children: (agent.name || "U").charAt(0)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 266,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "text-sm font-bold text-[#263238]",
+                                                                children: agent.name
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                                lineNumber: 267,
+                                                                columnNumber: 24
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                className: "text-[10px] text-gray-400 font-medium",
+                                                                children: [
+                                                                    "Rank #",
+                                                                    i + 1,
+                                                                    " in team"
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                                lineNumber: 267,
+                                                                columnNumber: 88
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 267,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 461,
+                                                lineNumber: 265,
                                                 columnNumber: 17
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-xs text-gray-400 mt-2 font-bold",
-                                                children: "No active agent data"
-                                            }, void 0, false, {
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-right",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-sm font-bold text-[#263238]",
+                                                        children: [
+                                                            (agent.count || 0).toLocaleString(),
+                                                            " ",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "text-[10px] text-gray-400 font-medium ml-1",
+                                                                children: "dials"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                                lineNumber: 270,
+                                                                columnNumber: 105
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 270,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-[11px] font-bold text-[#4b33e8]",
+                                                        children: formatDuration(agent.duration || 0)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 271,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-[9px] text-green-500 font-bold uppercase tracking-tighter",
+                                                        children: [
+                                                            ((agent.count || 0) / (totalDials || 1) * 100).toFixed(1),
+                                                            "% share"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 272,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 462,
+                                                lineNumber: 269,
                                                 columnNumber: 17
                                             }, this)
                                         ]
-                                    }, void 0, true, {
+                                    }, i, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 460,
+                                        lineNumber: 264,
                                         columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
+                                    }, this))
+                            }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 423,
+                                lineNumber: 262,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -816,23 +748,23 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                 children: "View All Team Insights"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 468,
+                                lineNumber: 277,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 414,
+                        lineNumber: 260,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 269,
+                lineNumber: 218,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "bg-white rounded-[24px] overflow-hidden text-left",
+                className: "bg-white rounded-[24px] overflow-hidden text-left shadow-sm",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "px-8 py-6 border-b border-gray-100 flex justify-between items-center",
@@ -844,21 +776,21 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                         children: "Member Performance Breakdown"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 481,
-                                        columnNumber: 19
+                                        lineNumber: 283,
+                                        columnNumber: 20
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-sm text-gray-400 mt-1",
-                                        children: "Granular metrics for individual agent activity"
+                                        children: "Granular metrics for individual agent activity (Sync enabled)"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 482,
-                                        columnNumber: 19
+                                        lineNumber: 283,
+                                        columnNumber: 102
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 480,
+                                lineNumber: 283,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -866,37 +798,41 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>{
-                                            const orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                                            const userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-                                            fetchAgentPerformance(orgFilter, dateFilter, undefined, true, userFilter);
+                                            let start = new Date();
+                                            let end = new Date();
+                                            if (dateFilter === "today") {
+                                                start.setHours(0, 0, 0, 0);
+                                                end.setHours(23, 59, 59, 999);
+                                            }
+                                            fetchRpcPerformance(start.toISOString(), end.toISOString());
                                         },
-                                        disabled: loading,
+                                        disabled: isLoading,
                                         className: "group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100 translate-y-[1px]",
                                         title: "Refresh Data",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                className: `fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`
+                                                className: `fi flex fi-rr-refresh ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 495,
-                                                columnNumber: 23
+                                                lineNumber: 285,
+                                                columnNumber: 476
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Refresh"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 496,
-                                                columnNumber: 23
+                                                lineNumber: 285,
+                                                columnNumber: 610
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 485,
+                                        lineNumber: 285,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: handleDownloadExcel,
-                                        disabled: loading || agentData.length === 0,
+                                        disabled: isLoading || displayData.length === 0,
                                         className: "group flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-all border border-emerald-100 translate-y-[1px]",
                                         title: "Download Excel Report",
                                         children: [
@@ -904,20 +840,20 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 className: "fi flex fi-rr-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 505,
-                                                columnNumber: 23
+                                                lineNumber: 286,
+                                                columnNumber: 330
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Download Excel"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 506,
-                                                columnNumber: 23
+                                                lineNumber: 286,
+                                                columnNumber: 438
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 499,
+                                        lineNumber: 286,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -930,14 +866,14 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 510,
-                                                        columnNumber: 25
+                                                        lineNumber: 288,
+                                                        columnNumber: 147
                                                     }, this),
-                                                    " ACTIVE"
+                                                    " ONLINE"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 509,
+                                                lineNumber: 288,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -947,32 +883,32 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         className: "w-2 h-2 rounded-full bg-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 513,
-                                                        columnNumber: 25
+                                                        lineNumber: 289,
+                                                        columnNumber: 138
                                                     }, this),
                                                     " IDLE"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 512,
+                                                lineNumber: 289,
                                                 columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 508,
+                                        lineNumber: 287,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 484,
+                                lineNumber: 284,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 479,
+                        lineNumber: 282,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -989,23 +925,23 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Agent"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 523,
+                                                lineNumber: 298,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                                 className: "px-2 py-4 font-bold text-center",
-                                                children: "Last Active"
+                                                children: "Login Status"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 524,
+                                                lineNumber: 299,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
                                                 className: "px-2 py-4 font-bold text-center",
-                                                children: "Status"
+                                                children: "Status (Idle Time)"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 525,
+                                                lineNumber: 300,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1013,7 +949,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Total Dials"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 526,
+                                                lineNumber: 301,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1021,7 +957,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Connected"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 527,
+                                                lineNumber: 302,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1029,15 +965,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Talk Time"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 528,
-                                                columnNumber: 27
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "px-2 py-4 font-bold text-center",
-                                                children: "Avg Talk"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 529,
+                                                lineNumber: 303,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1045,15 +973,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Follow Ups"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 530,
-                                                columnNumber: 27
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
-                                                className: "px-2 py-4 font-bold text-center",
-                                                children: "Streak/Gap"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 531,
+                                                lineNumber: 304,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1061,7 +981,7 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Utilization"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 532,
+                                                lineNumber: 305,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1069,23 +989,23 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                 children: "Last Call"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 533,
+                                                lineNumber: 306,
                                                 columnNumber: 27
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 522,
+                                        lineNumber: 297,
                                         columnNumber: 23
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 521,
+                                    lineNumber: 296,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
                                     className: "divide-y divide-gray-50",
-                                    children: agentData.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                    children: displayData.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                             colSpan: 10,
                                             className: "px-8 py-12 text-center",
@@ -1096,38 +1016,34 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         className: "fi fi-rr-search text-3xl text-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 541,
-                                                        columnNumber: 39
+                                                        lineNumber: 311,
+                                                        columnNumber: 133
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         className: "text-sm font-bold text-gray-400",
                                                         children: "No agent activity found for this period"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 542,
-                                                        columnNumber: 39
+                                                        lineNumber: 311,
+                                                        columnNumber: 191
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 540,
-                                                columnNumber: 35
+                                                lineNumber: 311,
+                                                columnNumber: 83
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 539,
+                                            lineNumber: 311,
                                             columnNumber: 31
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 538,
+                                        lineNumber: 311,
                                         columnNumber: 27
-                                    }, this) : [
-                                        ...agentData
-                                    ].sort((a, b)=>(a.name || '').localeCompare(b.name || '')).map((agent, i)=>{
-                                        const { status, idleTime, isOnline } = calculateStatus(agent.last_active);
-                                        const connectRate = agent.count > 0 ? (agent.connected_count / agent.count * 100).toFixed(1) : "0.0";
-                                        const avgTalkTime = agent.connected_count > 0 ? formatDuration(Math.floor(agent.duration / agent.connected_count)) : "0s";
+                                    }, this) : displayData.map((agent, i)=>{
+                                        const isOnline = agent.login_status_fmt === 'ONLINE';
                                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                             className: "hover:bg-gray-50/50 transition-colors group",
                                             children: [
@@ -1137,27 +1053,19 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         className: "flex items-center gap-4",
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "w-11 h-11 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center text-[#4b33e8] font-bold group-hover:bg-[#4b33e8] group-hover:text-white transition-all cursor-pointer",
-                                                                children: agent.profile_pic_url ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                                                    src: agent.profile_pic_url,
-                                                                    alt: "",
-                                                                    className: "w-full h-full object-cover"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 559,
-                                                                    columnNumber: 51
-                                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 shadow-sm overflow-hidden flex items-center justify-center text-[#4b33e8] font-bold group-hover:bg-[#4b33e8] group-hover:text-white transition-all cursor-pointer",
+                                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                     className: "text-sm",
-                                                                    children: (agent.name || "U").charAt(0)
+                                                                    children: agent.name.charAt(0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 561,
-                                                                    columnNumber: 51
+                                                                    lineNumber: 316,
+                                                                    columnNumber: 341
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 557,
-                                                                columnNumber: 43
+                                                                lineNumber: 316,
+                                                                columnNumber: 102
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "cursor-pointer",
@@ -1167,8 +1075,8 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                         children: agent.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 565,
-                                                                        columnNumber: 47
+                                                                        lineNumber: 316,
+                                                                        columnNumber: 434
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                         className: "text-[10px] text-gray-400 font-medium",
@@ -1178,134 +1086,63 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 566,
-                                                                        columnNumber: 47
+                                                                        lineNumber: 316,
+                                                                        columnNumber: 498
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 564,
-                                                                columnNumber: 43
+                                                                lineNumber: 316,
+                                                                columnNumber: 402
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 556,
-                                                        columnNumber: 39
+                                                        lineNumber: 316,
+                                                        columnNumber: 61
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 555,
+                                                    lineNumber: 316,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-2 py-5 text-center",
-                                                    children: agent.last_online ? (()=>{
-                                                        const diff = Date.now() - new Date(agent.last_online).getTime();
-                                                        const diffMins = diff / 60000;
-                                                        let dotColor = "bg-gray-400";
-                                                        let textColor = "text-gray-500";
-                                                        let bgColor = "bg-gray-50";
-                                                        let borderColor = "border-gray-100";
-                                                        let statusText = "OFFLINE";
-                                                        if (diffMins <= 1) {
-                                                            dotColor = "bg-emerald-500 animate-pulse";
-                                                            textColor = "text-emerald-700";
-                                                            bgColor = "bg-emerald-50";
-                                                            borderColor = "border-emerald-100";
-                                                            statusText = "ONLINE";
-                                                        } else if (diffMins <= 3) {
-                                                            dotColor = "bg-amber-500";
-                                                            textColor = "text-amber-700";
-                                                            bgColor = "bg-amber-50";
-                                                            borderColor = "border-amber-100";
-                                                            statusText = "IDLE";
-                                                        }
-                                                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "flex flex-col items-center gap-1",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                                    className: "text-[10px] font-bold text-gray-500",
-                                                                    children: formatTime(agent.last_online)
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 596,
-                                                                    columnNumber: 51
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: `inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[9px] font-bold border ${bgColor} ${textColor} ${borderColor}`,
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                            className: `w-1 h-1 rounded-full ${dotColor}`
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                            lineNumber: 598,
-                                                                            columnNumber: 55
-                                                                        }, this),
-                                                                        statusText
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 597,
-                                                                    columnNumber: 51
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 595,
-                                                            columnNumber: 47
-                                                        }, this);
-                                                    })() : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "text-gray-300 font-bold",
-                                                        children: "-"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 604,
-                                                        columnNumber: 43
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 570,
-                                                    columnNumber: 35
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "px-2 py-5 text-center",
-                                                    children: agent.on_call ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.is_personal ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`,
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                className: `fi flex ${agent.is_personal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 610,
-                                                                columnNumber: 47
-                                                            }, this),
-                                                            agent.is_personal ? 'PERSONAL CALL' : 'ON CALL'
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 609,
-                                                        columnNumber: 43
-                                                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`,
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: `inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[9px] font-bold border ${isOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`,
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                className: `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`
+                                                                className: `w-1 h-1 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 615,
-                                                                columnNumber: 47
+                                                                lineNumber: 318,
+                                                                columnNumber: 39
                                                             }, this),
-                                                            isOnline ? 'ACTIVE' : `IDLE ${idleTime !== 'N/A' ? idleTime : ''}`
+                                                            agent.login_status_fmt
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 614,
-                                                        columnNumber: 43
+                                                        lineNumber: 317,
+                                                        columnNumber: 73
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 607,
+                                                    lineNumber: 317,
+                                                    columnNumber: 35
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-2 py-5 text-center",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: `inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.status_fmt === '--' ? 'bg-gray-50 text-gray-300' : 'bg-amber-50 text-amber-700 border-amber-100'}`,
+                                                        children: agent.status_fmt === '--' ? '--' : `IDLE ${agent.status_fmt}`
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 321,
+                                                        columnNumber: 73
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                    lineNumber: 321,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1318,12 +1155,12 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 621,
-                                                        columnNumber: 39
+                                                        lineNumber: 322,
+                                                        columnNumber: 73
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 620,
+                                                    lineNumber: 322,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1334,24 +1171,24 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                             children: agent.connected_count
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 626,
-                                                            columnNumber: 39
+                                                            lineNumber: 323,
+                                                            columnNumber: 73
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-[10px] text-indigo-500 font-bold",
                                                             children: [
-                                                                connectRate,
-                                                                "% "
+                                                                agent.count > 0 ? (agent.connected_count / agent.count * 100).toFixed(1) : '0.0',
+                                                                "%"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 627,
-                                                            columnNumber: 39
+                                                            lineNumber: 323,
+                                                            columnNumber: 148
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 625,
+                                                    lineNumber: 323,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1359,31 +1196,15 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     children: formatDuration(agent.duration || 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 629,
-                                                    columnNumber: 35
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "px-2 py-5 text-center text-sm text-gray-600 font-bold",
-                                                    children: avgTalkTime
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 632,
+                                                    lineNumber: 324,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-2 py-5 text-center text-sm text-indigo-600 font-bold",
-                                                    children: agent.follow_ups_count || 0
+                                                    children: agent.follow_ups || 0
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 635,
-                                                    columnNumber: 35
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "px-2 py-5 text-center text-sm text-amber-600 font-bold",
-                                                    children: agent.consecutive_failed_stats
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 638,
+                                                    lineNumber: 325,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1393,41 +1214,38 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                         children: [
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "text-sm font-bold text-rose-600",
-                                                                children: [
-                                                                    (((agent.duration || 0) / 60 * 1.67 + (agent.count || 0)) / 3).toFixed(1),
-                                                                    "%"
-                                                                ]
-                                                            }, void 0, true, {
+                                                                children: agent.utilization_str
+                                                            }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 643,
-                                                                columnNumber: 43
+                                                                lineNumber: 326,
+                                                                columnNumber: 117
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "w-12 h-1 bg-gray-100 rounded-full mt-1 overflow-hidden",
                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "h-full bg-rose-500",
                                                                     style: {
-                                                                        width: `${Math.min(100, ((agent.duration || 0) / 60 * 1.67 + (agent.count || 0)) / 3)}%`
+                                                                        width: `${Math.min(100, agent.utilization_num)}%`
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 647,
-                                                                    columnNumber: 47
+                                                                    lineNumber: 326,
+                                                                    columnNumber: 269
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 646,
-                                                                columnNumber: 43
+                                                                lineNumber: 326,
+                                                                columnNumber: 197
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 642,
-                                                        columnNumber: 39
+                                                        lineNumber: 326,
+                                                        columnNumber: 73
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 641,
+                                                    lineNumber: 326,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1435,63 +1253,66 @@ function AgentPerformanceTab({ agentData: initialAgentData, totalDials: initialT
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-sm font-bold text-[#263238]",
-                                                            children: formatTime(agent.last_active)
+                                                            children: agent.last_active ? new Date(agent.last_active).toLocaleTimeString([], {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            }) : 'Never'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 655,
-                                                            columnNumber: 39
+                                                            lineNumber: 327,
+                                                            columnNumber: 72
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-[10px] text-gray-400 font-medium",
                                                             children: agent.last_active ? new Date(agent.last_active).toLocaleDateString() : 'N/A'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 656,
-                                                            columnNumber: 39
+                                                            lineNumber: 327,
+                                                            columnNumber: 246
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 654,
+                                                    lineNumber: 327,
                                                     columnNumber: 35
                                                 }, this)
                                             ]
-                                        }, agent.id, true, {
+                                        }, agent.id || i, true, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 554,
+                                            lineNumber: 315,
                                             columnNumber: 31
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 536,
+                                    lineNumber: 309,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                            lineNumber: 520,
+                            lineNumber: 295,
                             columnNumber: 15
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 519,
+                        lineNumber: 294,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 478,
+                lineNumber: 281,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-        lineNumber: 206,
+        lineNumber: 197,
         columnNumber: 5
     }, this);
 }
-_s(AgentPerformanceTab, "9WrW50dpwA44sOnigguw86nXA14=", false, function() {
+_s(AgentPerformanceTab, "SsnjfFJzraEyNF1j91RfXE0zCaM=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"]
