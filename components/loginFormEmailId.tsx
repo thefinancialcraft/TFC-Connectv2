@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotPasswordForm from "./ForgotPasswordForm";
@@ -19,10 +19,42 @@ export default function LoginFormEmailId({
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotEmailForm, setShowForgotEmailForm] = useState(false);
+
+  // Load remembered creds
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedEmail = localStorage.getItem('remembered_email');
+    const savedPass = localStorage.getItem('_upsa_data');
+    const rememberPref = localStorage.getItem('remember_me_pref') === 'true';
+    
+    if (rememberPref) {
+        setRememberMe(true);
+        if (savedEmail) setEmail(savedEmail);
+        if (savedPass) {
+            try {
+                setPassword(window.atob(savedPass)); // Decode for auto-fill
+            } catch (e) {
+                console.warn("Failed to decode saved credentials");
+            }
+        }
+    }
+  }, []);
+
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setRememberMe(checked);
+    localStorage.setItem('remember_me_pref', checked ? 'true' : 'false');
+    if (!checked) {
+        localStorage.removeItem('remembered_email');
+        localStorage.removeItem('_upsa_data');
+    }
+  };
 
   const handleForgotPasswordFormToggle = (show: boolean) => {
     onForgotPasswordFormToggle?.(show);
@@ -36,6 +68,14 @@ export default function LoginFormEmailId({
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    if (rememberMe) {
+        localStorage.setItem('remembered_email', email.trim());
+        localStorage.setItem('_upsa_data', window.btoa(password)); // Obfuscate password
+    } else {
+        localStorage.removeItem('remembered_email');
+        localStorage.removeItem('_upsa_data');
+    }
 
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -129,6 +169,8 @@ export default function LoginFormEmailId({
           <input
             type="email"
             id="email"
+            name="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none"
@@ -187,6 +229,8 @@ export default function LoginFormEmailId({
           <input
             type={showPassword ? "text" : "password"}
             id="password"
+            name="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none"
@@ -234,6 +278,25 @@ export default function LoginFormEmailId({
             Forgot Password?
           </button>
         </div>
+      </div>
+
+      {/* Remember Me Checkbox */}
+      <div className="flex items-center gap-2 mb-4 px-1">
+        <input
+          type="checkbox"
+          id="rememberMe"
+          checked={rememberMe}
+          onChange={handleRememberMeChange}
+          className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8]"
+          style={{ cursor: 'pointer' }}
+        />
+        <label 
+          htmlFor="rememberMe" 
+          className="text-sm cursor-pointer select-none"
+          style={{ color: '#787E9D', fontWeight: '500' }}
+        >
+          Remember Me
+        </label>
       </div>
 
       {/* Login Button */}

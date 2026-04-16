@@ -12,7 +12,8 @@ export interface UseAuthGuardReturn {
   error: string;
   mounted: boolean;
   statusMessage: string;
-  refetchUser: () => Promise<void>;
+  refetchUser: (force?: boolean) => Promise<void>;
+  sessionExpired: boolean;
 }
 
 export function useAuthGuard(): UseAuthGuardReturn {
@@ -22,6 +23,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Checking session...");
+  const [sessionExpired, setSessionExpired] = useState(false);
   const loadingRef = useRef(false);
 
   const fetchAuth = async (force = false) => {
@@ -46,7 +48,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
       const authUser = authSession?.user;
 
       if (authUser) {
-        
+        setSessionExpired(false);
         // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
         // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
         const sessionProfileStr = typeof window !== 'undefined' ? sessionStorage.getItem('active_user_profile') : null;
@@ -98,8 +100,13 @@ export function useAuthGuard(): UseAuthGuardReturn {
         // Not logged in
         setUser(null);
         if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
-          setStatusMessage("Access denied. Please login...");
-          router.push("/login");
+            // If we had a user before, but now we don't, it might be an expiration
+          if (user || typeof window !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
+              setSessionExpired(true);
+          } else {
+              setStatusMessage("Access denied. Please login...");
+              router.push("/login");
+          }
         }
       }
     } catch (err: any) {
@@ -123,39 +130,87 @@ export function useAuthGuard(): UseAuthGuardReturn {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log(`🔐 [Auth Event] ${event}`);
       
-      // STRICT SINGLE-FETCH: 
-      // We purposefully ignore "TOKEN_REFRESH" and "USER_UPDATED" events to prevent redundant API calls 
-      // on tab-switches or background wakeups.
       if (event === 'SIGNED_IN') {
+        setSessionExpired(false);
         fetchAuth(true); // Sync data only on explicit login
-        } else if (event === 'SIGNED_OUT') {
-        // Prevent accidental kicks due to token refresh timing out when waking from suspended background tabs
-        setTimeout(async () => {
-             const { data } = await supabase.auth.getSession();
-             if (!data.session) {
-                 // Clear cache so it doesn't try to auto-login next time
-                 if (typeof window !== "undefined") {
-                   localStorage.removeItem("cached_user_profile");
-                   sessionStorage.removeItem("active_user_profile");
-                 }
-                 setUser(null);
-                 router.push("/login");
-             } else {
-                 console.log("🔐 [Auth Guard] False SIGNED_OUT event caught and ignored.");
-             }
-        }, 1500);
+      } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED' && !session) {
+        // Immediate check for session expiry UI
+        const isManualLogout = typeof window !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
+        const hasSessionCache = typeof window !== 'undefined' && !!sessionStorage.getItem('active_user_profile');
+        
+        if (isManualLogout) {
+            console.log("👋 [Auth Guard] Manual logout detected. Redirecting...");
+            localStorage.removeItem('manual_logout_intended');
+            setSessionExpired(false);
+            setUser(null);
+            router.push("/login");
+            return;
+        }
+
+        if (user || hasSessionCache) {
+            console.log("🚫 [Auth Guard] Detected expiry event. Showing UI.");
+            if (typeof window !== "undefined") {
+                localStorage.removeItem("cached_user_profile");
+                sessionStorage.removeItem("active_user_profile");
+            }
+            setSessionExpired(true);
+            setUser(null);
+        } else {
+            setUser(null);
+            router.push("/login");
+        }
       }
     });
 
+    // ⚡ PROACTIVE LISTENERS
+    // 1. Cross-tab logout detection
+    const handleStorageChange = (e: StorageEvent) => {
+        if (e.key && e.key.includes('auth-token') && !e.newValue && (user || sessionStorage.getItem('active_user_profile'))) {
+            setSessionExpired(true);
+            setUser(null);
+        }
+    };
+
+    // 2. Immediate check on tab focus
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && (user || sessionStorage.getItem('active_user_profile'))) {
+            fetchAuth(); 
+        }
+    };
+
+    // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
+    // Every 2 seconds, we check if the Supabase token still exists. 
+    // This catches manual deletions or system-level expiries immediately without server round-trips.
+    const localHeartbeat = setInterval(() => {
+        if (typeof window === 'undefined') return;
+        
+        const hasToken = Object.keys(localStorage).some(key => key.includes('auth-token'));
+        const hasProfile = !!sessionStorage.getItem('active_user_profile');
+        const isManualLogout = localStorage.getItem('manual_logout_intended') === 'true';
+        
+        if (!hasToken && (user || hasProfile) && !sessionExpired && !isManualLogout) {
+            console.log("🚨 [Auth Guard] Local token missing. Locking system.");
+            setSessionExpired(true);
+            setUser(null);
+            
+            // Clean up
+            sessionStorage.removeItem('active_user_profile');
+            localStorage.removeItem('cached_user_profile');
+        }
+    }, 2000);
+
     return () => {
       subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(localHeartbeat);
     };
-  }, []);
+  }, [user, router.pathname, sessionExpired]);
 
   // 2. Production Pattern: Pure Route Protection on every navigation
   // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.
   useEffect(() => {
-    if (!mounted || loading) return;
+    if (!mounted || loading || sessionExpired) return;
 
     const isLoginPage = router.pathname === "/login" || router.pathname === "/portal/login";
     const isPublicLandingPage = ["/home", "/signup", "/signup-success", "/contact", "/features", "/pricing", "/faq"].includes(router.pathname);
@@ -178,7 +233,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
             }
         }
     }
-  }, [router.pathname, router.asPath, user?.uid, mounted, loading]);
+  }, [router.pathname, router.asPath, user?.uid, mounted, loading, sessionExpired]);
 
-  return { user, loading, error, mounted, statusMessage, refetchUser: fetchAuth };
+  return { user, loading, error, mounted, statusMessage, refetchUser: fetchAuth, sessionExpired };
 }

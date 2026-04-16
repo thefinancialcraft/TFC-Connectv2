@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import ForgotUserIdForm from "./ForgotUserIdForm";
@@ -24,9 +24,41 @@ export default function LoginFormUserId({
   const router = useRouter();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Load remembered creds
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedId = localStorage.getItem('remembered_user_id');
+    const savedPass = localStorage.getItem('_upid_data');
+    const rememberPref = localStorage.getItem('remember_me_userId_pref') === 'true';
+    
+    if (rememberPref) {
+        setRememberMe(true);
+        if (savedId) setUserId(savedId);
+        if (savedPass) {
+            try {
+                setPassword(window.atob(savedPass)); // Decode for auto-fill
+            } catch (e) {
+                console.warn("Failed to decode saved credentials");
+            }
+        }
+    }
+  }, []);
+
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setRememberMe(checked);
+    localStorage.setItem('remember_me_userId_pref', checked ? 'true' : 'false');
+    if (!checked) {
+        localStorage.removeItem('remembered_user_id');
+        localStorage.removeItem('_upid_data');
+    }
+  };
 
   const handleForgotFormToggle = (show: boolean) => {
     onForgotFormToggle?.(show);
@@ -40,6 +72,14 @@ export default function LoginFormUserId({
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    if (rememberMe) {
+        localStorage.setItem('remembered_user_id', userId.trim());
+        localStorage.setItem('_upid_data', window.btoa(password)); // Obfuscate password
+    } else {
+        localStorage.removeItem('remembered_user_id');
+        localStorage.removeItem('_upid_data');
+    }
     
     try {
       const inputId = userId.trim();
@@ -168,6 +208,8 @@ export default function LoginFormUserId({
           <input
             type="text"
             id="userId"
+            name="username"
+            autoComplete="username"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
             className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none"
@@ -226,6 +268,8 @@ export default function LoginFormUserId({
           <input
             type={showPassword ? "text" : "password"}
             id="password"
+            name="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none"
@@ -273,6 +317,25 @@ export default function LoginFormUserId({
             Forgot Password?
           </button>
         </div>
+      </div>
+
+      {/* Remember Me Checkbox */}
+      <div className="flex items-center gap-2 mb-4 px-1">
+        <input
+          type="checkbox"
+          id="rememberMe"
+          checked={rememberMe}
+          onChange={handleRememberMeChange}
+          className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8]"
+          style={{ cursor: 'pointer' }}
+        />
+        <label 
+          htmlFor="rememberMe" 
+          className="text-sm cursor-pointer select-none"
+          style={{ color: '#787E9D', fontWeight: '500' }}
+        >
+          Remember Me
+        </label>
       </div>
 
       {/* Login Button */}

@@ -43,6 +43,19 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/pages_portal_activity_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_activity_tsx_e67dc058._.js"
     ],
+    "/portal/call-sessions": [
+      "static/chunks/[root-of-the-server]__15e65461._.js",
+      "static/chunks/node_modules_next_dist_compiled_ebbb8748._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_49f863e2._.js",
+      "static/chunks/node_modules_next_dist_client_d0aa886c._.js",
+      "static/chunks/node_modules_next_dist_a1eb637b._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
+      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+      "static/chunks/node_modules_26c981b5._.js",
+      "static/chunks/pages_portal_call-sessions_tsx_2da965e7._.js",
+      "static/chunks/turbopack-pages_portal_call-sessions_tsx_3f91734d._.js"
+    ],
     "/portal/campaign": [
       "static/chunks/[root-of-the-server]__cfe117d7._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
@@ -111,8 +124,8 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/turbopack-pages_portal_customer_tsx_ab630f0f._.js"
     ],
     "/portal/dashboard": [
-      "static/chunks/_31a2a838._.js",
-      "static/chunks/[root-of-the-server]__9a18fefd._.js",
+      "static/chunks/components_dashboard_7185b9e8._.js",
+      "static/chunks/[root-of-the-server]__b1a68bc2._.js",
       "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
       "static/chunks/node_modules_next_dist_shared_lib_41d42037._.js",
       "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
@@ -123,7 +136,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_b0c9384a._.js",
       "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_dashboard_tsx_af17d781._.js"
+      "static/chunks/turbopack-pages_portal_dashboard_tsx_7619a305._.js"
     ],
     "/portal/followup": [
       "static/chunks/[root-of-the-server]__1159d318._.js",
@@ -153,6 +166,20 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_8efd91fd._.js",
       "static/chunks/pages_portal_login_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_login_tsx_669ef6ff._.js"
+    ],
+    "/portal/organization": [
+      "static/chunks/[root-of-the-server]__92165a0a._.js",
+      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
+      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
+      "static/chunks/node_modules_next_dist_a1eb637b._.js",
+      "static/chunks/node_modules_next_5cb05f67._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
+      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+      "static/chunks/node_modules_6526044e._.js",
+      "static/chunks/pages_portal_organization_tsx_2da965e7._.js",
+      "static/chunks/turbopack-pages_portal_organization_tsx_389798b5._.js"
     ],
     "/portal/profile-completion": [
       "static/chunks/[root-of-the-server]__ebb9f576._.js",
@@ -202,7 +229,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/components_users_8ac302c1._.js",
       "static/chunks/components_UserMenuDropdown_tsx_cc8bfca1._.js",
       "static/chunks/components_15103253._.js",
-      "static/chunks/_6937d256._.js",
+      "static/chunks/_f60b56bb._.js",
       "static/chunks/[root-of-the-server]__ef8266b7._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
@@ -214,7 +241,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_6526044e._.js",
       "static/chunks/pages_portal_users_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_users_tsx_b311be7e._.js"
+      "static/chunks/turbopack-pages_portal_users_tsx_3c20d611._.js"
     ],
     "/portal/users/[userId]": [
       "static/chunks/_6d3cb3db._.js",

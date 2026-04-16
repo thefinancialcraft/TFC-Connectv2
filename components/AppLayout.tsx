@@ -20,13 +20,14 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, hideSidebar = false, hideHeader = false }: AppLayoutProps) {
   const router = useRouter();
-  const { user, loading: authLoading, error, mounted, statusMessage } = useUser();
+  const { user, loading: authLoading, error, mounted, statusMessage, sessionExpired } = useUser();
 
   const handleLogoutClick = useCallback(async () => {
     await handleLogout(router);
   }, [router]);
 
   // 🛰️ Sentinel: Track Page Visits
+  // NOTE: This must stay ABOVE any early returns to satisfy React Hook Rules
   useEffect(() => {
     if (mounted && user && !router.pathname.includes('/login')) {
       logSystemEvent({
@@ -39,6 +40,36 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
     }
   }, [router.pathname, user?.uid, mounted]);
 
+  // Session Expired UI logic
+  // NOTE: Conditional rendering happens AFTER all hooks are declared
+  if (sessionExpired) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f6f5ff] p-4 text-center">
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white animate-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-[#263238] mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>Session Expired</h2>
+          <p className="text-[#787E9D] mb-8">For your security, your session has timed out. Please refresh to re-authenticate and continue your work.</p>
+          
+          <button
+            onClick={() => {
+                sessionStorage.clear();
+                localStorage.clear();
+                window.location.href = '/portal/login';
+            }}
+            className="w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200 group"
+          >
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin group-hover:scale-110 transition-transform"></div>
+            Refresh & Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isAuthPage = ['/portal/login', '/portal/signup', '/portal/signup-success'].includes(router.pathname);
 

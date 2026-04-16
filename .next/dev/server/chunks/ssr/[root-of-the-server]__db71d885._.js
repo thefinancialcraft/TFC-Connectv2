@@ -220,9 +220,11 @@ function useDashboardStats() {
             setLoading(true);
             setError(null);
             // Wait for session using the robust helper (handles hydration race conditions)
-            const { ensureValidSession } = await __turbopack_context__.A("[project]/lib/sessionManager.ts [ssr] (ecmascript, async loader)");
             const session = await ensureValidSession();
-            if (!session) throw new Error("Not authenticated");
+            if (!session) {
+                setLoading(false);
+                return;
+            }
             const params = new URLSearchParams({
                 dateFilter,
                 ...orgId && {

@@ -1480,6 +1480,7 @@ const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project
     loading: true,
     error: null,
     statusMessage: "",
+    sessionExpired: false,
     refetchUser: async ()=>{}
 });
 const useUser = ()=>{
@@ -1560,7 +1561,7 @@ async function checkAuthAndFetchProfile() {
             profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
             googleCalendarConnected: profileData?.google_calendar_connected || false,
             googleCalendarSkipped: profileData?.google_calendar_skipped || false,
-            isClient: profileData?.is_client || false,
+            isClient: profileData ? profileData.is_client ?? false : undefined,
             isCaller: profileData?.is_caller || false,
             designation: profileData?.designation || null,
             department: profileData?.department || null,
@@ -1598,9 +1599,11 @@ async function handleLogout(router) {
                     value: true
                 });
             }
-            // Clear all auth related local storage
-            localStorage.clear();
-            sessionStorage.clear();
+            // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
+            localStorage.setItem('manual_logout_intended', 'true');
+            // Clear specific caches instead of nuking everything immediately
+            localStorage.removeItem('cached_user_profile');
+            sessionStorage.removeItem('active_user_profile');
         }
         // 2. Clear Supabase session on server and client
         const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
@@ -1650,6 +1653,7 @@ function useAuthGuard() {
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [mounted, setMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [statusMessage, setStatusMessage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("Checking session...");
+    const [sessionExpired, setSessionExpired] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const loadingRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(false);
     const fetchAuth = async (force = false)=>{
         // Production Pattern: If we already have a user and aren't forcing a refresh, skip the loading screen and call.
@@ -1668,6 +1672,7 @@ function useAuthGuard() {
             const { data: { session: authSession }, error: authError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
             const authUser = authSession?.user;
             if (authUser) {
+                setSessionExpired(false);
                 // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
                 // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
                 const sessionProfileStr = ("TURBOPACK compile-time truthy", 1) ? sessionStorage.getItem('active_user_profile') : "TURBOPACK unreachable";
@@ -1714,8 +1719,13 @@ function useAuthGuard() {
                 // Not logged in
                 setUser(null);
                 if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
-                    setStatusMessage("Access denied. Please login...");
-                    router.push("/login");
+                    // If we had a user before, but now we don't, it might be an expiration
+                    if (user || ("TURBOPACK compile-time value", "object") !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
+                        setSessionExpired(true);
+                    } else {
+                        setStatusMessage("Access denied. Please login...");
+                        router.push("/login");
+                    }
                 }
             }
         } catch (err) {
@@ -1738,44 +1748,95 @@ function useAuthGuard() {
             const { data: { subscription } } = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.onAuthStateChange({
                 "useAuthGuard.useEffect": (event, session)=>{
                     console.log(`🔐 [Auth Event] ${event}`);
-                    // STRICT SINGLE-FETCH: 
-                    // We purposefully ignore "TOKEN_REFRESH" and "USER_UPDATED" events to prevent redundant API calls 
-                    // on tab-switches or background wakeups.
                     if (event === 'SIGNED_IN') {
+                        setSessionExpired(false);
                         fetchAuth(true); // Sync data only on explicit login
-                    } else if (event === 'SIGNED_OUT') {
-                        // Prevent accidental kicks due to token refresh timing out when waking from suspended background tabs
-                        setTimeout({
-                            "useAuthGuard.useEffect": async ()=>{
-                                const { data } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
-                                if (!data.session) {
-                                    // Clear cache so it doesn't try to auto-login next time
-                                    if ("TURBOPACK compile-time truthy", 1) {
-                                        localStorage.removeItem("cached_user_profile");
-                                        sessionStorage.removeItem("active_user_profile");
-                                    }
-                                    setUser(null);
-                                    router.push("/login");
-                                } else {
-                                    console.log("🔐 [Auth Guard] False SIGNED_OUT event caught and ignored.");
-                                }
+                    } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED' && !session) {
+                        // Immediate check for session expiry UI
+                        const isManualLogout = ("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
+                        const hasSessionCache = ("TURBOPACK compile-time value", "object") !== 'undefined' && !!sessionStorage.getItem('active_user_profile');
+                        if (isManualLogout) {
+                            console.log("👋 [Auth Guard] Manual logout detected. Redirecting...");
+                            localStorage.removeItem('manual_logout_intended');
+                            setSessionExpired(false);
+                            setUser(null);
+                            router.push("/login");
+                            return;
+                        }
+                        if (user || hasSessionCache) {
+                            console.log("🚫 [Auth Guard] Detected expiry event. Showing UI.");
+                            if ("TURBOPACK compile-time truthy", 1) {
+                                localStorage.removeItem("cached_user_profile");
+                                sessionStorage.removeItem("active_user_profile");
                             }
-                        }["useAuthGuard.useEffect"], 1500);
+                            setSessionExpired(true);
+                            setUser(null);
+                        } else {
+                            setUser(null);
+                            router.push("/login");
+                        }
                     }
                 }
             }["useAuthGuard.useEffect"]);
+            // ⚡ PROACTIVE LISTENERS
+            // 1. Cross-tab logout detection
+            const handleStorageChange = {
+                "useAuthGuard.useEffect.handleStorageChange": (e)=>{
+                    if (e.key && e.key.includes('auth-token') && !e.newValue && (user || sessionStorage.getItem('active_user_profile'))) {
+                        setSessionExpired(true);
+                        setUser(null);
+                    }
+                }
+            }["useAuthGuard.useEffect.handleStorageChange"];
+            // 2. Immediate check on tab focus
+            const handleVisibilityChange = {
+                "useAuthGuard.useEffect.handleVisibilityChange": ()=>{
+                    if (document.visibilityState === 'visible' && (user || sessionStorage.getItem('active_user_profile'))) {
+                        fetchAuth();
+                    }
+                }
+            }["useAuthGuard.useEffect.handleVisibilityChange"];
+            // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
+            // Every 2 seconds, we check if the Supabase token still exists. 
+            // This catches manual deletions or system-level expiries immediately without server round-trips.
+            const localHeartbeat = setInterval({
+                "useAuthGuard.useEffect.localHeartbeat": ()=>{
+                    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                    ;
+                    const hasToken = Object.keys(localStorage).some({
+                        "useAuthGuard.useEffect.localHeartbeat.hasToken": (key)=>key.includes('auth-token')
+                    }["useAuthGuard.useEffect.localHeartbeat.hasToken"]);
+                    const hasProfile = !!sessionStorage.getItem('active_user_profile');
+                    const isManualLogout = localStorage.getItem('manual_logout_intended') === 'true';
+                    if (!hasToken && (user || hasProfile) && !sessionExpired && !isManualLogout) {
+                        console.log("🚨 [Auth Guard] Local token missing. Locking system.");
+                        setSessionExpired(true);
+                        setUser(null);
+                        // Clean up
+                        sessionStorage.removeItem('active_user_profile');
+                        localStorage.removeItem('cached_user_profile');
+                    }
+                }
+            }["useAuthGuard.useEffect.localHeartbeat"], 2000);
             return ({
                 "useAuthGuard.useEffect": ()=>{
                     subscription.unsubscribe();
+                    window.removeEventListener('storage', handleStorageChange);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    clearInterval(localHeartbeat);
                 }
             })["useAuthGuard.useEffect"];
         }
-    }["useAuthGuard.useEffect"], []);
+    }["useAuthGuard.useEffect"], [
+        user,
+        router.pathname,
+        sessionExpired
+    ]);
     // 2. Production Pattern: Pure Route Protection on every navigation
     // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "useAuthGuard.useEffect": ()=>{
-            if (!mounted || loading) return;
+            if (!mounted || loading || sessionExpired) return;
             const isLoginPage = router.pathname === "/login" || router.pathname === "/portal/login";
             const isPublicLandingPage = [
                 "/home",
@@ -1810,7 +1871,8 @@ function useAuthGuard() {
         router.asPath,
         user?.uid,
         mounted,
-        loading
+        loading,
+        sessionExpired
     ]);
     return {
         user,
@@ -1818,10 +1880,11 @@ function useAuthGuard() {
         error,
         mounted,
         statusMessage,
-        refetchUser: fetchAuth
+        refetchUser: fetchAuth,
+        sessionExpired
     };
 }
-_s(useAuthGuard, "IOXwMeUJgulr++5zI26HjDwvKKI=", false, function() {
+_s(useAuthGuard, "D84MmLKOg9CbRCYJVP2pABY9oN0=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];
@@ -1848,7 +1911,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 function UserProvider({ children }) {
     _s();
-    const { user, loading, error, mounted, statusMessage, refetchUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAuthGuard"])();
+    const { user, loading, error, mounted, statusMessage, refetchUser, sessionExpired } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAuthGuard"])();
     const prevUserRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
     // Bridge Sync Logic (Reliability Pinger for refresh/cold-start)
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -1973,6 +2036,7 @@ function UserProvider({ children }) {
                 error: error || null,
                 mounted,
                 statusMessage,
+                sessionExpired,
                 refetchUser
             })
     }["UserProvider.useMemo[contextValue]"], [
@@ -1981,18 +2045,19 @@ function UserProvider({ children }) {
         error,
         mounted,
         statusMessage,
-        refetchUser
+        refetchUser,
+        sessionExpired
     ]);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["UserContext"].Provider, {
         value: contextValue,
         children: children
     }, void 0, false, {
         fileName: "[project]/components/UserProvider.tsx",
-        lineNumber: 133,
+        lineNumber: 134,
         columnNumber: 5
     }, this);
 }
-_s(UserProvider, "b8WoAknzg6R3oO89pPrYozVl3X4=", false, function() {
+_s(UserProvider, "gFq0OZBwIDvqmeCr+7djjWDfmos=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAuthGuard"]
     ];
@@ -9248,7 +9313,7 @@ var _s = __turbopack_context__.k.signature();
 function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const { user, loading: authLoading, error, mounted, statusMessage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const { user, loading: authLoading, error, mounted, statusMessage, sessionExpired } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
     const handleLogoutClick = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "AppLayout.useCallback[handleLogoutClick]": async ()=>{
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["handleLogout"])(router);
@@ -9257,6 +9322,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
         router
     ]);
     // 🛰️ Sentinel: Track Page Visits
+    // NOTE: This must stay ABOVE any early returns to satisfy React Hook Rules
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AppLayout.useEffect": ()=>{
             if (mounted && user && !router.pathname.includes('/login')) {
@@ -9274,6 +9340,110 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
         user?.uid,
         mounted
     ]);
+    // Session Expired UI logic
+    // NOTE: Conditional rendering happens AFTER all hooks are declared
+    if (sessionExpired) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "flex flex-col min-h-screen items-center justify-center bg-[#f6f5ff] p-4 text-center",
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white animate-in zoom-in duration-300",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                            xmlns: "http://www.w3.org/2000/svg",
+                            width: "40",
+                            height: "40",
+                            viewBox: "0 0 24 24",
+                            fill: "none",
+                            stroke: "currentColor",
+                            strokeWidth: "2",
+                            strokeLinecap: "round",
+                            strokeLinejoin: "round",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
+                                    x: "3",
+                                    y: "11",
+                                    width: "18",
+                                    height: "11",
+                                    rx: "2",
+                                    ry: "2"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AppLayout.tsx",
+                                    lineNumber: 51,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                    d: "M7 11V7a5 5 0 0 1 10 0v4"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/AppLayout.tsx",
+                                    lineNumber: 52,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/AppLayout.tsx",
+                            lineNumber: 50,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/AppLayout.tsx",
+                        lineNumber: 49,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                        className: "text-2xl font-bold text-[#263238] mb-2",
+                        style: {
+                            fontFamily: "'Poppins', sans-serif"
+                        },
+                        children: "Session Expired"
+                    }, void 0, false, {
+                        fileName: "[project]/components/AppLayout.tsx",
+                        lineNumber: 55,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-[#787E9D] mb-8",
+                        children: "For your security, your session has timed out. Please refresh to re-authenticate and continue your work."
+                    }, void 0, false, {
+                        fileName: "[project]/components/AppLayout.tsx",
+                        lineNumber: 56,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>{
+                            sessionStorage.clear();
+                            localStorage.clear();
+                            window.location.href = '/portal/login';
+                        },
+                        className: "w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200 group",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin group-hover:scale-110 transition-transform"
+                            }, void 0, false, {
+                                fileName: "[project]/components/AppLayout.tsx",
+                                lineNumber: 66,
+                                columnNumber: 13
+                            }, this),
+                            "Refresh & Login"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/AppLayout.tsx",
+                        lineNumber: 58,
+                        columnNumber: 11
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/AppLayout.tsx",
+                lineNumber: 48,
+                columnNumber: 9
+            }, this)
+        }, void 0, false, {
+            fileName: "[project]/components/AppLayout.tsx",
+            lineNumber: 47,
+            columnNumber: 7
+        }, this);
+    }
     const isAuthPage = [
         '/portal/login',
         '/portal/signup',
@@ -9290,12 +9460,12 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         className: "scale-125 mb-4",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                             fileName: "[project]/components/AppLayout.tsx",
-                            lineNumber: 51,
+                            lineNumber: 82,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 50,
+                        lineNumber: 81,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9305,7 +9475,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 className: "w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 54,
+                                lineNumber: 85,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9316,7 +9486,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: statusMessage || "Retrieving logged details..."
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 55,
+                                lineNumber: 86,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9324,24 +9494,24 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: "Please wait while we sync your session"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 58,
+                                lineNumber: 89,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 53,
+                        lineNumber: 84,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 49,
+                lineNumber: 80,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 48,
+            lineNumber: 79,
             columnNumber: 7
         }, this);
     }
@@ -9360,7 +9530,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 73,
+                        lineNumber: 104,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9371,18 +9541,18 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: "Redirecting to login..."
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 74,
+                        lineNumber: 105,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 72,
+                lineNumber: 103,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 68,
+            lineNumber: 99,
             columnNumber: 7
         }, this);
     }
@@ -9403,7 +9573,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
       `
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 90,
+                lineNumber: 121,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Sidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -9412,7 +9582,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 onLogout: handleLogoutClick
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 98,
+                lineNumber: 129,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9424,7 +9594,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         hideSidebar: hideSidebar
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 109,
+                        lineNumber: 140,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -9435,13 +9605,13 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: children
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 117,
+                        lineNumber: 148,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 106,
+                lineNumber: 137,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$BottomNav$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -9452,22 +9622,22 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 employeeId: user?.employeeId
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 127,
+                lineNumber: 158,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 137,
+                lineNumber: 168,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/AppLayout.tsx",
-        lineNumber: 86,
+        lineNumber: 117,
         columnNumber: 5
     }, this);
 }
-_s(AppLayout, "McqxV0YD8MtaNlIX9Gq/YR6Gb18=", false, function() {
+_s(AppLayout, "yKi5KgIqE5AwuY1zEJ4z0UR2gks=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]

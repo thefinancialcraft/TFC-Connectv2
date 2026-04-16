@@ -7,7 +7,8 @@ export interface UserContextType {
   loading: boolean;
   error: string | null;
   statusMessage?: string;
-  refetchUser: () => Promise<void>;
+  sessionExpired: boolean;
+  refetchUser: (force?: boolean) => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -16,6 +17,7 @@ export const UserContext = createContext<UserContextType>({
   loading: true,
   error: null,
   statusMessage: "",
+  sessionExpired: false,
   refetchUser: async () => {},
 });
 

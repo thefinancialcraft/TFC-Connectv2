@@ -98,7 +98,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
         profileData?.profile_pic_url || profileData?.profile_image || null,
       googleCalendarConnected: profileData?.google_calendar_connected || false,
       googleCalendarSkipped: profileData?.google_calendar_skipped || false,
-      isClient: profileData?.is_client || false,
+      isClient: profileData ? (profileData.is_client ?? false) : undefined,
       isCaller: profileData?.is_caller || false,
       designation: profileData?.designation || null,
       department: profileData?.department || null,
@@ -143,9 +143,12 @@ export async function handleLogout(router: NextRouter): Promise<void> {
         });
       }
 
-      // Clear all auth related local storage
-      localStorage.clear();
-      sessionStorage.clear();
+      // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
+      localStorage.setItem('manual_logout_intended', 'true');
+      
+      // Clear specific caches instead of nuking everything immediately
+      localStorage.removeItem('cached_user_profile');
+      sessionStorage.removeItem('active_user_profile');
     }
 
     // 2. Clear Supabase session on server and client

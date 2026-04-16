@@ -1114,9 +1114,28 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     const [userId, setUserId] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [password, setPassword] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
+    const [rememberMe, setRememberMe] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [showPassword, setShowPassword] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    // Load remembered creds
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if ("TURBOPACK compile-time truthy", 1) return;
+        //TURBOPACK unreachable
+        ;
+        const savedId = undefined;
+        const savedPass = undefined;
+        const rememberPref = undefined;
+    }, []);
+    const handleRememberMeChange = (e)=>{
+        const checked = e.target.checked;
+        setRememberMe(checked);
+        localStorage.setItem('remember_me_userId_pref', checked ? 'true' : 'false');
+        if (!checked) {
+            localStorage.removeItem('remembered_user_id');
+            localStorage.removeItem('_upid_data');
+        }
+    };
     const handleForgotFormToggle = (show)=>{
         onForgotFormToggle?.(show);
     };
@@ -1127,6 +1146,13 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
         e.preventDefault();
         setError("");
         setIsLoading(true);
+        if (rememberMe) {
+            localStorage.setItem('remembered_user_id', userId.trim());
+            localStorage.setItem('_upid_data', window.btoa(password)); // Obfuscate password
+        } else {
+            localStorage.removeItem('remembered_user_id');
+            localStorage.removeItem('_upid_data');
+        }
         try {
             const inputId = userId.trim();
             console.log("🔍 [Login] Starting login for ID:", inputId);
@@ -1207,7 +1233,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
             onError: onError
         }, void 0, false, {
             fileName: "[project]/components/loginFormUserId.tsx",
-            lineNumber: 131,
+            lineNumber: 171,
             columnNumber: 12
         }, this);
     }
@@ -1217,7 +1243,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
             onError: onError
         }, void 0, false, {
             fileName: "[project]/components/loginFormUserId.tsx",
-            lineNumber: 135,
+            lineNumber: 175,
             columnNumber: 12
         }, this);
     }
@@ -1239,7 +1265,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                 children: "Login With User ID"
             }, void 0, false, {
                 fileName: "[project]/components/loginFormUserId.tsx",
-                lineNumber: 140,
+                lineNumber: 180,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1254,7 +1280,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                         children: "User ID"
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 153,
+                        lineNumber: 193,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1268,12 +1294,14 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormUserId.tsx",
-                                lineNumber: 161,
+                                lineNumber: 201,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                 type: "text",
                                 id: "userId",
+                                name: "username",
+                                autoComplete: "username",
                                 value: userId,
                                 onChange: (e)=>setUserId(e.target.value),
                                 className: "w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none",
@@ -1295,13 +1323,13 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormUserId.tsx",
-                                lineNumber: 168,
+                                lineNumber: 208,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 160,
+                        lineNumber: 200,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1320,18 +1348,18 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                             children: "Forgot User ID?"
                         }, void 0, false, {
                             fileName: "[project]/components/loginFormUserId.tsx",
-                            lineNumber: 193,
+                            lineNumber: 235,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 192,
+                        lineNumber: 234,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/loginFormUserId.tsx",
-                lineNumber: 152,
+                lineNumber: 192,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1346,7 +1374,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                         children: "Password"
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 211,
+                        lineNumber: 253,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1360,12 +1388,14 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormUserId.tsx",
-                                lineNumber: 219,
+                                lineNumber: 261,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                 type: showPassword ? "text" : "password",
                                 id: "password",
+                                name: "password",
+                                autoComplete: "current-password",
                                 value: password,
                                 onChange: (e)=>setPassword(e.target.value),
                                 className: "w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none",
@@ -1387,7 +1417,7 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormUserId.tsx",
-                                lineNumber: 226,
+                                lineNumber: 268,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -1407,18 +1437,18 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                                     className: `fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`
                                 }, void 0, false, {
                                     fileName: "[project]/components/loginFormUserId.tsx",
-                                    lineNumber: 263,
+                                    lineNumber: 307,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormUserId.tsx",
-                                lineNumber: 249,
+                                lineNumber: 293,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 218,
+                        lineNumber: 260,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1433,18 +1463,54 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                             children: "Forgot Password?"
                         }, void 0, false, {
                             fileName: "[project]/components/loginFormUserId.tsx",
-                            lineNumber: 267,
+                            lineNumber: 311,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormUserId.tsx",
-                        lineNumber: 266,
+                        lineNumber: 310,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/loginFormUserId.tsx",
-                lineNumber: 210,
+                lineNumber: 252,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-2 mb-4 px-1",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
+                        type: "checkbox",
+                        id: "rememberMe",
+                        checked: rememberMe,
+                        onChange: handleRememberMeChange,
+                        className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8]",
+                        style: {
+                            cursor: 'pointer'
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/components/loginFormUserId.tsx",
+                        lineNumber: 324,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                        htmlFor: "rememberMe",
+                        className: "text-sm cursor-pointer select-none",
+                        style: {
+                            color: '#787E9D',
+                            fontWeight: '500'
+                        },
+                        children: "Remember Me"
+                    }, void 0, false, {
+                        fileName: "[project]/components/loginFormUserId.tsx",
+                        lineNumber: 332,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/loginFormUserId.tsx",
+                lineNumber: 323,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -1458,13 +1524,13 @@ function LoginFormUserId({ showForgotForm = false, showForgotPasswordForm = fals
                 children: isLoading ? "Logging in..." : "Login"
             }, void 0, false, {
                 fileName: "[project]/components/loginFormUserId.tsx",
-                lineNumber: 279,
+                lineNumber: 342,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/loginFormUserId.tsx",
-        lineNumber: 139,
+        lineNumber: 179,
         columnNumber: 5
     }, this);
 }
@@ -1871,10 +1937,29 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
     const [email, setEmail] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [password, setPassword] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
+    const [rememberMe, setRememberMe] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])("");
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [showPassword, setShowPassword] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [showForgotEmailForm, setShowForgotEmailForm] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
+    // Load remembered creds
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if ("TURBOPACK compile-time truthy", 1) return;
+        //TURBOPACK unreachable
+        ;
+        const savedEmail = undefined;
+        const savedPass = undefined;
+        const rememberPref = undefined;
+    }, []);
+    const handleRememberMeChange = (e)=>{
+        const checked = e.target.checked;
+        setRememberMe(checked);
+        localStorage.setItem('remember_me_pref', checked ? 'true' : 'false');
+        if (!checked) {
+            localStorage.removeItem('remembered_email');
+            localStorage.removeItem('_upsa_data');
+        }
+    };
     const handleForgotPasswordFormToggle = (show)=>{
         onForgotPasswordFormToggle?.(show);
     };
@@ -1885,6 +1970,13 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
         e.preventDefault();
         setError("");
         setIsLoading(true);
+        if (rememberMe) {
+            localStorage.setItem('remembered_email', email.trim());
+            localStorage.setItem('_upsa_data', window.btoa(password)); // Obfuscate password
+        } else {
+            localStorage.removeItem('remembered_email');
+            localStorage.removeItem('_upsa_data');
+        }
         try {
             const { data, error: signInError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].auth.signInWithPassword({
                 email: email.trim(),
@@ -1933,7 +2025,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
             onError: onError
         }, void 0, false, {
             fileName: "[project]/components/loginFormEmailId.tsx",
-            lineNumber: 92,
+            lineNumber: 132,
             columnNumber: 12
         }, this);
     }
@@ -1943,7 +2035,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
             onError: onError
         }, void 0, false, {
             fileName: "[project]/components/loginFormEmailId.tsx",
-            lineNumber: 96,
+            lineNumber: 136,
             columnNumber: 12
         }, this);
     }
@@ -1965,7 +2057,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                 children: "Login With Email"
             }, void 0, false, {
                 fileName: "[project]/components/loginFormEmailId.tsx",
-                lineNumber: 101,
+                lineNumber: 141,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1980,7 +2072,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                         children: "Email"
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 114,
+                        lineNumber: 154,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -1994,12 +2086,14 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormEmailId.tsx",
-                                lineNumber: 122,
+                                lineNumber: 162,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                 type: "email",
                                 id: "email",
+                                name: "email",
+                                autoComplete: "email",
                                 value: email,
                                 onChange: (e)=>setEmail(e.target.value),
                                 className: "w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none",
@@ -2021,13 +2115,13 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormEmailId.tsx",
-                                lineNumber: 129,
+                                lineNumber: 169,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 121,
+                        lineNumber: 161,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -2046,18 +2140,18 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                             children: "Forgot Email?"
                         }, void 0, false, {
                             fileName: "[project]/components/loginFormEmailId.tsx",
-                            lineNumber: 154,
+                            lineNumber: 196,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 153,
+                        lineNumber: 195,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/loginFormEmailId.tsx",
-                lineNumber: 113,
+                lineNumber: 153,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -2072,7 +2166,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                         children: "Password"
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 172,
+                        lineNumber: 214,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -2086,12 +2180,14 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormEmailId.tsx",
-                                lineNumber: 180,
+                                lineNumber: 222,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
                                 type: showPassword ? "text" : "password",
                                 id: "password",
+                                name: "password",
+                                autoComplete: "current-password",
                                 value: password,
                                 onChange: (e)=>setPassword(e.target.value),
                                 className: "w-full rounded-full border-2 py-3 md:py-[11px] md:text-[13px] transition-all focus:outline-none",
@@ -2113,7 +2209,7 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormEmailId.tsx",
-                                lineNumber: 187,
+                                lineNumber: 229,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -2133,18 +2229,18 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                                     className: `fi flex ${showPassword ? 'fi-rr-eye' : 'fi-rr-eye-crossed'}`
                                 }, void 0, false, {
                                     fileName: "[project]/components/loginFormEmailId.tsx",
-                                    lineNumber: 224,
+                                    lineNumber: 268,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/loginFormEmailId.tsx",
-                                lineNumber: 210,
+                                lineNumber: 254,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 179,
+                        lineNumber: 221,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -2159,18 +2255,54 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                             children: "Forgot Password?"
                         }, void 0, false, {
                             fileName: "[project]/components/loginFormEmailId.tsx",
-                            lineNumber: 228,
+                            lineNumber: 272,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/loginFormEmailId.tsx",
-                        lineNumber: 227,
+                        lineNumber: 271,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/loginFormEmailId.tsx",
-                lineNumber: 171,
+                lineNumber: 213,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: "flex items-center gap-2 mb-4 px-1",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
+                        type: "checkbox",
+                        id: "rememberMe",
+                        checked: rememberMe,
+                        onChange: handleRememberMeChange,
+                        className: "w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8]",
+                        style: {
+                            cursor: 'pointer'
+                        }
+                    }, void 0, false, {
+                        fileName: "[project]/components/loginFormEmailId.tsx",
+                        lineNumber: 285,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                        htmlFor: "rememberMe",
+                        className: "text-sm cursor-pointer select-none",
+                        style: {
+                            color: '#787E9D',
+                            fontWeight: '500'
+                        },
+                        children: "Remember Me"
+                    }, void 0, false, {
+                        fileName: "[project]/components/loginFormEmailId.tsx",
+                        lineNumber: 293,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/loginFormEmailId.tsx",
+                lineNumber: 284,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -2184,13 +2316,13 @@ function LoginFormEmailId({ showForgotPasswordForm = false, onForgotPasswordForm
                 children: isLoading ? "Logging in..." : "Login"
             }, void 0, false, {
                 fileName: "[project]/components/loginFormEmailId.tsx",
-                lineNumber: 240,
+                lineNumber: 303,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/loginFormEmailId.tsx",
-        lineNumber: 100,
+        lineNumber: 140,
         columnNumber: 5
     }, this);
 }

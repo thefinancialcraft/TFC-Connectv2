@@ -2,6 +2,8 @@ module.exports = [
 "[project]/components/dashboard/HourlyAnalyticsTab.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+
 __turbopack_context__.s([
     "default",
     ()=>HourlyAnalyticsTab
@@ -9,6 +11,10 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useDashboardCharts.ts [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -611,7 +617,8 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
         columnNumber: 5
     }, this);
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/components/dashboard/HourlyAnalyticsTab.tsx [ssr] (ecmascript, next/dynamic entry)", ((__turbopack_context__) => {
 
 __turbopack_context__.n(__turbopack_context__.i("[project]/components/dashboard/HourlyAnalyticsTab.tsx [ssr] (ecmascript)"));

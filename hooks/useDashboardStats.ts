@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { ensureValidSession } from "../lib/sessionManager";
 
 export interface DashboardStats {
   totalCustomers: number;
@@ -117,11 +118,12 @@ export function useDashboardStats(): UseDashboardStatsReturn {
         setError(null);
 
         // Wait for session using the robust helper (handles hydration race conditions)
-        const { ensureValidSession } = await import("../lib/sessionManager");
         const session = await ensureValidSession();
 
-        if (!session) throw new Error("Not authenticated");
-
+        if (!session) {
+            setLoading(false);
+            return; // Graceful exit on session expiry
+        }
 
         const params = new URLSearchParams({
           dateFilter,

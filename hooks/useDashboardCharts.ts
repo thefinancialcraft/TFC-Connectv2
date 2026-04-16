@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { ensureValidSession } from "../lib/sessionManager";
 
 // Interfaces... (unchanged)
 export interface ChartPoint {
@@ -100,12 +101,13 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
         setLoading(true);
         setError(null);
 
-        // Wait for session using the robust helper (handles hydration race conditions)
-        const { ensureValidSession } = await import("../lib/sessionManager");
+        // Wait for session
         const session = await ensureValidSession();
 
-        if (!session) throw new Error("Not authenticated");
-
+        if (!session) {
+            setLoading(false);
+            return;
+        }
 
         const params = new URLSearchParams({
           dateFilter,

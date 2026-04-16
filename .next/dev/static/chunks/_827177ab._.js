@@ -517,7 +517,7 @@ async function checkAuthAndFetchProfile() {
             profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
             googleCalendarConnected: profileData?.google_calendar_connected || false,
             googleCalendarSkipped: profileData?.google_calendar_skipped || false,
-            isClient: profileData?.is_client || false,
+            isClient: profileData ? profileData.is_client ?? false : undefined,
             isCaller: profileData?.is_caller || false,
             designation: profileData?.designation || null,
             department: profileData?.department || null,
@@ -757,6 +757,7 @@ const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project
     loading: true,
     error: null,
     statusMessage: "",
+    sessionExpired: false,
     refetchUser: async ()=>{}
 });
 const useUser = ()=>{

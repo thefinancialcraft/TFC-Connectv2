@@ -8107,6 +8107,11 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
+  .shadow-\[0_20px_50px_rgba\(0\,0\,0\,0\.1\)\] {
+    --tw-shadow: 0 20px 50px var(--tw-shadow-color, #0000001a);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
   .shadow-\[0_20px_50px_rgba\(0\,0\,0\,0\.5\)\] {
     --tw-shadow: 0 20px 50px var(--tw-shadow-color, #00000080);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -8449,6 +8454,22 @@
   @supports (color: color-mix(in lab, red, red)) {
     .shadow-purple-100 {
       --tw-shadow-color: color-mix(in oklab, var(--color-purple-100) var(--tw-shadow-alpha), transparent);
+    }
+  }
+
+  .shadow-purple-200 {
+    --tw-shadow-color: #e9d5ff;
+  }
+
+  @supports (color: lab(0% 0 0)) {
+    .shadow-purple-200 {
+      --tw-shadow-color: lab(87.8405% 13.4282 -18.7159);
+    }
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .shadow-purple-200 {
+      --tw-shadow-color: color-mix(in oklab, var(--color-purple-200) var(--tw-shadow-alpha), transparent);
     }
   }
 
@@ -9903,6 +9924,12 @@
   @media (hover: hover) {
     .hover\:bg-\[\#3b27b8\]:hover {
       background-color: #3b27b8;
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:bg-\[\#3b27c2\]:hover {
+      background-color: #3b27c2;
     }
   }
 

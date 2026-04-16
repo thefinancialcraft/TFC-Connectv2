@@ -2472,3 +2472,1706 @@ Import traces:
 [02:14:23.927] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [02:15:23.649] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [02:15:24.049] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:16:23.238] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:16:52.516] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:17:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:17:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:18:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:18:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:18:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:19:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:19:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:19:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:20:19.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:20:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:20:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:26.600] Server  LOG      ✓ Compiled in 1701ms
+[02:21:27.280] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:21:27.280] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:27.280] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:21:29.197] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:21:29.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:29.197] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:21:29.197] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:21:29.197] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:21:29.197] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:21:29.197] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:21:32.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:32.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:32.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:21:32.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:32.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:33.205] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:21:33.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:33.206] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:33.206] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:21:33.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:33.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:34.206] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:21:55.720] Server  LOG      ✓ Compiled in 4.7s
+[02:21:56.208] Browser ERROR   ./hooks/useAuthGuard.ts:9:8
+Parsing ecmascript source code failed
+   7 | import { supabase } from "../lib/supabase";
+   8 |
+>  9 | export interface UseAuthGuardReturn {
+     |        ^^^^^^^^^
+  10 |   user: UserProfile | null;
+  11 |   loading: boolean;
+  12 |   error: string;
+
+Expected '{', got 'interface'
+
+Import traces:
+  Browser:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:56.208] Browser ERROR   ./hooks/useAuthGuard.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:57.208] Browser ERROR   ./hooks/useAuthGuard.ts:9:8
+Parsing ecmascript source code failed
+   7 | import { supabase } from "../lib/supabase";
+   8 |
+>  9 | export interface UseAuthGuardReturn {
+     |        ^^^^^^^^^
+  10 |   user: UserProfile | null;
+  11 |   loading: boolean;
+  12 |   error: string;
+
+Expected '{', got 'interface'
+
+Import trace:
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:57.208] Browser ERROR   ./hooks/useAuthGuard.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import trace:
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:57.209] Browser ERROR   ./hooks/useAuthGuard.ts:9:8
+Parsing ecmascript source code failed
+   7 | import { supabase } from "../lib/supabase";
+   8 |
+>  9 | export interface UseAuthGuardReturn {
+     |        ^^^^^^^^^
+  10 |   user: UserProfile | null;
+  11 |   loading: boolean;
+  12 |   error: string;
+
+Expected '{', got 'interface'
+
+Import trace:
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:57.209] Browser ERROR   ./hooks/useAuthGuard.ts
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/hooks/useAuthGuard.ts [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import trace:
+  SSR:
+    ./hooks/useAuthGuard.ts
+    ./components/UserProvider.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:21:58.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:03.214] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:03.215] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:12.171] Server  LOG      ✓ Compiled in 390ms
+[02:22:12.927] Server  LOG     Using date-holidays fallback
+[02:22:12.995] Server  LOG     Using date-holidays fallback
+[02:22:13.023] Server  LOG     Using date-holidays fallback
+[02:22:13.205] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:13.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:13.205] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:13.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:13.205] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:13.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:13.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:13.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:13.208] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:13.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:13.208] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:13.208] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:13.208] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:13.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:14.522] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:14.522] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:14.522] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:14.522] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_577026e9-63f8-4fbc-ae31-a89ce6c67700
+[02:22:14.522] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:14.522] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:15.204] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:15.204] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:15.243] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:15.264] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:19.205] Browser LOG     [Fetch] Found 1 history records via API.
+[02:22:19.205] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:22:19.205] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:29.062] Server  LOG      ✓ Compiled in 1106ms
+[02:22:30.199] Browser ERROR   ./context/UserContext.tsx:15:14
+Parsing ecmascript source code failed
+  13 |
+  14 |   sessionExpired: false,
+> 15 |   refetchUser: async () => {},
+     |              ^
+  16 | });
+  17 |
+  18 | export const useUser = () => useContext(UserContext);
+
+Expected ';', '}' or <eof>
+
+Import traces:
+  Browser:
+    ./context/UserContext.tsx
+    ./components/CallReminderOverlay.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+
+  SSR:
+    ./context/UserContext.tsx
+    ./components/CallReminderOverlay.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:22:31.208] Browser ERROR   ./context/UserContext.tsx:15:14
+Parsing ecmascript source code failed
+  13 |
+  14 |   sessionExpired: false,
+> 15 |   refetchUser: async () => {},
+     |              ^
+  16 | });
+  17 |
+  18 | export const useUser = () => useContext(UserContext);
+
+Expected ';', '}' or <eof>
+
+Import traces:
+  #1 [Browser]:
+    ./context/UserContext.tsx
+    ./pages/portal/dashboard.tsx
+
+  #2 [SSR]:
+    ./context/UserContext.tsx
+    ./pages/portal/dashboard.tsx
+
+  #3 [SSR]:
+    ./context/UserContext.tsx
+    ./components/CallReminderOverlay.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:22:31.209] Browser ERROR   ./context/UserContext.tsx:15:14
+Parsing ecmascript source code failed
+  13 |
+  14 |   sessionExpired: false,
+> 15 |   refetchUser: async () => {},
+     |              ^
+  16 | });
+  17 |
+  18 | export const useUser = () => useContext(UserContext);
+
+Expected ';', '}' or <eof>
+
+Import traces:
+  #1 [Browser]:
+    ./context/UserContext.tsx
+    ./pages/portal/dashboard.tsx
+
+  #2 [SSR]:
+    ./context/UserContext.tsx
+    ./pages/portal/dashboard.tsx
+
+  #3 [SSR]:
+    ./context/UserContext.tsx
+    ./components/CallReminderOverlay.tsx
+    ./components/PortalContainer.tsx
+    ./pages/_app.tsx
+[02:22:38.103] Server  LOG      ✓ Compiled in 301ms
+[02:22:38.186] Server  LOG     Using date-holidays fallback
+[02:22:38.253] Server  LOG     Using date-holidays fallback
+[02:22:38.615] Server  LOG     Using date-holidays fallback
+[02:22:39.599] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:39.599] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:39.599] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_577026e9-63f8-4fbc-ae31-a89ce6c67700
+[02:22:39.599] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:39.599] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:39.617] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:39.617] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:39.617] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:39.617] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:39.617] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:40.192] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:40.194] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:40.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:40.194] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:40.194] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:40.194] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:40.194] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:40.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:40.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:40.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:40.194] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:40.194] Browser LOG     [Fetch] Found 1 history records via API.
+[02:22:40.194] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:22:40.194] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:50.053] Server  LOG      ✓ Compiled in 377ms
+[02:22:50.369] Server  LOG     Using date-holidays fallback
+[02:22:50.405] Server  LOG     Using date-holidays fallback
+[02:22:50.664] Server  LOG     Using date-holidays fallback
+[02:22:51.197] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:51.198] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:51.198] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:51.198] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:51.198] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:51.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:51.204] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:51.204] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:51.204] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:51.204] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:51.204] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:51.204] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:51.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:51.204] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:52.059] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:22:52.059] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:52.059] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:52.059] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_577026e9-63f8-4fbc-ae31-a89ce6c67700
+[02:22:52.059] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:52.059] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:52.721] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:53.199] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:53.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:22:53.199] Browser LOG     [Fetch] Found 1 history records via API.
+[02:22:53.199] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:22:53.199] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:22:53.199] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:23:05.709] Server  LOG     Using date-holidays fallback
+[02:23:05.845] Server  LOG     Using date-holidays fallback
+[02:23:06.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:06.205] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:06.205] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:23:06.252] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:06.252] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:23:06.373] Server  LOG      ✓ Compiled in 4.6s
+[02:23:06.707] Server  LOG     Using date-holidays fallback
+[02:23:07.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:07.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:07.214] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:07.214] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_577026e9-63f8-4fbc-ae31-a89ce6c67700
+[02:23:09.208] Browser LOG     [Fetch] Found 1 history records via API.
+[02:23:09.208] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:23:09.208] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:23:14.743] Server  LOG      ✓ Compiled in 1302ms
+[02:23:14.815] Server  LOG     Using date-holidays fallback
+[02:23:14.834] Server  LOG     Using date-holidays fallback
+[02:23:14.945] Server  LOG     Using date-holidays fallback
+[02:23:15.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:15.208] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:23:15.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:15.208] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_577026e9-63f8-4fbc-ae31-a89ce6c67700
+[02:23:16.243] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:16.243] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:16.243] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:23:16.243] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:16.243] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:23:16.243] Browser LOG     [Fetch] Found 1 history records via API.
+[02:23:17.201] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:23:17.201] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:23:22.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:22.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:22.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:28.839] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:23:28.839] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:23:28.839] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:28.839] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:23:28.839] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:23:52.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:52.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:52.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:23.525] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:23.563] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:23.567] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:52.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:52.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:52.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:22.465] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:22.476] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:22.479] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:52.276] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:52.297] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:52.299] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:26:08.208] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:26:08.209] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:26:08.209] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:26:08.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:26:08.209] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:26:22.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:26:52.227] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:20.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:33.946] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:27:33.946] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:27:33.947] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:27:33.947] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:27:33.947] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:27:34.181] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:50.607] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:20.605] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:50.622] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:01.348] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:29:02.197] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:29:02.197] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:29:02.197] Browser LOG     [App] Logger and Interceptors initialized.
+[02:29:02.583] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AppLayout> component. React will try to recreate this component tree from scratch using the error boundary you provided, PagesDevOverlayErrorBoundary.
+[02:29:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:30.151] Server  LOG      ✓ Compiled in 2s
+[02:29:34.342] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:29:34.958] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:29:34.958] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:29:34.958] Browser LOG     [App] Logger and Interceptors initialized.
+[02:29:35.402] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:29:36.339] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:30:04.454] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:30:05.029] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:30:05.029] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:30:05.029] Browser LOG     [App] Logger and Interceptors initialized.
+[02:30:05.271] Server  LOG     Using date-holidays fallback
+[02:30:05.417] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:05.417] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:05.417] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:06.228] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:30:17.670] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:30:17.670] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:30:20.333] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:30:20.786] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:30:20.786] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:30:21.035] Server  LOG     Using date-holidays fallback
+[02:30:21.171] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:21.171] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:30:21.171] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:30:21.171] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:30:21.171] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:30:21.171] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:21.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:30:21.200] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[02:30:21.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:30:21.514] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:30:21.514] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:21.514] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:30:21.514] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:30:21.637] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:30:21.888] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:30:22.122] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:30:22.142] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:30:22.149] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:30:22.159] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:30:22.159] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:30:22.159] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:30:22.254] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:30:23.282] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1385ms
+[02:30:23.581] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:30:23.583] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1946ms
+[02:30:26.047] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4218ms
+[02:30:51.757] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:31:03.347] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:10.867] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:13.753] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[02:31:13.753] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:14.273] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[02:31:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:31:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:31:20.109] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:21.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:31:23.765] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:28.516] Server  LOG      ○ Compiling /portal/organization ...
+[02:31:34.084] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:38.291] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:42.725] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:45.969] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:45.969] Browser ERROR   Dashboard Stats Fetch Error: {}
+[02:31:45.969] Browser ERROR   Dashboard Charts Fetch Error: {}
+[02:31:45.969] Browser ERROR   Agent Performance Fetch Error: {}
+[02:31:45.969] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:31:45.969] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:31:45.969] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:31:45.969] Browser ERROR   Dashboard Stats Fetch Error: {}
+[02:31:45.969] Browser ERROR   Dashboard Charts Fetch Error: {}
+[02:31:46.128] Browser ERROR   Agent Performance Fetch Error: {}
+[02:31:52.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:31:56.186] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:31:56.778] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:31:56.778] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:31:56.778] Browser LOG     [App] Logger and Interceptors initialized.
+[02:31:57.094] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:31:58.060] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:31:58.367] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:31:58.716] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:31:58.717] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:31:58.717] Browser LOG     [App] Logger and Interceptors initialized.
+[02:31:58.909] Server  LOG     Using date-holidays fallback
+[02:31:59.056] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:31:59.056] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:31:59.056] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:32:01.208] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:32:12.197] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:32:19.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:32:19.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:32:49.642] Server  LOG      ✓ Compiled in 1252ms
+[02:32:59.702] Server  LOG      ✓ Compiled in 677ms
+[02:33:14.674] Server  LOG      ✓ Compiled in 1445ms
+[02:33:15.271] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:33:16.610] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:33:16.610] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:33:16.611] Browser LOG     [App] Logger and Interceptors initialized.
+[02:33:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:33:28.197] Server  LOG      ✓ Compiled in 445ms
+[02:33:42.653] Server  LOG      ✓ Compiled in 1000ms
+[02:34:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:35:09.366] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:35:10.432] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:35:10.819] Browser ERROR   ❌ [Login] Supabase sign-in error: Invalid login credentials
+[02:35:10.819] Browser ERROR   🔴 [Login] Fatal error: Invalid login credentials
+[02:35:13.531] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:35:14.103] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:35:14.415] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:35:14.415] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:35:14.833] Server  LOG     Using date-holidays fallback
+[02:35:14.934] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:35:14.934] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:35:14.934] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:35:14.934] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:35:14.934] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:35:14.934] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:35:15.256] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:35:15.256] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:35:15.671] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:35:15.671] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:35:15.671] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:35:15.694] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:35:15.906] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:35:15.919] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:35:16.210] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:35:16.238] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:35:16.257] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:35:16.277] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:35:16.277] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:35:16.277] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:35:16.548] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:35:16.550] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 855ms
+[02:35:16.597] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 560ms
+[02:35:18.921] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2897ms
+[02:35:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:35:23.360] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:35:45.139] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:36:07.446] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:36:11.297] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:36:11.463] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:36:15.225] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:36:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:36:23.012] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:36:26.259] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:36:26.259] Browser ERROR   Agent Performance Fetch Error: {}
+[02:36:26.259] Browser ERROR   Agent Performance Fetch Error: {}
+[02:36:26.259] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:36:45.934] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:36:49.233] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[02:36:49.233] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:36:49.465] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[02:36:54.074] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:03.538] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:03.538] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:09.441] Server  LOG      ✓ Compiled in 4.7s
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.795] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.795] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.796] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:10.797] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:10.797] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:11.059] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:37:11.096] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:37:11.096] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:11.096] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:37:12.810] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:37:12.810] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:37:12.810] Browser LOG     [App] Logger and Interceptors initialized.
+[02:37:13.339] Server  LOG     Using date-holidays fallback
+[02:37:13.520] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:13.520] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:37:13.520] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:37:14.267] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:37:20.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:37:27.194] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:38:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:38:40.661] Server  LOG      ✓ Compiled in 950ms
+[02:38:40.859] Server  LOG     Using date-holidays fallback
+[02:38:41.200] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:38:41.200] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:38:42.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:38:42.209] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:38:42.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:38:43.207] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:38:43.208] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:38:54.208] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:39:12.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:39:20.599] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:39:21.432] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:39:21.993] Server  LOG     Using date-holidays fallback
+[02:39:22.084] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:39:22.084] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:39:22.084] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:39:22.084] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:39:22.084] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:39:22.084] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:39:22.084] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:39:22.604] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:39:22.604] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:39:22.604] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:39:22.604] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:39:22.604] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:39:22.604] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:39:22.604] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:39:23.085] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:39:23.085] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:39:23.085] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:39:23.136] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:39:23.327] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:39:23.366] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:39:24.107] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:39:24.111] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:39:24.114] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:39:24.422] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:39:24.423] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1286ms
+[02:39:24.471] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1070ms
+[02:39:25.189] Browser LOG     [Fetch] Found 1 history records via API.
+[02:39:27.291] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3881ms
+[02:39:42.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:39:52.313] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:40:09.838] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:40:12.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:40:22.315] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:40:28.929] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:40:29.183] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:40:42.210] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:40:53.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:41:12.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:41:18.718] Server  LOG      ✓ Compiled in 1618ms
+[02:41:19.193] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:41:19.193] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:41:20.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:41:21.202] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:41:23.199] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:41:23.199] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:41:23.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:41:23.199] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:41:50.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:41:52.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:42:20.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:42:22.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:42:40.173] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:42:48.970] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:42:50.744] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:42:50.745] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:42:50.745] Browser LOG     [App] Logger and Interceptors initialized.
+[02:42:51.579] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:42:52.068] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:42:52.643] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:42:56.096] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:42:57.328] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:42:57.328] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:42:57.328] Browser LOG     [App] Logger and Interceptors initialized.
+[02:42:57.986] Server  LOG     Using date-holidays fallback
+[02:42:58.186] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:42:58.186] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:42:58.446] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:42:58.867] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:43:10.170] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:43:10.459] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:43:10.616] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:43:11.046] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:43:11.046] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:43:11.440] Server  LOG     Using date-holidays fallback
+[02:43:11.733] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:43:11.733] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:43:11.733] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:43:11.733] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:43:11.733] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:43:11.733] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:43:13.316] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:43:13.316] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:43:13.316] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:43:13.316] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:43:13.316] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:43:13.316] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:43:13.316] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:43:13.316] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:43:13.316] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:43:13.409] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:43:13.453] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:43:13.625] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:43:13.886] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:43:13.917] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:43:13.920] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:43:14.239] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:43:14.240] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 830ms
+[02:43:14.255] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 555ms
+[02:43:16.487] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2783ms
+[02:43:20.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:43:22.440] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[02:43:22.440] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:43:22.440] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:43:22.440] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:43:22.765] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[02:43:42.109] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:43:50.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:44:11.774] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:44:20.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:44:41.784] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:45:09.436] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:45:12.038] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:45:15.263] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[02:45:15.716] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[02:45:15.716] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:45:15.716] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:45:15.962] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:45:15.962] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:45:15.962] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:45:15.962] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:45:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:45:23.180] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:45:31.185] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:45:33.135] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:45:33.135] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:45:33.365] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:45:39.314] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:45:39.314] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:45:39.626] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[02:45:39.626] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:45:43.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:45:57.855] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:46:14.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:46:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:46:45.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:46:46.972] Server  LOG      ✓ Compiled in 1657ms
+[02:46:47.194] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:46:47.194] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:46:48.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:46:48.791] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:46:49.193] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:46:49.206] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:46:50.204] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:46:50.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:46:51.201] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[02:46:51.201] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:46:51.201] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:46:53.197] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:47:18.232] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:47:48.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:48:18.225] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:48:38.469] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:48:40.721] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:48:40.722] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:48:40.722] Browser LOG     [App] Logger and Interceptors initialized.
+[02:48:42.764] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:48:42.764] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:48:42.881] Server  LOG     Using date-holidays fallback
+[02:48:43.222] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:48:43.222] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:48:50.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:48:56.205] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:49:18.232] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:49:46.297] Server  LOG      ✓ Compiled in 5s
+[02:49:48.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:49:51.533] Server  LOG      ✓ Compiled in 411ms
+[02:50:09.208] Server  LOG      ✓ Compiled in 347ms
+[02:50:17.686] Server  LOG      ✓ Compiled in 302ms
+[02:50:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:50:46.222] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:50:47.220] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:50:47.730] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:50:47.730] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:50:48.520] Server  LOG     Using date-holidays fallback
+[02:50:48.592] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:50:48.592] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:50:48.592] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:50:48.592] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:50:48.592] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:50:48.592] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:50:48.842] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:50:48.842] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:50:49.174] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:50:49.174] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:50:49.174] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:50:49.174] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:50:49.485] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:50:49.485] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:50:51.303] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:50:51.532] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:50:51.532] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:50:51.532] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:50:52.190] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:50:52.231] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:50:52.482] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:50:52.486] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:50:53.014] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:50:53.047] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1720ms
+[02:50:53.208] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 966ms
+[02:50:55.368] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3734ms
+[02:51:04.235] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:51:04.235] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:51:04.448] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:51:10.241] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[02:51:10.433] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:51:10.545] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:51:11.306] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:51:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:51:53.408] Server  LOG      ✓ Compiled in 1815ms
+[02:51:59.711] Server  LOG      ✓ Compiled in 2s
+[02:52:12.030] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:52:13.539] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:52:13.539] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:52:13.539] Browser LOG     [App] Logger and Interceptors initialized.
+[02:52:15.203] Server  LOG     Using date-holidays fallback
+[02:52:15.664] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:15.664] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:52:16.039] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:52:16.039] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:52:28.172] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:52:35.791] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:52:38.083] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:52:39.397] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:52:39.397] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:52:39.706] Server  LOG     Using date-holidays fallback
+[02:52:39.947] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:52:39.947] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:52:39.947] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:39.947] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:52:39.947] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:52:39.947] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:52:40.804] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:52:40.804] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:52:40.804] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:52:40.804] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:40.804] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:52:40.804] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:52:41.123] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:52:41.417] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:41.417] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:52:41.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:52:41.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:52:41.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:52:41.445] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:52:41.680] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:52:42.012] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:52:42.163] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:52:42.170] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:52:42.276] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:52:42.277] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 831ms
+[02:52:42.485] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 529ms
+[02:52:45.173] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3213ms
+[02:52:45.672] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:52:45.672] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:52:45.672] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[02:52:45.672] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:52:45.778] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:52:46.667] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:52:49.432] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:52:50.377] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:52:50.377] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:52:50.377] Browser LOG     [App] Logger and Interceptors initialized.
+[02:52:51.048] Server  LOG     Using date-holidays fallback
+[02:52:51.259] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:51.259] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:52:51.404] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:52:51.841] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:01.206] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:53:01.729] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:53:02.078] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:53:02.078] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:53:02.385] Server  LOG     Using date-holidays fallback
+[02:53:02.600] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:53:02.600] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:53:02.600] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:02.600] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:02.600] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:53:02.600] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:03.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:03.197] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:53:03.197] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:53:03.197] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:03.197] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:03.197] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:53:03.804] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:03.804] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:03.804] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:03.804] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:03.804] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:03.804] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:03.885] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:53:04.096] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:53:04.312] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:53:04.416] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:53:04.437] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:53:04.672] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:53:04.673] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 787ms
+[02:53:04.758] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 528ms
+[02:53:06.932] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2730ms
+[02:53:11.122] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:53:11.122] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[02:53:11.345] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:11.345] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:53:11.345] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:53:11.345] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:12.192] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:32.300] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:53:33.301] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:53:33.301] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:53:33.301] Browser LOG     [App] Logger and Interceptors initialized.
+[02:53:34.032] Server  LOG     Using date-holidays fallback
+[02:53:34.125] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:34.125] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:34.377] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:35.046] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:39.916] Server  LOG      ✓ Compiled in 1335ms
+[02:53:40.157] Server  LOG     Using date-holidays fallback
+[02:53:40.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:40.208] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:41.035] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:43.196] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:43.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:43.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:43.196] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:53:43.196] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:53:43.196] Browser LOG     [Fetch] Found 1 history records via API.
+[02:53:43.196] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:43.196] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:53:52.202] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:53:53.200] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:53:53.655] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:53:54.188] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:53:54.188] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:53:54.489] Server  LOG     Using date-holidays fallback
+[02:53:54.750] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:53:54.750] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:53:54.750] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:54.750] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:54.750] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:53:54.786] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:55.006] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:55.155] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:53:55.600] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:56.650] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:53:56.650] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:53:56.650] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:56.650] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:53:57.457] Server  LOG      ✓ Compiled in 1580ms
+[02:53:57.479] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:57.479] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:57.479] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:53:58.026] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:53:58.036] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:58.036] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:58.036] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:58.164] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:58.343] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:53:58.438] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:58.550] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:58.573] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:53:58.586] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:53:58.589] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:53:58.833] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:53:58.833] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 807ms
+[02:53:58.924] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 560ms
+[02:53:59.058] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:53:59.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:59.198] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:59.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:59.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:59.198] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:53:59.198] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:53:59.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:59.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:53:59.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:59.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[02:53:59.198] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:53:59.198] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[02:53:59.198] Browser LOG     [Fetch] Found 1 history records via API.
+[02:54:00.196] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:00.196] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[02:54:01.161] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2808ms
+[02:54:05.611] Server  LOG      ✓ Compiled in 486ms
+[02:54:05.873] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:05.873] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:06.232] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:06.839] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:07.206] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:07.206] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:07.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:08.209] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:14.720] Server  LOG      ✓ Compiled in 1454ms
+[02:54:15.161] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:15.161] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:15.391] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:16.105] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:18.217] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:18.217] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:18.217] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:20.200] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:38.423] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:54:38.423] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[02:54:38.423] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:54:38.423] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:38.424] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:40.168] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:54:42.938] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:54:42.938] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[02:54:42.938] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:54:43.434] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:43.904] Server  LOG     Using date-holidays fallback
+[02:54:43.961] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:54:44.170] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:44.170] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:54:49.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:54.070] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:54:54.574] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:54:54.893] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:54:54.893] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:54:55.285] Server  LOG     Using date-holidays fallback
+[02:54:55.415] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:54:55.585] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:54:55.585] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:54:55.585] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:55.585] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:54:55.585] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:54:55.585] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:54:55.681] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:54:55.786] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:54:55.786] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:54:55.786] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:54:55.900] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:54:55.905] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:54:55.919] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:54:56.136] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:54:56.158] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:54:56.158] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 743ms
+[02:54:56.165] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:54:56.254] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:54:56.370] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:54:56.447] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:54:56.466] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:54:56.698] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:54:56.698] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 779ms
+[02:54:59.254] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2999ms
+[02:55:03.444] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[02:55:03.575] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:55:03.575] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:55:04.415] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:55:07.010] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:55:08.469] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:55:08.469] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:55:08.469] Browser LOG     [App] Logger and Interceptors initialized.
+[02:55:09.764] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:55:09.764] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:55:09.862] Server  LOG     Using date-holidays fallback
+[02:55:09.965] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:55:10.416] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:55:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:22.554] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:55:49.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:57.683] Server  LOG      ✓ Compiled in 2.4s
+[02:56:03.279] Server  LOG      ✓ Compiled in 403ms
+[02:56:11.588] Server  LOG      ✓ Compiled in 318ms
+[02:56:12.197] Browser LOG     🎒 [Login] Checking stored ID... {"rememberPref":false,"savedId":null}
+[02:56:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:56:19.719] Server  LOG      ✓ Compiled in 327ms
+[02:56:20.202] Browser LOG     🎒 [Login] Checking stored ID... {"rememberPref":false,"savedId":null}
+[02:56:49.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:00.346] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:57:01.352] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:57:01.799] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:57:01.799] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:57:03.265] Server  LOG     Using date-holidays fallback
+[02:57:03.405] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:03.405] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:57:03.405] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:57:03.405] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:57:03.405] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:57:03.405] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:03.716] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:03.716] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:57:04.536] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:57:04.536] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:04.536] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:57:04.536] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:57:04.536] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:57:04.608] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:04.863] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:57:05.458] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:57:05.912] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:57:05.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:05.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:05.941] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:05.957] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:57:05.991] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:57:06.336] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:57:06.338] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1473ms
+[02:57:06.369] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 642ms
+[02:57:08.664] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3568ms
+[02:57:14.149] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[02:57:14.273] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:14.273] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:15.114] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:57:17.357] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:57:18.495] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:57:18.495] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:57:18.495] Browser LOG     [App] Logger and Interceptors initialized.
+[02:57:19.402] Server  LOG     Using date-holidays fallback
+[02:57:19.557] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:19.557] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:19.557] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:19.872] Browser LOG     🎒 [Login] Checking stored ID... {"rememberPref":false,"savedId":null}
+[02:57:19.975] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:57:20.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:30.273] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:57:30.824] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:57:31.482] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:57:32.568] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:57:32.568] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:57:32.858] Server  LOG     Using date-holidays fallback
+[02:57:33.061] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:57:33.062] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:57:33.062] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:33.062] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:57:33.062] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:57:33.062] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:33.843] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:33.843] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[02:57:33.843] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:57:33.843] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:33.843] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:57:33.843] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:57:34.329] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:57:34.329] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:34.329] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:34.329] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:57:34.393] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:57:34.430] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:34.606] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:57:34.832] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:57:35.053] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:57:35.058] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:57:35.102] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:57:35.102] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 709ms
+[02:57:35.381] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 543ms
+[02:57:37.614] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2775ms
+[02:57:43.747] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:57:44.413] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:57:44.413] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[02:57:44.413] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:57:44.454] Server  LOG     Using date-holidays fallback
+[02:57:44.673] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:57:44.673] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:57:44.673] Browser LOG     🎒 [Login] Checking stored ID... {"rememberPref":true,"savedId":"NXUS-001"}
+[02:57:44.673] Browser LOG     📝 [Login] Auto-filled User ID from storage.
+[02:57:45.389] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:57:58.208] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:58:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:58:22.729] Server  LOG      ✓ Compiled in 3.5s
+[02:58:31.084] Server  LOG      ✓ Compiled in 367ms
+[02:58:58.803] Server  LOG      ✓ Compiled in 236ms
+[02:59:10.298] Server  LOG      ✓ Compiled in 282ms
+[02:59:19.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:32.172] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:59:33.133] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:59:33.574] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:59:33.574] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:59:34.267] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:34.267] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:59:34.267] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:59:34.267] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:59:34.267] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:59:34.327] Server  LOG     Using date-holidays fallback
+[02:59:34.745] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:59:34.745] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:34.745] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:59:34.745] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:59:34.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:34.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:34.745] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:34.822] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:59:34.867] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:59:35.055] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:59:35.111] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:59:35.111] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:35.389] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:59:35.400] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:59:35.404] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:59:35.742] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:59:35.744] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 922ms
+[02:59:35.773] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 673ms
+[02:59:40.216] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:59:42.925] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 7835ms
+[02:59:43.031] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:59:43.031] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[02:59:43.031] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:59:43.031] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:59:43.031] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:43.031] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:43.031] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:59:43.077] Server  LOG     Using date-holidays fallback
+[02:59:46.636] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:59:46.991] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:59:47.395] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:59:47.395] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:59:47.834] Server  LOG     Using date-holidays fallback
+[02:59:47.923] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:59:47.923] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:59:47.923] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:59:47.923] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:47.923] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:59:47.974] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:59:48.215] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:59:48.227] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:59:48.228] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:48.228] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:48.228] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:59:48.347] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:59:48.415] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:59:48.578] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:59:48.771] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:59:48.888] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:59:49.034] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:59:49.070] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:59:49.070] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1096ms
+[02:59:49.171] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:49.251] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:59:49.255] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:59:49.525] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:59:49.526] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1110ms
+[02:59:52.233] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3206ms
+[03:00:00.226] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:00:19.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:00:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:00:49.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

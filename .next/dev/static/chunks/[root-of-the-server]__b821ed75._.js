@@ -508,6 +508,7 @@ const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project
     loading: true,
     error: null,
     statusMessage: "",
+    sessionExpired: false,
     refetchUser: async ()=>{}
 });
 const useUser = ()=>{
@@ -3218,7 +3219,7 @@ async function checkAuthAndFetchProfile() {
             profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
             googleCalendarConnected: profileData?.google_calendar_connected || false,
             googleCalendarSkipped: profileData?.google_calendar_skipped || false,
-            isClient: profileData?.is_client || false,
+            isClient: profileData ? profileData.is_client ?? false : undefined,
             isCaller: profileData?.is_caller || false,
             designation: profileData?.designation || null,
             department: profileData?.department || null,
@@ -3256,9 +3257,11 @@ async function handleLogout(router) {
                     value: true
                 });
             }
-            // Clear all auth related local storage
-            localStorage.clear();
-            sessionStorage.clear();
+            // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
+            localStorage.setItem('manual_logout_intended', 'true');
+            // Clear specific caches instead of nuking everything immediately
+            localStorage.removeItem('cached_user_profile');
+            sessionStorage.removeItem('active_user_profile');
         }
         // 2. Clear Supabase session on server and client
         const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();

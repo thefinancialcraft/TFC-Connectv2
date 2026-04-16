@@ -508,6 +508,7 @@ const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project
     loading: true,
     error: null,
     statusMessage: "",
+    sessionExpired: false,
     refetchUser: async ()=>{}
 });
 const useUser = ()=>{

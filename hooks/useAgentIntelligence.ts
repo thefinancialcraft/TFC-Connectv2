@@ -20,7 +20,10 @@ export function useAgentIntelligence() {
         setError(null);
 
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error("Not authenticated");
+        if (!session) {
+          setLoading(false);
+          return;
+        }
 
         const params = new URLSearchParams({
           agentId,
