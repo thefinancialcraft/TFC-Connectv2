@@ -555,9 +555,11 @@ async function handleLogout(router) {
                     value: true
                 });
             }
-            // Clear all auth related local storage
-            localStorage.clear();
-            sessionStorage.clear();
+            // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
+            localStorage.setItem('manual_logout_intended', 'true');
+            // Clear specific caches instead of nuking everything immediately
+            localStorage.removeItem('cached_user_profile');
+            sessionStorage.removeItem('active_user_profile');
         }
         // 2. Clear Supabase session on server and client
         const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();

@@ -4175,3 +4175,563 @@ Import traces:
 [03:00:19.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [03:00:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [03:00:49.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:49.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:12.070] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:02:12.070] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:02:12.072] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:02:12.072] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:02:12.193] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:02:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:49.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:19.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:36.786] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:03:36.786] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:03:36.786] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:03:36.786] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:03:36.896] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:46.774] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:03:46.774] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:03:46.774] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:03:46.774] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:03:46.911] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:48.332] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:55.217] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:03:55.217] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:03:55.217] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:03:55.217] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:03:55.326] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:57.307] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[03:03:57.307] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[03:03:57.307] Browser ERROR   {"__isAuthError":true,"code":"refresh_token_not_found","name":"AuthApiError","status":400}
+[03:03:57.307] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[03:03:57.307] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:57.307] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:57.894] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:03:58.084] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[03:03:58.084] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:00.025] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:04:00.026] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:04:00.026] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:00.026] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:00.411] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:04.341] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:04:04.341] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:04:04.341] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:04.341] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:04.472] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:05.417] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:05.418] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:05.536] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:09.752] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:09.752] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:09.752] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:12.576] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:04:12.576] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:04:12.576] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:12.576] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:12.576] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:14.215] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:04:14.215] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:04:14.215] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:14.215] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:14.215] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:18.062] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:04:19.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:04:37.216] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:04:37.216] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:04:37.216] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:37.216] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:37.216] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:40.639] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:04:40.639] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:04:40.639] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:04:40.763] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:04:40.788] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:04:42.637] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:04:42.637] Browser ERROR   Agent Performance Fetch Error: {}
+[03:04:42.637] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:04:48.119] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:09.165] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:05:09.165] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:05:09.165] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:05:09.165] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:05:09.286] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:05:18.061] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:32.915] Browser LOG     [AutoReload] Returning after 42 mins. Refreshing lead data.
+[03:05:34.054] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:05:34.140] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:05:34.142] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:05:34.142] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:05:34.142] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:05:34.142] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:05:34.797] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:05:34.797] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:05:34.797] Browser LOG     [App] Logger and Interceptors initialized.
+[03:05:35.240] Server  LOG     Using date-holidays fallback
+[03:05:35.429] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:05:35.429] Browser LOG     🚀 [Bridge] Requesting Device Info
+[03:05:35.429] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:05:35.429] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:05:35.429] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:05:35.429] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:05:35.693] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:35.693] Browser LOG     🚀 [Bridge] Requesting Device Info
+[03:05:36.197] Browser LOG     🚀 [Bridge] Requesting Device Info
+[03:05:36.337] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:05:36.553] Browser LOG     [Fetch] Found 1 history records via API.
+[03:05:36.871] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[03:05:37.037] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:05:43.840] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[03:05:43.840] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:05:43.840] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:05:43.840] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:05:43.884] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:05:44.090] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:05:44.090] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:05:44.090] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:05:44.090] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:05:44.257] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:05:44.277] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:05:44.779] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:05:44.780] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:05:44.780] Browser ERROR   Agent Performance Fetch Error: {}
+[03:05:49.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:00.426] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:06:00.426] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:06:00.426] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:00.426] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:06:00.426] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:04.836] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:06:05.197] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:06:05.197] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:06:05.197] Browser LOG     [App] Logger and Interceptors initialized.
+[03:06:05.392] Server  LOG     Using date-holidays fallback
+[03:06:05.544] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:06:05.544] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:05.544] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:05.544] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:06:05.544] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:06:05.544] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:06:05.594] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:06:05.682] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:05.683] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:05.861] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:05.861] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:05.861] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:06.022] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:06:06.055] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:06.055] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:06:06.055] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:06:06.055] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:06:06.055] Browser ERROR   Agent Performance Fetch Error: {}
+[03:06:06.492] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:06:06.492] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:06:06.492] Browser ERROR   Agent Performance Fetch Error: {}
+[03:06:06.492] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:06:09.061] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:06:09.403] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:06:09.403] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:06:09.403] Browser LOG     [App] Logger and Interceptors initialized.
+[03:06:09.591] Server  LOG     Using date-holidays fallback
+[03:06:09.737] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:06:09.737] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:09.737] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:09.737] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:06:09.737] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:06:09.737] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:06:09.798] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:06:09.859] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:09.859] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:10.071] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:10.071] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:10.071] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:06:10.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:10.193] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:06:10.193] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:06:10.193] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:06:10.193] Browser ERROR   Agent Performance Fetch Error: {}
+[03:06:10.205] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:06:10.716] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:06:10.716] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:06:10.716] Browser ERROR   Agent Performance Fetch Error: {}
+[03:06:10.716] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:06:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:41.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:51.270] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:06:51.270] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:06:51.270] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:51.270] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:06:51.270] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:06:52.752] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:06:52.752] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:06:52.752] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:52.752] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:06:52.752] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:11.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:13.844] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:14.166] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:14.206] Server  LOG      ✓ Compiled in 1802ms
+[03:07:14.206] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:14.206] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:07:14.286] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:15.207] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:15.207] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:15.207] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:15.207] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:15.207] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:07:15.207] Browser ERROR   Agent Performance Fetch Error: {}
+[03:07:15.281] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:16.783] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:07:16.783] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:07:16.783] Browser ERROR   Agent Performance Fetch Error: {}
+[03:07:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:24.965] Server  LOG      ✓ Compiled in 1899ms
+[03:07:25.407] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:25.580] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:25.764] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:26.201] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:26.201] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:07:26.201] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:26.201] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:07:26.201] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:27.194] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:27.194] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:27.194] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:28.527] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:28.527] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:07:28.527] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:28.527] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:07:33.532] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:33.581] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:33.665] Server  LOG      ✓ Compiled in 384ms
+[03:07:33.822] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:35.195] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:35.196] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:07:35.196] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:35.196] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:07:35.196] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:35.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:35.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:35.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:36.313] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:07:36.313] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:36.313] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:07:36.313] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:38.111] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:07:38.111] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:07:38.111] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:38.111] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:38.111] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:39.457] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:07:39.457] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:07:39.457] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:39.457] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:39.457] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:39.879] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:43.649] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:07:43.649] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:07:43.649] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:43.649] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:43.649] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:46.878] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[03:07:46.878] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"team_leader","email":"john.doe@example.com","isClient":true,"normalizedDesignation":"team_leader","organization_id":"5fda76df-9265-46e0-a602-0c5301c8084c","uid":"330935fc-4cc1-41a6-8bfc-7edbc3ba3547"}
+[03:07:46.878] Browser LOG     🏢 [Campaign] Filtering by Organization: 5fda76df-9265-46e0-a602-0c5301c8084c
+[03:07:46.878] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:46.878] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:47.149] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:47.564] Browser LOG     👥 [Campaign] Level 2: TL Filter Applied. Searching for members: ["330935fc-4cc1-41a6-8bfc-7edbc3ba3547"]
+[03:07:47.564] Browser LOG     🔗 [Campaign] Generated OR Filter: users.cs.[{"user_id":"330935fc-4cc1-41a6-8bfc-7edbc3ba3547"}]
+[03:07:47.870] Browser LOG     ✅ [Campaign] Query returned 1 campaigns.
+[03:07:49.802] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:49.930] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:49.930] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:49.930] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:49.930] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:49.930] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:49.930] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:49.931] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:50.163] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:07:50.188] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:50.540] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:50.540] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:07:50.540] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:51.297] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:07:52.083] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:07:52.084] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:07:52.084] Browser LOG     [App] Logger and Interceptors initialized.
+[03:07:52.404] Server  LOG     Using date-holidays fallback
+[03:07:52.555] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:07:52.555] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:07:52.555] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:52.555] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:52.555] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:07:52.606] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:52.667] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:52.816] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:52.816] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:52.816] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:07:53.033] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:07:53.080] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:53.080] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:07:53.080] Browser ERROR   Dashboard Stats Fetch Error: {}
+[03:07:53.606] Browser WARN    🔐 [Dashboard Stats] Auth failure detected. Silently stopping fetch.
+[03:07:53.606] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:07:53.607] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:07:53.608] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:08:03.505] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:08:03.505] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:08:03.506] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:08:03.506] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:08:03.506] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:08:13.421] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:13.469] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:13.582] Server  LOG      ✓ Compiled in 353ms
+[03:08:14.030] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:14.204] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:08:14.204] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:08:14.204] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:14.204] Browser ERROR   Dashboard Charts Fetch Error: {}
+[03:08:14.204] Browser ERROR   Agent Performance Fetch Error: {}
+[03:08:15.193] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:15.193] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:15.193] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:15.193] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:15.193] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:08:15.193] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:08:16.637] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:16.637] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:08:16.637] Browser WARN    🔐 [Agent Performance] Auth failure detected. Silently stopping fetch.
+[03:08:16.637] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:08:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:08:21.437] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:21.515] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:21.649] Server  LOG      ✓ Compiled in 382ms
+[03:08:21.731] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:23.208] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:08:23.208] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:08:23.208] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:23.208] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:08:23.208] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:08:23.208] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:23.208] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:23.208] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:24.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:08:24.505] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:24.505] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:08:24.505] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:08:24.505] Browser WARN    🔐 [Dashboard Charts] Auth failure detected. Silently stopping fetch.
+[03:08:29.636] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:29.776] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:29.902] Server  LOG      ✓ Compiled in 392ms
+[03:08:30.077] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:30.200] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:08:30.200] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:08:31.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:31.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:31.196] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:31.196] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[03:08:31.196] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:31.196] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:08:32.497] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[03:08:32.497] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:32.497] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:08:32.497] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:08:39.371] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:08:39.371] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:08:39.371] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:08:39.371] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:08:39.371] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:08:42.025] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:08:42.474] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:08:42.474] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:08:42.474] Browser LOG     [App] Logger and Interceptors initialized.
+[03:08:42.683] Server  LOG     Using date-holidays fallback
+[03:08:42.840] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:08:42.840] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:08:42.840] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:08:42.840] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:08:42.840] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:08:42.840] Browser LOG     [Dashboard] Filtering users for TL: 330935fc-4cc1-41a6-8bfc-7edbc3ba3547
+[03:08:42.898] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:42.990] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:08:42.990] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:08:43.122] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:43.122] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:43.122] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[03:08:43.244] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:08:43.244] Browser LOG     [Dashboard] Restricting User Selection to 1 members
+[03:08:43.267] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:08:43.659] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:08:43.659] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[03:08:43.659] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:08:43.778] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:09:11.234] Browser LOG     🚨 [Auth Guard] Local token missing. Locking system.
+[03:09:11.871] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:12.087] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:09:13.358] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[03:09:13.833] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:19.253] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[03:09:19.274] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:09:19.692] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[03:09:19.692] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[03:09:19.693] Browser LOG     [App] Logger and Interceptors initialized.
+[03:09:20.145] Server  LOG     Using date-holidays fallback
+[03:09:21.200] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:21.200] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:09:21.531] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[03:09:33.200] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[03:09:35.326] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:09:35.327] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:09:35.327] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:09:35.327] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:09:35.440] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:38.020] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:09:38.020] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:09:38.162] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:40.930] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:09:41.116] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:09:41.116] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:09:41.116] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:09:41.116] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:09:42.809] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[03:09:42.809] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:09:42.809] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:09:49.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:10:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

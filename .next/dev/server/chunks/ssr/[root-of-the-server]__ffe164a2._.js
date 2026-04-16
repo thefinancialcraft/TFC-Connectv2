@@ -316,6 +316,12 @@ function useDashboardStats() {
                 },
                 signal: controller.signal
             });
+            // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
+            if (response.status === 401) {
+                console.warn("🔐 [Dashboard Stats] 401 Detected. Silently stopping.");
+                setLoading(false);
+                return;
+            }
             let result;
             try {
                 result = await response.json();
@@ -448,6 +454,12 @@ function useDashboardCharts() {
                 },
                 signal: controller.signal
             });
+            // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
+            if (response.status === 401) {
+                console.warn("🔐 [Dashboard Charts] 401 Detected. Silently stopping.");
+                setLoading(false);
+                return;
+            }
             let result;
             try {
                 result = await response.json();
@@ -576,6 +588,12 @@ function useAgentPerformance() {
                 },
                 signal: controller.signal
             });
+            // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
+            if (response.status === 401) {
+                console.warn("🔐 [Agent Performance] 401 Detected. Silently stopping.");
+                setLoading(false);
+                return;
+            }
             let result;
             try {
                 result = await response.json();

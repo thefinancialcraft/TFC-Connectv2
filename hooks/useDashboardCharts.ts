@@ -122,6 +122,13 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
           signal: controller.signal,
         });
 
+        // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
+        if (response.status === 401) {
+            console.warn("🔐 [Dashboard Charts] 401 Detected. Silently stopping.");
+            setLoading(false);
+            return;
+        }
+
         let result;
         try {
           result = await response.json();
