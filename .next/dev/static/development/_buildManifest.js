@@ -5,9 +5,6 @@ self.__BUILD_MANIFEST = {
   "/portal/activity": [
     "static/chunks/pages/portal/activity.js"
   ],
-  "/portal/call-sessions": [
-    "static/chunks/pages/portal/call-sessions.js"
-  ],
   "/portal/campaign": [
     "static/chunks/pages/portal/campaign.js"
   ],
@@ -29,23 +26,14 @@ self.__BUILD_MANIFEST = {
   "/portal/login": [
     "static/chunks/pages/portal/login.js"
   ],
-  "/portal/organization": [
-    "static/chunks/pages/portal/organization.js"
-  ],
-  "/portal/organization/[id]": [
-    "static/chunks/pages/portal/organization/[id].js"
-  ],
-  "/portal/organization/create": [
-    "static/chunks/pages/portal/organization/create.js"
+  "/portal/profile-completion": [
+    "static/chunks/pages/portal/profile-completion.js"
   ],
   "/portal/settings": [
     "static/chunks/pages/portal/settings.js"
   ],
   "/portal/team": [
     "static/chunks/pages/portal/team.js"
-  ],
-  "/portal/team/[id]": [
-    "static/chunks/pages/portal/team/[id].js"
   ],
   "/portal/users": [
     "static/chunks/pages/portal/users.js"

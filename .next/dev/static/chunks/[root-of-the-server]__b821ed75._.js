@@ -3298,7 +3298,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$ind
 var _s = __turbopack_context__.k.signature();
 ;
 ;
-const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation }) {
+const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const [isVisible, setIsVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
@@ -3357,6 +3357,13 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
             icon: "fi-rr-calendar-clock",
             path: "/followup",
             adminOnly: false
+        },
+        {
+            id: "call-sessions",
+            label: "Call Sessions",
+            icon: "fi-rr-headset",
+            path: "/call-sessions",
+            adminOnly: true
         }
     ];
     // Filter nav items based on admin status and client designation
@@ -3382,8 +3389,11 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                 'developer'
             ].includes(currentDesignation));
             const isAdminState = mounted && isAdmin;
+            const isSpecialUser = employeeId === 'NXUS-001';
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
+                    // Special override for Call Sessions for NXUS-001
+                    if (item.id === 'call-sessions' && isSpecialUser) return true;
                     // Admin check
                     if (item.adminOnly && !isAdminState) return false;
                     // User page visibility check
@@ -3401,6 +3411,7 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
         isAdmin,
         isClient,
         designation,
+        employeeId,
         allNavItems
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -3484,32 +3495,32 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 202,
+                                lineNumber: 215,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 192,
+                            lineNumber: 205,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 190,
+                    lineNumber: 203,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 189,
+                lineNumber: 202,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 185,
+            lineNumber: 198,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 178,
+        lineNumber: 191,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {

@@ -24,7 +24,7 @@ export interface UseAgentPerformanceReturn {
   totalDuration: number;
   loading: boolean;
   error: string | null;
-  fetchAgentPerformance: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean, userId?: string) => Promise<void>;
+  fetchAgentPerformance: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean, userId?: string | null, restrictedUserIds?: string[] | null) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -59,8 +59,8 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   }, []);
 
   const fetchAgentPerformance = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string) => {
-      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
+    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string | null, restrictedUserIds?: string[] | null) => {
+      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
 
       const cached = globalCache[cacheKey];
       if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -93,6 +93,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
           ...(orgId && { orgId }),
           ...(customRange && { startDate: customRange.start, endDate: customRange.end }),
           ...(userId && { userId }),
+          ...(restrictedUserIds && { restrictedUserIds: JSON.stringify(restrictedUserIds) }),
         });
 
         const response = await fetch(`/api/agent_performance?${params}`, {

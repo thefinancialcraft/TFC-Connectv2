@@ -400,10 +400,10 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
             rows={rows || 3}
             placeholder={placeholder}
             disabled={isDisabled}
-            className="flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed"
             style={{
               borderColor: "#E0E0E0",
-              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
               color: "#000000",
               fontFamily: "'Roboto', sans-serif",
             }}
@@ -420,10 +420,10 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
             value={fieldValue}
             onChange={handleInputChange}
             disabled={isDisabled}
-            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed"
             style={{
               borderColor: "#E0E0E0",
-              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
               color: "#000000",
               fontFamily: "'Roboto', sans-serif",
             }}
@@ -450,10 +450,10 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
             disabled={isDisabled}
             placeholder={placeholder}
             maxLength={maxLength}
-            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed"
             style={{
               borderColor: "#E0E0E0",
-              backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+              backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
               color: "#000000",
               fontFamily: "'Roboto', sans-serif",
             }}
@@ -577,7 +577,7 @@ export default function SettingsFormFields({ formData, handleInputChange, catego
   if (category === "documents") {
     return (
       <div className="space-y-4">
-        <p className="text-sm" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
+        <p className="text-sm" style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}>
           Upload your documents. Maximum file size: 10MB. Accepted formats: Images (JPG, PNG, WEBP) and PDF.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

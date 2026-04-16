@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import { useUser } from './AppLayout';
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 interface User {
   id: string;
@@ -148,6 +150,13 @@ export default function UserMenuDropdown({
   onClose,
   onMenuClose
 }: UserMenuDropdownProps) {
+  const { user: currentUser } = useUser();
+  const currentLevel = getUserDashboardLevel(currentUser);
+  
+  const canManageIsClient = currentLevel === DashboardLevel.LEVEL_1_ADMIN;
+  const availableDesignations = currentLevel === DashboardLevel.LEVEL_1_ADMIN 
+    ? ['agent', 'manager', 'faculty_staff', 'team_leader', 'ceo', 'developer']
+    : ['agent', 'team_leader', 'ceo'];
   
   const handleClose = () => {
     setOpenApprovalDropdown(null);
@@ -615,7 +624,7 @@ export default function UserMenuDropdown({
         </button>
         {openDesignationDropdown === user.id && (
           <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
-            {['agent', 'manager', 'faculty_staff', 'team_leader', 'ceo', 'developer'].map((designation) => (
+            {availableDesignations.map((designation) => (
               <div
                 key={designation}
                 onClick={(e) => {
@@ -648,70 +657,72 @@ export default function UserMenuDropdown({
         )}
       </div>
 
-      {/* Is Client Dropdown */}
-      <div className="relative">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpenIsClientDropdown(openIsClientDropdown === user.id ? null : user.id);
-            setOpenApprovalDropdown(null);
-            setOpenWorkTypeDropdown(null);
-            setOpenUserTypeDropdown(null);
-            setOpenRoleDropdown(null);
-            setOpenDepartmentDropdown(null);
-            setOpenDesignationDropdown(null);
-            setOpenIsCallerDropdown(null);
-          }}
-          className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
-        >
-          <div className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            <span>Is Client: {user.is_client ? 'Yes' : 'No'}</span>
-          </div>
-          {openIsClientDropdown === user.id ? (
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-          ) : (
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          )}
-        </button>
-        {openIsClientDropdown === user.id && (
-          <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
-            {[true, false].map((isClient) => (
-              <div
-                key={isClient ? 'yes' : 'no'}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onIsClientChange(user.id, isClient);
-                  if (viewType === 'list') {
-                    onMenuClose?.();
-                  }
-                }}
-                className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${user.is_client === isClient ? 'bg-purple-50' : ''
-                  }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-700">{isClient ? 'Yes' : 'No'}</span>
+      {/* Is Client Dropdown (Level 1 Only) */}
+      {canManageIsClient && (
+        <div className="relative">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenIsClientDropdown(openIsClientDropdown === user.id ? null : user.id);
+              setOpenApprovalDropdown(null);
+              setOpenWorkTypeDropdown(null);
+              setOpenUserTypeDropdown(null);
+              setOpenRoleDropdown(null);
+              setOpenDepartmentDropdown(null);
+              setOpenDesignationDropdown(null);
+              setOpenIsCallerDropdown(null);
+            }}
+            className="w-full flex items-center justify-between px-2 py-1.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Is Client: {user.is_client ? 'Yes' : 'No'}</span>
+            </div>
+            {openIsClientDropdown === user.id ? (
+              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            )}
+          </button>
+          {openIsClientDropdown === user.id && (
+            <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]">
+              {[true, false].map((isClient) => (
+                <div
+                  key={isClient ? 'yes' : 'no'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onIsClientChange(user.id, isClient);
+                    if (viewType === 'list') {
+                      onMenuClose?.();
+                    }
+                  }}
+                  className={`px-2 py-1.5 text-sm cursor-pointer hover:bg-gray-100 flex items-center justify-between ${user.is_client === isClient ? 'bg-purple-50' : ''
+                    }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-700">{isClient ? 'Yes' : 'No'}</span>
+                  </div>
+                  {user.is_client === isClient && (
+                    <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
                 </div>
-                {user.is_client === isClient && (
-                  <svg className="h-4 w-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Is Caller Dropdown */}
       <div className="relative">

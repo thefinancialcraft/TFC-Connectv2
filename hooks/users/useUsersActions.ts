@@ -21,6 +21,8 @@ export function useUsersActions(refreshData: () => Promise<void>) {
     work_type: "on_site" as any,
     user_type: "employee" as any,
     status: "active" as any,
+    is_client: false as boolean,
+    is_caller: true as boolean,
   });
 
   const [showHoldModal, setShowHoldModal] = useState(false);
@@ -51,6 +53,8 @@ export function useUsersActions(refreshData: () => Promise<void>) {
           work_type: fullUserData.work_type || "on_site",
           user_type: fullUserData.user_type || "employee",
           status: fullUserData.status || "active",
+          is_client: !!fullUserData.is_client,
+          is_caller: fullUserData.is_caller !== false, // default to true if null
         });
         setShowApprovalModal(true);
         return;
@@ -256,6 +260,8 @@ export function useUsersActions(refreshData: () => Promise<void>) {
           designation: approvalFormData.designation,
           work_type: approvalFormData.work_type,
           user_type: approvalFormData.user_type,
+          is_client: approvalFormData.is_client,
+          is_caller: approvalFormData.is_caller,
           employee_id: employeeId,
           updated_at: new Date().toISOString(),
         })

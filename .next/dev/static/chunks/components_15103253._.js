@@ -1918,7 +1918,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$ind
 var _s = __turbopack_context__.k.signature();
 ;
 ;
-const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation }) {
+const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const [isVisible, setIsVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
@@ -1977,6 +1977,13 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
             icon: "fi-rr-calendar-clock",
             path: "/followup",
             adminOnly: false
+        },
+        {
+            id: "call-sessions",
+            label: "Call Sessions",
+            icon: "fi-rr-headset",
+            path: "/call-sessions",
+            adminOnly: true
         }
     ];
     // Filter nav items based on admin status and client designation
@@ -2002,8 +2009,11 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                 'developer'
             ].includes(currentDesignation));
             const isAdminState = mounted && isAdmin;
+            const isSpecialUser = employeeId === 'NXUS-001';
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
+                    // Special override for Call Sessions for NXUS-001
+                    if (item.id === 'call-sessions' && isSpecialUser) return true;
                     // Admin check
                     if (item.adminOnly && !isAdminState) return false;
                     // User page visibility check
@@ -2021,6 +2031,7 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
         isAdmin,
         isClient,
         designation,
+        employeeId,
         allNavItems
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -2104,32 +2115,32 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 202,
+                                lineNumber: 215,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 192,
+                            lineNumber: 205,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 190,
+                    lineNumber: 203,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 189,
+                lineNumber: 202,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 185,
+            lineNumber: 198,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 178,
+        lineNumber: 191,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {
@@ -2384,7 +2395,8 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 activeNav: router.pathname.replace('/portal', '').replace('/', '') || 'dashboard',
                 userRole: userRole,
                 isClient: user?.isClient,
-                designation: user?.designation
+                designation: user?.designation,
+                employeeId: user?.employeeId
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
                 lineNumber: 127,
@@ -2392,7 +2404,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 136,
+                lineNumber: 137,
                 columnNumber: 7
             }, this)
         ]
@@ -2483,14 +2495,23 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
+;
+;
 ;
 ;
 ;
 function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganizationId, isAuthorised = true, organizationId = null }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const dashboardLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
+    // Restriction: Only Level 1 Admins see the onboarding lifecycle
+    const showOnboardingLifecyle = fromAdminPanel && dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN;
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
         name: "",
         email: "",
@@ -2679,7 +2700,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                 children: "Create Account"
             }, void 0, false, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 210,
+                lineNumber: 217,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2693,7 +2714,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "User Type"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 225,
+                        lineNumber: 232,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2709,7 +2730,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 children: "Employee"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 232,
+                                lineNumber: 239,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2722,19 +2743,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 children: "POSP Agent"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 244,
+                                lineNumber: 251,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 231,
+                        lineNumber: 238,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 224,
+                lineNumber: 231,
                 columnNumber: 7
             }, this),
             (fromAdminPanel || organizations.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2748,7 +2769,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Assign Organization"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 262,
+                        lineNumber: 269,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2763,7 +2784,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 269,
+                                lineNumber: 276,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -2790,7 +2811,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Select Organization (Optional)"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 296,
+                                        lineNumber: 303,
                                         columnNumber: 15
                                     }, this),
                                     organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -2803,26 +2824,26 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                             ]
                                         }, org.id, true, {
                                             fileName: "[project]/components/SignupForm.tsx",
-                                            lineNumber: 298,
+                                            lineNumber: 305,
                                             columnNumber: 17
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 277,
+                                lineNumber: 284,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                 className: "fi flex fi-rr-angle-small-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 303,
+                                lineNumber: 310,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 268,
+                        lineNumber: 275,
                         columnNumber: 11
                     }, this),
                     loadingOrgs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2830,16 +2851,16 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Loading organizations..."
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 305,
+                        lineNumber: 312,
                         columnNumber: 27
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 261,
+                lineNumber: 268,
                 columnNumber: 9
             }, this),
-            fromAdminPanel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            showOnboardingLifecyle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "mb-6 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2852,7 +2873,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         className: "fi flex fi-rr-settings-sliders text-indigo-500 text-xs text-[10px]"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 314,
+                                        lineNumber: 321,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2860,13 +2881,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Onboarding Lifecycle"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 315,
+                                        lineNumber: 322,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 313,
+                                lineNumber: 320,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2881,7 +2902,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: `fi flex ${isClient ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 327,
+                                                lineNumber: 334,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2889,13 +2910,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: isClient ? 'Client' : 'Personnel'
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 328,
+                                                lineNumber: 335,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 318,
+                                        lineNumber: 325,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2907,7 +2928,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: `fi flex ${isCaller ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 340,
+                                                lineNumber: 347,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2915,25 +2936,25 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: isCaller ? 'Caller' : 'Non-Caller'
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 348,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 331,
+                                        lineNumber: 338,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 317,
+                                lineNumber: 324,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 312,
+                        lineNumber: 319,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2946,7 +2967,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Engagement Date"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 348,
+                                        lineNumber: 355,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2956,7 +2977,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: "fi flex fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 350,
+                                                lineNumber: 357,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2966,19 +2987,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 351,
+                                                lineNumber: 358,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 356,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 347,
+                                lineNumber: 354,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2991,7 +3012,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: "Next Renewal"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 361,
+                                                lineNumber: 368,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3001,7 +3022,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "fi flex fi-rr-refresh absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 363,
+                                                        lineNumber: 370,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3011,19 +3032,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 364,
+                                                        lineNumber: 371,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 362,
+                                                lineNumber: 369,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 360,
+                                        lineNumber: 367,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3033,7 +3054,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: "Expiration"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 373,
+                                                lineNumber: 380,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3043,7 +3064,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "fi flex fi-rr-alarm-clock absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 375,
+                                                        lineNumber: 382,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3053,37 +3074,37 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 376,
+                                                        lineNumber: 383,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 374,
+                                                lineNumber: 381,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 372,
+                                        lineNumber: 379,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 359,
+                                lineNumber: 366,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 346,
+                        lineNumber: 353,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 311,
+                lineNumber: 318,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3098,7 +3119,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Full Name"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 391,
+                        lineNumber: 398,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3112,7 +3133,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 399,
+                                lineNumber: 406,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3140,13 +3161,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 406,
+                                lineNumber: 413,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 398,
+                        lineNumber: 405,
                         columnNumber: 9
                     }, this),
                     errors.name && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3154,13 +3175,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.name
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 432,
+                        lineNumber: 439,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 390,
+                lineNumber: 397,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3175,7 +3196,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Email"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 438,
+                        lineNumber: 445,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3189,7 +3210,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 446,
+                                lineNumber: 453,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3217,13 +3238,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 453,
+                                lineNumber: 460,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 445,
+                        lineNumber: 452,
                         columnNumber: 9
                     }, this),
                     errors.email && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3231,13 +3252,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.email
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 479,
+                        lineNumber: 486,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 437,
+                lineNumber: 444,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3252,7 +3273,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Contact Number"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 485,
+                        lineNumber: 492,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3266,7 +3287,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 493,
+                                lineNumber: 500,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3295,13 +3316,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 500,
+                                lineNumber: 507,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 492,
+                        lineNumber: 499,
                         columnNumber: 9
                     }, this),
                     errors.contactNo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3309,13 +3330,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.contactNo
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 527,
+                        lineNumber: 534,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 484,
+                lineNumber: 491,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3330,7 +3351,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Password"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 533,
+                        lineNumber: 540,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3344,7 +3365,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 541,
+                                lineNumber: 548,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3372,13 +3393,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 548,
+                                lineNumber: 555,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 540,
+                        lineNumber: 547,
                         columnNumber: 9
                     }, this),
                     errors.password && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3386,13 +3407,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.password
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 574,
+                        lineNumber: 581,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 532,
+                lineNumber: 539,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3407,7 +3428,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Confirm Password"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 580,
+                        lineNumber: 587,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3421,7 +3442,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 588,
+                                lineNumber: 595,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -3449,13 +3470,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 595,
+                                lineNumber: 602,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 587,
+                        lineNumber: 594,
                         columnNumber: 9
                     }, this),
                     errors.confirmPassword && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3463,13 +3484,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.confirmPassword
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 621,
+                        lineNumber: 628,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 579,
+                lineNumber: 586,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3495,19 +3516,20 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                 children: isLoading ? "Creating Account..." : "Sign Up"
             }, void 0, false, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 627,
+                lineNumber: 634,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/SignupForm.tsx",
-        lineNumber: 209,
+        lineNumber: 216,
         columnNumber: 5
     }, this);
 }
-_s(SignupForm, "gBMJXhU7y2fv3Udb4Buo4hww8P0=", false, function() {
+_s(SignupForm, "85RohAgWwYIOJ4kVAkmdl1zklJs=", false, function() {
     return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
     ];
 });
 _c = SignupForm;
@@ -4026,10 +4048,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     rows: rows || 3,
                     placeholder: placeholder,
                     disabled: isDisabled,
-                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -4048,10 +4070,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     value: fieldValue,
                     onChange: handleInputChange,
                     disabled: isDisabled,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -4082,10 +4104,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     disabled: isDisabled,
                     placeholder: placeholder,
                     maxLength: maxLength,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -4335,7 +4357,7 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                     className: "text-sm",
                     style: {
-                        color: "#787E9D",
+                        color: "#263238",
                         fontFamily: "'Roboto', sans-serif"
                     },
                     children: "Upload your documents. Maximum file size: 10MB. Accepted formats: Images (JPG, PNG, WEBP) and PDF."

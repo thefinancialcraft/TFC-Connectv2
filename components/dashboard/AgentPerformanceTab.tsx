@@ -21,6 +21,7 @@ interface AgentPerformanceTabProps {
   selectedUserId?: string;
   dateFilter?: string;
   loading?: boolean;
+  restrictedUserIds?: string[] | null;
 }
 
 export default function AgentPerformanceTab({
@@ -28,6 +29,7 @@ export default function AgentPerformanceTab({
   selectedUserId,
   dateFilter: propDateFilter = "today",
   loading = false,
+  restrictedUserIds = null,
 }: AgentPerformanceTabProps) {
   const router = useRouter();
   
@@ -61,9 +63,12 @@ export default function AgentPerformanceTab({
   const fetchRpcPerformance = async (start: string, end: string) => {
     try {
       setRpcLoading(true);
-      const { data, error } = await supabase.rpc('get_org_performance_report', {
+      const { data, error } = await supabase.rpc('get_dashboard_agent_performance', {
         p_start_date: start,
-        p_end_date: end
+        p_end_date: end,
+        p_org_id: selectedOrgId === "all" ? null : selectedOrgId,
+        p_user_id: selectedUserId === "all" ? null : selectedUserId,
+        p_restricted_user_ids: restrictedUserIds
       });
       if (error) throw error;
       setRpcData(data || []);
@@ -134,7 +139,7 @@ export default function AgentPerformanceTab({
         
         fetchRpcPerformance(start.toISOString(), end.toISOString());
     }
-  }, [dateFilter, isFiltered]);
+  }, [dateFilter, isFiltered, selectedOrgId, selectedUserId, restrictedUserIds]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -155,7 +160,7 @@ export default function AgentPerformanceTab({
         }
     }, 30000); 
     return () => clearInterval(interval);
-  }, [dateFilter, isFiltered, startDate, endDate]);
+  }, [dateFilter, isFiltered, startDate, endDate, selectedOrgId, selectedUserId]);
 
   const totalDials = displayData.reduce((acc, curr) => acc + curr.count, 0);
 

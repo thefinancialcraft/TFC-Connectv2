@@ -164,7 +164,8 @@ const Users = () => {
         checkAndApproveExpiredHolds();
       }
     }
-  }, [mounted, user, userTypeToggle, isAuthorisedUser]); // Re-fetch when user or toggle changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, user?.uid, user?.organization_id, userTypeToggle, isAuthorisedUser]); // Re-fetch only when core identity or filters change
 
   // Filter Users Logic
   const filteredUsers = React.useMemo(() => {
@@ -306,6 +307,8 @@ const Users = () => {
                         ? "posp_agent"
                         : "employee",
                     status: "active",
+                    is_client: !!user.is_client,
+                    is_caller: user.is_caller !== false,
                   });
                   setShowApprovalModal(true);
                 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
+import { useUser } from "./AppLayout";
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 interface SignupFormProps {
   onError?: (error: string) => void;
@@ -20,6 +22,11 @@ export default function SignupForm({
   organizationId = null
 }: SignupFormProps) {
   const router = useRouter();
+  const { user: currentUser } = useUser();
+  const dashboardLevel = getUserDashboardLevel(currentUser);
+  
+  // Restriction: Only Level 1 Admins see the onboarding lifecycle
+  const showOnboardingLifecyle = fromAdminPanel && dashboardLevel === DashboardLevel.LEVEL_1_ADMIN;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -306,8 +313,8 @@ export default function SignupForm({
         </div>
       )}
 
-      {/* Classification & Lifecycle (Admin Only) */}
-      {fromAdminPanel && (
+      {/* Classification & Lifecycle (Admin Only - Level 1 Only) */}
+      {showOnboardingLifecyle && (
         <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">

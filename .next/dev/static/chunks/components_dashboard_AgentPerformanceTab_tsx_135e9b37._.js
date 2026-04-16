@@ -27,7 +27,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
-function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDateFilter = "today", loading = false }) {
+function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDateFilter = "today", loading = false, restrictedUserIds = null }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     // Date states for local filtration
@@ -51,9 +51,12 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
     const fetchRpcPerformance = async (start, end)=>{
         try {
             setRpcLoading(true);
-            const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].rpc('get_org_performance_report', {
+            const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].rpc('get_dashboard_agent_performance', {
                 p_start_date: start,
-                p_end_date: end
+                p_end_date: end,
+                p_org_id: selectedOrgId === "all" ? null : selectedOrgId,
+                p_user_id: selectedUserId === "all" ? null : selectedUserId,
+                p_restricted_user_ids: restrictedUserIds
             });
             if (error) throw error;
             setRpcData(data || []);
@@ -129,7 +132,10 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
         }
     }["AgentPerformanceTab.useEffect"], [
         dateFilter,
-        isFiltered
+        isFiltered,
+        selectedOrgId,
+        selectedUserId,
+        restrictedUserIds
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AgentPerformanceTab.useEffect": ()=>{
@@ -160,7 +166,9 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
         dateFilter,
         isFiltered,
         startDate,
-        endDate
+        endDate,
+        selectedOrgId,
+        selectedUserId
     ]);
     const totalDials = displayData.reduce((acc, curr)=>acc + curr.count, 0);
     const handlePrint = ()=>{
@@ -223,7 +231,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
       `
             }, void 0, false, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 198,
+                lineNumber: 203,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -239,7 +247,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                 className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 209,
+                                lineNumber: 214,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -247,7 +255,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                 children: "-"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 210,
+                                lineNumber: 215,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -257,13 +265,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                 className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 211,
+                                lineNumber: 216,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 208,
+                        lineNumber: 213,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -274,7 +282,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                             className: "w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                            lineNumber: 214,
+                            lineNumber: 219,
                             columnNumber: 24
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
                             children: [
@@ -282,27 +290,27 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                     className: "fi fi-rr-filter flex text-xs"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 214,
+                                    lineNumber: 219,
                                     columnNumber: 126
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     children: "Apply Filter"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 214,
+                                    lineNumber: 219,
                                     columnNumber: 174
                                 }, this)
                             ]
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 213,
+                        lineNumber: 218,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 207,
+                lineNumber: 212,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -318,12 +326,12 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                     className: "animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 220,
+                                    lineNumber: 225,
                                     columnNumber: 133
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 220,
+                                lineNumber: 225,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -336,7 +344,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Agent Productivity Leaderboard"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 227,
                                                 columnNumber: 18
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -344,13 +352,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Dials & Talktime per agent"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 227,
                                                 columnNumber: 102
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 222,
+                                        lineNumber: 227,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -365,7 +373,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         children: "Dials"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 225,
+                                                        lineNumber: 230,
                                                         columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -374,13 +382,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         children: "Talktime"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 226,
+                                                        lineNumber: 231,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 224,
+                                                lineNumber: 229,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -390,24 +398,24 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     className: "fi flex fi-rr-print text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 228,
+                                                    lineNumber: 233,
                                                     columnNumber: 191
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 228,
+                                                lineNumber: 233,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 223,
+                                        lineNumber: 228,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 221,
+                                lineNumber: 226,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -438,7 +446,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     stroke: "#F1F1F1"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 236,
+                                                    lineNumber: 241,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -447,7 +455,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     xAxisId: "cnt"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 237,
+                                                    lineNumber: 242,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -456,7 +464,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     xAxisId: "dur"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 237,
+                                                    lineNumber: 242,
                                                     columnNumber: 61
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Legend$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Legend"], {
@@ -470,7 +478,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 238,
+                                                    lineNumber: 243,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -489,7 +497,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     dx: -8
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 239,
+                                                    lineNumber: 244,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -508,7 +516,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                         children: data.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 243,
+                                                                        lineNumber: 248,
                                                                         columnNumber: 97
                                                                     }, void 0),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -522,7 +530,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                                lineNumber: 243,
+                                                                                lineNumber: 248,
                                                                                 columnNumber: 200
                                                                             }, void 0),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -533,19 +541,19 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                                lineNumber: 243,
+                                                                                lineNumber: 248,
                                                                                 columnNumber: 275
                                                                             }, void 0)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 243,
+                                                                        lineNumber: 248,
                                                                         columnNumber: 161
                                                                     }, void 0)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 243,
+                                                                lineNumber: 248,
                                                                 columnNumber: 30
                                                             }, void 0);
                                                         }
@@ -553,7 +561,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 240,
+                                                    lineNumber: 245,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -582,45 +590,45 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 children: metric === 'dials' ? value : formatDuration(value)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 250,
+                                                                lineNumber: 255,
                                                                 columnNumber: 30
                                                             }, void 0);
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 248,
+                                                        lineNumber: 253,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 247,
+                                                    lineNumber: 252,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 235,
+                                            lineNumber: 240,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 234,
+                                        lineNumber: 239,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 232,
+                                    lineNumber: 237,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 231,
+                                lineNumber: 236,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 219,
+                        lineNumber: 224,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -631,7 +639,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                 children: "Activity Contribution"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 261,
+                                lineNumber: 266,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -647,7 +655,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         children: (agent.name || "U").charAt(0)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 266,
+                                                        lineNumber: 271,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -657,7 +665,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 children: agent.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 267,
+                                                                lineNumber: 272,
                                                                 columnNumber: 24
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -669,19 +677,19 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 267,
+                                                                lineNumber: 272,
                                                                 columnNumber: 88
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 267,
+                                                        lineNumber: 272,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 265,
+                                                lineNumber: 270,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -697,13 +705,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 children: "dials"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 270,
+                                                                lineNumber: 275,
                                                                 columnNumber: 105
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 270,
+                                                        lineNumber: 275,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -711,7 +719,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         children: formatDuration(agent.duration || 0)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 271,
+                                                        lineNumber: 276,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -722,24 +730,24 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 272,
+                                                        lineNumber: 277,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 269,
+                                                lineNumber: 274,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 264,
+                                        lineNumber: 269,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 262,
+                                lineNumber: 267,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -748,19 +756,19 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                 children: "View All Team Insights"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 277,
+                                lineNumber: 282,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 260,
+                        lineNumber: 265,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 218,
+                lineNumber: 223,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -776,7 +784,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                         children: "Member Performance Breakdown"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 283,
+                                        lineNumber: 288,
                                         columnNumber: 20
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -784,13 +792,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                         children: "Granular metrics for individual agent activity (Sync enabled)"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 283,
+                                        lineNumber: 288,
                                         columnNumber: 102
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 283,
+                                lineNumber: 288,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -814,20 +822,20 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 className: `fi flex fi-rr-refresh ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 285,
+                                                lineNumber: 290,
                                                 columnNumber: 476
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Refresh"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 285,
+                                                lineNumber: 290,
                                                 columnNumber: 610
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 285,
+                                        lineNumber: 290,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -840,20 +848,20 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 className: "fi flex fi-rr-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 286,
+                                                lineNumber: 291,
                                                 columnNumber: 330
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                 children: "Download Excel"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 286,
+                                                lineNumber: 291,
                                                 columnNumber: 438
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 286,
+                                        lineNumber: 291,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -866,14 +874,14 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 288,
+                                                        lineNumber: 293,
                                                         columnNumber: 147
                                                     }, this),
                                                     " ONLINE"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 288,
+                                                lineNumber: 293,
                                                 columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -883,32 +891,32 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         className: "w-2 h-2 rounded-full bg-gray-400"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 289,
+                                                        lineNumber: 294,
                                                         columnNumber: 138
                                                     }, this),
                                                     " IDLE"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 289,
+                                                lineNumber: 294,
                                                 columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 287,
+                                        lineNumber: 292,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                lineNumber: 284,
+                                lineNumber: 289,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 282,
+                        lineNumber: 287,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -925,7 +933,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Agent"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 298,
+                                                lineNumber: 303,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -933,7 +941,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Login Status"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 299,
+                                                lineNumber: 304,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -941,7 +949,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Status (Idle Time)"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 300,
+                                                lineNumber: 305,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -949,7 +957,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Total Dials"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 301,
+                                                lineNumber: 306,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -957,7 +965,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Connected"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 302,
+                                                lineNumber: 307,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -965,7 +973,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Talk Time"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 303,
+                                                lineNumber: 308,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -973,7 +981,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Follow Ups"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 304,
+                                                lineNumber: 309,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -981,7 +989,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Utilization"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 305,
+                                                lineNumber: 310,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -989,18 +997,18 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 children: "Last Call"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 306,
+                                                lineNumber: 311,
                                                 columnNumber: 27
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 297,
+                                        lineNumber: 302,
                                         columnNumber: 23
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 296,
+                                    lineNumber: 301,
                                     columnNumber: 19
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1016,7 +1024,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         className: "fi fi-rr-search text-3xl text-gray-200"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 311,
+                                                        lineNumber: 316,
                                                         columnNumber: 133
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1024,23 +1032,23 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                         children: "No agent activity found for this period"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 311,
+                                                        lineNumber: 316,
                                                         columnNumber: 191
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                lineNumber: 311,
+                                                lineNumber: 316,
                                                 columnNumber: 83
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 311,
+                                            lineNumber: 316,
                                             columnNumber: 31
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 316,
                                         columnNumber: 27
                                     }, this) : displayData.map((agent, i)=>{
                                         const isOnline = agent.login_status_fmt === 'ONLINE';
@@ -1059,12 +1067,12 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                     children: agent.name.charAt(0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 316,
+                                                                    lineNumber: 321,
                                                                     columnNumber: 341
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 316,
+                                                                lineNumber: 321,
                                                                 columnNumber: 102
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1075,7 +1083,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                         children: agent.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 316,
+                                                                        lineNumber: 321,
                                                                         columnNumber: 434
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1086,24 +1094,24 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                        lineNumber: 316,
+                                                                        lineNumber: 321,
                                                                         columnNumber: 498
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 316,
+                                                                lineNumber: 321,
                                                                 columnNumber: 402
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 316,
+                                                        lineNumber: 321,
                                                         columnNumber: 61
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 316,
+                                                    lineNumber: 321,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1115,43 +1123,10 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 className: `w-1 h-1 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 318,
+                                                                lineNumber: 323,
                                                                 columnNumber: 39
                                                             }, this),
                                                             agent.login_status_fmt
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 317,
-                                                        columnNumber: 73
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 317,
-                                                    columnNumber: 35
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "px-2 py-5 text-center",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: `inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.status_fmt === '--' ? 'bg-gray-50 text-gray-300' : 'bg-amber-50 text-amber-700 border-amber-100'}`,
-                                                        children: agent.status_fmt === '--' ? '--' : `IDLE ${agent.status_fmt}`
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 321,
-                                                        columnNumber: 73
-                                                    }, this)
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 321,
-                                                    columnNumber: 35
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
-                                                    className: "px-2 py-5 text-center",
-                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "px-2 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100/50",
-                                                        children: [
-                                                            agent.count.toLocaleString(),
-                                                            " CALLS"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
@@ -1165,13 +1140,46 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-2 py-5 text-center",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: `inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.status_fmt === '--' ? 'bg-gray-50 text-gray-300' : 'bg-amber-50 text-amber-700 border-amber-100'}`,
+                                                        children: agent.status_fmt === '--' ? '--' : `IDLE ${agent.status_fmt}`
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 326,
+                                                        columnNumber: 73
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                    lineNumber: 326,
+                                                    columnNumber: 35
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-2 py-5 text-center",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "px-2 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100/50",
+                                                        children: [
+                                                            agent.count.toLocaleString(),
+                                                            " CALLS"
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                        lineNumber: 327,
+                                                        columnNumber: 73
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
+                                                    lineNumber: 327,
+                                                    columnNumber: 35
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-2 py-5 text-center",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-sm font-bold text-[#263238]",
                                                             children: agent.connected_count
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 323,
+                                                            lineNumber: 328,
                                                             columnNumber: 73
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1182,13 +1190,13 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 323,
+                                                            lineNumber: 328,
                                                             columnNumber: 148
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 323,
+                                                    lineNumber: 328,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1196,7 +1204,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     children: formatDuration(agent.duration || 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 324,
+                                                    lineNumber: 329,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1204,7 +1212,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                     children: agent.follow_ups || 0
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 325,
+                                                    lineNumber: 330,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1217,7 +1225,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                 children: agent.utilization_str
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 326,
+                                                                lineNumber: 331,
                                                                 columnNumber: 117
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1229,23 +1237,23 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                    lineNumber: 326,
+                                                                    lineNumber: 331,
                                                                     columnNumber: 269
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                                lineNumber: 326,
+                                                                lineNumber: 331,
                                                                 columnNumber: 197
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                        lineNumber: 326,
+                                                        lineNumber: 331,
                                                         columnNumber: 73
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 326,
+                                                    lineNumber: 331,
                                                     columnNumber: 35
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1259,7 +1267,7 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                             }) : 'Never'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 327,
+                                                            lineNumber: 332,
                                                             columnNumber: 72
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1267,48 +1275,48 @@ function AgentPerformanceTab({ selectedOrgId, selectedUserId, dateFilter: propDa
                                                             children: agent.last_active ? new Date(agent.last_active).toLocaleDateString() : 'N/A'
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                            lineNumber: 327,
+                                                            lineNumber: 332,
                                                             columnNumber: 246
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                                    lineNumber: 327,
+                                                    lineNumber: 332,
                                                     columnNumber: 35
                                                 }, this)
                                             ]
                                         }, agent.id || i, true, {
                                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                            lineNumber: 315,
+                                            lineNumber: 320,
                                             columnNumber: 31
                                         }, this);
                                     })
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                                    lineNumber: 309,
+                                    lineNumber: 314,
                                     columnNumber: 19
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                            lineNumber: 295,
+                            lineNumber: 300,
                             columnNumber: 15
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                        lineNumber: 294,
+                        lineNumber: 299,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-                lineNumber: 281,
+                lineNumber: 286,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/dashboard/AgentPerformanceTab.tsx",
-        lineNumber: 197,
+        lineNumber: 202,
         columnNumber: 5
     }, this);
 }

@@ -1,6 +1,9 @@
 import React from "react";
 import { AllUser } from "../types";
 import SettingsFormFields from "../../SettingsFormFields";
+import { useUser } from "../../AppLayout";
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
+
 
 interface ApprovalModalProps {
   show: boolean;
@@ -19,7 +22,25 @@ export function ApprovalModal({
   onClose,
   onConfirm,
 }: ApprovalModalProps) {
+  const { user: currentUser } = useUser();
+  const currentLevel = getUserDashboardLevel(currentUser);
+  
   if (!show || !userData) return null;
+
+  const availableDesignations = currentLevel === DashboardLevel.LEVEL_1_ADMIN 
+    ? [
+        { value: 'agent', label: 'Agent' },
+        { value: 'manager', label: 'Manager' },
+        { value: 'team_leader', label: 'Team Leader' },
+        { value: 'ceo', label: 'CEO' },
+        { value: 'developer', label: 'Developer' },
+        { value: 'faculty_staff', label: 'Faculty Staff' }
+      ]
+    : [
+        { value: 'agent', label: 'Agent' },
+        { value: 'team_leader', label: 'Team Leader' },
+        { value: 'ceo', label: 'CEO' }
+      ];
 
   return (
     <div
@@ -40,7 +61,7 @@ export function ApprovalModal({
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-10"
         >
-          <i className="fi flex fi-rr-cross text-gray-500"></i>
+          <i className="fi flex fi-rr-cross text-gray-900"></i>
         </button>
 
         <div className="p-6">
@@ -55,7 +76,7 @@ export function ApprovalModal({
               Approve New User
             </h2>
             <p
-              className="text-sm text-gray-600"
+              className="text-sm text-gray-900"
               style={{ fontFamily: "'Roboto', sans-serif" }}
             >
               Review and approve user registration. Set initial role and
@@ -87,6 +108,7 @@ export function ApprovalModal({
                       setFormData({ ...formData, status: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -103,6 +125,7 @@ export function ApprovalModal({
                       setFormData({ ...formData, role: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
@@ -120,6 +143,7 @@ export function ApprovalModal({
                       setFormData({ ...formData, department: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
                     <option value="sales">Sales</option>
                     <option value="renewal">Renewal</option>
@@ -141,15 +165,51 @@ export function ApprovalModal({
                       setFormData({ ...formData, designation: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
-                    <option value="agent">Agent</option>
-                    <option value="manager">Manager</option>
-                    <option value="team_leader">Team Leader</option>
-                    <option value="ceo">CEO</option>
-                    <option value="developer">Developer</option>
-                    <option value="faculty_staff">Faculty Staff</option>
+                    {availableDesignations.map((d) => (
+                      <option key={d.value} value={d.value}>{d.label}</option>
+                    ))}
                   </select>
                 </div>
+
+                {currentLevel === DashboardLevel.LEVEL_1_ADMIN && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">
+                        Client Status
+                      </label>
+                      <select
+                        value={formData.is_client ? "true" : "false"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, is_client: e.target.value === "true" })
+                        }
+                        className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
+                      >
+                        <option value="true">Client</option>
+                        <option value="false">Personnel</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">
+                        Caller Status
+                      </label>
+                      <select
+                        value={formData.is_caller ? "true" : "false"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, is_caller: e.target.value === "true" })
+                        }
+                        className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
+                      >
+                        <option value="true">Caller</option>
+                        <option value="false">Non-Caller</option>
+                      </select>
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">
@@ -161,6 +221,7 @@ export function ApprovalModal({
                       setFormData({ ...formData, work_type: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
                     <option value="on_site">On Site</option>
                     <option value="remote">Remote</option>
@@ -177,6 +238,7 @@ export function ApprovalModal({
                       setFormData({ ...formData, user_type: e.target.value })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]"
+                    style={{ color: "#000000" }}
                   >
                     <option value="employee">Employee</option>
                     <option value="posp_agent">POSP Agent</option>
@@ -199,7 +261,7 @@ export function ApprovalModal({
               <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-6 max-h-[400px] overflow-y-auto">
                 {/* Basic Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Basic Details
                   </h4>
                   <SettingsFormFields
@@ -219,7 +281,7 @@ export function ApprovalModal({
 
                 {/* Personal Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Personal Information
                   </h4>
                   <SettingsFormFields
@@ -239,7 +301,7 @@ export function ApprovalModal({
 
                 {/* Employment Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Employment Information
                   </h4>
                   <SettingsFormFields
@@ -259,7 +321,7 @@ export function ApprovalModal({
 
                 {/* Address Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Address Information
                   </h4>
                   <SettingsFormFields
@@ -275,7 +337,7 @@ export function ApprovalModal({
 
                 {/* KYC Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     KYC Information
                   </h4>
                   <SettingsFormFields
@@ -291,7 +353,7 @@ export function ApprovalModal({
 
                 {/* Bank Info */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Bank Details
                   </h4>
                   <SettingsFormFields
@@ -313,7 +375,7 @@ export function ApprovalModal({
 
                 {/* Documents */}
                 <div>
-                  <h4 className="text-xs font-semibold mb-3 text-gray-700">
+                  <h4 className="text-xs font-semibold mb-3 text-gray-900">
                     Documents
                   </h4>
                   <SettingsFormFields
@@ -338,7 +400,7 @@ export function ApprovalModal({
             <div className="col-span-1 md:col-span-2 flex justify-end gap-3 pt-4 border-t border-gray-200 mt-auto">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>

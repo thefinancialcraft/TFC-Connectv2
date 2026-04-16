@@ -181,7 +181,7 @@ export default async function handler(
     // Fetch user profile to validate org access
     const { data: userProfile, error: profileError } = await (supabaseAdmin || supabase)
       .from("user_profiles")
-      .select("organization_id, role, designation")
+      .select("organization_id, role, designation, is_client")
       .eq("user_id", requestUserId)
       .maybeSingle();
 
@@ -193,7 +193,11 @@ export default async function handler(
     // Determine dashboard level
     const userRole = userProfile?.role || 'user';
     const userDesignation = (userProfile as any)?.designation || '';
-    const dashboardLevel = getUserDashboardLevel({ isClient: true, role: userRole, designation: userDesignation });
+    const dashboardLevel = getUserDashboardLevel({ 
+      isClient: userProfile?.is_client ?? false, 
+      role: userRole, 
+      designation: userDesignation 
+    });
 
     // Team Leader IDs tracking
     let restrictedUserIds: string[] | undefined = undefined;

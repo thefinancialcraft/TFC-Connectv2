@@ -39,6 +39,9 @@ export default function Dashboard() {
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useSessionState<string>("dash_activeTab", "prospect");
+  
+  // Security Restrictions
+  const [restrictedUserIds, setRestrictedUserIds] = useState<string[] | null>(null);
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -78,24 +81,30 @@ export default function Dashboard() {
       // Level 1: Full Access, default to ALL stats
       setIsOrgLocked(false);
       setIsUserLocked(false);
-      setSelectedUserId("all"); 
+      setSelectedOrgId("all");
+      setSelectedUserId("all");
+      setRestrictedUserIds(null);
     } else if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
       setIsOrgLocked(true);
       setIsUserLocked(false);
       if (user.organization_id) setSelectedOrgId(user.organization_id);
+      setRestrictedUserIds(null);
     } else if (level === DashboardLevel.LEVEL_3_TL_SALES) {
       setIsOrgLocked(true);
       setIsUserLocked(false);
       if (user.organization_id) setSelectedOrgId(user.organization_id);
+      // Fail secure: Default to self only until team members are fetched
+      setRestrictedUserIds([currentId]);
     } else if (level === DashboardLevel.LEVEL_4_AGENT_SALES) {
       setIsOrgLocked(true);
       setIsUserLocked(true);
       
       // FORCE selections immediately for Level 4
       if (user.organization_id) setSelectedOrgId(user.organization_id);
-      if (currentId) setSelectedUserId(currentId);
-      
-      console.log(`[Dashboard] Level 4 Lockdown Applied: Org=${user.organization_id}, User=${currentId}`);
+      if (currentId) {
+        setSelectedUserId(currentId);
+        setRestrictedUserIds([currentId]);
+      }
     }
     
     hasInitialized.current = true;
@@ -161,6 +170,8 @@ export default function Dashboard() {
         const finalIds = Array.from(memberIds);
         console.log(`[Dashboard] Restricting User Selection to ${finalIds.length} members`);
 
+        setRestrictedUserIds(finalIds);
+
         // Apply membership filter
         finalQuery = queryBase.in("user_id", finalIds);
 
@@ -170,6 +181,7 @@ export default function Dashboard() {
       } else {
         // Global view for Admin (Level 1)
         finalQuery = queryBase;
+        setRestrictedUserIds(null);
       }
 
       const { data, error: userError } = await finalQuery.order("user_name");
@@ -201,6 +213,14 @@ export default function Dashboard() {
   // Date filter state
   const [dateFilter, setDateFilter] = useSessionState<string>("dash_dateFilter", "today");
 
+  useEffect(() => {
+    if (mounted && user && dashboardLevel !== DashboardLevel.UNKNOWN) {
+      if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
+        setRestrictedUserIds([user.uid]);
+      }
+    }
+  }, [mounted, user, dashboardLevel]);
+
   // Fetch all dashboard data when filters change
   useEffect(() => {
     if (mounted && user) {
@@ -218,12 +238,12 @@ export default function Dashboard() {
       
       // Fetch all data in parallel
       Promise.all([
-        fetchStats(orgFilter, dateFilter, userFilter),
-        fetchChartData(orgFilter, dateFilter, undefined, userFilter),
-        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter),
+        fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds),
+        fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds),
+        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds),
       ]);
     }
-  }, [selectedOrgId, selectedUserId, dateFilter, user?.uid, user?.organization_id, mounted, dashboardLevel, fetchStats, fetchChartData, fetchAgentPerformance]);
+  }, [selectedOrgId, selectedUserId, dateFilter, user?.uid, user?.organization_id, mounted, dashboardLevel, fetchStats, fetchChartData, fetchAgentPerformance, restrictedUserIds]);
 
   const loading = statsLoading || chartsLoading || agentLoading;
 
@@ -447,6 +467,7 @@ export default function Dashboard() {
               selectedOrgId={selectedOrgId}
               selectedUserId={selectedUserId}
               dateFilter={dateFilter}
+              restrictedUserIds={restrictedUserIds}
               loading={agentLoading}
             />
           )}

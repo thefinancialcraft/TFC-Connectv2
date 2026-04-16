@@ -7,6 +7,12 @@ __turbopack_context__.s([
     ()=>UserMenuDropdown
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
 ;
 // Helper functions
 const getApprovalStatusLabel = (status)=>{
@@ -92,6 +98,22 @@ const getDesignationLabel = (designation)=>{
     }
 };
 function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onApprovalStatusChange, onWorkTypeChange, onUserTypeChange, onRoleChange, onDepartmentChange, onDesignationChange, onIsClientChange, onIsCallerChange, onStatusChange, onDelete, openApprovalDropdown, openWorkTypeDropdown, openUserTypeDropdown, openRoleDropdown, openDepartmentDropdown, openDesignationDropdown, openIsClientDropdown, openIsCallerDropdown, setOpenApprovalDropdown, setOpenWorkTypeDropdown, setOpenUserTypeDropdown, setOpenRoleDropdown, setOpenDepartmentDropdown, setOpenDesignationDropdown, setOpenIsClientDropdown, setOpenIsCallerDropdown, menuRef, onClose, onMenuClose }) {
+    _s();
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const currentLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
+    const canManageIsClient = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN;
+    const availableDesignations = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN ? [
+        'agent',
+        'manager',
+        'faculty_staff',
+        'team_leader',
+        'ceo',
+        'developer'
+    ] : [
+        'agent',
+        'team_leader',
+        'ceo'
+    ];
     const handleClose = ()=>{
         setOpenApprovalDropdown(null);
         setOpenWorkTypeDropdown(null);
@@ -119,14 +141,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                 children: "User Actions"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 175,
+                lineNumber: 184,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 176,
+                lineNumber: 185,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -164,7 +186,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 195,
+                                                lineNumber: 204,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -173,7 +195,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 196,
+                                                lineNumber: 205,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -183,7 +205,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "14"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 197,
+                                                lineNumber: 206,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -193,26 +215,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "11"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 198,
+                                                lineNumber: 207,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 194,
+                                        lineNumber: 203,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getApprovalStatusLabel(user.approval_status)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 200,
+                                        lineNumber: 209,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 193,
+                                lineNumber: 202,
                                 columnNumber: 11
                             }, this),
                             openApprovalDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -227,12 +249,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 204,
+                                    lineNumber: 213,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 203,
+                                lineNumber: 212,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -246,18 +268,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 208,
+                                    lineNumber: 217,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 207,
+                                lineNumber: 216,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 180,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, this),
                     openApprovalDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -315,20 +337,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M22 11.08V12a10 10 0 1 1-5.93-9.14"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 245,
+                                                        lineNumber: 254,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
                                                         points: "22 4 12 14.01 9 11.01"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 246,
+                                                        lineNumber: 255,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 253,
                                                 columnNumber: 21
                                             }, this) : status === 'pending' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -348,20 +370,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 250,
+                                                        lineNumber: 259,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
                                                         points: "12 6 12 12 16 14"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 251,
+                                                        lineNumber: 260,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 249,
+                                                lineNumber: 258,
                                                 columnNumber: 21
                                             }, this) : status === 'hold' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -381,7 +403,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 264,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -391,7 +413,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "8"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 256,
+                                                        lineNumber: 265,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -401,13 +423,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "8"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 266,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 254,
+                                                lineNumber: 263,
                                                 columnNumber: 21
                                             }, this) : status === 'suspend' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -427,7 +449,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 261,
+                                                        lineNumber: 270,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -437,13 +459,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "19.07"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 262,
+                                                        lineNumber: 271,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 260,
+                                                lineNumber: 269,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -463,7 +485,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 266,
+                                                        lineNumber: 275,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -473,7 +495,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "15"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 267,
+                                                        lineNumber: 276,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -483,13 +505,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "15"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 268,
+                                                        lineNumber: 277,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 265,
+                                                lineNumber: 274,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -497,13 +519,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getApprovalStatusLabel(status)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 271,
+                                                lineNumber: 280,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 242,
+                                        lineNumber: 251,
                                         columnNumber: 17
                                     }, this),
                                     user.approval_status === status && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -516,29 +538,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 275,
+                                            lineNumber: 284,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 274,
+                                        lineNumber: 283,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, status, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 231,
+                                lineNumber: 240,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 213,
+                        lineNumber: 222,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 179,
+                lineNumber: 188,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -576,20 +598,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 302,
+                                                lineNumber: 311,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
                                                 points: "9 22 9 12 15 12 15 22"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 303,
+                                                lineNumber: 312,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 301,
+                                        lineNumber: 310,
                                         columnNumber: 15
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                         xmlns: "http://www.w3.org/2000/svg",
@@ -612,33 +634,33 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 ry: "2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 307,
+                                                lineNumber: 316,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 308,
+                                                lineNumber: 317,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 306,
+                                        lineNumber: 315,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getWorkTypeLabel(user.work_type)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 320,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 299,
+                                lineNumber: 308,
                                 columnNumber: 11
                             }, this),
                             openWorkTypeDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -653,12 +675,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 315,
+                                    lineNumber: 324,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 314,
+                                lineNumber: 323,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -672,18 +694,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 319,
+                                    lineNumber: 328,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 318,
+                                lineNumber: 327,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 286,
+                        lineNumber: 295,
                         columnNumber: 9
                     }, this),
                     openWorkTypeDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -720,20 +742,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 342,
+                                                        lineNumber: 351,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
                                                         points: "9 22 9 12 15 12 15 22"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 343,
+                                                        lineNumber: 352,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 350,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -756,20 +778,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 347,
+                                                        lineNumber: 356,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                         d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 348,
+                                                        lineNumber: 357,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 346,
+                                                lineNumber: 355,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -777,13 +799,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getWorkTypeLabel(workType)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 351,
+                                                lineNumber: 360,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 339,
+                                        lineNumber: 348,
                                         columnNumber: 17
                                     }, this),
                                     user.work_type === workType && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -796,29 +818,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 355,
+                                            lineNumber: 364,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 354,
+                                        lineNumber: 363,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, workType, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 326,
+                                lineNumber: 335,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 324,
+                        lineNumber: 333,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 285,
+                lineNumber: 294,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -856,7 +878,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 382,
+                                                lineNumber: 391,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -865,13 +887,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 383,
+                                                lineNumber: 392,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 381,
+                                        lineNumber: 390,
                                         columnNumber: 15
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                         xmlns: "http://www.w3.org/2000/svg",
@@ -889,14 +911,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 387,
+                                                lineNumber: 396,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("polyline", {
                                                 points: "3.27 6.96 12 12.01 20.73 6.96"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 388,
+                                                lineNumber: 397,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -906,26 +928,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "12"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 389,
+                                                lineNumber: 398,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 386,
+                                        lineNumber: 395,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getUserTypeLabel(user.user_type)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 392,
+                                        lineNumber: 401,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 379,
+                                lineNumber: 388,
                                 columnNumber: 11
                             }, this),
                             openUserTypeDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -940,12 +962,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 396,
+                                    lineNumber: 405,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 395,
+                                lineNumber: 404,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -959,18 +981,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 400,
+                                    lineNumber: 409,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 399,
+                                lineNumber: 408,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 366,
+                        lineNumber: 375,
                         columnNumber: 9
                     }, this),
                     openUserTypeDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1007,7 +1029,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 423,
+                                                        lineNumber: 432,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -1016,13 +1038,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 424,
+                                                        lineNumber: 433,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 422,
+                                                lineNumber: 431,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -1045,20 +1067,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 428,
+                                                        lineNumber: 437,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                         d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 429,
+                                                        lineNumber: 438,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 427,
+                                                lineNumber: 436,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1066,13 +1088,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getUserTypeLabel(userType)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 432,
+                                                lineNumber: 441,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 420,
+                                        lineNumber: 429,
                                         columnNumber: 17
                                     }, this),
                                     user.user_type === userType && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1085,29 +1107,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 436,
+                                            lineNumber: 445,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 435,
+                                        lineNumber: 444,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, userType, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 407,
+                                lineNumber: 416,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 405,
+                        lineNumber: 414,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 365,
+                lineNumber: 374,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1144,7 +1166,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 461,
+                                                lineNumber: 470,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -1153,40 +1175,40 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 462,
+                                                lineNumber: 471,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M23 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 472,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 464,
+                                                lineNumber: 473,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 460,
+                                        lineNumber: 469,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getRoleLabel(user.role)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 466,
+                                        lineNumber: 475,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 459,
+                                lineNumber: 468,
                                 columnNumber: 11
                             }, this),
                             openRoleDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1201,12 +1223,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 470,
+                                    lineNumber: 479,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 469,
+                                lineNumber: 478,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -1220,18 +1242,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 474,
+                                    lineNumber: 483,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 473,
+                                lineNumber: 482,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 447,
+                        lineNumber: 456,
                         columnNumber: 9
                     }, this),
                     openRoleDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1269,7 +1291,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 496,
+                                                        lineNumber: 505,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -1278,13 +1300,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 497,
+                                                        lineNumber: 506,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 495,
+                                                lineNumber: 504,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1292,13 +1314,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getRoleLabel(role)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 499,
+                                                lineNumber: 508,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 494,
+                                        lineNumber: 503,
                                         columnNumber: 17
                                     }, this),
                                     user.role === role && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1311,29 +1333,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 503,
+                                            lineNumber: 512,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 502,
+                                        lineNumber: 511,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, role, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 481,
+                                lineNumber: 490,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 479,
+                        lineNumber: 488,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 446,
+                lineNumber: 455,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1376,7 +1398,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 ry: "2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 529,
+                                                lineNumber: 538,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -1386,7 +1408,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "9"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 530,
+                                                lineNumber: 539,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -1396,26 +1418,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "9"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 531,
+                                                lineNumber: 540,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 537,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getDepartmentLabel(user.department)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 533,
+                                        lineNumber: 542,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 527,
+                                lineNumber: 536,
                                 columnNumber: 11
                             }, this),
                             openDepartmentDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1430,12 +1452,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 537,
+                                    lineNumber: 546,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 536,
+                                lineNumber: 545,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -1449,18 +1471,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 541,
+                                    lineNumber: 550,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 540,
+                                lineNumber: 549,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 514,
+                        lineNumber: 523,
                         columnNumber: 9
                     }, this),
                     openDepartmentDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1505,7 +1527,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 563,
+                                                        lineNumber: 572,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -1515,7 +1537,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "9"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 564,
+                                                        lineNumber: 573,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -1525,13 +1547,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "9"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 565,
+                                                        lineNumber: 574,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 562,
+                                                lineNumber: 571,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1539,13 +1561,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getDepartmentLabel(department)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 567,
+                                                lineNumber: 576,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 561,
+                                        lineNumber: 570,
                                         columnNumber: 17
                                     }, this),
                                     user.department === department && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1558,29 +1580,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 571,
+                                            lineNumber: 580,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 570,
+                                        lineNumber: 579,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, department, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 548,
+                                lineNumber: 557,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 546,
+                        lineNumber: 555,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 513,
+                lineNumber: 522,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1620,7 +1642,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 599,
+                                                lineNumber: 608,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -1629,40 +1651,40 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 600,
+                                                lineNumber: 609,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 601,
+                                                lineNumber: 610,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 602,
+                                                lineNumber: 611,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 598,
+                                        lineNumber: 607,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: getDesignationLabel(user.designation)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 604,
+                                        lineNumber: 613,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 597,
+                                lineNumber: 606,
                                 columnNumber: 11
                             }, this),
                             openDesignationDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1677,12 +1699,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 608,
+                                    lineNumber: 617,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 607,
+                                lineNumber: 616,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -1696,30 +1718,23 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 612,
+                                    lineNumber: 621,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 611,
+                                lineNumber: 620,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 582,
+                        lineNumber: 591,
                         columnNumber: 9
                     }, this),
                     openDesignationDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]",
-                        children: [
-                            'agent',
-                            'manager',
-                            'faculty_staff',
-                            'team_leader',
-                            'ceo',
-                            'developer'
-                        ].map((designation)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: availableDesignations.map((designation)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 onClick: (e)=>{
                                     e.stopPropagation();
                                     onDesignationChange(user.id, designation);
@@ -1748,7 +1763,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 633,
+                                                        lineNumber: 642,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -1757,27 +1772,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 634,
+                                                        lineNumber: 643,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                         d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 635,
+                                                        lineNumber: 644,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                         d: "M16 3.13a4 4 0 0 1 0 7.75"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 636,
+                                                        lineNumber: 645,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 632,
+                                                lineNumber: 641,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1785,13 +1800,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getDesignationLabel(designation)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 638,
+                                                lineNumber: 647,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 631,
+                                        lineNumber: 640,
                                         columnNumber: 17
                                     }, this),
                                     user.designation === designation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -1804,32 +1819,32 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 642,
+                                            lineNumber: 651,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 641,
+                                        lineNumber: 650,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, designation, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 619,
+                                lineNumber: 628,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 617,
+                        lineNumber: 626,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 581,
+                lineNumber: 590,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            canManageIsClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "relative",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1866,8 +1881,8 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 670,
-                                                columnNumber: 15
+                                                lineNumber: 680,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
                                                 cx: "9",
@@ -1875,28 +1890,28 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 671,
-                                                columnNumber: 15
+                                                lineNumber: 681,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 672,
-                                                columnNumber: 15
+                                                lineNumber: 682,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 673,
-                                                columnNumber: 15
+                                                lineNumber: 683,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 669,
-                                        columnNumber: 13
+                                        lineNumber: 679,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: [
@@ -1905,14 +1920,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 675,
-                                        columnNumber: 13
+                                        lineNumber: 685,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 668,
-                                columnNumber: 11
+                                lineNumber: 678,
+                                columnNumber: 13
                             }, this),
                             openIsClientDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -1926,13 +1941,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 679,
-                                    columnNumber: 15
+                                    lineNumber: 689,
+                                    columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 678,
-                                columnNumber: 13
+                                lineNumber: 688,
+                                columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
                                 fill: "none",
@@ -1945,19 +1960,19 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 683,
-                                    columnNumber: 15
+                                    lineNumber: 693,
+                                    columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 682,
-                                columnNumber: 13
+                                lineNumber: 692,
+                                columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 653,
-                        columnNumber: 9
+                        lineNumber: 663,
+                        columnNumber: 11
                     }, this),
                     openIsClientDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]",
@@ -1981,13 +1996,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             children: isClient ? 'Yes' : 'No'
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 703,
-                                            columnNumber: 19
+                                            lineNumber: 713,
+                                            columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 702,
-                                        columnNumber: 17
+                                        lineNumber: 712,
+                                        columnNumber: 19
                                     }, this),
                                     user.is_client === isClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                         className: "h-4 w-4 text-purple-600",
@@ -1999,30 +2014,30 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 707,
-                                            columnNumber: 21
+                                            lineNumber: 717,
+                                            columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 706,
-                                        columnNumber: 19
+                                        lineNumber: 716,
+                                        columnNumber: 21
                                     }, this)
                                 ]
                             }, isClient ? 'yes' : 'no', true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 690,
-                                columnNumber: 15
+                                lineNumber: 700,
+                                columnNumber: 17
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 688,
-                        columnNumber: 11
+                        lineNumber: 698,
+                        columnNumber: 13
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 652,
-                columnNumber: 7
+                lineNumber: 662,
+                columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "relative",
@@ -2061,7 +2076,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 735,
+                                                lineNumber: 746,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -2070,27 +2085,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 736,
+                                                lineNumber: 747,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 737,
+                                                lineNumber: 748,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 738,
+                                                lineNumber: 749,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 734,
+                                        lineNumber: 745,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2100,13 +2115,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 740,
+                                        lineNumber: 751,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 733,
+                                lineNumber: 744,
                                 columnNumber: 11
                             }, this),
                             openIsCallerDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -2121,12 +2136,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 744,
+                                    lineNumber: 755,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 743,
+                                lineNumber: 754,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -2140,18 +2155,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 748,
+                                    lineNumber: 759,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 747,
+                                lineNumber: 758,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 718,
+                        lineNumber: 729,
                         columnNumber: 9
                     }, this),
                     openIsCallerDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2176,12 +2191,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             children: isCaller ? 'Yes' : 'No'
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 768,
+                                            lineNumber: 779,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 767,
+                                        lineNumber: 778,
                                         columnNumber: 17
                                     }, this),
                                     user.is_caller === isCaller && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
@@ -2194,36 +2209,36 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 772,
+                                            lineNumber: 783,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 771,
+                                        lineNumber: 782,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, isCaller ? 'yes' : 'no', true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 755,
+                                lineNumber: 766,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 753,
+                        lineNumber: 764,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 717,
+                lineNumber: 728,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 781,
+                lineNumber: 792,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2251,27 +2266,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M12 2v10"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 794,
+                                lineNumber: 805,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M18.4 6.6a9 9 0 1 1-12.77.04"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 795,
+                                lineNumber: 806,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 793,
+                        lineNumber: 804,
                         columnNumber: 9
                     }, this),
                     "Set Active"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 784,
+                lineNumber: 795,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2299,48 +2314,48 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M18.36 6.64A9 9 0 0 1 20.77 15"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 810,
+                                lineNumber: 821,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M6.16 6.16a9 9 0 1 0 12.68 12.68"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 811,
+                                lineNumber: 822,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M12 2v4"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 812,
+                                lineNumber: 823,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "m2 2 20 20"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 813,
+                                lineNumber: 824,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 809,
+                        lineNumber: 820,
                         columnNumber: 9
                     }, this),
                     "Set Inactive"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 800,
+                lineNumber: 811,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 818,
+                lineNumber: 829,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2370,21 +2385,21 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M3 6h18"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 832,
+                                lineNumber: 843,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 833,
+                                lineNumber: 844,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                 d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 834,
+                                lineNumber: 845,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -2394,7 +2409,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 y2: "17"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 835,
+                                lineNumber: 846,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
@@ -2404,26 +2419,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 y2: "17"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 836,
+                                lineNumber: 847,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 831,
+                        lineNumber: 842,
                         columnNumber: 9
                     }, this),
                     "Delete User"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 820,
+                lineNumber: 831,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/UserMenuDropdown.tsx",
-        lineNumber: 174,
+        lineNumber: 183,
         columnNumber: 5
     }, this);
     if (viewType === 'grid') {
@@ -2455,7 +2470,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 854,
+                                lineNumber: 865,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -2464,7 +2479,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 855,
+                                lineNumber: 866,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -2473,18 +2488,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 856,
+                                lineNumber: 867,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 853,
+                        lineNumber: 864,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                    lineNumber: 846,
+                    lineNumber: 857,
                     columnNumber: 9
                 }, this),
                 isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -2497,7 +2512,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             }
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 863,
+                            lineNumber: 874,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2509,7 +2524,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             children: menuContent
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 872,
+                            lineNumber: 883,
                             columnNumber: 13
                         }, this)
                     ]
@@ -2517,7 +2532,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
             ]
         }, void 0, true, {
             fileName: "[project]/components/UserMenuDropdown.tsx",
-            lineNumber: 845,
+            lineNumber: 856,
             columnNumber: 7
         }, this);
     } else {
@@ -2550,7 +2565,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 895,
+                                lineNumber: 906,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -2559,7 +2574,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 896,
+                                lineNumber: 907,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("circle", {
@@ -2568,18 +2583,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 897,
+                                lineNumber: 908,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 894,
+                        lineNumber: 905,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                    lineNumber: 887,
+                    lineNumber: 898,
                     columnNumber: 9
                 }, this),
                 isOpen && menuPosition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -2592,7 +2607,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             }
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 904,
+                            lineNumber: 915,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2606,7 +2621,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             children: menuContent
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 913,
+                            lineNumber: 924,
                             columnNumber: 13
                         }, this)
                     ]
@@ -2614,11 +2629,16 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
             ]
         }, void 0, true, {
             fileName: "[project]/components/UserMenuDropdown.tsx",
-            lineNumber: 886,
+            lineNumber: 897,
             columnNumber: 7
         }, this);
     }
 }
+_s(UserMenuDropdown, "cBpjnE2vJpG3ucheMivUxwL5Cwg=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
+    ];
+});
 _c = UserMenuDropdown;
 var _c;
 __turbopack_context__.k.register(_c, "UserMenuDropdown");

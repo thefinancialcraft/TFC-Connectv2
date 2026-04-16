@@ -467,7 +467,17 @@ export default function Settings() {
                   { id: "kyc_info", label: "KYC", icon: "fi-rr-shield-check" },
                   { id: "bank_info", label: "Bank", icon: "fi-rr-credit-card" },
                   { id: "documents", label: "Files", icon: "fi-rr-file" },
-                ].map((cat) => (
+                ].filter(cat => {
+                  if (cat.id === "client_lifecycle") {
+                    return (
+                      user?.isClient === false &&
+                      user?.role === "super_admin" &&
+                      (user?.designation?.toLowerCase() === "ceo" ||
+                        user?.designation?.toLowerCase() === "developer")
+                    );
+                  }
+                  return true;
+                }).map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id as any)}
@@ -491,7 +501,17 @@ export default function Settings() {
                 <SettingsFormFields
                   formData={formData}
                   handleInputChange={handleInputChange}
-                  category={activeCategory}
+                  category={
+                    activeCategory === "client_lifecycle" &&
+                    !(
+                      user?.isClient === false &&
+                      user?.role === "super_admin" &&
+                      (user?.designation?.toLowerCase() === "ceo" ||
+                        user?.designation?.toLowerCase() === "developer")
+                    )
+                      ? "basic_info"
+                      : activeCategory
+                  }
                   onFileUpload={handleFileUpload}
                 />
 

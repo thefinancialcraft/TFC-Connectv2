@@ -5183,10 +5183,58 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/SettingsFormFields.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
 ;
 ;
 function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfirm }) {
+    _s();
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const currentLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
     if (!show || !userData) return null;
+    const availableDesignations = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN ? [
+        {
+            value: 'agent',
+            label: 'Agent'
+        },
+        {
+            value: 'manager',
+            label: 'Manager'
+        },
+        {
+            value: 'team_leader',
+            label: 'Team Leader'
+        },
+        {
+            value: 'ceo',
+            label: 'CEO'
+        },
+        {
+            value: 'developer',
+            label: 'Developer'
+        },
+        {
+            value: 'faculty_staff',
+            label: 'Faculty Staff'
+        }
+    ] : [
+        {
+            value: 'agent',
+            label: 'Agent'
+        },
+        {
+            value: 'team_leader',
+            label: 'Team Leader'
+        },
+        {
+            value: 'ceo',
+            label: 'CEO'
+        }
+    ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "fixed inset-0 z-[10000] flex items-center justify-center p-4",
         style: {
@@ -5205,15 +5253,15 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                     onClick: onClose,
                     className: "absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-10",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                        className: "fi flex fi-rr-cross text-gray-500"
+                        className: "fi flex fi-rr-cross text-gray-900"
                     }, void 0, false, {
                         fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                        lineNumber: 43,
+                        lineNumber: 64,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                    lineNumber: 39,
+                    lineNumber: 60,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5231,24 +5279,24 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                     children: "Approve New User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 48,
+                                    lineNumber: 69,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                    className: "text-sm text-gray-600",
+                                    className: "text-sm text-gray-900",
                                     style: {
                                         fontFamily: "'Roboto', sans-serif"
                                     },
                                     children: "Review and approve user registration. Set initial role and permissions."
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 57,
+                                    lineNumber: 78,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                            lineNumber: 47,
+                            lineNumber: 68,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5266,7 +5314,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "Approval Settings"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 69,
+                                            lineNumber: 90,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5279,7 +5327,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Status"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 81,
+                                                            lineNumber: 102,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5289,13 +5337,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     status: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                     value: "active",
                                                                     children: "Active"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 91,
+                                                                    lineNumber: 113,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5303,19 +5354,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Inactive"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 92,
+                                                                    lineNumber: 114,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 84,
+                                                            lineNumber: 105,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 80,
+                                                    lineNumber: 101,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5325,7 +5376,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Role"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 97,
+                                                            lineNumber: 119,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5335,13 +5386,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     role: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                     value: "user",
                                                                     children: "User"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 107,
+                                                                    lineNumber: 130,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5349,7 +5403,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Admin"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 108,
+                                                                    lineNumber: 131,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5357,19 +5411,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Super Admin"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 109,
+                                                                    lineNumber: 132,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 100,
+                                                            lineNumber: 122,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 96,
+                                                    lineNumber: 118,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5379,7 +5433,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Department"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 114,
+                                                            lineNumber: 137,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5389,13 +5443,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     department: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                     value: "sales",
                                                                     children: "Sales"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 124,
+                                                                    lineNumber: 148,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5403,7 +5460,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Renewal"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 125,
+                                                                    lineNumber: 149,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5411,7 +5468,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Backend"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 126,
+                                                                    lineNumber: 150,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5419,7 +5476,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Management"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 127,
+                                                                    lineNumber: 151,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5427,7 +5484,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Service"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 128,
+                                                                    lineNumber: 152,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5435,7 +5492,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "HR"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 129,
+                                                                    lineNumber: 153,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5443,19 +5500,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "IT"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 130,
+                                                                    lineNumber: 154,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 117,
+                                                            lineNumber: 140,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 113,
+                                                    lineNumber: 136,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5465,7 +5522,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Designation"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 135,
+                                                            lineNumber: 159,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5475,67 +5532,130 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     designation: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "agent",
-                                                                    children: "Agent"
-                                                                }, void 0, false, {
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
+                                                            children: availableDesignations.map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                    value: d.value,
+                                                                    children: d.label
+                                                                }, d.value, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 145,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "manager",
-                                                                    children: "Manager"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 146,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "team_leader",
-                                                                    children: "Team Leader"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 147,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "ceo",
-                                                                    children: "CEO"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 148,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "developer",
-                                                                    children: "Developer"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 149,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                    value: "faculty_staff",
-                                                                    children: "Faculty Staff"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 150,
-                                                                    columnNumber: 21
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
+                                                                    lineNumber: 171,
+                                                                    columnNumber: 23
+                                                                }, this))
+                                                        }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 138,
+                                                            lineNumber: 162,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 134,
+                                                    lineNumber: 158,
                                                     columnNumber: 17
                                                 }, this),
+                                                currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                                    className: "block text-xs font-semibold text-gray-500 mb-1.5 uppercase",
+                                                                    children: "Client Status"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 179,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                                    value: formData.is_client ? "true" : "false",
+                                                                    onChange: (e)=>setFormData({
+                                                                            ...formData,
+                                                                            is_client: e.target.value === "true"
+                                                                        }),
+                                                                    className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                                    style: {
+                                                                        color: "#000000"
+                                                                    },
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "true",
+                                                                            children: "Client"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 190,
+                                                                            columnNumber: 25
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "false",
+                                                                            children: "Personnel"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 191,
+                                                                            columnNumber: 25
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 182,
+                                                                    columnNumber: 23
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                            lineNumber: 178,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                                    className: "block text-xs font-semibold text-gray-500 mb-1.5 uppercase",
+                                                                    children: "Caller Status"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 196,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                                    value: formData.is_caller ? "true" : "false",
+                                                                    onChange: (e)=>setFormData({
+                                                                            ...formData,
+                                                                            is_caller: e.target.value === "true"
+                                                                        }),
+                                                                    className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                                    style: {
+                                                                        color: "#000000"
+                                                                    },
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "true",
+                                                                            children: "Caller"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 207,
+                                                                            columnNumber: 25
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                                            value: "false",
+                                                                            children: "Non-Caller"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 208,
+                                                                            columnNumber: 25
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 199,
+                                                                    columnNumber: 23
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                            lineNumber: 195,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -5543,7 +5663,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Work Type"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 155,
+                                                            lineNumber: 215,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5553,13 +5673,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     work_type: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                     value: "on_site",
                                                                     children: "On Site"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 165,
+                                                                    lineNumber: 226,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5567,19 +5690,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Remote"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 166,
+                                                                    lineNumber: 227,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 158,
+                                                            lineNumber: 218,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 154,
+                                                    lineNumber: 214,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5589,7 +5712,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "User Type"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 171,
+                                                            lineNumber: 232,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
@@ -5599,13 +5722,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     user_type: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                                     value: "employee",
                                                                     children: "Employee"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 181,
+                                                                    lineNumber: 243,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -5613,31 +5739,31 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "POSP Agent"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 182,
+                                                                    lineNumber: 244,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 174,
+                                                            lineNumber: 235,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 170,
+                                                    lineNumber: 231,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 79,
+                                            lineNumber: 100,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 68,
+                                    lineNumber: 89,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5652,7 +5778,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "User Application Details"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 190,
+                                            lineNumber: 252,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5661,11 +5787,11 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Basic Details"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 202,
+                                                            lineNumber: 264,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5682,23 +5808,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 205,
+                                                            lineNumber: 267,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 201,
+                                                    lineNumber: 263,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Personal Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 222,
+                                                            lineNumber: 284,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5715,23 +5841,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 225,
+                                                            lineNumber: 287,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 221,
+                                                    lineNumber: 283,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Employment Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 242,
+                                                            lineNumber: 304,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5748,23 +5874,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 245,
+                                                            lineNumber: 307,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 241,
+                                                    lineNumber: 303,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Address Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 262,
+                                                            lineNumber: 324,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5777,23 +5903,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 265,
+                                                            lineNumber: 327,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 261,
+                                                    lineNumber: 323,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "KYC Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 278,
+                                                            lineNumber: 340,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5806,23 +5932,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 281,
+                                                            lineNumber: 343,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 339,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Bank Details"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 294,
+                                                            lineNumber: 356,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5840,23 +5966,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 297,
+                                                            lineNumber: 359,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 293,
+                                                    lineNumber: 355,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Documents"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 316,
+                                                            lineNumber: 378,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -5873,25 +5999,25 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 319,
+                                                            lineNumber: 381,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 315,
+                                                    lineNumber: 377,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 199,
+                                            lineNumber: 261,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 189,
+                                    lineNumber: 251,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5899,11 +6025,11 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: onClose,
-                                            className: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors",
+                                            className: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors",
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 339,
+                                            lineNumber: 401,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -5912,39 +6038,44 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "Approve User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 345,
+                                            lineNumber: 407,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 338,
+                                    lineNumber: 400,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                            lineNumber: 66,
+                            lineNumber: 87,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                    lineNumber: 46,
+                    lineNumber: 67,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-            lineNumber: 34,
+            lineNumber: 55,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-        lineNumber: 25,
+        lineNumber: 46,
         columnNumber: 5
     }, this);
 }
+_s(ApprovalModal, "cBpjnE2vJpG3ucheMivUxwL5Cwg=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
+    ];
+});
 _c = ApprovalModal;
 var _c;
 __turbopack_context__.k.register(_c, "ApprovalModal");

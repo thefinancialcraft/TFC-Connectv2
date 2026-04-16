@@ -509,10 +509,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     rows: rows || 3,
                     placeholder: placeholder,
                     disabled: isDisabled,
-                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -531,10 +531,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     value: fieldValue,
                     onChange: handleInputChange,
                     disabled: isDisabled,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -565,10 +565,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     disabled: isDisabled,
                     placeholder: placeholder,
                     maxLength: maxLength,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -818,7 +818,7 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                     className: "text-sm",
                     style: {
-                        color: "#787E9D",
+                        color: "#263238",
                         fontFamily: "'Roboto', sans-serif"
                     },
                     children: "Upload your documents. Maximum file size: 10MB. Accepted formats: Images (JPG, PNG, WEBP) and PDF."
@@ -3473,7 +3473,12 @@ function Settings() {
                                                 label: "Files",
                                                 icon: "fi-rr-file"
                                             }
-                                        ].map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                        ].filter((cat)=>{
+                                            if (cat.id === "client_lifecycle") {
+                                                return user?.isClient === false && user?.role === "super_admin" && (user?.designation?.toLowerCase() === "ceo" || user?.designation?.toLowerCase() === "developer");
+                                            }
+                                            return true;
+                                        }).map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                                 onClick: ()=>setActiveCategory(cat.id),
                                                 className: `flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all flex-shrink-0 ${activeCategory === cat.id ? "bg-[#4b33e8] text-white" : "bg-white border border-gray-100 text-gray-500 hover:border-[#4b33e8]"}`,
                                                 children: [
@@ -3481,7 +3486,7 @@ function Settings() {
                                                         className: `fi ${cat.icon} flex`
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                        lineNumber: 478,
+                                                        lineNumber: 488,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -3489,13 +3494,13 @@ function Settings() {
                                                         children: cat.label
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                        lineNumber: 479,
+                                                        lineNumber: 489,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, cat.id, true, {
                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                lineNumber: 471,
+                                                lineNumber: 481,
                                                 columnNumber: 19
                                             }, this))
                                     }, void 0, false, {
@@ -3516,24 +3521,24 @@ function Settings() {
                                                         className: "fi fi-rr-edit text-[#4b33e8] text-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                        lineNumber: 487,
+                                                        lineNumber: 497,
                                                         columnNumber: 19
                                                     }, this),
                                                     activeCategory.replace("_", " ").toUpperCase()
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                lineNumber: 486,
+                                                lineNumber: 496,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                 formData: formData,
                                                 handleInputChange: handleInputChange,
-                                                category: activeCategory,
+                                                category: activeCategory === "client_lifecycle" && !(user?.isClient === false && user?.role === "super_admin" && (user?.designation?.toLowerCase() === "ceo" || user?.designation?.toLowerCase() === "developer")) ? "basic_info" : activeCategory,
                                                 onFileUpload: handleFileUpload
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                lineNumber: 491,
+                                                lineNumber: 501,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3548,18 +3553,18 @@ function Settings() {
                                                     children: isSaving ? "Saving..." : "Save Changes"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                    lineNumber: 499,
+                                                    lineNumber: 519,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                lineNumber: 498,
+                                                lineNumber: 518,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/pages/portal/settings.tsx",
-                                        lineNumber: 485,
+                                        lineNumber: 495,
                                         columnNumber: 15
                                     }, this)
                                 ]
@@ -3581,7 +3586,7 @@ function Settings() {
                                             children: "Security Center"
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/settings.tsx",
-                                            lineNumber: 514,
+                                            lineNumber: 534,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3598,7 +3603,7 @@ function Settings() {
                                                                     children: "Update Password"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 522,
+                                                                    lineNumber: 542,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3619,7 +3624,7 @@ function Settings() {
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                                        lineNumber: 526,
+                                                                                        lineNumber: 546,
                                                                                         columnNumber: 29
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -3628,13 +3633,13 @@ function Settings() {
                                                                                         placeholder: `Enter ${p.toLowerCase()} password`
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                                        lineNumber: 527,
+                                                                                        lineNumber: 547,
                                                                                         columnNumber: 29
                                                                                     }, this)
                                                                                 ]
                                                                             }, p, true, {
                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                lineNumber: 525,
+                                                                                lineNumber: 545,
                                                                                 columnNumber: 27
                                                                             }, this)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -3642,26 +3647,26 @@ function Settings() {
                                                                             children: "Change Password"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 534,
+                                                                            lineNumber: 554,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 523,
+                                                                    lineNumber: 543,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 521,
+                                                            lineNumber: 541,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                             className: "h-px bg-gray-100"
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 540,
+                                                            lineNumber: 560,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3672,7 +3677,7 @@ function Settings() {
                                                                     children: "Display Name"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 544,
+                                                                    lineNumber: 564,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3685,7 +3690,7 @@ function Settings() {
                                                                                     className: "fi fi-rr-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 547,
+                                                                                    lineNumber: 567,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -3699,13 +3704,13 @@ function Settings() {
                                                                                     placeholder: "Display Name"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 548,
+                                                                                    lineNumber: 568,
                                                                                     columnNumber: 33
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 546,
+                                                                            lineNumber: 566,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -3714,19 +3719,19 @@ function Settings() {
                                                                             children: "Update"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 556,
+                                                                            lineNumber: 576,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 545,
+                                                                    lineNumber: 565,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 543,
+                                                            lineNumber: 563,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3737,7 +3742,7 @@ function Settings() {
                                                                     children: "Email Address"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 567,
+                                                                    lineNumber: 587,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3750,7 +3755,7 @@ function Settings() {
                                                                                     className: "fi fi-rr-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 570,
+                                                                                    lineNumber: 590,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -3764,13 +3769,13 @@ function Settings() {
                                                                                     placeholder: "Email Address"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 571,
+                                                                                    lineNumber: 591,
                                                                                     columnNumber: 33
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 569,
+                                                                            lineNumber: 589,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -3779,19 +3784,19 @@ function Settings() {
                                                                             children: "Update"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 579,
+                                                                            lineNumber: 599,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 568,
+                                                                    lineNumber: 588,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 566,
+                                                            lineNumber: 586,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3802,7 +3807,7 @@ function Settings() {
                                                                     children: "Phone Number"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 590,
+                                                                    lineNumber: 610,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3815,7 +3820,7 @@ function Settings() {
                                                                                     className: "fi fi-rr-smartphone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 593,
+                                                                                    lineNumber: 613,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -3829,13 +3834,13 @@ function Settings() {
                                                                                     placeholder: "Phone Number"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 594,
+                                                                                    lineNumber: 614,
                                                                                     columnNumber: 33
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 592,
+                                                                            lineNumber: 612,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -3844,25 +3849,25 @@ function Settings() {
                                                                             children: "Update"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 602,
+                                                                            lineNumber: 622,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 591,
+                                                                    lineNumber: 611,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 589,
+                                                            lineNumber: 609,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                    lineNumber: 519,
+                                                    lineNumber: 539,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3876,7 +3881,7 @@ function Settings() {
                                                                     children: "Active Sessions"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 614,
+                                                                    lineNumber: 634,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3891,12 +3896,12 @@ function Settings() {
                                                                                 className: `fi fi-rr-refresh flex text-[10px] ${isLoadingSessions ? 'animate-spin' : ''}`
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                lineNumber: 622,
+                                                                                lineNumber: 642,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 616,
+                                                                            lineNumber: 636,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -3908,19 +3913,19 @@ function Settings() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 624,
+                                                                            lineNumber: 644,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 615,
+                                                                    lineNumber: 635,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 613,
+                                                            lineNumber: 633,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3932,7 +3937,7 @@ function Settings() {
                                                                         className: "w-6 h-6 border-2 border-[#4b33e8]/30 border-t-[#4b33e8] rounded-full animate-spin"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                        lineNumber: 634,
+                                                                        lineNumber: 654,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -3940,13 +3945,13 @@ function Settings() {
                                                                         children: "Loading sessions..."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                        lineNumber: 635,
+                                                                        lineNumber: 655,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                lineNumber: 633,
+                                                                lineNumber: 653,
                                                                 columnNumber: 25
                                                             }, this) : activeSessions.length > 0 ? activeSessions.map((s)=>{
                                                                 const isCurrentSession = s.token_id === currentTokenId;
@@ -3964,12 +3969,12 @@ function Settings() {
                                                                                         className: `fi flex text-xl ${s.device_type?.toLowerCase() === 'mobile' ? 'fi-rr-smartphone' : 'fi-rr-laptop'}`
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                                        lineNumber: 660,
+                                                                                        lineNumber: 680,
                                                                                         columnNumber: 33
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 655,
+                                                                                    lineNumber: 675,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3982,7 +3987,7 @@ function Settings() {
                                                                                                     children: s.device_name || "Device"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                                    lineNumber: 669,
+                                                                                                    lineNumber: 689,
                                                                                                     columnNumber: 35
                                                                                                 }, this),
                                                                                                 isCurrentSession && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -3990,7 +3995,7 @@ function Settings() {
                                                                                                     children: "Current"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                                    lineNumber: 671,
+                                                                                                    lineNumber: 691,
                                                                                                     columnNumber: 37
                                                                                                 }, this),
                                                                                                 (()=>{
@@ -4012,7 +4017,7 @@ function Settings() {
                                                                                                                 className: `w-2 h-2 rounded-full ${dotColor} relative`
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                                                lineNumber: 692,
+                                                                                                                lineNumber: 712,
                                                                                                                 columnNumber: 45
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4020,20 +4025,20 @@ function Settings() {
                                                                                                                 children: statusText
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                                                lineNumber: 693,
+                                                                                                                lineNumber: 713,
                                                                                                                 columnNumber: 45
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                                                        lineNumber: 691,
+                                                                                                        lineNumber: 711,
                                                                                                         columnNumber: 41
                                                                                                     }, this);
                                                                                                 })()
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                                            lineNumber: 668,
+                                                                                            lineNumber: 688,
                                                                                             columnNumber: 33
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -4045,19 +4050,19 @@ function Settings() {
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                                            lineNumber: 701,
+                                                                                            lineNumber: 721,
                                                                                             columnNumber: 33
                                                                                         }, this)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 667,
+                                                                                    lineNumber: 687,
                                                                                     columnNumber: 31
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 654,
+                                                                            lineNumber: 674,
                                                                             columnNumber: 29
                                                                         }, this),
                                                                         !isCurrentSession && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -4066,13 +4071,13 @@ function Settings() {
                                                                             children: "Revoke"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 707,
+                                                                            lineNumber: 727,
                                                                             columnNumber: 31
                                                                         }, this)
                                                                     ]
                                                                 }, sessionId, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 643,
+                                                                    lineNumber: 663,
                                                                     columnNumber: 27
                                                                 }, this);
                                                             }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4080,47 +4085,47 @@ function Settings() {
                                                                 children: "No active sessions found"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                lineNumber: 719,
+                                                                lineNumber: 739,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 631,
+                                                            lineNumber: 651,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                    lineNumber: 612,
+                                                    lineNumber: 632,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/settings.tsx",
-                                            lineNumber: 516,
+                                            lineNumber: 536,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 513,
+                                    lineNumber: 533,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 512,
+                                lineNumber: 532,
                                 columnNumber: 13
                             }, this),
                             activeTab === "flutter_bridge" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                 className: "animate-in fade-in slide-in-from-bottom-2 duration-300",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$settings$2f$FlutterBridgeTab$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 731,
+                                    lineNumber: 751,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 730,
+                                lineNumber: 750,
                                 columnNumber: 13
                             }, this),
                             activeTab === "devices" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4129,12 +4134,12 @@ function Settings() {
                                     employeeId: user?.employeeId
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 737,
+                                    lineNumber: 757,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 736,
+                                lineNumber: 756,
                                 columnNumber: 13
                             }, this),
                             activeTab === "integrations" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4152,14 +4157,14 @@ function Settings() {
                                                     className: "fi fi-rr-apps text-[#4b33e8] text-sm"
                                                 }, void 0, false, {
                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                    lineNumber: 745,
+                                                    lineNumber: 765,
                                                     columnNumber: 19
                                                 }, this),
                                                 "Connected Apps"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/pages/portal/settings.tsx",
-                                            lineNumber: 744,
+                                            lineNumber: 764,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4181,12 +4186,12 @@ function Settings() {
                                                                                 className: "fi fi-brands-google text-lg flex text-indigo-600"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                lineNumber: 757,
+                                                                                lineNumber: 777,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 756,
+                                                                            lineNumber: 776,
                                                                             columnNumber: 27
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4196,7 +4201,7 @@ function Settings() {
                                                                                     children: "Google Calendar"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 760,
+                                                                                    lineNumber: 780,
                                                                                     columnNumber: 29
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -4204,19 +4209,19 @@ function Settings() {
                                                                                     children: user?.googleCalendarConnected ? `Connected as ${user.email || 'team@rynxly.in'}` : 'Sync reminders & schedules'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                                    lineNumber: 761,
+                                                                                    lineNumber: 781,
                                                                                     columnNumber: 29
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 759,
+                                                                            lineNumber: 779,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 755,
+                                                                    lineNumber: 775,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4301,18 +4306,18 @@ function Settings() {
                                                                         className: `absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${user?.googleCalendarConnected ? 'right-1' : 'left-1'}`
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/settings.tsx",
-                                                                        lineNumber: 861,
+                                                                        lineNumber: 881,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 770,
+                                                                    lineNumber: 790,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 754,
+                                                            lineNumber: 774,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4327,12 +4332,12 @@ function Settings() {
                                                                                 className: "fi fi-rr-check flex"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                lineNumber: 869,
+                                                                                lineNumber: 889,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 868,
+                                                                            lineNumber: 888,
                                                                             columnNumber: 27
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4340,13 +4345,13 @@ function Settings() {
                                                                             children: "Sync Call Schedules"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 871,
+                                                                            lineNumber: 891,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 867,
+                                                                    lineNumber: 887,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4358,12 +4363,12 @@ function Settings() {
                                                                                 className: "fi fi-rr-check flex"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                                                lineNumber: 875,
+                                                                                lineNumber: 895,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 874,
+                                                                            lineNumber: 894,
                                                                             columnNumber: 27
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4371,58 +4376,58 @@ function Settings() {
                                                                             children: "Sync Reminders"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                                            lineNumber: 877,
+                                                                            lineNumber: 897,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                                    lineNumber: 873,
+                                                                    lineNumber: 893,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/pages/portal/settings.tsx",
-                                                            lineNumber: 866,
+                                                            lineNumber: 886,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/pages/portal/settings.tsx",
-                                                    lineNumber: 752,
+                                                    lineNumber: 772,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/pages/portal/settings.tsx",
-                                                lineNumber: 751,
+                                                lineNumber: 771,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/settings.tsx",
-                                            lineNumber: 749,
+                                            lineNumber: 769,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 743,
+                                    lineNumber: 763,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 742,
+                                lineNumber: 762,
                                 columnNumber: 13
                             }, this),
                             activeTab === "console_logs" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                 className: "animate-in fade-in slide-in-from-bottom-2 duration-300",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$settings$2f$ConsoleLogsTab$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 889,
+                                    lineNumber: 909,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 888,
+                                lineNumber: 908,
                                 columnNumber: 13
                             }, this)
                         ]
@@ -4450,12 +4455,12 @@ function Settings() {
                                     className: "fi fi-rr-cross-circle text-3xl text-red-500 flex"
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/settings.tsx",
-                                    lineNumber: 900,
+                                    lineNumber: 920,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 899,
+                                lineNumber: 919,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h3", {
@@ -4463,7 +4468,7 @@ function Settings() {
                                 children: "Account Already Linked"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 903,
+                                lineNumber: 923,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -4472,19 +4477,19 @@ function Settings() {
                                     "This Google account is already connected to another user.",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/pages/portal/settings.tsx",
-                                        lineNumber: 907,
+                                        lineNumber: 927,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/pages/portal/settings.tsx",
-                                        lineNumber: 907,
+                                        lineNumber: 927,
                                         columnNumber: 22
                                     }, this),
                                     "Please use a different Google account or log in with the existing account associated with this email."
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 905,
+                                lineNumber: 925,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -4493,23 +4498,23 @@ function Settings() {
                                 children: "Okay, I understand"
                             }, void 0, false, {
                                 fileName: "[project]/pages/portal/settings.tsx",
-                                lineNumber: 911,
+                                lineNumber: 931,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/pages/portal/settings.tsx",
-                        lineNumber: 898,
+                        lineNumber: 918,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/settings.tsx",
-                    lineNumber: 897,
+                    lineNumber: 917,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/settings.tsx",
-                lineNumber: 896,
+                lineNumber: 916,
                 columnNumber: 9
             }, this)
         ]

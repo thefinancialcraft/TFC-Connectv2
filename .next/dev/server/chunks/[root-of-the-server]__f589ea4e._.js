@@ -196,16 +196,18 @@ var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
 }({});
 const getUserDashboardLevel = (user)=>{
     if (!user) return "UNKNOWN";
+    const role = (user.role || '').toLowerCase();
+    const designation = (user.designation || '').toLowerCase();
     // --- Level 1: Super Admin / Management (TFC Internal) ---
-    if (user.isClient === false) {
+    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
         return "LEVEL_1";
     }
-    const role = user.role;
-    const designation = user.designation?.toLowerCase() || '';
-    // --- Level 2: Client CEO / Org Owner ---
-    if (user.isClient === true && (role === 'super_admin' || designation === 'ceo' || designation === 'owner')) {
+    // --- Level 2: Client CEO / Org Owner / Developer ---
+    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
         return "LEVEL_2";
     }
+    // If we don't have enough data to determine level, return UNKNOWN
+    if (!role) return "UNKNOWN";
     // --- Level 3: Team Leader ---
     // Role is 'admin' and designation is 'team_leader'
     if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
@@ -311,7 +313,7 @@ async function handler(req, res) {
             });
         }
         // Fetch user profile to validate org access
-        const { data: userProfile, error: profileError } = await (__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["supabaseAdmin"] || __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["supabase"]).from("user_profiles").select("organization_id, role, designation").eq("user_id", userId).maybeSingle();
+        const { data: userProfile, error: profileError } = await (__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["supabaseAdmin"] || __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["supabase"]).from("user_profiles").select("organization_id, role, designation, is_client").eq("user_id", userId).maybeSingle();
         if (profileError) {
             console.error("Profile fetch error:", profileError);
             return res.status(500).json({
@@ -323,7 +325,7 @@ async function handler(req, res) {
         const userRole = userProfile?.role || 'user';
         const userDesignation = userProfile?.designation || '';
         const dashboardLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$api$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])({
-            isClient: true,
+            isClient: userProfile?.is_client ?? false,
             role: userRole,
             designation: userDesignation
         });

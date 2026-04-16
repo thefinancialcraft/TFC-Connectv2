@@ -10,21 +10,27 @@ export enum DashboardLevel {
 export const getUserDashboardLevel = (user: any): DashboardLevel => {
   if (!user) return DashboardLevel.UNKNOWN;
 
+  const role = (user.role || '').toLowerCase();
+  const designation = (user.designation || '').toLowerCase();
+
   // --- Level 1: Super Admin / Management (TFC Internal) ---
-  if (user.isClient === false) {
+  if (
+    user.isClient === false && 
+    (role === 'superadmin' || role === 'super_admin') && 
+    (designation === 'ceo' || designation === 'developer')
+  ) {
     return DashboardLevel.LEVEL_1_ADMIN;
   }
-
-  const role = user.role;
-  const designation = user.designation?.toLowerCase() || '';
-
-  // --- Level 2: Client CEO / Org Owner ---
+  // --- Level 2: Client CEO / Org Owner / Developer ---
   if (
     user.isClient === true &&
-    (role === 'super_admin' || designation === 'ceo' || designation === 'owner')
+    (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')
   ) {
     return DashboardLevel.LEVEL_2_CLIENT_CEO;
   }
+
+  // If we don't have enough data to determine level, return UNKNOWN
+  if (!role) return DashboardLevel.UNKNOWN;
 
   // --- Level 3: Team Leader ---
   // Role is 'admin' and designation is 'team_leader'

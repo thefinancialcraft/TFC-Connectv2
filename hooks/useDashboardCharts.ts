@@ -39,7 +39,7 @@ export interface UseDashboardChartsReturn {
   hourlyStats: HourlyStatPoint[];
   loading: boolean;
   error: string | null;
-  fetchChartData: (orgId?: string, dateFilter?: string, customRange?: { start: string; end: string }, userId?: string) => Promise<void>;
+  fetchChartData: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -76,8 +76,8 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
   }, []);
 
   const fetchChartData = useCallback(
-    async (orgId?: string, dateFilter: string = "this_month", customRange?: { start: string; end: string }, userId?: string) => {
-      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}`;
+    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null) => {
+      const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
 
       const cached = cacheRef.current[cacheKey];
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -112,6 +112,7 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
           ...(orgId && { orgId }),
           ...(customRange && { startDate: customRange.start, endDate: customRange.end }),
           ...(userId && { userId }),
+          ...(restrictedUserIds && { restrictedUserIds: JSON.stringify(restrictedUserIds) }),
         });
 
         const response = await fetch(`/api/dashboard_charts?${params}`, {
