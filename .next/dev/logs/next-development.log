@@ -7093,3 +7093,7 @@ Import traces:
 [09:32:04.228] Browser LOG     [Fetch] Found 1 history records via API.
 [09:32:06.305] Browser LOG     [Fetch-Session] Active session found for this lead: active
 [09:32:06.305] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:32:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:32:23.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:32:32.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:32:32.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
