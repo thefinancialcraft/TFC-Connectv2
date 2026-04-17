@@ -9532,3 +9532,65 @@ Import traces:
 [11:08:49.237] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [11:08:50.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [11:08:51.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:18.158] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[11:09:18.557] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:18.557] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[11:09:18.560] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:09:18.560] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:09:20.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:22.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:47.750] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:50.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:09:51.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:17.762] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:21.367] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:22.191] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:31.842] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[11:10:34.155] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[11:10:34.155] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[11:10:34.155] Browser LOG     [App] Logger and Interceptors initialized.
+[11:10:34.609] Server  LOG     Using date-holidays fallback
+[11:10:34.767] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[11:10:34.767] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[11:10:34.767] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[11:10:34.767] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:10:34.944] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[11:10:34.944] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[11:10:34.944] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:10:35.254] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:35.254] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[11:10:35.254] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:10:35.254] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:10:35.672] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[11:10:50.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:51.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:10:52.658] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[11:10:52.973] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[11:10:52.973] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:10:52.973] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:11:06.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:36.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:44.086] Server  LOG      ✓ Compiled in 1601ms
+[11:11:45.193] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:11:45.204] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:45.204] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:45.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:11:45.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:45.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:45.238] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:45.238] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:46.194] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:11:46.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:46.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:46.205] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[11:11:46.221] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:46.221] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[11:11:47.202] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[11:11:47.204] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[11:11:47.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:47.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:11:47.205] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[11:11:48.206] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[11:12:15.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:12:16.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:12:17.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

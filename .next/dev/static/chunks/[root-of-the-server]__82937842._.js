@@ -1882,6 +1882,12 @@ function useAuthGuard() {
                 if (!isPublicLandingPage) {
                     const status = user.status || user.accountStatus;
                     const approvalStatus = user.approvalStatus;
+                    const isRestrictedPage = [
+                        '/portal/suspended',
+                        '/portal/hold',
+                        '/portal/pending',
+                        '/portal/rejected'
+                    ].includes(router.pathname);
                     if (status === 'suspend' || approvalStatus === 'suspend') {
                         if (router.pathname !== '/portal/suspended') {
                             router.push("/portal/suspended");
@@ -1898,13 +1904,13 @@ function useAuthGuard() {
                         if (router.pathname !== '/portal/rejected') {
                             router.push("/portal/rejected");
                         }
-                    } else {
+                    } else if (status === 'active' || approvalStatus === 'approved') {
                         // User is fully active/approved
-                        // Logged in and trying to access login/root
-                        if (isLoginPage || isRootPath) {
+                        // If they are on a restricted page, send them back to dashboard
+                        if (isRestrictedPage || isLoginPage || isRootPath) {
                             const lastPath = localStorage.getItem('last_visited_path');
-                            router.push(lastPath || "/dashboard");
-                        } else {
+                            router.push(lastPath && !isRestrictedPage ? lastPath : "/dashboard");
+                        } else if (!isPublicLandingPage) {
                             // Save the valid current path
                             if ("TURBOPACK compile-time truthy", 1) {
                                 localStorage.setItem('last_visited_path', router.asPath);
