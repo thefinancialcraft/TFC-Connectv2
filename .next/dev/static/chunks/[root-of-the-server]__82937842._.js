@@ -1557,6 +1557,7 @@ async function checkAuthAndFetchProfile() {
             role: profileData?.role || null,
             approvalStatus: profileData?.approval_status || null,
             accountStatus: profileData?.status || null,
+            status: profileData?.status || null,
             updatedAt: profileData?.updated_at || null,
             profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
             googleCalendarConnected: profileData?.google_calendar_connected || false,

@@ -9364,3 +9364,52 @@ Import traces:
 [10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:34.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:34.220] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:34.223] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:04.359] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:04.373] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:04.376] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:34.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:34.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:56:34.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:57:04.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:57:04.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:57:04.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:19.212] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:20.979] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:21.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:31.308] Server  LOG      ✓ Compiled in 2.9s
+[10:58:32.194] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:58:33.207] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:33.207] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:33.207] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:33.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:33.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:33.209] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:58:33.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:33.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:34.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:34.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:34.197] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:58:35.208] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:58:35.210] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:58:35.384] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:35.384] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:35.384] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:58:36.197] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:58:36.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:37.204] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:58:37.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:37.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:37.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:58:37.204] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:59:04.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:59:04.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:59:06.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:59:34.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:59:34.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:59:36.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:00:04.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:00:04.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[11:00:06.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

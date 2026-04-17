@@ -15,6 +15,7 @@ export interface UserProfile {
   role: string | null;
   approvalStatus: string | null;
   accountStatus: string | null;
+  status: string | null;
   updatedAt: string | null;
   googleCalendarConnected: boolean;
   googleCalendarSkipped: boolean;
@@ -93,6 +94,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       role: profileData?.role || null,
       approvalStatus: profileData?.approval_status || null,
       accountStatus: profileData?.status || null,
+      status: profileData?.status || null,
       updatedAt: profileData?.updated_at || null,
       profilePicUrl:
         profileData?.profile_pic_url || profileData?.profile_image || null,
