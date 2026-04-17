@@ -4735,3 +4735,74 @@ Import traces:
 [03:09:42.809] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
 [03:09:49.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [03:10:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:11:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:11:39.105] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:11:39.105] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:11:39.105] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:11:39.105] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:11:39.221] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:11:49.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:12:04.828] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:12:04.828] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:12:04.828] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:12:04.828] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:12:04.953] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:12:07.047] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:12:07.047] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:12:07.047] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:12:08.908] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:12:08.908] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:12:08.908] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:12:14.209] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:12:14.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:12:14.209] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:12:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:12:49.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:13:15.333] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:13:15.333] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[03:13:15.333] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:13:15.333] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:13:15.333] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:13:18.243] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:13:18.243] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:13:18.243] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:13:18.243] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:13:18.338] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[03:13:18.546] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[03:13:19.683] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[03:13:19.683] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[03:13:19.683] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[03:13:51.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:14:20.667] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:15:20.699] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:16:20.558] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[08:45:59.703] Browser LOG     ❌ [Status] Offline Event
+[08:45:59.706] Browser LOG     🌐 [Status] Online Event
+[08:45:59.864] Browser LOG     ❌ [Status] Offline Event
+[08:45:59.865] Browser LOG     🌐 [Status] Online Event
+[08:46:00.981] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[08:46:00.981] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[08:46:03.171] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[08:46:03.172] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[08:46:03.172] Browser ERROR   {"__isAuthError":true,"code":"refresh_token_not_found","name":"AuthApiError","status":400}
+[08:46:03.172] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[08:46:03.172] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[08:46:03.172] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[08:46:03.557] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[08:46:03.586] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[08:46:03.826] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[08:46:04.254] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[08:46:07.438] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[08:46:09.115] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[08:46:09.115] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[08:46:09.115] Browser LOG     [App] Logger and Interceptors initialized.
+[08:46:09.826] Server  LOG     Using date-holidays fallback
+[08:46:10.024] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[08:46:10.025] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[08:46:10.025] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[08:46:10.585] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[08:46:23.205] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[08:46:49.128] Server  LOG      ✓ Compiled in 3.3s

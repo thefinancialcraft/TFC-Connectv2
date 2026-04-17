@@ -8196,18 +8196,9 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                             localStorage.clear();
                             window.location.href = '/portal/login';
                         },
-                        className: "w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200 group",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                className: "w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin group-hover:scale-110 transition-transform"
-                            }, void 0, false, {
-                                fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 66,
-                                columnNumber: 13
-                            }, this),
-                            "Refresh & Login"
-                        ]
-                    }, void 0, true, {
+                        className: "w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200",
+                        children: "Refresh & Login"
+                    }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
                         lineNumber: 58,
                         columnNumber: 11
@@ -8240,12 +8231,12 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         className: "scale-125 mb-4",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                             fileName: "[project]/components/AppLayout.tsx",
-                            lineNumber: 82,
+                            lineNumber: 81,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 81,
+                        lineNumber: 80,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8255,7 +8246,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 className: "w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 85,
+                                lineNumber: 84,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -8266,7 +8257,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: statusMessage || "Retrieving logged details..."
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 86,
+                                lineNumber: 85,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -8274,24 +8265,24 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                                 children: "Please wait while we sync your session"
                             }, void 0, false, {
                                 fileName: "[project]/components/AppLayout.tsx",
-                                lineNumber: 89,
+                                lineNumber: 88,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 84,
+                        lineNumber: 83,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 80,
+                lineNumber: 79,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 79,
+            lineNumber: 78,
             columnNumber: 7
         }, this);
     }
@@ -8310,7 +8301,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 104,
+                        lineNumber: 103,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8321,18 +8312,18 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: "Redirecting to login..."
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 105,
+                        lineNumber: 104,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 103,
+                lineNumber: 102,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/AppLayout.tsx",
-            lineNumber: 99,
+            lineNumber: 98,
             columnNumber: 7
         }, this);
     }
@@ -8353,7 +8344,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
       `
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 121,
+                lineNumber: 120,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Sidebar$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8362,7 +8353,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 onLogout: handleLogoutClick
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 129,
+                lineNumber: 128,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8374,7 +8365,7 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         hideSidebar: hideSidebar
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 140,
+                        lineNumber: 139,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("main", {
@@ -8385,13 +8376,13 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                         children: children
                     }, void 0, false, {
                         fileName: "[project]/components/AppLayout.tsx",
-                        lineNumber: 148,
+                        lineNumber: 147,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 137,
+                lineNumber: 136,
                 columnNumber: 7
             }, this),
             !hideSidebar && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$BottomNav$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8402,18 +8393,18 @@ function AppLayout({ children, hideSidebar = false, hideHeader = false }) {
                 employeeId: user?.employeeId
             }, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 158,
+                lineNumber: 157,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UtilitySidebar$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/AppLayout.tsx",
-                lineNumber: 168,
+                lineNumber: 167,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/AppLayout.tsx",
-        lineNumber: 117,
+        lineNumber: 116,
         columnNumber: 5
     }, this);
 }

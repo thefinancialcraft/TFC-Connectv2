@@ -61,9 +61,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
                 localStorage.clear();
                 window.location.href = '/portal/login';
             }}
-            className="w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200 group"
+            className="w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200"
           >
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin group-hover:scale-110 transition-transform"></div>
             Refresh & Login
           </button>
         </div>
