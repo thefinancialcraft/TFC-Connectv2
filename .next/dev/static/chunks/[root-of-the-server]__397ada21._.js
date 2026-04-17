@@ -3967,7 +3967,13 @@ function Activity() {
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                                     className: "px-4 py-3 whitespace-nowrap text-xs text-blue-600 font-mono",
-                                                                    children: activity.number || "—"
+                                                                    children: (()=>{
+                                                                        const phone = activity.number;
+                                                                        if (!phone) return "—";
+                                                                        const cleaned = phone.toString().replace(/\D/g, "");
+                                                                        if (cleaned.length < 6) return phone;
+                                                                        return `+91 ******${cleaned.slice(-4)}`;
+                                                                    })()
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
                                                                     lineNumber: 1036,
@@ -3978,7 +3984,7 @@ function Activity() {
                                                                     children: formatSeconds(activity.duration || 0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1039,
+                                                                    lineNumber: 1045,
                                                                     columnNumber: 39
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -3991,7 +3997,7 @@ function Activity() {
                                                                                 className: "fi flex fi-rr-smartphone text-xs"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1044,
+                                                                                lineNumber: 1050,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3999,18 +4005,18 @@ function Activity() {
                                                                                 children: activity.device_id || "Unknown"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1045,
+                                                                                lineNumber: 1051,
                                                                                 columnNumber: 45
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/activity.tsx",
-                                                                        lineNumber: 1043,
+                                                                        lineNumber: 1049,
                                                                         columnNumber: 41
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1042,
+                                                                    lineNumber: 1048,
                                                                     columnNumber: 39
                                                                 }, this)
                                                             ]
@@ -4029,7 +4035,7 @@ function Activity() {
                                                                     children: activity.agent?.employee_id || "N/A"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1054,
+                                                                    lineNumber: 1060,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4037,7 +4043,7 @@ function Activity() {
                                                                     children: activity.agent?.user_name || "Unknown Agent"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1057,
+                                                                    lineNumber: 1063,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4045,7 +4051,7 @@ function Activity() {
                                                                     children: activity.customer?.customer_name || activity.rejected_customer?.customer_name || "Unknown Customer"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1060,
+                                                                    lineNumber: 1066,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4053,7 +4059,7 @@ function Activity() {
                                                                     children: activity.next_called_at ? formatDisplayDate(activity.next_called_at) : "No Followup"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1063,
+                                                                    lineNumber: 1069,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4066,7 +4072,7 @@ function Activity() {
                                                                                 children: activity.disposition || "N/A"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1068,
+                                                                                lineNumber: 1074,
                                                                                 columnNumber: 40
                                                                             }, this),
                                                                             activity.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4074,18 +4080,18 @@ function Activity() {
                                                                                 children: activity.sub_disposition
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1070,
+                                                                                lineNumber: 1076,
                                                                                 columnNumber: 42
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/activity.tsx",
-                                                                        lineNumber: 1067,
+                                                                        lineNumber: 1073,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1066,
+                                                                    lineNumber: 1072,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4093,7 +4099,7 @@ function Activity() {
                                                                     children: activity.campaign?.name || "General"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1074,
+                                                                    lineNumber: 1080,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4106,7 +4112,7 @@ function Activity() {
                                                                                 children: formatTime(activity.created_at)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1079,
+                                                                                lineNumber: 1085,
                                                                                 columnNumber: 39
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4114,18 +4120,18 @@ function Activity() {
                                                                                 children: formatDisplayDate(activity.created_at)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/pages/portal/activity.tsx",
-                                                                                lineNumber: 1080,
+                                                                                lineNumber: 1086,
                                                                                 columnNumber: 39
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/pages/portal/activity.tsx",
-                                                                        lineNumber: 1078,
+                                                                        lineNumber: 1084,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1077,
+                                                                    lineNumber: 1083,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4133,7 +4139,7 @@ function Activity() {
                                                                     children: activity.duration ? formatSeconds(activity.duration) : "00:00:00"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1083,
+                                                                    lineNumber: 1089,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4143,12 +4149,12 @@ function Activity() {
                                                                         children: activity.is_connected || "N/A"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/pages/portal/activity.tsx",
-                                                                        lineNumber: 1087,
+                                                                        lineNumber: 1093,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1086,
+                                                                    lineNumber: 1092,
                                                                     columnNumber: 35
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -4157,13 +4163,13 @@ function Activity() {
                                                                     children: activity.notes || "No remark provided"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/pages/portal/activity.tsx",
-                                                                    lineNumber: 1091,
+                                                                    lineNumber: 1097,
                                                                     columnNumber: 35
                                                                 }, this)
                                                             ]
                                                         }, activity.id, true, {
                                                             fileName: "[project]/pages/portal/activity.tsx",
-                                                            lineNumber: 1053,
+                                                            lineNumber: 1059,
                                                             columnNumber: 33
                                                         }, this);
                                                     }

@@ -41,6 +41,9 @@ self.__BUILD_MANIFEST = {
   "/portal/team": [
     "static/chunks/pages/portal/team.js"
   ],
+  "/portal/team/[id]": [
+    "static/chunks/pages/portal/team/[id].js"
+  ],
   "/portal/users": [
     "static/chunks/pages/portal/users.js"
   ],

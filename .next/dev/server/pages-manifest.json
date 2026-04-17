@@ -22,6 +22,7 @@
   "/portal/profile-completion": "pages/portal/profile-completion.js",
   "/portal/settings": "pages/portal/settings.js",
   "/portal/team": "pages/portal/team.js",
+  "/portal/team/[id]": "pages/portal/team/[id].js",
   "/portal/users": "pages/portal/users.js",
   "/portal/users/[userId]": "pages/portal/users/[userId].js"
 }

@@ -1676,11 +1676,28 @@ function useAuthGuard() {
                 // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
                 // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
                 const sessionProfileStr = ("TURBOPACK compile-time truthy", 1) ? sessionStorage.getItem('active_user_profile') : "TURBOPACK unreachable";
-                if (sessionProfileStr) {
+                if (sessionProfileStr && !force) {
                     try {
                         const cachedProfile = JSON.parse(sessionProfileStr);
+                        // CRITICAL: Even if cached, we must occasionally verify status from DB to catch suspensions
+                        // For now, let's allow the UI to show up but trigger a background check if status is important
                         setUser(cachedProfile);
-                        console.log("⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.");
+                        console.log("⚡ [Auth] Restored User Profile from Session Tab Memory.");
+                        // If it's a critical page, we force a background verification
+                        if (router.pathname.includes('/portal')) {
+                            console.log("🔍 [Auth] Background Status Verification Triggered...");
+                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["checkAuthAndFetchProfile"])().then((result)=>{
+                                if (result.user && (result.user.status === 'suspend' || result.user.status === 'inactive')) {
+                                    console.log("🚨 [Auth] User suspended in background. Locking system.");
+                                    setUser(null);
+                                    sessionStorage.removeItem('active_user_profile');
+                                    router.push("/login");
+                                } else if (result.user) {
+                                    setUser(result.user);
+                                    sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                                }
+                            });
+                        }
                         if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
                             const lastPath = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('last_visited_path') : "TURBOPACK unreachable";
                             router.push(lastPath || "/dashboard");

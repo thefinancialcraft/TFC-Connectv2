@@ -1034,7 +1034,13 @@ export default function Activity() {
                                         {activity.name || "Unknown"}
                                       </td>
                                       <td className="px-4 py-3 whitespace-nowrap text-xs text-blue-600 font-mono">
-                                        {activity.number || "—"}
+                                        {(() => {
+                                          const phone = activity.number;
+                                          if (!phone) return "—";
+                                          const cleaned = phone.toString().replace(/\D/g, "");
+                                          if (cleaned.length < 6) return phone;
+                                          return `+91 ******${cleaned.slice(-4)}`;
+                                        })()}
                                       </td>
                                       <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
                                         {formatSeconds(activity.duration || 0)}

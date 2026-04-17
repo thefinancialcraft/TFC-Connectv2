@@ -52,12 +52,31 @@ export function useAuthGuard(): UseAuthGuardReturn {
         // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
         // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
         const sessionProfileStr = typeof window !== 'undefined' ? sessionStorage.getItem('active_user_profile') : null;
-        if (sessionProfileStr) {
+        if (sessionProfileStr && !force) {
             try {
                 const cachedProfile = JSON.parse(sessionProfileStr);
-                setUser(cachedProfile);
-                console.log("⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.");
                 
+                // CRITICAL: Even if cached, we must occasionally verify status from DB to catch suspensions
+                // For now, let's allow the UI to show up but trigger a background check if status is important
+                setUser(cachedProfile);
+                console.log("⚡ [Auth] Restored User Profile from Session Tab Memory.");
+                
+                // If it's a critical page, we force a background verification
+                if (router.pathname.includes('/portal')) {
+                    console.log("🔍 [Auth] Background Status Verification Triggered...");
+                    checkAuthAndFetchProfile().then(result => {
+                        if (result.user && (result.user.status === 'suspend' || result.user.status === 'inactive')) {
+                            console.log("🚨 [Auth] User suspended in background. Locking system.");
+                            setUser(null);
+                            sessionStorage.removeItem('active_user_profile');
+                            router.push("/login");
+                        } else if (result.user) {
+                            setUser(result.user);
+                            sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                        }
+                    });
+                }
+
                 if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
                     const lastPath = typeof window !== 'undefined' ? localStorage.getItem('last_visited_path') : null;
                     router.push(lastPath || "/dashboard");

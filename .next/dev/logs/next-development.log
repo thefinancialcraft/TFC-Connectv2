@@ -7272,3 +7272,2095 @@ Import traces:
 [09:41:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [09:41:20.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [09:41:21.359] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:42:19.215] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:42:25.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:42:27.758] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:42:28.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:42:46.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:42:46.207] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:42:46.208] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:42:57.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:42:58.206] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:13.208] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:43:13.208] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/d1286a01-ec64-491b-867a-dc0a568b9328
+[09:43:13.208] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:43:13.208] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:13.208] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:43:13.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:43:13.208] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:13.208] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:13.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:43:14.198] Browser LOG     [Fetch] Found 1 history records via API.
+[09:43:15.300] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:43:17.202] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:43:17.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:43:17.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:17.202] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:43:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:43:21.096] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:43:21.294] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:43:43.201] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:43:43.201] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:43:43.201] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:43:57.261] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:02.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:21.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:21.195] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:44:21.195] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/18392382-0b26-42a9-ae59-55658a0efb98
+[09:44:21.195] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:44:21.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:44:21.195] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:44:21.195] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:44:21.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:44:22.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:44:23.009] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:23.214] Browser LOG     [Fetch] Found 1 history records via API.
+[09:44:24.236] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:44:24.236] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:44:32.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:44:59.206] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:44:59.206] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:44:59.206] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:45:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:45:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:45:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:45:20.862] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:45:32.209] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:45:33.207] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:45:33.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:45:55.199] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:45:55.199] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/a7fa3401-45aa-4df7-96ad-6b2ab7a1e93c
+[09:45:55.199] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:45:55.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:45:55.199] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:45:55.199] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:45:55.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:45:55.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:45:55.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:45:55.199] Browser LOG     [Fetch] Found 1 history records via API.
+[09:45:56.198] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:45:56.198] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:46:19.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:20.825] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:20.879] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:39.692] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:46:39.694] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:46:39.694] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:46:39.694] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:46:39.887] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:46:40.027] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:41.194] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:46:41.194] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:46:41.194] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:46:41.194] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:46:41.194] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:46:43.274] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:46:45.205] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:46:45.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:46:45.205] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:46:50.640] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:46:52.607] Server  LOG      ✓ Compiled in 3.5s
+[09:46:58.364] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[09:47:01.962] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:47:01.962] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:47:01.962] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:01.962] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:02.097] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:47:02.361] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:05.587] Server  LOG      ✓ Compiled in 2.5s
+[09:47:12.171] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:47:12.172] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:47:12.172] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:12.172] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:13.232] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:47:13.232] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:47:13.232] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:13.232] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:14.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:47:14.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:14.477] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:47:16.192] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[09:47:17.772] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:47:17.772] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:47:17.772] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:17.772] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:20.518] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:23.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:23.201] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:47:23.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:41.206] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:47:41.217] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:47:41.218] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:42.192] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:47:44.275] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:47:44.275] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:47:44.275] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:44.275] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:44.421] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:47:52.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:47:55.768] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[09:47:55.768] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:47:55.768] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:47:55.954] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:48:07.009] Server  LOG      ○ Compiling /portal/team/[id] ...
+[09:48:10.291] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:48:18.566] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:48:18.566] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:48:18.566] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:48:18.566] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:48:18.750] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:48:19.221] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:48:20.041] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:48:20.041] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:48:20.041] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:48:20.041] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:48:21.721] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:48:40.284] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:48:48.556] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:10.416] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:49:10.416] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:49:10.416] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:10.416] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:10.416] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:49:10.416] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:49:10.416] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:49:10.622] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:49:16.214] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:49:16.214] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:49:16.214] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:16.214] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:16.214] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:49:16.214] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:49:16.214] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:49:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:49:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:49:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:49:41.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:49:43.454] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:49:43.454] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:49:43.454] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:43.454] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:49:43.454] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:49:43.454] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:49:43.454] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:49:45.904] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:49:45.904] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:49:45.904] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:49:45.904] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:49:46.177] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[09:49:47.064] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[09:49:47.346] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[09:49:47.373] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[09:49:47.393] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[09:49:47.621] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[09:49:47.623] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1446ms
+[09:49:47.736] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 660ms
+[09:49:50.278] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3200ms
+[09:50:11.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:50:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:50:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:50:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:50:40.619] Server  LOG      ✓ Compiled in 1803ms
+[09:50:42.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:00.840] Server  LOG      ✓ Compiled in 293ms
+[09:51:03.644] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[09:51:03.644] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:29:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1207:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:9463:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9317:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11892:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12132:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12228:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[09:51:03.646] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[09:51:03.646] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:29:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js?id=%255Bproject%255D%252Fcomponents%252FAppLayout.tsx+%255Bclient%255D+%2528ecmascript%2529+%253Clocals%253E:32:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11896:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1867:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12136:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12232:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[09:51:03.648] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[09:51:03.648] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:29:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9313:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11888:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12128:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12224:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[09:51:26.369] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:51:29.748] Server  LOG      ✓ Compiled in 2.5s
+[09:51:31.198] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:51:31.199] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:51:31.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:51:31.236] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:51:34.826] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[09:51:34.826] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:35.141] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:35.237] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/eb60c738-8ecb-482b-a1cc-928dc63b6925
+[09:51:35.237] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:51:35.237] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:51:35.237] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:51:35.237] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:51:35.237] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:35.237] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:51:35.237] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:35.237] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:51:35.358] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[09:51:35.358] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:51:36.200] Browser LOG     [Fetch] Found 2 history records via API.
+[09:51:38.205] Browser LOG     [Fetch-Session] Active session found for this lead: active
+[09:51:38.206] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:52:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:52:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:52:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:52:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:52:40.236] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:52:40.236] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:52:40.236] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[09:52:40.236] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:52:53.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:52:55.202] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/6f22237f-977c-4d90-8f2b-e49156500fd7
+[09:52:55.202] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:52:55.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:52:55.202] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:52:55.202] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:52:55.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:52:55.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:52:55.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:52:55.202] Browser LOG     [Fetch] Found 1 history records via API.
+[09:52:57.195] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:52:57.195] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:53:12.818] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:53:12.818] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:53:12.818] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:53:12.818] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:53:12.818] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:53:13.048] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:53:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:53:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:53:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:53:40.335] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:03.201] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:54:03.201] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:03.201] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:54:11.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:26.222] Server  LOG      ✓ Compiled in 1614ms
+[09:54:28.209] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:54:28.209] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:54:28.209] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:54:28.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:54:28.210] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:54:28.210] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:29.118] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:54:40.475] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:41.197] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:54:41.197] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/a420eaaf-704e-4a8d-843f-108773fc9619
+[09:54:41.197] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:54:41.197] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:41.197] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:54:41.197] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:54:41.197] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:43.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:54:43.206] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:43.206] Browser LOG     [Fetch] Found 2 history records via API.
+[09:54:44.202] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:54:44.203] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:54:46.203] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:54:46.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:54:46.203] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:55:01.195] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:55:02.204] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:10.194] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:55:10.194] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/baebe2b4-c76b-45b8-8161-ff058f615400
+[09:55:10.194] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:55:10.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:10.194] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:55:10.194] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:55:10.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:10.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:55:10.194] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:10.194] Browser LOG     [Fetch] Found 2 history records via API.
+[09:55:10.324] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:55:11.550] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:55:11.550] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:55:13.277] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:55:13.277] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:13.277] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:55:20.448] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:55:20.449] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:55:21.149] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:55:21.149] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:55:21.612] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:55:26.007] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:55:26.007] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:55:26.007] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:55:26.007] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:55:26.107] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:55:33.025] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:55:33.025] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:55:33.025] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:55:36.617] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:55:36.617] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:55:36.617] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:55:37.198] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:55:37.198] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:55:38.203] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:55:40.319] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:56:10.310] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:56:13.199] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:56:13.199] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/f488f888-a499-4a30-93ee-5e41595dc3ec
+[09:56:13.199] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:56:13.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:56:13.199] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:56:13.199] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:56:13.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:56:13.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:56:13.199] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:56:13.199] Browser LOG     [Fetch] Found 2 history records via API.
+[09:56:14.198] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:56:14.198] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:56:15.198] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:56:16.193] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:56:16.193] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:56:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:56:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:56:19.611] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:56:19.611] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:56:19.611] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:56:19.611] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:56:19.611] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:56:22.459] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[09:56:22.484] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:56:22.484] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:56:22.484] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:56:22.593] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:56:22.737] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[09:56:23.013] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[09:56:23.031] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[09:56:23.035] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[09:56:23.413] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[09:56:23.415] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 956ms
+[09:56:23.639] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 900ms
+[09:56:27.223] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4500ms
+[09:56:36.881] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[09:56:36.881] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:56:36.881] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:56:36.881] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:56:37.138] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[09:56:40.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:02.208] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:02.208] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:02.208] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:10.201] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:10.201] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/e899853d-22b4-4771-943c-37c77fb1ea49
+[09:57:10.201] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:57:10.201] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:10.201] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:57:10.201] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:57:10.201] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:10.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:10.201] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:10.201] Browser LOG     [Fetch] Found 2 history records via API.
+[09:57:11.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:11.197] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:57:11.197] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:57:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:27.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:27.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:27.202] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:57:41.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:45.196] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:45.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:54.195] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:57:54.195] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/7d7260a5-2313-4e96-8c5a-79ef9d9659f5
+[09:57:54.195] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:57:54.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:54.195] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:57:54.195] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:57:54.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:54.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:57:54.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:57:55.198] Browser LOG     [Fetch] Found 2 history records via API.
+[09:57:56.207] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:57:56.207] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:58:02.618] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[09:58:02.619] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:58:02.619] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:58:02.619] Browser LOG     🔍 [Campaign] Fetching for user: {"designation":"ceo","email":"deepakkumar.official32@gmail.com","isClient":false,"normalizedDesignation":"ceo","organization_id":null,"uid":"ff144635-44d2-40eb-bb57-f5dc6640cc3d"}
+[09:58:02.619] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:02.619] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:58:02.619] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:58:02.877] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[09:58:03.108] Browser LOG     ✅ [Campaign] Query returned 9 campaigns.
+[09:58:05.025] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:05.025] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:58:05.026] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:58:08.323] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:08.323] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:08.323] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:08.323] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:58:08.323] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:58:08.806] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:58:08.806] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:58:08.806] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:58:08.806] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:58:10.289] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:14.069] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:58:14.069] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:58:14.069] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:14.069] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:14.069] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:14.069] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:58:14.069] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:58:14.195] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:58:14.195] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:58:14.195] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:58:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:20.739] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:21.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:32.890] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:58:32.890] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:58:32.890] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:32.890] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:58:32.890] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:32.890] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:58:32.890] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:58:39.250] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:58:40.322] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:58:40.322] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:58:41.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:55.197] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:58:56.202] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/4623d592-31f4-41c6-b0dc-e349be206a27
+[09:58:56.203] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:58:56.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:58:56.203] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:58:56.203] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:58:56.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:58:57.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:58:57.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:58:57.196] Browser LOG     [Fetch] Found 2 history records via API.
+[09:58:59.197] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:58:59.197] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:59:04.202] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:59:11.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:59:13.196] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:59:13.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:59:13.196] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:59:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:59:20.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:59:20.648] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:59:26.206] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:59:27.208] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:59:34.198] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[09:59:55.568] Server  LOG      ✓ Compiled in 3s
+[09:59:56.204] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[09:59:56.204] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[09:59:56.204] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[09:59:56.204] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[09:59:56.205] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[09:59:56.205] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:03.414] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:00:03.414] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/4ba48ef2-6bcd-43c5-8df8-b2ea9e7b2da5
+[10:00:03.414] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[10:00:04.201] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:00:06.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:00:06.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:00:06.203] Browser LOG     [Lead-Change] New lead detected, showing alert
+[10:00:06.203] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:00:06.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:00:06.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:00:06.214] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.214] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.214] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.214] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.223] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.223] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.223] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.223] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.245] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.245] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.245] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:101:3
+Parsing ecmascript source code failed
+   99 |       fetchManualPerformance(start.toISOString(), end.toISOString());
+  100 |     }
+> 101 |   };
+      |   ^
+  102 |
+  103 |   useEffect(() => {
+  104 |     const interval = setInterval(() => {
+
+Expression expected
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:06.245] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:00:07.199] Browser LOG     [Fetch] Found 2 history records via API.
+[10:00:09.207] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[10:00:09.207] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[10:00:16.780] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:00:16.780] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:00:16.780] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[10:00:16.780] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:00:16.780] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:00:16.780] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:00:16.780] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:00:17.026] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:00:28.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:00:30.454] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:00:41.678] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:00:46.696] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:01:10.300] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:01:16.689] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:01:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:01:20.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:01:20.196] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:01:20.196] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:01:20.196] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[10:01:21.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:01:32.139] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:01:32.139] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:01:32.139] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[10:01:32.139] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:01:32.139] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:01:32.139] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:01:32.139] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:01:34.215] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:01:34.215] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:01:38.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:01:38.210] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:01:40.344] Server  LOG      ✓ Compiled in 7s
+[10:01:41.300] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:01:41.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:01:41.846] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:01:42.716] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:01:42.799] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:01:42.805] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:01:43.063] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:01:43.069] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1768ms
+[10:01:43.143] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:01:43.266] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1372ms
+[10:01:43.357] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:01:43.601] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:01:43.754] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:01:43.883] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:01:43.930] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:01:43.930] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 787ms
+[10:01:44.086] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 549ms
+[10:01:44.434] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:01:46.708] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4816ms
+[10:01:47.362] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:01:50.018] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2867ms
+[10:02:04.117] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:02:13.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:17.205] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:17.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:17.208] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:24.328] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:02:24.328] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:02:24.328] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[10:02:24.328] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:02:24.328] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:24.328] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:02:32.074] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[10:02:32.172] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:32.173] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:32.173] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:32.173] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/17d157ce-540f-45ef-8de0-2131a6db6fa1
+[10:02:32.173] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[10:02:32.177] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:32.180] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:02:32.181] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:32.181] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:02:32.181] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:02:32.558] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:02:33.026] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:02:33.381] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:02:33.402] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:02:33.409] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:02:33.673] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:02:33.674] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1115ms
+[10:02:33.754] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 701ms
+[10:02:36.042] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:36.042] Browser LOG     [Lead-Change] New lead detected, showing alert
+[10:02:36.042] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:36.533] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3478ms
+[10:02:37.200] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:39.422] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[10:02:39.422] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[10:02:39.422] Browser LOG     [App] Logger and Interceptors initialized.
+[10:02:40.058] Server  LOG     Using date-holidays fallback
+[10:02:40.217] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/17d157ce-540f-45ef-8de0-2131a6db6fa1
+[10:02:40.217] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:40.217] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:40.217] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:40.438] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:02:40.438] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:40.438] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:02:40.438] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[10:02:40.438] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:02:40.438] Browser LOG     Effect triggered: Fetching team data for 5d375504-cc87-4677-9839-bf368cbaa870
+[10:02:40.438] Browser LOG     Starting team data fetch for: 5d375504-cc87-4677-9839-bf368cbaa870
+[10:02:40.438] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:40.661] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:02:41.206] Browser LOG     [Fetch] Found 2 history records via API.
+[10:02:41.661] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:02:41.661] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:02:41.661] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:02:41.661] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:02:41.890] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:02:43.212] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[10:02:43.212] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[10:02:46.206] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:46.206] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:46.206] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[10:02:48.058] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:02:48.105] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[10:02:48.105] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:02:48.105] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:02:48.105] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:02:48.334] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:02:48.543] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:02:48.570] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:02:48.573] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:02:48.743] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:02:48.801] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:02:48.801] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 742ms
+[10:02:48.894] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 540ms
+[10:02:51.331] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2975ms
+[10:02:52.208] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:54.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:02:54.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:02:54.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:03:10.366] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:19.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:26.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:03:26.202] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:03:26.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:03:30.308] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:03:30.308] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:03:30.308] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:03:30.308] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:03:30.308] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:03:39.298] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:03:39.298] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/a2e970d6-637c-48ac-a323-a99c60586490
+[10:03:39.298] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[10:03:40.200] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:03:40.200] Browser LOG     [Lead-Change] New lead detected, showing alert
+[10:03:40.200] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:03:40.200] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:03:40.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:40.200] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:03:40.365] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:03:41.194] Browser LOG     [Fetch] Found 2 history records via API.
+[10:03:43.292] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[10:03:44.635] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[10:03:45.663] Server  LOG      ✓ Compiled in 2.9s
+[10:04:00.367] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:04:00.367] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:04:00.367] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[10:04:11.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:04:18.029] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:04:18.029] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:04:18.029] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:04:18.029] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:04:18.211] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:04:19.258] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:04:19.259] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:04:19.944] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:04:30.229] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:04:32.202] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[10:04:32.203] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:04:34.689] Server  LOG      ✓ Compiled in 7.4s
+[10:04:40.376] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:04:45.535] Server  LOG      ✓ Compiled in 4.5s
+[10:04:46.208] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:04:46.210] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js?id=%255Bproject%255D%252Fcomponents%252FAppLayout.tsx+%255Bclient%255D+%2528ecmascript%2529+%253Clocals%253E:32:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11896:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1867:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12136:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12232:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:04:48.809] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:04:48.809] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1207:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:9463:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9317:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11892:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12132:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12228:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:04:49.374] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:04:49.376] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9313:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11888:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12128:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12224:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:05:05.952] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:05:05.952] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:05:05.952] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:05:05.955] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:05:05.955] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:05:10.367] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:05:16.051] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:05:16.051] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:05:16.052] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:05:16.052] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:05:16.052] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:05:23.450] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:05:25.481] Server  LOG      ✓ Compiled in 8.4s
+[10:05:25.605] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:05:27.234] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:05:27.234] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js?id=%255Bproject%255D%252Fcomponents%252FAppLayout.tsx+%255Bclient%255D+%2528ecmascript%2529+%253Clocals%253E:32:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11896:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1867:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12136:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12232:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:05:27.236] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:05:27.236] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1207:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:9463:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9317:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11892:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12132:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12228:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:05:42.938] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:05:42.953] Browser ERROR   %o
+
+%s
+
+%s
+ {} The above error occurred in the <AgentPerformanceTab> component. React will try to recreate this component tree from scratch using the error boundary you provided, DashboardErrorBoundary.
+[10:05:42.953] Browser ERROR   Uncaught error in Dashboard: {} {"componentStack":"\n    at AgentPerformanceTab (http://localhost:3000/_next/static/chunks/components_dashboard_AgentPerformanceTab_tsx_135e9b37._.js?id=%255Bproject%255D%252Fcomponents%252Fdashboard%252FAgentPerformanceTab.tsx+%255Bclient%255D+%2528ecmascript%2529:26:32)\n    at LoadableComponent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_41d42037._.js:6043:9)\n    at div (<anonymous>)\n    at DashboardErrorBoundary (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js:1163:1)\n    at Dashboard (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__b1a68bc2._.js?id=%255Bproject%255D%252Fpages%252Fportal%252Fdashboard.tsx+%255Bclient%255D+%2528ecmascript%2529:79:162)\n    at main (<anonymous>)\n    at div (<anonymous>)\n    at div (<anonymous>)\n    at AppLayout (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:9313:22)\n    at SessionProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:11888:28)\n    at UserProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:1912:25)\n    at PortalContainer (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12128:28)\n    at DialogProvider (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:769:27)\n    at App (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__82937842._.js:12224:16)\n    at PathnameContextProviderAdapter (http://localhost:3000/_next/static/chunks/node_modules_next_dist_shared_lib_57404a76._.js:5569:43)\n    at PagesDevOverlayErrorBoundary (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:1295:9)\n    at PagesDevOverlayBridge (http://localhost:3000/_next/static/chunks/node_modules_next_dist_a1eb637b._.js:2072:34)\n    at Container (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3041:1)\n    at AppContainer (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3140:25)\n    at Root (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_3ede7da4._.js:3348:17)"}
+[10:05:46.227] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:05:46.227] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:05:46.227] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:05:46.227] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:05:50.210] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:05:50.210] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:06:09.134] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:06:09.134] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:06:09.135] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:06:09.135] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:06:09.135] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:06:10.570] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:06:27.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:06:32.947] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:06:40.383] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:06:42.337] Server  LOG      ✓ Compiled in 2.5s
+[10:06:42.746] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:12
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             </div>
+> 473 |           ))}
+      |            ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Expected '</', got ')'
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:06:42.746] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:06:43.205] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:12
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             </div>
+> 473 |           ))}
+      |            ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Expected '</', got ')'
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:06:43.205] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:06:43.948] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:12
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             </div>
+> 473 |           ))}
+      |            ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Expected '</', got ')'
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:06:43.948] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:13.639] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:07:23.154] Server  LOG      ✓ Compiled in 15.9s
+[10:07:23.226] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:07:23.227] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:13
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             );
+> 473 |           })}
+      |             ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:23.227] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:475:8
+Parsing ecmascript source code failed
+  473 |           })}
+  474 |         </div>
+> 475 |       </div>
+      |        ^^^^^
+  476 |     </div>
+  477 |   );
+  478 | }
+
+Unterminated regexp literal
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:23.227] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:23.615] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:13
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             );
+> 473 |           })}
+      |             ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:23.615] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:475:8
+Parsing ecmascript source code failed
+  473 |           })}
+  474 |         </div>
+> 475 |       </div>
+      |        ^^^^^
+  476 |     </div>
+  477 |   );
+  478 | }
+
+Unterminated regexp literal
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:23.615] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:07:29.675] Server  LOG      ✓ Compiled in 2.7s
+[10:07:32.104] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:07:35.479] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:07:40.376] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:08:07.266] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:473:13
+Parsing ecmascript source code failed
+  471 |               </div>
+  472 |             );
+> 473 |           })}
+      |             ^
+  474 |         </div>
+  475 |       </div>
+  476 |     </div>
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:08:07.266] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx:475:8
+Parsing ecmascript source code failed
+  473 |           })}
+  474 |         </div>
+> 475 |       </div>
+      |        ^^^^^
+  476 |     </div>
+  477 |   );
+  478 | }
+
+Unterminated regexp literal
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:08:07.267] Browser ERROR   ./components/dashboard/AgentPerformanceTab.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/components/dashboard/AgentPerformanceTab.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+
+Import traces:
+  Browser:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+
+  SSR:
+    ./components/dashboard/AgentPerformanceTab.tsx
+    ./pages/portal/dashboard.tsx
+[10:08:08.202] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:08:10.363] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:08:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:08:19.210] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:08:40.573] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:09:02.821] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:09:02.822] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:09:02.822] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:09:02.822] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:09:02.822] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:09:10.360] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:09:21.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:09:22.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:09:23.827] Server  LOG      ✓ Compiled in 11.7s
+[10:09:25.111] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:09:25.257] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:09:25.360] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:09:25.649] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:09:25.915] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:09:25.935] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:09:26.243] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:09:26.275] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:09:26.281] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:09:26.293] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:09:26.298] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:09:26.303] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:09:26.626] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 705ms
+[10:09:26.710] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:09:26.711] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1598ms
+[10:09:26.752] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:09:26.753] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1495ms
+[10:09:26.799] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:09:26.816] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 855ms
+[10:09:27.009] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:09:27.116] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:09:27.229] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:09:27.538] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 626ms
+[10:09:27.734] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:09:27.734] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 935ms
+[10:09:28.117] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:09:30.783] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4850ms
+[10:09:32.024] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:09:34.008] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 8045ms
+[10:09:35.248] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3608ms
+[10:09:40.359] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:10:20.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:10:20.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:10:40.205] Server  LOG      ✓ Compiled in 1434ms
+[10:11:01.771] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:11:01.771] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:11:01.771] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:11:01.771] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:11:01.831] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:11:02.123] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:11:11.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:11:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:11:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:11:25.254] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/92a48252-4c72-4b75-9b82-dd2d9ae19503
+[10:11:25.254] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[10:11:25.282] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:11:25.282] Browser LOG     [Lead-Change] New lead detected, showing alert
+[10:11:25.282] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:11:25.282] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:11:25.282] Browser LOG     🚀 [Bridge] Requesting Device Info
+[10:11:25.282] Browser LOG     [Fetch] Found 2 history records via API.
+[10:11:25.282] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[10:11:25.282] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[10:11:34.830] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:11:34.830] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:11:34.830] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:11:34.830] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:11:35.117] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:11:40.393] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:11:55.449] Server  LOG      ✓ Compiled in 5.2s
+[10:11:58.643] Server  LOG      ✓ Compiled in 1503ms
+[10:12:10.554] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:12:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:12:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:12:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:12:35.508] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:12:35.508] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:12:36.265] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:12:40.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:12:43.114] Browser LOG     Effect triggered: Fetching team data for 8c3a3f9b-76a1-4d70-99da-93de9fc7634c
+[10:12:43.114] Browser LOG     Starting team data fetch for: 8c3a3f9b-76a1-4d70-99da-93de9fc7634c
+[10:12:43.114] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:12:43.114] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:12:43.114] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:12:43.864] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:12:43.864] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:12:43.864] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:12:43.864] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:12:55.435] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:12:55.435] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:12:55.435] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:10.356] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:17.461] Browser LOG     Effect triggered: Fetching team data for 8c3a3f9b-76a1-4d70-99da-93de9fc7634c
+[10:13:17.461] Browser LOG     Starting team data fetch for: 8c3a3f9b-76a1-4d70-99da-93de9fc7634c
+[10:13:17.461] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:17.461] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:17.461] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:17.921] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:13:17.921] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:13:17.921] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:13:17.921] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:13:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:26.751] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:26.752] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:26.752] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:26.836] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:13:27.430] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:13:27.443] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[10:13:27.443] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[10:13:27.443] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[10:13:27.733] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:13:27.755] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:13:27.761] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:13:28.198] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:13:28.201] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1364ms
+[10:13:28.330] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 880ms
+[10:13:30.024] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:13:30.707] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3260ms
+[10:13:40.699] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:41.207] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:13:41.207] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:13:41.207] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:41.207] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:41.207] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:42.458] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:13:42.459] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:13:42.460] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:42.460] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:42.460] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:42.696] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:13:44.205] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:13:44.205] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:13:44.205] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:44.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:44.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:46.355] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:13:46.355] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:13:46.355] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:13:46.355] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:13:46.355] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:13:52.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:14:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:14:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:14:22.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:14:46.883] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:14:46.883] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:14:46.883] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:14:46.883] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:14:46.883] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:14:48.209] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:14:48.209] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:14:48.209] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:14:48.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:14:48.209] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:14:50.728] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:05.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:19.221] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:19.369] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:21.180] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:15:21.180] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:15:21.180] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:15:21.180] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:15:21.180] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:15:22.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:40.362] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:15:52.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:16:10.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:16:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:16:20.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:16:40.365] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:10.364] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:19.395] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:19.570] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:39.999] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:17:39.999] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:17:40.000] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:17:40.000] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:17:40.000] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:17:40.298] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:41.206] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:17:41.206] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:17:41.206] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:17:41.206] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:17:41.206] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:17:41.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:17:44.384] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:17:44.384] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:17:44.384] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:17:44.384] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:17:44.384] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:17:52.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:18:11.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:18:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:18:20.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:18:22.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:18:41.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:14.231] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:19:14.231] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:19:14.231] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:19:14.231] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:19:14.231] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:19:14.584] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:15.207] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:19:15.208] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:19:15.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:19:15.208] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:19:15.208] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:19:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:19.443] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:19.688] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:22.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:48.404] Server  LOG      ✓ Compiled in 4.6s
+[10:19:49.994] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:19:50.003] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:19:50.338] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:19:50.582] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:19:50.586] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:19:50.878] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:19:50.961] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:19:51.040] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:19:51.052] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:19:51.064] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:19:51.078] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:19:51.091] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:19:51.212] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:19:51.616] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:19:51.620] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1624ms
+[10:19:51.709] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:19:51.710] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1707ms
+[10:19:51.793] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1208ms
+[10:19:51.853] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1273ms
+[10:19:51.910] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:19:52.157] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[10:19:52.505] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:19:52.703] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:19:53.052] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:19:53.054] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1142ms
+[10:19:53.260] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1041ms
+[10:19:56.040] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 5472ms
+[10:19:56.968] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 6433ms
+[10:19:57.570] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:19:57.843] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:20:01.005] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3660ms
+[10:20:06.643] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:20:06.643] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:20:06.643] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:20:06.643] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:20:06.930] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:20:06.930] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:20:10.407] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:20:15.491] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:20:15.491] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:20:15.491] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:20:15.491] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:20:16.203] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:20:19.210] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:20:20.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:20:41.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:21:11.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:21:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:21:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:21:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:03.208] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:22:03.208] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:22:03.209] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:22:03.209] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:22:03.344] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:22:06.622] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:09.030] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:22:09.030] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:22:09.233] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:22:10.819] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:41.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:22:41.883] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:22:41.883] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:22:41.883] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:22:41.883] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:22:41.883] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:23:10.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:23:13.350] Server  LOG      ✓ Compiled in 4.8s
+[10:23:19.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:23:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:23:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:23:24.391] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:23:24.391] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:23:24.391] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:23:24.391] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:23:24.391] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:23:39.175] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:23:39.175] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:23:39.175] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:23:39.175] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:23:39.175] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:23:40.508] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:24:11.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:24:19.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:24:21.310] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:24:23.756] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:24:29.665] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:24:29.665] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:24:29.665] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:24:29.665] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:24:29.665] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:24:30.514] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:24:30.515] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:24:30.680] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[10:24:30.841] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:24:31.037] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[10:24:31.385] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[10:24:31.635] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[10:24:31.640] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[10:24:31.643] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[10:24:31.943] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[10:24:31.945] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 907ms
+[10:24:31.955] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 583ms
+[10:24:35.378] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4000ms
+[10:24:40.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:25:10.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:25:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:25:20.319] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:25:20.884] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:25:41.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:26:11.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:26:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:26:20.502] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:26:20.983] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:27:15.732] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:27:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:27:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:27:20.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:27:32.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:28:02.199] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:28:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:28:20.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:28:20.906] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:21.055] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:21.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:21.332] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:49.066] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:29:49.066] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:29:49.066] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:29:49.066] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:29:50.085] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:29:50.085] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:29:50.438] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:29:50.438] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:29:50.438] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:29:50.438] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:29:50.438] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:30:10.367] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:30:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:30:20.396] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:30:20.989] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:30:41.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:31:12.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:31:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:31:20.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:31:20.855] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:32:19.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:32:20.290] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:32:21.392] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:32:21.529] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:33:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:33:20.531] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:33:21.171] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:33:21.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:34:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:34:20.380] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:34:21.228] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:34:21.530] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:35:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:35:20.653] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:35:21.117] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:35:21.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:35:34.371] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:35:34.371] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:35:34.371] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:35:34.371] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:35:34.591] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:35:37.397] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:35:37.397] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:35:37.397] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:35:40.378] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:36:10.371] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:36:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:36:20.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:36:20.849] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:36:40.385] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:37:10.381] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:37:19.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:37:20.357] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:37:20.880] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:37:40.372] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:38:10.387] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:38:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:38:20.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:38:20.670] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:38:40.374] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:00.180] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:39:00.180] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:39:00.180] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:39:00.180] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:39:00.192] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:39:00.321] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:39:01.088] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:01.208] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:39:01.208] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:39:01.208] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:39:01.208] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:39:11.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:18.819] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:39:18.819] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:39:18.819] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:39:18.819] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:39:18.819] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:39:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:20.858] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:22.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:41.209] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:39:51.201] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:40:11.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:40:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:40:20.272] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:41:19.245] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:41:20.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:41:25.828] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:41:28.366] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:42:19.197] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:42:19.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:42:19.599] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:42:20.690] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:42:58.888] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:42:58.888] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:42:58.888] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:42:58.888] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:42:58.888] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:42:59.110] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:43:11.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:43:29.265] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:43:29.757] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:43:41.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:44:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:44:20.192] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:44:20.612] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:45:19.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:45:20.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:45:20.735] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:45:30.205] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[10:46:19.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:46:20.230] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:46:20.744] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:47:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:47:20.380] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:47:21.059] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:48:19.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:48:20.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:48:20.836] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:49:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:49:19.631] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[10:49:19.631] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[10:49:20.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:49:21.367] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:49:21.650] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:49:21.650] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:49:21.651] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:49:23.197] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:50:20.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:50:21.365] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[10:50:22.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:50:23.359] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[10:50:23.359] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:51:19.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:51:20.441] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:51:21.255] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:52:19.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:52:20.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:52:20.666] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:52:50.724] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[10:52:50.724] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:52:50.725] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:52:50.725] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:52:50.725] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:52:51.060] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:53:10.809] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[10:53:10.857] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:53:12.006] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[10:53:12.006] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[10:53:12.006] Browser LOG     [App] Logger and Interceptors initialized.
+[10:53:12.637] Server  LOG     Using date-holidays fallback
+[10:53:12.914] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[10:53:12.914] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:53:12.914] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:53:12.914] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[10:53:12.914] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[10:53:12.914] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:53:13.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:53:14.144] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:53:20.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:53:21.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:53:48.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:02.104] Server  LOG      ✓ Compiled in 1218ms
+[10:54:03.192] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:54:03.204] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:54:03.204] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:54:03.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:03.205] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:54:03.205] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:54:03.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:03.347] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[10:54:04.202] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[10:54:04.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:05.200] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:54:05.201] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:54:05.201] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:54:05.201] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[10:54:34.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:34.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:54:34.194] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[10:55:04.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

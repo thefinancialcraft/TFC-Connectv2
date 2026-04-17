@@ -9456,6 +9456,10 @@
     outline-style: none;
   }
 
+  .first-letter\:uppercase:first-letter {
+    text-transform: uppercase;
+  }
+
   .selection\:bg-indigo-100 ::selection, .selection\:bg-indigo-100::selection {
     background-color: var(--color-indigo-100);
   }
