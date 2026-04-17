@@ -7,8 +7,11 @@ __turbopack_context__.s([
     ()=>SecondaryStats
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
+;
 ;
 function SecondaryStats({ stats, secondaryStats, loading = false }) {
+    const [isExpanded, setIsExpanded] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const items = [
         {
             label: "Active Campaigns",
@@ -54,100 +57,138 @@ function SecondaryStats({ stats, secondaryStats, loading = false }) {
         }
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-        className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3",
-        children: items.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                className: "bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]",
-                children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                    className: "animate-pulse flex flex-col justify-between h-full",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                            className: "w-7 h-7 bg-gray-100 rounded-lg"
-                        }, void 0, false, {
-                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 71,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: "h-5 bg-gray-200 rounded w-1/2 mb-2"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                    lineNumber: 73,
-                                    columnNumber: 21
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                                    className: "h-2 bg-gray-100 rounded w-3/4"
-                                }, void 0, false, {
-                                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                    lineNumber: 74,
-                                    columnNumber: 21
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 72,
-                            columnNumber: 17
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                    lineNumber: 70,
-                    columnNumber: 14
-                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                            className: "w-7 h-7 rounded-lg flex items-center justify-center",
-                            style: {
-                                backgroundColor: item.bg,
-                                color: item.color
-                            },
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                                className: `fi ${item.icon} text-xs flex`
-                            }, void 0, false, {
+        className: "space-y-3",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: `transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? "max-h-[400px]" : "max-h-[105px] lg:max-h-none"}`,
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                    className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3",
+                    children: items.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                            className: "bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]",
+                            children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                className: "animate-pulse flex flex-col justify-between h-full",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                        className: "w-7 h-7 bg-gray-100 rounded-lg"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                        lineNumber: 79,
+                                        columnNumber: 19
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                className: "h-5 bg-gray-200 rounded w-1/2 mb-2"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                                lineNumber: 81,
+                                                columnNumber: 21
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                className: "h-2 bg-gray-100 rounded w-3/4"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                                lineNumber: 82,
+                                                columnNumber: 21
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                        lineNumber: 80,
+                                        columnNumber: 19
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                lineNumber: 83,
+                                lineNumber: 78,
                                 columnNumber: 17
-                            }, this)
-                        }, void 0, false, {
+                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                        className: "w-7 h-7 rounded-lg flex items-center justify-center",
+                                        style: {
+                                            backgroundColor: item.bg,
+                                            color: item.color
+                                        },
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                                            className: `fi ${item.icon} text-xs flex`
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                            lineNumber: 91,
+                                            columnNumber: 21
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                        lineNumber: 87,
+                                        columnNumber: 19
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
+                                                className: "text-base font-bold text-[#263238] leading-tight",
+                                                children: (item.value || 0).toLocaleString()
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                                lineNumber: 94,
+                                                columnNumber: 21
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
+                                                className: "text-[9px] font-bold text-[#787E9D] uppercase tracking-wider",
+                                                children: item.label
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                                lineNumber: 97,
+                                                columnNumber: 21
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                                        lineNumber: 93,
+                                        columnNumber: 19
+                                    }, this)
+                                ]
+                            }, void 0, true)
+                        }, i, false, {
                             fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 79,
-                            columnNumber: 15
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                    className: "text-base font-bold text-[#263238] leading-tight",
-                                    children: (item.value || 0).toLocaleString()
-                                }, void 0, false, {
-                                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                    lineNumber: 86,
-                                    columnNumber: 17
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                    className: "text-[9px] font-bold text-[#787E9D] uppercase tracking-wider",
-                                    children: item.label
-                                }, void 0, false, {
-                                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                    lineNumber: 89,
-                                    columnNumber: 17
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 85,
-                            columnNumber: 15
-                        }, this)
-                    ]
-                }, void 0, true)
-            }, i, false, {
+                            lineNumber: 73,
+                            columnNumber: 13
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                    lineNumber: 71,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
                 fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                lineNumber: 65,
+                lineNumber: 66,
+                columnNumber: 7
+            }, this),
+            !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                className: "lg:hidden flex justify-center pt-1",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                    onClick: ()=>setIsExpanded(!isExpanded),
+                    className: "flex items-center justify-center w-8 h-8 rounded-full text-gray-400 active:scale-90 transition-all",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
+                        className: `fi ${isExpanded ? "fi-rr-angle-small-up" : "fi-rr-angle-small-down"} flex text-2xl transition-transform duration-300`
+                    }, void 0, false, {
+                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                        lineNumber: 115,
+                        columnNumber: 13
+                    }, this)
+                }, void 0, false, {
+                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                    lineNumber: 111,
+                    columnNumber: 11
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
+                lineNumber: 110,
                 columnNumber: 9
-            }, this))
-    }, void 0, false, {
+            }, this)
+        ]
+    }, void 0, true, {
         fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-        lineNumber: 63,
+        lineNumber: 64,
         columnNumber: 5
     }, this);
 }
@@ -1630,52 +1671,76 @@ function Dashboard() {
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-                        className: "bg-gray-100/50 p-1 rounded-2xl inline-flex gap-1 w-full sm:w-auto",
-                        children: [
-                            {
-                                id: "prospect",
-                                label: "Prospect Wise Performance",
-                                short: "Prospects"
-                            },
-                            {
-                                id: "callDetails",
-                                label: "Call Hourly Analytics",
-                                short: "Hours"
-                            },
-                            {
-                                id: "agentPerf",
-                                label: "Agent Performance",
-                                short: "Agents"
-                            }
-                        ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
-                                onClick: ()=>setActiveTab(tab.id),
-                                className: `flex-1 sm:flex-none px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeTab === tab.id ? "bg-white text-[#4b33e8] shadow-sm scale-[1.02]" : "text-gray-500 hover:text-gray-900"}`,
-                                style: {
-                                    fontFamily: "'Poppins', sans-serif"
-                                },
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                        className: "hidden sm:inline",
-                                        children: tab.label
-                                    }, void 0, false, {
+                        className: "flex justify-start",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                            className: "bg-white border border-gray-100 p-1 rounded-xl inline-flex w-full sm:w-auto relative overflow-hidden",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                    className: "absolute top-1 bottom-1 transition-all duration-300 ease-out bg-[#4b33e8] rounded-lg z-0",
+                                    style: {
+                                        width: 'calc((100% - 8px) / 3)',
+                                        left: `calc(4px + (${[
+                                            "prospect",
+                                            "callDetails",
+                                            "agentPerf"
+                                        ].indexOf(activeTab)} * (100% - 8px) / 3))`
+                                    }
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/portal/dashboard.tsx",
+                                    lineNumber: 433,
+                                    columnNumber: 15
+                                }, this),
+                                [
+                                    {
+                                        id: "prospect",
+                                        label: "Prospect Wise ",
+                                        short: "Prospects"
+                                    },
+                                    {
+                                        id: "callDetails",
+                                        label: "Call Hourly Analytics",
+                                        short: "Hours"
+                                    },
+                                    {
+                                        id: "agentPerf",
+                                        label: "Agent Performance",
+                                        short: "Agents"
+                                    }
+                                ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>setActiveTab(tab.id),
+                                        className: `flex-1 sm:w-56 px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${activeTab === tab.id ? "text-white" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"}`,
+                                        style: {
+                                            fontFamily: "'Poppins', sans-serif"
+                                        },
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
+                                                className: "hidden sm:inline",
+                                                children: tab.label
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/dashboard.tsx",
+                                                lineNumber: 456,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
+                                                className: "sm:hidden",
+                                                children: tab.short
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/dashboard.tsx",
+                                                lineNumber: 457,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, tab.id, true, {
                                         fileName: "[project]/pages/portal/dashboard.tsx",
                                         lineNumber: 446,
                                         columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
-                                        className: "sm:hidden",
-                                        children: tab.short
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 447,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, tab.id, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 436,
-                                columnNumber: 15
-                            }, this))
+                                    }, this))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/pages/portal/dashboard.tsx",
+                            lineNumber: 431,
+                            columnNumber: 13
+                        }, this)
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/dashboard.tsx",
                         lineNumber: 430,
@@ -1689,7 +1754,7 @@ function Dashboard() {
                         loading: statsLoading || chartsLoading
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 454,
+                        lineNumber: 465,
                         columnNumber: 13
                     }, this),
                     activeTab === "agentPerf" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(AgentPerformanceTab, {
@@ -1702,7 +1767,7 @@ function Dashboard() {
                         loading: agentLoading
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 464,
+                        lineNumber: 475,
                         columnNumber: 13
                     }, this),
                     activeTab === "callDetails" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(HourlyAnalyticsTab, {
@@ -1714,7 +1779,7 @@ function Dashboard() {
                         loading: chartsLoading
                     }, void 0, false, {
                         fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 476,
+                        lineNumber: 487,
                         columnNumber: 13
                     }, this)
                 ]

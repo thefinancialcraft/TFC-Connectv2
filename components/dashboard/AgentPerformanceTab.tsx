@@ -209,28 +209,72 @@ export default function AgentPerformanceTab({
         }
       `}</style>
 
-      <div className="flex justify-end items-center gap-3">
-        <div className="flex items-center gap-2">
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer" />
+      <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <div className="flex items-center gap-2 flex-1 sm:flex-none">
+          <input 
+            type="date" 
+            value={startDate} 
+            onChange={(e) => setStartDate(e.target.value)} 
+            className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] transition-all cursor-pointer min-w-0" 
+          />
           <span className="text-gray-400 font-bold">-</span>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm transition-all cursor-pointer" />
+          <input 
+            type="date" 
+            value={endDate} 
+            onChange={(e) => setEndDate(e.target.value)} 
+            className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] transition-all cursor-pointer min-w-0" 
+          />
         </div>
-        <button onClick={handleApplyFilter} disabled={isLoading || !startDate || !endDate} className="px-5 py-2 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2">
-          {isLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <><i className="fi fi-rr-filter flex text-xs"></i><span>Apply Filter</span></>}
+        <button 
+          onClick={handleApplyFilter} 
+          disabled={isLoading || !startDate || !endDate} 
+          className="w-full sm:w-auto px-5 py-2.5 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          ) : (
+            <>
+              <i className="fi fi-rr-filter flex text-xs"></i>
+              <span>Apply Filter</span>
+            </>
+          )}
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div id="agent-leaderboard-print-area" className="lg:col-span-8 bg-white rounded-[24px] p-8 flex flex-col relative h-[550px]">
           {isLoading && <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[24px] no-print"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"></div></div>}
-          <div className="flex items-center justify-between mb-6">
-            <div><h3 className="font-bold text-[#263238] text-xl">Agent Productivity Leaderboard</h3><p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Dials & Talktime per agent</p></div>
-            <div className="flex items-center gap-3 no-print">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h3 className="font-bold text-[#263238] text-xl">Agent Productivity Leaderboard</h3>
+              <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-bold">Dials & Talktime per agent</p>
+            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-3 no-print">
               <div className="flex bg-gray-100/80 p-1 rounded-xl border border-gray-200/50">
-                <button onClick={() => setMetric('dials')} className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${metric === 'dials' ? 'bg-white shadow-sm text-[#4b33e8]' : 'text-gray-400 hover:text-gray-600'}`}>Dials</button>
-                <button onClick={() => setMetric('talktime')} className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${metric === 'talktime' ? 'bg-white shadow-sm text-[#10b981]' : 'text-gray-400 hover:text-gray-600'}`}>Talktime</button>
+                <button 
+                  onClick={() => setMetric('dials')} 
+                  className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${
+                    metric === 'dials' ? 'bg-white shadow-sm text-[#4b33e8]' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  Dials
+                </button>
+                <button 
+                  onClick={() => setMetric('talktime')} 
+                  className={`px-4 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold transition-all ${
+                    metric === 'talktime' ? 'bg-white shadow-sm text-[#10b981]' : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  Talktime
+                </button>
               </div>
-              <button onClick={handlePrint} className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-[#4b33e8] transition-colors"><i className="fi flex fi-rr-print text-sm"></i></button>
+              <button 
+                onClick={handlePrint} 
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-[#4b33e8] transition-colors"
+                title="Print Leaderboard"
+              >
+                <i className="fi flex fi-rr-print text-sm"></i>
+              </button>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-indigo-100 scrollbar-track-transparent no-print-scroll">
@@ -284,19 +328,55 @@ export default function AgentPerformanceTab({
       </div>
 
       <div className="bg-white rounded-[24px] overflow-hidden text-left shadow-sm">
-          <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
-              <div><h3 className="font-bold text-[#263238] text-xl">Member Performance Breakdown</h3><p className="text-sm text-gray-400 mt-1">Granular metrics for individual agent activity (Sync enabled)</p></div>
-              <div className="flex items-center gap-4">
-                  <button onClick={() => { let start = new Date(); let end = new Date(); if (dateFilter === "today") { start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999); } fetchRpcPerformance(start.toISOString(), end.toISOString()); }} disabled={isLoading} className="group flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100 translate-y-[1px]" title="Refresh Data"><i className={`fi flex fi-rr-refresh ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i><span>Refresh</span></button>
-                  <button onClick={handleDownloadExcel} disabled={isLoading || displayData.length === 0} className="group flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-all border border-emerald-100 translate-y-[1px]" title="Download Excel Report"><i className="fi flex fi-rr-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"></i><span>Download Excel</span></button>
-                  <div className="flex gap-4 text-xs font-bold">
-                      <span className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ONLINE</span>
-                      <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-xl border border-gray-100"><span className="w-2 h-2 rounded-full bg-gray-400"></span> IDLE</span>
+          <div className="px-6 lg:px-8 py-6 border-b border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              <div>
+                  <h3 className="font-bold text-[#263238] text-xl">Member Performance Breakdown</h3>
+                  <p className="text-sm text-gray-400 mt-1">Granular metrics for individual agent activity (Sync enabled)</p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+                  <div className="grid grid-cols-2 sm:flex items-center gap-2">
+                      <button 
+                        onClick={() => { 
+                            let start = new Date(); 
+                            let end = new Date(); 
+                            if (dateFilter === "today") { 
+                                start.setHours(0, 0, 0, 0); 
+                                end.setHours(23, 59, 59, 999); 
+                            } 
+                            fetchRpcPerformance(start.toISOString(), end.toISOString()); 
+                        }} 
+                        disabled={isLoading} 
+                        className="group flex items-center justify-center gap-2 px-3 py-2 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-xl text-xs font-bold transition-all border border-indigo-100" 
+                        title="Refresh Data"
+                      >
+                        <i className={`fi flex fi-rr-refresh ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i>
+                        <span>Refresh</span>
+                      </button>
+                      <button 
+                        onClick={handleDownloadExcel} 
+                        disabled={isLoading || displayData.length === 0} 
+                        className="group flex items-center justify-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-all border border-emerald-100" 
+                        title="Download Excel Report"
+                      >
+                        <i className="fi flex fi-rr-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"></i>
+                        <span>Excel</span>
+                      </button>
+                  </div>
+                  <div className="flex items-center justify-center gap-3 text-[10px] font-bold">
+                      <span className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 
+                        ONLINE
+                      </span>
+                      <span className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 text-gray-500 rounded-xl border border-gray-100">
+                        <span className="w-2 h-2 rounded-full bg-gray-400"></span> 
+                        IDLE
+                      </span>
                   </div>
               </div>
           </div>
           
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (Hidden on Mobile) */}
+          <div className="hidden lg:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                   <thead>
                       <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest border-b border-gray-100">
@@ -323,7 +403,18 @@ export default function AgentPerformanceTab({
                                       <span className={`w-1 h-1 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></span>
                                       {agent.login_status_fmt}
                                   </div></td>
-                                  <td className="px-2 py-5 text-center"><div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.status_fmt === '--' ? 'bg-gray-50 text-gray-300' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>{agent.status_fmt === '--' ? '--' : `IDLE ${agent.status_fmt}`}</div></td>
+                                  <td className="px-2 py-5 text-center">
+                                      {agent.status_fmt === 'ON CALL' ? (
+                                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black bg-indigo-50 text-[#4b33e8] border border-indigo-100 animate-pulse">
+                                              <i className="fi fi-rr-phone-call flex text-[8px]"></i>
+                                              ON CALL
+                                          </div>
+                                      ) : (
+                                          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold border ${agent.status_fmt === '--' ? 'bg-gray-50 text-gray-300' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>
+                                              {agent.status_fmt === '--' ? '--' : `IDLE ${agent.status_fmt}`}
+                                          </div>
+                                      )}
+                                  </td>
                                   <td className="px-2 py-5 text-center"><span className="px-2 py-1 rounded-lg bg-indigo-50 text-[#4b33e8] text-[10px] font-bold border border-indigo-100/50">{agent.count.toLocaleString()} CALLS</span></td>
                                   <td className="px-2 py-5 text-center"><p className="text-sm font-bold text-[#263238]">{agent.connected_count}</p><p className="text-[10px] text-indigo-500 font-bold">{agent.count > 0 ? ((agent.connected_count/agent.count)*100).toFixed(1) : '0.0'}%</p></td>
                                   <td className="px-2 py-5 text-center text-sm font-bold text-[#263238]">{formatDuration(agent.duration || 0)}</td>
@@ -335,6 +426,67 @@ export default function AgentPerformanceTab({
                       })}
                   </tbody>
               </table>
+          </div>
+
+          {/* Mobile Card View (Hidden on Desktop) */}
+          <div className="lg:hidden divide-y divide-gray-50">
+              {displayData.length === 0 ? (
+                  <div className="px-8 py-12 text-center"><div className="flex flex-col items-center gap-2"><i className="fi fi-rr-search text-3xl text-gray-200"></i><p className="text-sm font-bold text-gray-400">No agent activity found</p></div></div>
+              ) : displayData.map((agent, i) => {
+                  const isOnline = agent.login_status_fmt === 'ONLINE';
+                  return (
+                      <div key={agent.id || i} className="p-6 bg-white space-y-4">
+                          <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-xl bg-[#4b33e8] text-white flex items-center justify-center font-bold text-sm">
+                                      {agent.name.charAt(0)}
+                                  </div>
+                                  <div>
+                                      <p className="font-bold text-[#263238] leading-none mb-1">{agent.name}</p>
+                                      <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[8px] font-black border uppercase tracking-widest ${isOnline ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
+                                      <span className={`w-1 h-1 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></span>
+                                      {agent.login_status_fmt}
+                                  </div>
+                                  {agent.status_fmt === 'ON CALL' && (
+                                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[8px] font-black bg-indigo-50 text-[#4b33e8] border border-indigo-100 animate-pulse uppercase tracking-widest ml-1">
+                                          <i className="fi fi-rr-phone-call flex text-[7px]"></i>
+                                          ON CALL
+                                      </div>
+                                  )}
+                                  </div>
+                              </div>
+                              <div className="text-right">
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Last Call</p>
+                                  <p className="text-[11px] font-bold text-[#263238]">{agent.last_active ? new Date(agent.last_active).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never'}</p>
+                              </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 pt-2">
+                              <div className="bg-gray-50 p-3 rounded-xl">
+                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Dials</p>
+                                  <p className="text-sm font-black text-[#4b33e8]">{agent.count} <span className="text-[10px] font-medium text-indigo-400 ml-1">Calls</span></p>
+                              </div>
+                              <div className="bg-gray-50 p-3 rounded-xl">
+                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Talk Time</p>
+                                  <p className="text-sm font-black text-[#263238]">{formatDuration(agent.duration || 0)}</p>
+                              </div>
+                              <div className="bg-gray-50 p-3 rounded-xl">
+                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Utilization</p>
+                                  <div className="flex items-center gap-2">
+                                      <p className="text-sm font-black text-rose-600">{agent.utilization_str}</p>
+                                      <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+                                          <div className="h-full bg-rose-500 rounded-full" style={{ width: `${Math.min(100, agent.utilization_num)}%` }}></div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div className="bg-gray-50 p-3 rounded-xl">
+                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Follow Ups</p>
+                                  <p className="text-sm font-black text-indigo-600">{agent.follow_ups || 0}</p>
+                              </div>
+                          </div>
+                      </div>
+                  );
+              })}
           </div>
       </div>
     </div>

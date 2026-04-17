@@ -132,8 +132,11 @@ const Sidebar = memo(function Sidebar({
     const isAdminState = isAdmin || isInternalStaff;
 
     const filtered = NAV_ITEMS.filter(item => {
-      // 0. NXUS-001 Exclusive Check (Hard rejection for Call Sessions)
-      if (item.path === '/call-sessions' && currentUser.employeeId !== 'NXUS-001') return false;
+      // 0. Hard Rejection for Call Sessions if NOT global
+      if (item.path === '/call-sessions' && isInternalStaff === false) return false;
+
+      // Global User Check for Call Sessions
+      if (item.path === '/call-sessions' && isInternalStaff) return true;
 
       // 1. Admin/Super Admin check
       if (item.adminOnly && !isAdminState) return false;

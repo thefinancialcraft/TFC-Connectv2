@@ -59,16 +59,16 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
         className: "space-y-6",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex justify-end items-center gap-3",
+                className: "flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center gap-2",
+                        className: "flex items-center gap-2 flex-1 sm:flex-none",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                 type: "date",
                                 value: startDate,
                                 onChange: (e)=>setStartDate(e.target.value),
-                                className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm"
+                                className: "flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] min-w-0"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
                                 lineNumber: 75,
@@ -86,7 +86,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                 type: "date",
                                 value: endDate,
                                 onChange: (e)=>setEndDate(e.target.value),
-                                className: "px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm"
+                                className: "flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] min-w-0"
                             }, void 0, false, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
                                 lineNumber: 82,
@@ -101,24 +101,32 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         onClick: handleApplyFilter,
                         disabled: isLoading || !startDate || !endDate,
-                        className: "px-4 py-2 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2",
-                        children: [
-                            isLoading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
-                            }, void 0, false, {
-                                fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 95,
-                                columnNumber: 13
-                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                className: "fi fi-rr-filter flex text-xs"
-                            }, void 0, false, {
-                                fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 97,
-                                columnNumber: 13
-                            }, this),
-                            "Apply Filter"
-                        ]
-                    }, void 0, true, {
+                        className: "w-full sm:w-auto px-5 py-2.5 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2",
+                        children: isLoading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                        }, void 0, false, {
+                            fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
+                            lineNumber: 95,
+                            columnNumber: 13
+                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "fi fi-rr-filter flex text-xs"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
+                                    lineNumber: 98,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    children: "Apply Filter"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
+                                    lineNumber: 99,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true)
+                    }, void 0, false, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
                         lineNumber: 89,
                         columnNumber: 9
@@ -138,12 +146,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                             className: "animate-spin rounded-full h-8 w-8 border-b-2 border-[#4b33e8]"
                         }, void 0, false, {
                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                            lineNumber: 107,
+                            lineNumber: 109,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 106,
+                        lineNumber: 108,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -157,20 +165,20 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         children: "Visit by Time"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 114,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
                                         className: "fi fi-rr-info text-[10px] text-gray-300"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 115,
+                                        lineNumber: 117,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 111,
+                                lineNumber: 113,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -181,7 +189,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         children: "0"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 118,
+                                        lineNumber: 120,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -199,12 +207,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 }
                                             }, i, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 123,
+                                                lineNumber: 125,
                                                 columnNumber: 17
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 121,
+                                        lineNumber: 123,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -212,19 +220,19 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         children: "1,000+"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 130,
+                                        lineNumber: 132,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 117,
+                                lineNumber: 119,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 110,
+                        lineNumber: 112,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -239,7 +247,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 className: "w-32 sticky left-0 bg-white z-10"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 140,
+                                                lineNumber: 142,
                                                 columnNumber: 17
                                             }, this),
                                             currentHeatmap.map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -247,18 +255,18 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                     children: d.day
                                                 }, d.day, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 142,
+                                                    lineNumber: 144,
                                                     columnNumber: 19
                                                 }, this))
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 139,
+                                        lineNumber: 141,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                    lineNumber: 138,
+                                    lineNumber: 140,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -269,7 +277,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                     children: timeslot
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 154,
+                                                    lineNumber: 156,
                                                     columnNumber: 19
                                                 }, this),
                                                 currentHeatmap.map((dayData, i)=>{
@@ -286,41 +294,41 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                            lineNumber: 162,
+                                                            lineNumber: 164,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, i, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 161,
+                                                        lineNumber: 163,
                                                         columnNumber: 23
                                                     }, this);
                                                 })
                                             ]
                                         }, idx, true, {
                                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                            lineNumber: 153,
+                                            lineNumber: 155,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                    lineNumber: 151,
+                                    lineNumber: 153,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                            lineNumber: 137,
+                            lineNumber: 139,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 136,
+                        lineNumber: 138,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                lineNumber: 104,
+                lineNumber: 106,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -330,7 +338,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                         className: "absolute inset-0 bg-white/50 z-10 flex items-center justify-center rounded-[20px]"
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 185,
+                        lineNumber: 187,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -343,7 +351,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         children: "Hourly Analysis"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 191,
+                                        lineNumber: 193,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -351,13 +359,13 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         children: "Time interval tracking"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 194,
+                                        lineNumber: 196,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 190,
+                                lineNumber: 192,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -367,20 +375,20 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                         className: "fi fi-rr-download flex text-[10px]"
                                     }, void 0, false, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 199,
+                                        lineNumber: 201,
                                         columnNumber: 13
                                     }, this),
                                     "Export"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                lineNumber: 198,
+                                lineNumber: 200,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 189,
+                        lineNumber: 191,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -397,7 +405,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Hour Interval"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 208,
+                                                lineNumber: 210,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -405,7 +413,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Total Calls"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 211,
+                                                lineNumber: 213,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -413,7 +421,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Connected"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 214,
+                                                lineNumber: 216,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -421,7 +429,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Outgoing"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 217,
+                                                lineNumber: 219,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -429,7 +437,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Missed"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 220,
+                                                lineNumber: 222,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -437,7 +445,7 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Avg Talktime"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 223,
+                                                lineNumber: 225,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -445,18 +453,18 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                 children: "Activity"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                lineNumber: 226,
+                                                lineNumber: 228,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                        lineNumber: 207,
+                                        lineNumber: 209,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                    lineNumber: 206,
+                                    lineNumber: 208,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -470,12 +478,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         children: row.hour
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 238,
+                                                        lineNumber: 240,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 237,
+                                                    lineNumber: 239,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -485,12 +493,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         children: row.total
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 243,
+                                                        lineNumber: 245,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 242,
+                                                    lineNumber: 244,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -500,12 +508,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         children: row.connected
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 248,
+                                                        lineNumber: 250,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 247,
+                                                    lineNumber: 249,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -515,12 +523,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         children: row.outgoing
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 253,
+                                                        lineNumber: 255,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 252,
+                                                    lineNumber: 254,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -530,12 +538,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         children: row.missed
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 258,
+                                                        lineNumber: 260,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 257,
+                                                    lineNumber: 259,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -548,12 +556,12 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 263,
+                                                        lineNumber: 265,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 262,
+                                                    lineNumber: 264,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -567,45 +575,45 @@ function HourlyAnalyticsTab({ heatmapData: initialHeatmap, hourlyStats: initialH
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                            lineNumber: 269,
+                                                            lineNumber: 271,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                        lineNumber: 268,
+                                                        lineNumber: 270,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                                    lineNumber: 267,
+                                                    lineNumber: 269,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, i, true, {
                                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                            lineNumber: 233,
+                                            lineNumber: 235,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                                    lineNumber: 231,
+                                    lineNumber: 233,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                            lineNumber: 205,
+                            lineNumber: 207,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                        lineNumber: 204,
+                        lineNumber: 206,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/dashboard/HourlyAnalyticsTab.tsx",
-                lineNumber: 183,
+                lineNumber: 185,
                 columnNumber: 7
             }, this)
         ]

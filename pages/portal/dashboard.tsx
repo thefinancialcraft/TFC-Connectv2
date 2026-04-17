@@ -426,27 +426,38 @@ export default function Dashboard() {
           {/* Secondary Stats Grid (Only depends on stats) */}
           <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={statsLoading} />
 
-          {/* Analytics Tab Selection */}
-          <div className="bg-gray-100/50 p-1 rounded-2xl inline-flex gap-1 w-full sm:w-auto">
-            {[
-              { id: "prospect", label: "Prospect Wise Performance", short: "Prospects" },
-              { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
-              { id: "agentPerf", label: "Agent Performance", short: "Agents" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                  activeTab === tab.id
-                    ? "bg-white text-[#4b33e8] shadow-sm scale-[1.02]"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-                style={{ fontFamily: "'Poppins', sans-serif" }}
-              >
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">{tab.short}</span>
-              </button>
-            ))}
+          {/* Analytics Segmented Toggle Selector */}
+          <div className="flex justify-start">
+            <div className="bg-white border border-gray-100 p-1 rounded-xl inline-flex w-full sm:w-auto relative overflow-hidden">
+              {/* Sliding Background Indicator */}
+              <div 
+                className="absolute top-1 bottom-1 transition-all duration-300 ease-out bg-[#4b33e8] rounded-lg z-0"
+                style={{
+                  width: 'calc((100% - 8px) / 3)', // Assuming 3 tabs
+                  left: `calc(4px + (${["prospect", "callDetails", "agentPerf"].indexOf(activeTab)} * (100% - 8px) / 3))`
+                }}
+              />
+              
+              {[
+                { id: "prospect", label: "Prospect Wise ", short: "Prospects" },
+                { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
+                { id: "agentPerf", label: "Agent Performance", short: "Agents" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 sm:w-56 px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${
+                    activeTab === tab.id
+                      ? "text-white"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"
+                  }`}
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.short}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Tab Content */}

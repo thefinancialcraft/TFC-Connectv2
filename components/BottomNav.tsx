@@ -117,8 +117,11 @@ const BottomNav = memo(function BottomNav({
     const isSpecialUser = employeeId === 'NXUS-001';
 
     return allNavItems.filter((item) => {
-      // Special override for Call Sessions for NXUS-001
-      if (item.id === 'call-sessions' && isSpecialUser) return true;
+      // 0. Hard Rejection for Call Sessions if NOT global
+      if (item.id === 'call-sessions' && isClient !== false) return false;
+
+      // Special override for Call Sessions for Global Users
+      if (item.id === 'call-sessions' && isClient === false) return true;
 
       // Admin check
       if (item.adminOnly && !isAdminState) return false;

@@ -55,7 +55,7 @@ function TopStats({ stats, chartData, loading = false }) {
         }
     ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
-        className: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4",
+        className: "grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4",
         children: cards.map((card, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "relative bg-white rounded-[20px] p-5 flex flex-col justify-start",
                 style: {

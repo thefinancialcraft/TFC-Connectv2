@@ -67,7 +67,7 @@ export default function TopStats({ stats, chartData, loading = false }: TopStats
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       {cards.map((card, i) => (
         <div
           key={i}

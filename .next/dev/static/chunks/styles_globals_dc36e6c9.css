@@ -2124,6 +2124,10 @@
     max-height: 100px;
   }
 
+  .max-h-\[105px\] {
+    max-height: 105px;
+  }
+
   .max-h-\[120px\] {
     max-height: 120px;
   }
@@ -2955,6 +2959,10 @@
     scale: 1.02;
   }
 
+  .scale-\[1\.03\] {
+    scale: 1.03;
+  }
+
   .-rotate-3 {
     rotate: -3deg;
   }
@@ -3552,6 +3560,10 @@
 
   .rounded-\[16px\] {
     border-radius: 16px;
+  }
+
+  .rounded-\[18px\] {
+    border-radius: 18px;
   }
 
   .rounded-\[20px\] {
@@ -8561,6 +8573,16 @@
     }
   }
 
+  .ring-black\/5 {
+    --tw-ring-color: #0000000d;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .ring-black\/5 {
+      --tw-ring-color: color-mix(in oklab, var(--color-black) 5%, transparent);
+    }
+  }
+
   .ring-green-500\/10 {
     --tw-ring-color: #00c7581a;
   }
@@ -10343,6 +10365,18 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-slate-200\/50:hover {
+      background-color: #e2e8f080;
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:bg-slate-200\/50:hover {
+        background-color: color-mix(in oklab, var(--color-slate-200) 50%, transparent);
+      }
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-slate-300:hover {
       background-color: var(--color-slate-300);
     }
@@ -11234,6 +11268,12 @@
   }
 
   @media (min-width: 40rem) {
+    .sm\:justify-end {
+      justify-content: flex-end;
+    }
+  }
+
+  @media (min-width: 40rem) {
     .sm\:justify-start {
       justify-content: flex-start;
     }
@@ -11346,6 +11386,12 @@
   @media (min-width: 40rem) {
     .sm\:px-6 {
       padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .sm\:px-8 {
+      padding-inline: calc(var(--spacing) * 8);
     }
   }
 
@@ -12423,6 +12469,12 @@
   @media (min-width: 64rem) {
     .lg\:inline {
       display: inline;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .lg\:max-h-none {
+      max-height: none;
     }
   }
 

@@ -70,33 +70,35 @@ export default function HourlyAnalyticsTab({
   return (
     <div className="space-y-6">
       {/* Date Range Inputs */}
-      <div className="flex justify-end items-center gap-3">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
+        <div className="flex items-center gap-2 flex-1 sm:flex-none">
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm"
+            className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] min-w-0"
           />
           <span className="text-gray-400 font-bold">-</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] shadow-sm"
+            className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 focus:outline-none focus:border-[#4b33e8] min-w-0"
           />
         </div>
         <button
           onClick={handleApplyFilter}
           disabled={isLoading || !startDate || !endDate}
-          className="px-4 py-2 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-sm font-bold transition-all shadow-sm flex items-center gap-2"
+          className="w-full sm:w-auto px-5 py-2.5 bg-[#4b33e8] hover:bg-[#3b25b8] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
           ) : (
-            <i className="fi fi-rr-filter flex text-xs"></i>
+            <>
+              <i className="fi fi-rr-filter flex text-xs"></i>
+              <span>Apply Filter</span>
+            </>
           )}
-          Apply Filter
         </button>
       </div>
 

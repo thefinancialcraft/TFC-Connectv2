@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SecondaryStats as SecondaryStatsType } from "../../hooks/useDashboardStats";
 import { DashboardStats } from "../../hooks/useDashboardStats";
 
@@ -12,6 +13,8 @@ export default function SecondaryStats({
   secondaryStats,
   loading = false,
 }: SecondaryStatsProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const items = [
     {
       label: "Active Campaigns",
@@ -41,7 +44,6 @@ export default function SecondaryStats({
       color: "#10b981",
       bg: "#ecfdf5",
     },
-    
     {
       label: "Total Followups",
       value: secondaryStats.followupCalls,
@@ -49,7 +51,6 @@ export default function SecondaryStats({
       color: "#f59e0b",
       bg: "#fffbeb",
     },
-    
     {
       label: "Overdue",
       value: secondaryStats.overdueFollowups,
@@ -60,40 +61,65 @@ export default function SecondaryStats({
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-      {items.map((item, i) => (
-        <div
-          key={i}
-          className="bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]"
-        >
-          {loading ? (
-             <div className="animate-pulse flex flex-col justify-between h-full">
-                <div className="w-7 h-7 bg-gray-100 rounded-lg"></div>
-                <div>
+    <div className="space-y-3">
+      {/* Smooth Expandable Container */}
+      <div 
+        className={`transition-all duration-500 ease-in-out overflow-hidden ${
+          isExpanded ? "max-h-[400px]" : "max-h-[105px] lg:max-h-none"
+        }`}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]"
+            >
+              {loading ? (
+                <div className="animate-pulse flex flex-col justify-between h-full">
+                  <div className="w-7 h-7 bg-gray-100 rounded-lg"></div>
+                  <div>
                     <div className="h-5 bg-gray-200 rounded w-1/2 mb-2"></div>
                     <div className="h-2 bg-gray-100 rounded w-3/4"></div>
+                  </div>
                 </div>
-             </div>
-          ) : (
-            <>
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: item.bg, color: item.color }}
-              >
-                <i className={`fi ${item.icon} text-xs flex`}></i>
-              </div>
-              <div>
-                <h4 className="text-base font-bold text-[#263238] leading-tight">
-                  {(item.value || 0).toLocaleString()}
-                </h4>
-                <p className="text-[9px] font-bold text-[#787E9D] uppercase tracking-wider">
-                  {item.label}
-                </p>
-              </div>
-            </>
-          )}
+              ) : (
+                <>
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: item.bg, color: item.color }}
+                  >
+                    <i className={`fi ${item.icon} text-xs flex`}></i>
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-[#263238] leading-tight">
+                      {(item.value || 0).toLocaleString()}
+                    </h4>
+                    <p className="text-[9px] font-bold text-[#787E9D] uppercase tracking-wider">
+                      {item.label}
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Mobile Toggle Button */}
+      {!loading && (
+        <div className="lg:hidden flex justify-center pt-1">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center justify-center w-8 h-8 rounded-full text-gray-400 active:scale-90 transition-all"
+          >
+            <i
+              className={`fi ${
+                isExpanded ? "fi-rr-angle-small-up" : "fi-rr-angle-small-down"
+              } flex text-2xl transition-transform duration-300`}
+            ></i>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
