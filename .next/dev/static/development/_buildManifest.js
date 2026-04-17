@@ -2,6 +2,9 @@ self.__BUILD_MANIFEST = {
   "/": [
     "static/chunks/pages/index.js"
   ],
+  "/_error": [
+    "static/chunks/pages/_error.js"
+  ],
   "/portal/activity": [
     "static/chunks/pages/portal/activity.js"
   ],
@@ -31,6 +34,9 @@ self.__BUILD_MANIFEST = {
   ],
   "/portal/organization": [
     "static/chunks/pages/portal/organization.js"
+  ],
+  "/portal/pending": [
+    "static/chunks/pages/portal/pending.js"
   ],
   "/portal/profile-completion": [
     "static/chunks/pages/portal/profile-completion.js"

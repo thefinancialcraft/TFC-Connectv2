@@ -462,834 +462,6 @@ function triggerUpdate(msg) {
     }
 }
 }),
-"[project]/components/dashboard/SecondaryStats.tsx [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "default",
-    ()=>SecondaryStats
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-;
-var _s = __turbopack_context__.k.signature();
-;
-function SecondaryStats({ stats, secondaryStats, loading = false }) {
-    _s();
-    const [isExpanded, setIsExpanded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const items = [
-        {
-            label: "Active Campaigns",
-            value: stats.activeCampaigns,
-            icon: "fi-rr-bullhorn",
-            color: "#6366f1",
-            bg: "#eef2ff"
-        },
-        {
-            label: "Team Members",
-            value: secondaryStats.assignedMembers,
-            icon: "fi-rr-users",
-            color: "#ec4899",
-            bg: "#fdf2f8"
-        },
-        {
-            label: "Total Records",
-            value: secondaryStats.newProspects,
-            icon: "fi-rr-user-add",
-            color: "#8b5cf6",
-            bg: "#f5f3ff"
-        },
-        {
-            label: "Fresh Prospects",
-            value: secondaryStats.freshProspects,
-            icon: "fi-rr-address-card",
-            color: "#10b981",
-            bg: "#ecfdf5"
-        },
-        {
-            label: "Total Followups",
-            value: secondaryStats.followupCalls,
-            icon: "fi-rr-phone-call",
-            color: "#f59e0b",
-            bg: "#fffbeb"
-        },
-        {
-            label: "Overdue",
-            value: secondaryStats.overdueFollowups,
-            icon: "fi-rr-calendar-exclamation",
-            color: "#ef4444",
-            bg: "#fef2f2"
-        }
-    ];
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "space-y-3",
-        children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: `transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? "max-h-[400px]" : "max-h-[105px] lg:max-h-none"}`,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3",
-                    children: items.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]",
-                            children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "animate-pulse flex flex-col justify-between h-full",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-7 h-7 bg-gray-100 rounded-lg"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 79,
-                                        columnNumber: 19
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "h-5 bg-gray-200 rounded w-1/2 mb-2"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 81,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "h-2 bg-gray-100 rounded w-3/4"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 82,
-                                                columnNumber: 21
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 80,
-                                        columnNumber: 19
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                lineNumber: 78,
-                                columnNumber: 17
-                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-7 h-7 rounded-lg flex items-center justify-center",
-                                        style: {
-                                            backgroundColor: item.bg,
-                                            color: item.color
-                                        },
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: `fi ${item.icon} text-xs flex`
-                                        }, void 0, false, {
-                                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                            lineNumber: 91,
-                                            columnNumber: 21
-                                        }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 87,
-                                        columnNumber: 19
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                className: "text-base font-bold text-[#263238] leading-tight",
-                                                children: (item.value || 0).toLocaleString()
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 94,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-[9px] font-bold text-[#787E9D] uppercase tracking-wider",
-                                                children: item.label
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 97,
-                                                columnNumber: 21
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 93,
-                                        columnNumber: 19
-                                    }, this)
-                                ]
-                            }, void 0, true)
-                        }, i, false, {
-                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 73,
-                            columnNumber: 13
-                        }, this))
-                }, void 0, false, {
-                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                    lineNumber: 71,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                lineNumber: 66,
-                columnNumber: 7
-            }, this),
-            !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "lg:hidden flex justify-center pt-1",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    onClick: ()=>setIsExpanded(!isExpanded),
-                    className: "flex items-center justify-center w-8 h-8 rounded-full text-gray-400 active:scale-90 transition-all",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                        className: `fi ${isExpanded ? "fi-rr-angle-small-up" : "fi-rr-angle-small-down"} flex text-2xl transition-transform duration-300`
-                    }, void 0, false, {
-                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                        lineNumber: 115,
-                        columnNumber: 13
-                    }, this)
-                }, void 0, false, {
-                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                    lineNumber: 111,
-                    columnNumber: 11
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                lineNumber: 110,
-                columnNumber: 9
-            }, this)
-        ]
-    }, void 0, true, {
-        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-        lineNumber: 64,
-        columnNumber: 5
-    }, this);
-}
-_s(SecondaryStats, "FPNvbbHVlWWR4LKxxNntSxiIS38=");
-_c = SecondaryStats;
-var _c;
-__turbopack_context__.k.register(_c, "SecondaryStats");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/supabase.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "supabase",
-    ()=>supabase,
-    "supabaseAdmin",
-    ()=>supabaseAdmin
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [client] (ecmascript) <locals>");
-;
-const supabaseUrl = ("TURBOPACK compile-time value", "https://qcglmkmhqvmkugaqvqih.supabase.co");
-const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjZ2xta21ocXZta3VnYXF2cWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTA5MTUsImV4cCI6MjA4MjA2NjkxNX0.XRbQNB4sbRgSppMH76ED7OruPYHJgI-xOMLQM7ZT6Lc");
-const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
-if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-;
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
-const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-        autoRefreshToken: false,
-        persistSession: false
-    }
-}) : null;
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/sessionManager.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "ensureValidSession",
-    ()=>ensureValidSession,
-    "generateTokenId",
-    ()=>generateTokenId,
-    "getEnvDeviceInfo",
-    ()=>getEnvDeviceInfo,
-    "getStoredAccounts",
-    ()=>getStoredAccounts,
-    "removeAccount",
-    ()=>removeAccount,
-    "saveAccount",
-    ()=>saveAccount
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-;
-const getEnvDeviceInfo = async (flutterDeviceInfo = null)=>{
-    // If we have flutter info, use it
-    if (flutterDeviceInfo) {
-        return {
-            device_name: `${flutterDeviceInfo.brand} ${flutterDeviceInfo.model}`,
-            browser: "Nexus App",
-            user_agent: flutterDeviceInfo.androidId || "Nexus-Android",
-            device_type: "mobile"
-        };
-    }
-    // Otherwise detect from browser
-    const ua = ("TURBOPACK compile-time truthy", 1) ? navigator.userAgent : "TURBOPACK unreachable";
-    let browser = "Unknown Browser";
-    if (ua.includes("Chrome")) browser = "Chrome";
-    else if (ua.includes("Firefox")) browser = "Firefox";
-    else if (ua.includes("Safari")) browser = "Safari";
-    else if (ua.includes("Edge")) browser = "Edge";
-    let os = "Unknown OS";
-    if (ua.includes("Windows")) os = "Windows";
-    else if (ua.includes("Mac")) os = "MacOS";
-    else if (ua.includes("Linux")) os = "Linux";
-    else if (ua.includes("Android")) os = "Android";
-    else if (ua.includes("iPhone")) os = "iOS";
-    return {
-        device_name: os,
-        browser: browser,
-        user_agent: ua,
-        device_type: ua.includes("Mobi") ? "mobile" : "desktop"
-    };
-};
-const ensureValidSession = async ()=>{
-    const { data: { session } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
-    return session;
-};
-const getStoredAccounts = ()=>[];
-const saveAccount = (user)=>{};
-const removeAccount = (tokenId)=>{};
-const generateTokenId = ()=>`token_${Math.random().toString(36).substring(2, 12)}`;
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useDashboardStats.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useDashboardStats",
-    ()=>useDashboardStats
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-;
-const CACHE_TTL = 60 * 1000; // 60 seconds
-function useDashboardStats() {
-    _s();
-    const [stats, setStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        totalCustomers: 0,
-        totalPremium: 0,
-        totalConverted: 0,
-        conversionRate: 0,
-        totalDials: 0,
-        totalTalktime: 0,
-        activeCampaigns: 0,
-        teamSize: 0,
-        efficiencyScore: 75
-    });
-    const [secondaryStats, setSecondaryStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        todayCalls: 0,
-        freshProspects: 0,
-        followupCalls: 0,
-        overdueFollowups: 0,
-        newProspects: 0,
-        assignedMembers: 0
-    });
-    const [performanceMetrics, setPerformanceMetrics] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        avgDuration: "0m 0s",
-        connectedRate: "0%",
-        roi: "1.0x"
-    });
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const cacheRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])({});
-    // Clean up abort controller on unmount
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useDashboardStats.useEffect": ()=>{
-            return ({
-                "useDashboardStats.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                }
-            })["useDashboardStats.useEffect"];
-        }
-    }["useDashboardStats.useEffect"], []);
-    const fetchStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useDashboardStats.useCallback[fetchStats]": async (orgId, dateFilter = "this_month", userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            // Check cache
-            const cached = cacheRef.current[cacheKey];
-            if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setStats(cached.data.stats);
-                setSecondaryStats(cached.data.secondaryStats);
-                setPerformanceMetrics(cached.data.performanceMetrics);
-                loading && setLoading(false); // Ensure loading is false if cache hit
-                return;
-            }
-            // Cancel previous request
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session using the robust helper (handles hydration race conditions)
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return; // Graceful exit on session expiry
-                }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/dashboard_overview?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Dashboard Stats] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = {
-                    stats: result.data.stats,
-                    secondaryStats: result.data.secondaryStats,
-                    performanceMetrics: result.data.performanceMetrics
-                };
-                // Update State
-                setStats(data.stats);
-                setSecondaryStats(data.secondaryStats);
-                setPerformanceMetrics(data.performanceMetrics);
-                // Update Cache
-                cacheRef.current[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Dashboard Stats Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    setLoading(false);
-                    if (abortControllerRef.current === controller) {
-                        abortControllerRef.current = null;
-                    }
-                }
-            }
-        }
-    }["useDashboardStats.useCallback[fetchStats]"], []);
-    return {
-        stats,
-        secondaryStats,
-        performanceMetrics,
-        loading,
-        error,
-        fetchStats
-    };
-}
-_s(useDashboardStats, "9teW5F/JEP5xI72KjI6MQstnRXk=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useDashboardCharts.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useDashboardCharts",
-    ()=>useDashboardCharts
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-;
-const CACHE_TTL = 60 * 1000;
-function useDashboardCharts() {
-    _s();
-    const [chartData, setChartData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [pieData, setPieData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [heatmapData, setHeatmapData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [campaignData, setCampaignData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [hourlyStats, setHourlyStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const cacheRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])({});
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useDashboardCharts.useEffect": ()=>{
-            return ({
-                "useDashboardCharts.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                }
-            })["useDashboardCharts.useEffect"];
-        }
-    }["useDashboardCharts.useEffect"], []);
-    const fetchChartData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useDashboardCharts.useCallback[fetchChartData]": async (orgId, dateFilter = "this_month", customRange, userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            const cached = cacheRef.current[cacheKey];
-            if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setChartData(cached.data.chartData);
-                setPieData(cached.data.pieData);
-                setHeatmapData(cached.data.heatmapData);
-                setCampaignData(cached.data.campaignData);
-                setHourlyStats(cached.data.hourlyStats);
-                loading && setLoading(false);
-                return;
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return;
-                }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...customRange && {
-                        startDate: customRange.start,
-                        endDate: customRange.end
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/dashboard_charts?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Dashboard Charts] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = result.data;
-                setChartData(data.chartData);
-                setPieData(data.pieData);
-                setHeatmapData(data.heatmapData);
-                setCampaignData(data.campaignData);
-                setHourlyStats(data.hourlyStats);
-                cacheRef.current[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Dashboard Charts Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    // Only turn off loading if THIS was the active request
-                    if (abortControllerRef.current === controller) {
-                        setLoading(false);
-                        abortControllerRef.current = null;
-                    }
-                }
-            }
-        }
-    }["useDashboardCharts.useCallback[fetchChartData]"], []);
-    return {
-        chartData,
-        pieData,
-        heatmapData,
-        campaignData,
-        hourlyStats,
-        loading,
-        error,
-        fetchChartData
-    };
-}
-_s(useDashboardCharts, "RSDnzN47eVB0eqSCQG7L6UYHlmA=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useAgentPerformance.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useAgentPerformance",
-    ()=>useAgentPerformance
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-;
-const CACHE_TTL = 60 * 1000;
-// Global cache to persist across remounts/tab switches
-const globalCache = {};
-function useAgentPerformance() {
-    _s();
-    const [agentData, setAgentData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [totalDials, setTotalDials] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
-    const [totalDuration, setTotalDuration] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useAgentPerformance.useEffect": ()=>{
-            return ({
-                "useAgentPerformance.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                }
-            })["useAgentPerformance.useEffect"];
-        }
-    }["useAgentPerformance.useEffect"], []);
-    const fetchAgentPerformance = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useAgentPerformance.useCallback[fetchAgentPerformance]": async (orgId, dateFilter = "this_month", customRange, force = false, userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            const cached = globalCache[cacheKey];
-            if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setAgentData(cached.data.agentData);
-                setTotalDials(cached.data.totalDials);
-                setTotalDuration(cached.data.totalDuration);
-                if (loading) setLoading(false);
-                return;
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return;
-                }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...customRange && {
-                        startDate: customRange.start,
-                        endDate: customRange.end
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/agent_performance?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Agent Performance] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = {
-                    agentData: result.data.agents,
-                    totalDials: result.data.totalDials || 0,
-                    totalDuration: result.data.totalDuration || 0
-                };
-                setAgentData(data.agentData);
-                setTotalDials(data.totalDials);
-                setTotalDuration(data.totalDuration);
-                globalCache[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Agent Performance Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    setLoading(false);
-                    if (abortControllerRef.current === controller) {
-                        abortControllerRef.current = null;
-                    }
-                }
-            }
-        }
-    }["useAgentPerformance.useCallback[fetchAgentPerformance]"], []);
-    return {
-        agentData,
-        totalDials,
-        totalDuration,
-        loading,
-        error,
-        fetchAgentPerformance
-    };
-}
-_s(useAgentPerformance, "uFAMfuobmrryJKX8ZMsl9iIF0KE=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/components/DashboardErrorBoundary.tsx [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "DashboardErrorBoundary",
-    ()=>DashboardErrorBoundary
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-;
-;
-class DashboardErrorBoundary extends __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Component"] {
-    state = {
-        hasError: false,
-        error: null
-    };
-    static getDerivedStateFromError(error) {
-        return {
-            hasError: true,
-            error
-        };
-    }
-    componentDidCatch(error, errorInfo) {
-        console.error("Uncaught error in Dashboard:", error, errorInfo);
-    }
-    render() {
-        if (this.state.hasError) {
-            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "w-full min-h-[400px] flex items-center justify-center bg-white rounded-2xl border border-red-100 p-8 text-center",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                className: "fi fi-rr-exclamation text-2xl text-red-500"
-                            }, void 0, false, {
-                                fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                                lineNumber: 32,
-                                columnNumber: 21
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 31,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                            className: "text-xl font-bold text-gray-900 mb-2",
-                            children: "Something went wrong"
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 34,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-gray-500 mb-6 max-w-md mx-auto",
-                            children: "We encountered an error while loading this section of the dashboard. Please try refreshing the page."
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 35,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "text-xs text-left bg-red-50 p-4 rounded-lg overflow-auto max-w-lg mx-auto mb-6 text-red-800 font-mono",
-                            children: this.state.error?.message
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 39,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            onClick: ()=>window.location.reload(),
-                            className: "px-6 py-2 bg-[#4b33e8] text-white rounded-xl font-bold hover:bg-[#3b27b8] transition-colors",
-                            children: "Refresh Page"
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 42,
-                            columnNumber: 17
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                    lineNumber: 30,
-                    columnNumber: 13
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                lineNumber: 29,
-                columnNumber: 9
-            }, this);
-        }
-        return this.props.children;
-    }
-}
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
 "[project]/components/AppLogo.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -2170,6 +1342,34 @@ const __TURBOPACK__default__export__ = Sidebar;
 var _c, _c1;
 __turbopack_context__.k.register(_c, "Sidebar$memo");
 __turbopack_context__.k.register(_c1, "Sidebar");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/supabase.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "supabase",
+    ()=>supabase,
+    "supabaseAdmin",
+    ()=>supabaseAdmin
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [client] (ecmascript) <locals>");
+;
+const supabaseUrl = ("TURBOPACK compile-time value", "https://qcglmkmhqvmkugaqvqih.supabase.co");
+const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjZ2xta21ocXZta3VnYXF2cWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTA5MTUsImV4cCI6MjA4MjA2NjkxNX0.XRbQNB4sbRgSppMH76ED7OruPYHJgI-xOMLQM7ZT6Lc");
+const supabaseServiceRoleKey = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.SUPABASE_SERVICE_ROLE_KEY;
+if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+;
+const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
+const supabaseAdmin = supabaseServiceRoleKey ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false
+    }
+}) : null;
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -9276,1221 +8476,585 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/dashboardUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "DashboardLevel",
-    ()=>DashboardLevel,
-    "getUserDashboardLevel",
-    ()=>getUserDashboardLevel
-]);
-var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
-    DashboardLevel["LEVEL_1_ADMIN"] = "LEVEL_1";
-    DashboardLevel["LEVEL_2_CLIENT_CEO"] = "LEVEL_2";
-    DashboardLevel["LEVEL_3_TL_SALES"] = "LEVEL_3";
-    DashboardLevel["LEVEL_4_AGENT_SALES"] = "LEVEL_4";
-    DashboardLevel["UNKNOWN"] = "UNKNOWN";
-    return DashboardLevel;
-}({});
-const getUserDashboardLevel = (user)=>{
-    if (!user) return "UNKNOWN";
-    const role = (user.role || '').toLowerCase();
-    const designation = (user.designation || '').toLowerCase();
-    // --- Level 1: Super Admin / Management (TFC Internal) ---
-    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
-        return "LEVEL_1";
-    }
-    // --- Level 2: Client CEO / Org Owner / Developer ---
-    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
-        return "LEVEL_2";
-    }
-    // If we don't have enough data to determine level, return UNKNOWN
-    if (!role) return "UNKNOWN";
-    // --- Level 3: Team Leader ---
-    // Role is 'admin' and designation is 'team_leader'
-    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
-        return "LEVEL_3";
-    }
-    // --- Level 4: Sales Agent ---
-    // Default for normal users (role = 'user' or any other non-admin/non-owner)
-    return "LEVEL_4";
-};
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useSessionState.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useSessionState",
-    ()=>useSessionState
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-function useSessionState(key, initialValue) {
-    _s();
-    const [state, setState] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        "useSessionState.useState": ()=>{
-            if ("TURBOPACK compile-time truthy", 1) {
-                try {
-                    const item = window.sessionStorage.getItem(key);
-                    if (item) {
-                        const parsed = JSON.parse(item);
-                        // Expire after 60 minutes
-                        if (Date.now() - parsed.timestamp < 60 * 60 * 1000) {
-                            return parsed.value;
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`Error reading sessionStorage key "${key}":`, error);
-                }
-            }
-            return initialValue;
-        }
-    }["useSessionState.useState"]);
-    const setValue = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useSessionState.useCallback[setValue]": (value)=>{
-            try {
-                setState({
-                    "useSessionState.useCallback[setValue]": (prevState)=>{
-                        const valueToStore = value instanceof Function ? value(prevState) : value;
-                        if ("TURBOPACK compile-time truthy", 1) {
-                            window.sessionStorage.setItem(key, JSON.stringify({
-                                timestamp: Date.now(),
-                                value: valueToStore
-                            }));
-                        }
-                        return valueToStore;
-                    }
-                }["useSessionState.useCallback[setValue]"]);
-            } catch (error) {
-                console.warn(`Error setting sessionStorage key "${key}":`, error);
-            }
-        }
-    }["useSessionState.useCallback[setValue]"], [
-        key
-    ]);
-    return [
-        state,
-        setValue
-    ];
-}
-_s(useSessionState, "CpcrUWv600SgspIsaBDrFgCYljA=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/pages/portal/dashboard.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/pages/portal/pending.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "default",
-    ()=>Dashboard
+    ()=>__TURBOPACK__default__export__
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
-// TopStats is now dynamically imported below with other chart components
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$dashboard$2f$SecondaryStats$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/dashboard/SecondaryStats.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-// Hooks
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useDashboardStats.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useDashboardCharts.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useAgentPerformance.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DashboardErrorBoundary$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/DashboardErrorBoundary.tsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useSessionState.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dynamic.js [client] (ecmascript)");
-;
-;
-;
-;
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/authService.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/AppLogo.tsx [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
 ;
-;
-;
-;
-;
-;
-;
-;
-;
-// Dynamically import dashboard tabs to prevent Recharts SSR sizing issues
-const TopStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c = TopStats;
-const ProspectTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/ProspectTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/ProspectTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c1 = ProspectTab;
-const AgentPerformanceTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/AgentPerformanceTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/AgentPerformanceTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c2 = AgentPerformanceTab;
-const HourlyAnalyticsTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/HourlyAnalyticsTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/HourlyAnalyticsTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c3 = HourlyAnalyticsTab;
-function Dashboard() {
+const PendingApproval = ()=>{
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
-    // Organization filter
-    const [organizations, setOrganizations] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [selectedOrgId, setSelectedOrgId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_selectedOrgId", "all");
-    // User filter
-    const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [selectedUserId, setSelectedUserId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_selectedUserId", "all");
-    // Filters Dropdown state
-    const [showFilters, setShowFilters] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const filterRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_activeTab", "prospect");
-    // Security Restrictions
-    const [restrictedUserIds, setRestrictedUserIds] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    // Close filters when clicking outside
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            const handleClickOutside = {
-                "Dashboard.useEffect.handleClickOutside": (event)=>{
-                    if (filterRef.current && !filterRef.current.contains(event.target)) {
-                        setShowFilters(false);
-                    }
-                }
-            }["Dashboard.useEffect.handleClickOutside"];
-            document.addEventListener("mousedown", handleClickOutside);
-            return ({
-                "Dashboard.useEffect": ()=>document.removeEventListener("mousedown", handleClickOutside)
-            })["Dashboard.useEffect"];
+    const handleBackToLogin = async ()=>{
+        try {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["handleLogout"])(router);
+        } catch (error) {
+            console.error("Error signing out:", error);
+            router.push("/login");
         }
-    }["Dashboard.useEffect"], []);
-    // Data hooks
-    const { stats, secondaryStats, performanceMetrics, loading: statsLoading, fetchStats } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardStats"])();
-    const { chartData, pieData, heatmapData, campaignData, hourlyStats, loading: chartsLoading, fetchChartData } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardCharts"])();
-    const { agentData, loading: agentLoading, fetchAgentPerformance } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"])();
-    // Dashboard Level State
-    const [dashboardLevel, setDashboardLevel] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN);
-    const [isOrgLocked, setIsOrgLocked] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [isUserLocked, setIsUserLocked] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const hasInitialized = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(false);
-    const [isInitialLoad, setIsInitialLoad] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
-    // Initialize Dashboard Level Logic & Constraints
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (!mounted || !user) return;
-            const level = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(user);
-            const currentId = user.uid || user.id || user.user_id;
-            setDashboardLevel(level);
-            // Apply Constraints based on level
-            // Apply Constraints based on level
-            if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN) {
-                // Level 1: Full Access, default to ALL stats
-                setIsOrgLocked(false);
-                setIsUserLocked(false);
-                setSelectedOrgId("all");
-                setSelectedUserId("all");
-                setRestrictedUserIds(null);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_2_CLIENT_CEO) {
-                setIsOrgLocked(true);
-                setIsUserLocked(false);
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                setRestrictedUserIds(null);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES) {
-                setIsOrgLocked(true);
-                setIsUserLocked(false);
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                // Fail secure: Default to self only until team members are fetched
-                setRestrictedUserIds([
-                    currentId
-                ]);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                setIsOrgLocked(true);
-                setIsUserLocked(true);
-                // FORCE selections immediately for Level 4
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                if (currentId) {
-                    setSelectedUserId(currentId);
-                    setRestrictedUserIds([
-                        currentId
-                    ]);
-                }
-            }
-            hasInitialized.current = true;
+    };
+    const getRoleColor = (role)=>{
+        switch(role){
+            case 'admin':
+                return "bg-red-50 text-red-700 border-red-100";
+            case 'user':
+                return "bg-blue-50 text-blue-700 border-blue-100";
+            default:
+                return "bg-gray-50 text-gray-700 border-gray-100";
         }
-    }["Dashboard.useEffect"], [
-        mounted,
-        user?.uid,
-        user?.organization_id
-    ]); // Trigger when key user info changes
-    // Fetch organizations
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            const fetchOrgs = {
-                "Dashboard.useEffect.fetchOrgs": async ()=>{
-                    const { data } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("organizations").select("id, company_name").order("company_name");
-                    if (data) setOrganizations(data);
-                }
-            }["Dashboard.useEffect.fetchOrgs"];
-            fetchOrgs();
+    };
+    const getRoleLabel = (role)=>{
+        switch(role){
+            case 'admin':
+                return 'Admin';
+            case 'user':
+                return 'User';
+            case 'super_admin':
+                return 'Super Admin';
+            default:
+                return role;
         }
-    }["Dashboard.useEffect"], []);
-    // Fetch users when org changes
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            // Skip if level isn't determined yet
-            if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) return;
-            // Skip if user is locked to self (Level 4)
-            if (isUserLocked) return;
-            const fetchUsers = {
-                "Dashboard.useEffect.fetchUsers": async ()=>{
-                    // Basic query for profiles
-                    const queryBase = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("user_profiles").select("user_id, user_name, role").neq("approval_status", "rejected");
-                    let finalQuery;
-                    // Stage for Level 3: Strictly Fetch Team Members
-                    if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES && user?.uid) {
-                        console.log(`[Dashboard] Filtering users for TL:`, user.uid);
-                        // Fetch teams where current user is leader
-                        const { data: teamData, error: teamError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('teams').select('members').eq('leader_id', user.uid).eq('is_active', true);
-                        if (teamError) {
-                            console.error("[Dashboard] Error fetching TL teams:", teamError);
-                        }
-                        const memberIds = new Set();
-                        memberIds.add(user.uid); // Always include the TL themself
-                        if (teamData && teamData.length > 0) {
-                            teamData.forEach({
-                                "Dashboard.useEffect.fetchUsers": (team)=>{
-                                    if (Array.isArray(team.members)) {
-                                        team.members.forEach({
-                                            "Dashboard.useEffect.fetchUsers": (id)=>{
-                                                if (id && typeof id === 'string') memberIds.add(id);
-                                            }
-                                        }["Dashboard.useEffect.fetchUsers"]);
-                                    }
-                                }
-                            }["Dashboard.useEffect.fetchUsers"]);
-                        }
-                        const finalIds = Array.from(memberIds);
-                        console.log(`[Dashboard] Restricting User Selection to ${finalIds.length} members`);
-                        setRestrictedUserIds(finalIds);
-                        // Apply membership filter
-                        finalQuery = queryBase.in("user_id", finalIds);
-                    } else if (selectedOrgId !== "all") {
-                        // Fallback for CEO (Level 2) or Admin (Level 1) selecting an org
-                        finalQuery = queryBase.eq("organization_id", selectedOrgId);
-                    } else {
-                        // Global view for Admin (Level 1)
-                        finalQuery = queryBase;
-                        setRestrictedUserIds(null);
-                    }
-                    const { data, error: userError } = await finalQuery.order("user_name");
-                    if (userError) {
-                        console.error("[Dashboard] Error fetching users:", userError);
-                    }
-                    if (data) {
-                        setUsers(data);
-                    } else {
-                        setUsers([]);
-                    }
-                }
-            }["Dashboard.useEffect.fetchUsers"];
-            if (mounted) {
-                // For Level 4, we don't fetch users list, stay locked to self
-                if (dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    fetchUsers();
-                    // Only reset to "all" if NOT locked
-                    if (!isUserLocked) {
-                        setSelectedUserId("all");
-                    }
-                }
-            }
-        }
-    }["Dashboard.useEffect"], [
-        selectedOrgId,
-        isUserLocked,
-        dashboardLevel,
-        mounted,
-        user?.uid
-    ]);
-    // Date filter state
-    const [dateFilter, setDateFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_dateFilter", "today");
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (mounted && user && dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) {
-                if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    setRestrictedUserIds([
-                        user.uid
-                    ]);
-                }
-            }
-        }
-    }["Dashboard.useEffect"], [
-        mounted,
-        user,
-        dashboardLevel
-    ]);
-    // Fetch all dashboard data when filters change
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (mounted && user) {
-                const currentId = user.uid || user.id || user.user_id;
-                let orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                let userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-                // --- CRITICAL OVERRIDE FOR LEVEL 4 (AGENT) ---
-                // This ensures that even if UI state is in transition, the data fetched is always their own.
-                if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    orgFilter = user.organization_id || undefined;
-                    userFilter = currentId || undefined;
-                }
-                // Fetch all data in parallel
-                Promise.all([
-                    fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds),
-                    fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds),
-                    fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds)
-                ]);
-            }
-        }
-    }["Dashboard.useEffect"], [
-        selectedOrgId,
-        selectedUserId,
-        dateFilter,
-        user?.uid,
-        user?.organization_id,
-        mounted,
-        dashboardLevel,
-        fetchStats,
-        fetchChartData,
-        fetchAgentPerformance,
-        restrictedUserIds
-    ]);
-    const loading = statsLoading || chartsLoading || agentLoading;
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (!loading) {
-                setIsInitialLoad(false);
-            }
-        }
-    }["Dashboard.useEffect"], [
-        loading
-    ]);
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DashboardErrorBoundary$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["DashboardErrorBoundary"], {
-            children: isInitialLoad && statsLoading && chartsLoading && agentLoading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-col min-h-[80vh] items-center justify-center animate-in fade-in duration-300",
+    };
+    // Show loading spinner
+    if (!mounted || !user) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "min-h-screen flex items-center justify-center",
+            style: {
+                backgroundColor: "#e7e3ff"
+            },
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "text-center",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"
+                        className: "animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto mb-4"
                     }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 262,
-                        columnNumber: 13
-                    }, this),
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 68,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "mt-4 text-[#263238] font-bold text-lg animate-pulse",
+                        className: "text-gray-600",
                         style: {
-                            fontFamily: "'Poppins', sans-serif"
+                            fontFamily: "'Roboto', sans-serif"
                         },
-                        children: "Loading Dashboard..."
+                        children: "Loading your approval status..."
                     }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 263,
-                        columnNumber: 13
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "text-[#787E9D] text-sm font-medium mt-1",
-                        children: "Please wait while we gather your statistics"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 266,
-                        columnNumber: 13
-                    }, this)
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 69,
+                        columnNumber: 11
+                    }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
-                fileName: "[project]/pages/portal/dashboard.tsx",
-                lineNumber: 261,
-                columnNumber: 11
-            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]",
+                fileName: "[project]/pages/portal/pending.tsx",
+                lineNumber: 67,
+                columnNumber: 9
+            }, ("TURBOPACK compile-time value", void 0))
+        }, void 0, false, {
+            fileName: "[project]/pages/portal/pending.tsx",
+            lineNumber: 66,
+            columnNumber: 7
+        }, ("TURBOPACK compile-time value", void 0));
+    }
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "min-h-screen flex items-center justify-center py-8",
+            style: {
+                backgroundColor: "#e7e3ff"
+            },
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "w-full max-w-2xl p-6 sm:p-8 bg-white rounded-xl shadow-lg border border-gray-100 mx-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6",
+                        className: "flex flex-col items-center mb-8",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex-1",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                        className: "text-2xl sm:text-3xl font-bold text-[#263238]",
-                                        style: {
-                                            fontFamily: "'Poppins', sans-serif"
-                                        },
-                                        children: "Dashboard Overview"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 273,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm text-[#787E9D] mt-1 line-clamp-1 sm:line-clamp-none",
-                                        children: [
-                                            "Welcome back,",
-                                            " ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "font-semibold text-[#4b33e8]",
-                                                children: mounted ? user?.displayName || "User" : "User"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 281,
-                                                columnNumber: 17
-                                            }, this),
-                                            ". Here's what's happening today."
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 279,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 272,
-                                columnNumber: 13
-                            }, this),
+                                className: "mb-6",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLogo$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                    size: "default"
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/portal/pending.tsx",
+                                    lineNumber: 83,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0))
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 82,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-3",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative",
-                                        ref: filterRef,
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>setShowFilters(!showFilters),
-                                                className: `h-10 px-4 rounded-xl border flex items-center gap-2 transition-all  font-bold text-sm ${showFilters ? "border-[#4b33e8] bg-[#4b33e8] text-white" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi flex fi-rr-filter"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 299,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "hidden sm:inline",
-                                                        children: "Filters"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 300,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    (selectedOrgId !== "all" || selectedUserId !== "all" || dateFilter !== "today") && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: `flex items-center justify-center w-2 h-2 rounded-full ${showFilters ? 'bg-white' : 'bg-[#4b33e8]'}`
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 302,
-                                                        columnNumber: 21
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 291,
-                                                columnNumber: 17
-                                            }, this),
-                                            showFilters && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute top-full right-0 mt-2 w-[240px] sm:w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-[100] animate-in fade-in zoom-in duration-200",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "space-y-4",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "Organization"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 311,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: selectedOrgId,
-                                                                            onChange: (e)=>setSelectedOrgId(e.target.value),
-                                                                            className: `w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isOrgLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`,
-                                                                            disabled: isOrgLocked,
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all",
-                                                                                    disabled: isOrgLocked,
-                                                                                    children: "Global (All Orgs)"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 319,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                        value: org.id,
-                                                                                        disabled: isOrgLocked && selectedOrgId !== org.id,
-                                                                                        children: org.company_name
-                                                                                    }, org.id, false, {
-                                                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                        lineNumber: 321,
-                                                                                        columnNumber: 31
-                                                                                    }, this))
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 313,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 326,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: `fi ${isOrgLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 327,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 312,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 310,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "User Selection"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 333,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: selectedUserId,
-                                                                            onChange: (e)=>setSelectedUserId(e.target.value),
-                                                                            className: `w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isUserLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`,
-                                                                            disabled: isUserLocked,
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all",
-                                                                                    disabled: isUserLocked,
-                                                                                    children: dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES ? "All Team Members" : "All Users"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 341,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                isUserLocked ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: user?.uid,
-                                                                                    children: user?.displayName || 'Me'
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 345,
-                                                                                    columnNumber: 33
-                                                                                }, this) : users.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                        value: u.user_id,
-                                                                                        children: u.user_name || "Unknown User"
-                                                                                    }, u.user_id, false, {
-                                                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                        lineNumber: 348,
-                                                                                        columnNumber: 35
-                                                                                    }, this))
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 335,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 354,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: `fi ${isUserLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 355,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 334,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 332,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "Time Period"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 361,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: dateFilter,
-                                                                            onChange: (e)=>setDateFilter(e.target.value),
-                                                                            className: "w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all cursor-pointer",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "today",
-                                                                                    children: "Today"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 368,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "yesterday",
-                                                                                    children: "Yesterday"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 369,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_week",
-                                                                                    children: "This Week"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 370,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "last_7_days",
-                                                                                    children: "Last 7 Days"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 371,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_month",
-                                                                                    children: "This Month"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 372,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "last_month",
-                                                                                    children: "Last Month"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 373,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_year",
-                                                                                    children: "1 Year"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 374,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "multi_year",
-                                                                                    children: "Multi-Year"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 375,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all_time",
-                                                                                    children: "All Time"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 376,
-                                                                                    columnNumber: 29
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 363,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 378,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 379,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 362,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 360,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "pt-2",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>{
-                                                                    setSelectedOrgId(isOrgLocked ? selectedOrgId : "all");
-                                                                    setSelectedUserId(isUserLocked ? selectedUserId : "all");
-                                                                    setDateFilter("all_time");
-                                                                    setShowFilters(false);
-                                                                },
-                                                                className: "w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-xs font-bold transition-all",
-                                                                children: "Reset Filters"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                lineNumber: 384,
-                                                                columnNumber: 25
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 383,
-                                                            columnNumber: 23
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                    lineNumber: 308,
-                                                    columnNumber: 21
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 307,
-                                                columnNumber: 19
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 290,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center gap-2",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "px-3 h-10 bg-[#4b33e8] rounded-xl text-xs font-bold text-white cursor-default flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: `w-1.5 h-1.5 rounded-full bg-white ${statsLoading || chartsLoading || agentLoading ? '' : 'animate-pulse'}`
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 403,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "hidden sm:inline",
-                                                        children: statsLoading || chartsLoading || agentLoading ? "Updating..." : "Live Updates"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 404,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "sm:hidden",
-                                                        children: statsLoading || chartsLoading || agentLoading ? "..." : "Live"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 405,
-                                                        columnNumber: 19
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 402,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>{
-                                                    const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
-                                                    const uid = selectedUserId === "all" ? "all" : selectedUserId;
-                                                    const dFilter = dateFilter;
-                                                    window.open(`/dashboard_report?orgId=${oid}&userId=${uid}&dateFilter=${dFilter}`, '_blank');
-                                                },
-                                                className: "w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all",
-                                                title: "Generate Report",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi flex fi-rr-print"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                    lineNumber: 418,
-                                                    columnNumber: 21
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 408,
-                                                columnNumber: 17
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 401,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 288,
-                                columnNumber: 13
-                            }, this)
+                                className: "inline-flex items-center justify-center w-20 h-20 rounded-full bg-yellow-50 mb-4",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "fi flex fi-rr-clock text-4xl",
+                                    style: {
+                                        color: "#F59E0B"
+                                    }
+                                }, void 0, false, {
+                                    fileName: "[project]/pages/portal/pending.tsx",
+                                    lineNumber: 86,
+                                    columnNumber: 13
+                                }, ("TURBOPACK compile-time value", void 0))
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 85,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                className: "text-2xl sm:text-3xl font-semibold text-gray-800 mb-2",
+                                style: {
+                                    fontFamily: "'Poppins', sans-serif"
+                                },
+                                children: "Pending Approval"
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 88,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-gray-600 text-center max-w-md",
+                                style: {
+                                    fontFamily: "'Roboto', sans-serif"
+                                },
+                                children: "Your application is under review. This usually takes 24-72 hours."
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 91,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 271,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TopStats, {
-                        stats: stats,
-                        chartData: chartData,
-                        loading: statsLoading || chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 425,
-                        columnNumber: 11
-                    }, this),
-                    dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "md:hidden relative overflow-hidden bg-gradient-to-r from-[#4b33e8] via-[#6366f1] to-[#8b5cf6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-indigo-100/20 group",
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 81,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "p-6 rounded-lg border bg-yellow-50 text-yellow-700 border-yellow-100 mb-6",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "absolute inset-0 overflow-hidden pointer-events-none z-0",
+                                className: "flex items-center gap-3 mb-4",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute inset-[-100%] opacity-[0.7] rotate-[-12deg]",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                        className: "fi flex fi-rr-clock text-2xl",
                                         style: {
-                                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-                                            backgroundRepeat: 'repeat'
+                                            color: "#F59E0B"
                                         }
                                     }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 433,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/20 rounded-full blur-[60px] animate-pulse"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 440,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute -bottom-12 -left-12 w-48 h-48 bg-black/10 rounded-full blur-[50px]"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 441,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 431,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "relative z-10 flex items-center gap-4",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 hidden md:flex shrink-0",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: "fi fi-rr-users-alt text-white text-lg"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                            lineNumber: 446,
-                                            columnNumber: 19
-                                        }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 445,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-center sm:text-left",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: "text-base sm:text-lg font-bold text-white leading-tight",
-                                                style: {
-                                                    fontFamily: "'Poppins', sans-serif"
-                                                },
-                                                children: "Empower Your Team’s Performance"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 449,
-                                                columnNumber: 19
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-white/70 text-[10px] font-medium hidden lg:block tracking-wide",
-                                                children: "Real-time monitoring and workforce optimization simplified."
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 452,
-                                                columnNumber: 19
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 448,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 444,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>router.push("/portal/team"),
-                                className: "relative z-10 flex items-center gap-2.5 px-6 py-2.5 bg-white text-[#4b33e8] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all hover:shadow-lg hover:shadow-white/20 active:scale-95 shrink-0",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    children: "Manage Team"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                    lineNumber: 462,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 458,
-                                columnNumber: 15
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 429,
-                        columnNumber: 13
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$dashboard$2f$SecondaryStats$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                        stats: stats,
-                        secondaryStats: secondaryStats,
-                        loading: statsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 468,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex justify-start",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-white border border-gray-100 p-1 rounded-xl inline-flex w-full sm:w-auto relative overflow-hidden",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-1 bottom-1 transition-all duration-300 ease-out bg-[#4b33e8] rounded-lg z-0",
-                                    style: {
-                                        width: 'calc((100% - 8px) / 3)',
-                                        left: `calc(4px + (${[
-                                            "prospect",
-                                            "callDetails",
-                                            "agentPerf"
-                                        ].indexOf(activeTab)} * (100% - 8px) / 3))`
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                    lineNumber: 474,
-                                    columnNumber: 15
-                                }, this),
-                                [
-                                    {
-                                        id: "prospect",
-                                        label: "Prospect Wise ",
-                                        short: "Prospects"
-                                    },
-                                    {
-                                        id: "callDetails",
-                                        label: "Call Hourly Analytics",
-                                        short: "Hours"
-                                    },
-                                    {
-                                        id: "agentPerf",
-                                        label: "Agent Performance",
-                                        short: "Agents"
-                                    }
-                                ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>setActiveTab(tab.id),
-                                        className: `flex-1 sm:w-56 px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${activeTab === tab.id ? "text-white" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"}`,
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 100,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "font-semibold text-lg",
                                         style: {
                                             fontFamily: "'Poppins', sans-serif"
                                         },
+                                        children: "Application Pending"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 101,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 99,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-2 text-sm",
+                                style: {
+                                    fontFamily: "'Roboto', sans-serif"
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        children: "• Your application has been submitted successfully"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 104,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        children: "• Our team is reviewing your information"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 105,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        children: "• You will be notified once a decision is made"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 106,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        children: "• Please check back later or contact support if you have questions"
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 107,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 103,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 98,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "bg-gray-50 rounded-lg p-6 mb-6",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                className: "text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2",
+                                style: {
+                                    fontFamily: "'Poppins', sans-serif"
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                        className: "fi flex fi-rr-user text-xl",
+                                        style: {
+                                            color: "#4b33e8"
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 114,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    "Profile Details"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 113,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "space-y-4",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "hidden sm:inline",
-                                                children: tab.label
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-user text-base",
+                                                style: {
+                                                    color: "#787E9D"
+                                                }
                                             }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 497,
-                                                columnNumber: 19
-                                            }, this),
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 120,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "sm:hidden",
-                                                children: tab.short
+                                                className: "text-sm font-medium",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#263238"
+                                                },
+                                                children: "Name:"
                                             }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 498,
-                                                columnNumber: 19
-                                            }, this)
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 121,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#787E9D"
+                                                },
+                                                children: user.displayName || "Not set"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 122,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0))
                                         ]
-                                    }, tab.id, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 487,
-                                        columnNumber: 17
-                                    }, this))
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/dashboard.tsx",
-                            lineNumber: 472,
-                            columnNumber: 13
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 471,
-                        columnNumber: 11
-                    }, this),
-                    activeTab === "prospect" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ProspectTab, {
-                        stats: stats,
-                        performanceMetrics: performanceMetrics,
-                        campaignData: campaignData,
-                        pieData: pieData,
-                        loading: statsLoading || chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 506,
-                        columnNumber: 13
-                    }, this),
-                    activeTab === "agentPerf" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(AgentPerformanceTab, {
-                        agentData: agentData,
-                        totalDials: stats.totalDials,
-                        selectedOrgId: selectedOrgId,
-                        selectedUserId: selectedUserId,
-                        dateFilter: dateFilter,
-                        restrictedUserIds: restrictedUserIds,
-                        loading: agentLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 516,
-                        columnNumber: 13
-                    }, this),
-                    activeTab === "callDetails" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HourlyAnalyticsTab, {
-                        heatmapData: heatmapData,
-                        hourlyStats: hourlyStats,
-                        selectedOrgId: selectedOrgId,
-                        selectedUserId: selectedUserId,
-                        dateFilter: dateFilter,
-                        loading: chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 528,
-                        columnNumber: 13
-                    }, this)
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 119,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-envelope text-base",
+                                                style: {
+                                                    color: "#787E9D"
+                                                }
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 126,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#263238"
+                                                },
+                                                children: "Email:"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 127,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#787E9D"
+                                                },
+                                                children: user.email
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 128,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 125,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    user.phone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-mobile text-base",
+                                                style: {
+                                                    color: "#787E9D"
+                                                }
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 133,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#263238"
+                                                },
+                                                children: "Contact:"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 134,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#787E9D"
+                                                },
+                                                children: user.phone
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 135,
+                                                columnNumber: 17
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 132,
+                                        columnNumber: 15
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-briefcase text-base",
+                                                style: {
+                                                    color: "#787E9D"
+                                                }
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 140,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#263238"
+                                                },
+                                                children: "Role:"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 141,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: `inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role || 'user')}`,
+                                                children: getRoleLabel(user.role || 'user')
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 142,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 139,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0)),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                                className: "fi flex fi-rr-calendar text-base",
+                                                style: {
+                                                    color: "#787E9D"
+                                                }
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 148,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm font-medium",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#263238"
+                                                },
+                                                children: "Account Created:"
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 149,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0)),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-sm",
+                                                style: {
+                                                    fontFamily: "'Roboto', sans-serif",
+                                                    color: "#787E9D"
+                                                },
+                                                children: user.createdAt ? (()=>{
+                                                    const date = new Date(user.createdAt);
+                                                    const monthNames = [
+                                                        'January',
+                                                        'February',
+                                                        'March',
+                                                        'April',
+                                                        'May',
+                                                        'June',
+                                                        'July',
+                                                        'August',
+                                                        'September',
+                                                        'October',
+                                                        'November',
+                                                        'December'
+                                                    ];
+                                                    return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                                                })() : '—'
+                                            }, void 0, false, {
+                                                fileName: "[project]/pages/portal/pending.tsx",
+                                                lineNumber: 150,
+                                                columnNumber: 15
+                                            }, ("TURBOPACK compile-time value", void 0))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/pages/portal/pending.tsx",
+                                        lineNumber: 147,
+                                        columnNumber: 13
+                                    }, ("TURBOPACK compile-time value", void 0))
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 118,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 112,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "text-center space-y-4",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: handleBackToLogin,
+                                className: "px-8 py-3 rounded-lg text-white transition hover:opacity-90",
+                                style: {
+                                    backgroundColor: "#4b33e8",
+                                    fontFamily: "'Poppins', sans-serif"
+                                },
+                                children: "Back to Login"
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 163,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-gray-500 text-sm",
+                                style: {
+                                    fontFamily: "'Roboto', sans-serif"
+                                },
+                                children: "You can check this page again later to see your approval status."
+                            }, void 0, false, {
+                                fileName: "[project]/pages/portal/pending.tsx",
+                                lineNumber: 171,
+                                columnNumber: 11
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/pages/portal/pending.tsx",
+                        lineNumber: 162,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
-                fileName: "[project]/pages/portal/dashboard.tsx",
-                lineNumber: 269,
-                columnNumber: 11
-            }, this)
+                fileName: "[project]/pages/portal/pending.tsx",
+                lineNumber: 79,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
-            fileName: "[project]/pages/portal/dashboard.tsx",
-            lineNumber: 259,
+            fileName: "[project]/pages/portal/pending.tsx",
+            lineNumber: 78,
             columnNumber: 7
-        }, this)
+        }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false);
-}
-_s(Dashboard, "L3deUKr+tSbb94EvYaTOk+zAnjk=", false, function() {
+};
+_s(PendingApproval, "dPzHhhxwAE6G+6JuezFhHDwTUWE=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardStats"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardCharts"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
     ];
 });
-_c4 = Dashboard;
-var _c, _c1, _c2, _c3, _c4;
-__turbopack_context__.k.register(_c, "TopStats");
-__turbopack_context__.k.register(_c1, "ProspectTab");
-__turbopack_context__.k.register(_c2, "AgentPerformanceTab");
-__turbopack_context__.k.register(_c3, "HourlyAnalyticsTab");
-__turbopack_context__.k.register(_c4, "Dashboard");
+_c = PendingApproval;
+const __TURBOPACK__default__export__ = PendingApproval;
+var _c;
+__turbopack_context__.k.register(_c, "PendingApproval");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/dashboard.tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/pending.tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
 
-const PAGE_PATH = "/portal/dashboard";
+const PAGE_PATH = "/portal/pending";
 (window.__NEXT_P = window.__NEXT_P || []).push([
     PAGE_PATH,
     ()=>{
-        return __turbopack_context__.r("[project]/pages/portal/dashboard.tsx [client] (ecmascript)");
+        return __turbopack_context__.r("[project]/pages/portal/pending.tsx [client] (ecmascript)");
     }
 ]);
 // @ts-expect-error module.hot exists
@@ -10503,11 +9067,11 @@ if (module.hot) {
     });
 }
 }),
-"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/portal/dashboard.tsx\" }", ((__turbopack_context__) => {
+"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/portal/pending.tsx\" }", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/dashboard.tsx [client] (ecmascript)\" } [client] (ecmascript)");
+__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/pending.tsx [client] (ecmascript)\" } [client] (ecmascript)");
 }),
 ]);
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__b1a68bc2._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__6f26bc9a._.js.map

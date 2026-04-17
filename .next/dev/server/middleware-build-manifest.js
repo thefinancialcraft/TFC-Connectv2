@@ -30,6 +30,19 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/pages__app_2da965e7._.js",
       "static/chunks/turbopack-pages__app_5f12131d._.js"
     ],
+    "/_error": [
+      "static/chunks/node_modules_next_dist_compiled_9c6fb6f2._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_6edb39eb._.js",
+      "static/chunks/node_modules_next_dist_client_d0aa886c._.js",
+      "static/chunks/node_modules_next_dist_f254759f._.js",
+      "static/chunks/node_modules_next_error_1cfbb379.js",
+      "static/chunks/[next]_entry_page-loader_ts_43b523b5._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_7f09fef0._.js",
+      "static/chunks/[root-of-the-server]__092393de._.js",
+      "static/chunks/pages__error_2da965e7._.js",
+      "static/chunks/turbopack-pages__error_bd4b61b3._.js"
+    ],
     "/portal/activity": [
       "static/chunks/[root-of-the-server]__397ada21._.js",
       "static/chunks/node_modules_next_dist_compiled_ebbb8748._.js",
@@ -124,7 +137,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/turbopack-pages_portal_customer_tsx_ab630f0f._.js"
     ],
     "/portal/dashboard": [
-      "static/chunks/components_dashboard_ab860bb7._.js",
+      "static/chunks/components_dashboard_dc15e985._.js",
       "static/chunks/[root-of-the-server]__b1a68bc2._.js",
       "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
       "static/chunks/node_modules_next_dist_shared_lib_41d42037._.js",
@@ -136,7 +149,7 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_b0c9384a._.js",
       "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_dashboard_tsx_85575a4b._.js"
+      "static/chunks/turbopack-pages_portal_dashboard_tsx_cdd0d5a5._.js"
     ],
     "/portal/followup": [
       "static/chunks/[root-of-the-server]__1159d318._.js",
@@ -180,6 +193,20 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/node_modules_6526044e._.js",
       "static/chunks/pages_portal_organization_tsx_2da965e7._.js",
       "static/chunks/turbopack-pages_portal_organization_tsx_389798b5._.js"
+    ],
+    "/portal/pending": [
+      "static/chunks/[root-of-the-server]__6f26bc9a._.js",
+      "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
+      "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
+      "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
+      "static/chunks/node_modules_next_dist_a1eb637b._.js",
+      "static/chunks/node_modules_next_5cb05f67._.js",
+      "static/chunks/node_modules_react-dom_4411d9bd._.js",
+      "static/chunks/node_modules_@supabase_realtime-js_dist_module_ff1c51c7._.js",
+      "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
+      "static/chunks/node_modules_6526044e._.js",
+      "static/chunks/pages_portal_pending_tsx_2da965e7._.js",
+      "static/chunks/turbopack-pages_portal_pending_tsx_baf7ac63._.js"
     ],
     "/portal/profile-completion": [
       "static/chunks/[root-of-the-server]__ebb9f576._.js",

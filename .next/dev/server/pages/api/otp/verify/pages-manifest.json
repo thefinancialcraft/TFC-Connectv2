@@ -1,0 +1,3 @@
+{
+  "/api/otp/verify": "pages/api/otp/verify.js"
+}

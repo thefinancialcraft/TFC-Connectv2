@@ -25,6 +25,7 @@ const HourlyAnalyticsTab = dynamic(() => import("@/components/dashboard/HourlyAn
 
 
 export default function Dashboard() {
+  const router = useRouter();
   const { user, mounted } = useUser();
   
   // Organization filter
@@ -422,6 +423,46 @@ export default function Dashboard() {
 
           {/* Top Stats Row (Only depends on stats and charts) */}
           <TopStats stats={stats} chartData={chartData} loading={statsLoading || chartsLoading} />
+
+          {/* Team Management CTA (Compact Modern Look - Mobile Only) */}
+          {dashboardLevel !== DashboardLevel.LEVEL_4_AGENT_SALES && (
+            <div className="md:hidden relative overflow-hidden bg-gradient-to-r from-[#4b33e8] via-[#6366f1] to-[#8b5cf6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-indigo-100/20 group">
+              {/* Enhanced Graphic Patterns Layer */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                {/* Tilted SVG Dotted Pattern */}
+                <div className="absolute inset-[-100%] opacity-[0.7] rotate-[-12deg]" 
+                    style={{ 
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'repeat'
+                    }}>
+                </div>
+                {/* Modern Abstract Shapes */}
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/20 rounded-full blur-[60px] animate-pulse"></div>
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-black/10 rounded-full blur-[50px]"></div>
+              </div>
+              
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 hidden md:flex shrink-0">
+                  <i className="fi fi-rr-users-alt text-white text-lg"></i>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    Empower Your Team’s Performance
+                  </h3>
+                  <p className="text-white/70 text-[10px] font-medium hidden lg:block tracking-wide">
+                    Real-time monitoring and workforce optimization simplified.
+                  </p>
+                </div>
+              </div>
+              
+              <button 
+                onClick={() => router.push("/portal/team")}
+                className="relative z-10 flex items-center gap-2.5 px-6 py-2.5 bg-white text-[#4b33e8] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all hover:shadow-lg hover:shadow-white/20 active:scale-95 shrink-0"
+              >
+                <span>Manage Team</span>
+                 </button>
+            </div>
+          )}
 
           {/* Secondary Stats Grid (Only depends on stats) */}
           <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={statsLoading} />

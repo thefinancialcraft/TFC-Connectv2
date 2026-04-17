@@ -1,0 +1,3 @@
+{
+  "/api/otp/generate": "pages/api/otp/generate.js"
+}
