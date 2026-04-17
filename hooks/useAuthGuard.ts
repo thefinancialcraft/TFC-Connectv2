@@ -65,14 +65,22 @@ export function useAuthGuard(): UseAuthGuardReturn {
                 if (router.pathname.includes('/portal')) {
                     console.log("🔍 [Auth] Background Status Verification Triggered...");
                     checkAuthAndFetchProfile().then(result => {
-                        if (result.user && (result.user.status === 'suspend' || result.user.status === 'inactive')) {
-                            console.log("🚨 [Auth] User suspended in background. Locking system.");
-                            setUser(null);
-                            sessionStorage.removeItem('active_user_profile');
-                            router.push("/login");
-                        } else if (result.user) {
-                            setUser(result.user);
-                            sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                        if (result.user) {
+                            const dbStatus = result.user.status || result.user.accountStatus;
+                            const dbApproval = result.user.approvalStatus;
+
+                            // If status changed to something restricted, update user state to trigger redirection
+                            if (dbStatus === 'suspend' || dbStatus === 'hold' || dbStatus === 'inactive' || 
+                                dbApproval === 'pending' || dbApproval === 'rejected' || dbApproval === 'hold' || dbApproval === 'suspend') {
+                                
+                                console.log(`🚨 [Auth] Restricted status detected (${dbStatus}/${dbApproval}). Redirecting...`);
+                                setUser(result.user); // This will trigger the router useEffect
+                                sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                            } else {
+                                // Status is active, just update memory if there's any difference
+                                setUser(result.user);
+                                sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                            }
                         }
                     });
                 }
@@ -241,14 +249,40 @@ export function useAuthGuard(): UseAuthGuardReturn {
             router.push("/login");
         }
     } else {
-        // Logged in and trying to access login/root
-        if (isLoginPage || isRootPath) {
-            const lastPath = localStorage.getItem('last_visited_path');
-            router.push(lastPath || "/dashboard");
-        } else if (!isPublicLandingPage) {
-            // Save the valid current path so Flutter WebView can restore it on wakeup
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('last_visited_path', router.asPath);
+        // Logged in: Check status for specific redirects
+        // If user is on a protected page, enforce status-based routing
+        if (!isPublicLandingPage) {
+            const status = user.status || user.accountStatus;
+            const approvalStatus = user.approvalStatus;
+
+            if (status === 'suspend' || approvalStatus === 'suspend') {
+                if (router.pathname !== '/portal/suspended') {
+                    router.push("/portal/suspended");
+                }
+            } else if (status === 'hold' || approvalStatus === 'hold') {
+                if (router.pathname !== '/portal/hold') {
+                    router.push("/portal/hold");
+                }
+            } else if (approvalStatus === 'pending') {
+                if (router.pathname !== '/portal/pending') {
+                    router.push("/portal/pending");
+                }
+            } else if (approvalStatus === 'rejected') {
+                if (router.pathname !== '/portal/rejected') {
+                    router.push("/portal/rejected");
+                }
+            } else {
+                // User is fully active/approved
+                // Logged in and trying to access login/root
+                if (isLoginPage || isRootPath) {
+                    const lastPath = localStorage.getItem('last_visited_path');
+                    router.push(lastPath || "/dashboard");
+                } else {
+                    // Save the valid current path
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('last_visited_path', router.asPath);
+                    }
+                }
             }
         }
     }
