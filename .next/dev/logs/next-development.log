@@ -7097,3 +7097,169 @@ Import traces:
 [09:32:23.204] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [09:32:32.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [09:32:32.200] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:32:44.193] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:32:44.193] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:32:47.205] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:32:52.201] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:32:52.201] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:32:52.201] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:32:52.201] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:32:52.201] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:32:53.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:32:53.511] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:32:53.511] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:32:53.511] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:32:53.511] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:32:55.888] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:32:55.888] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:32:55.888] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:32:55.888] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:32:55.888] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:32:58.318] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:32:58.714] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/63f61bb5-beb0-4888-9943-c38634f5e83d
+[09:32:59.132] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:33:01.440] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[09:33:01.440] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:33:01.440] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:33:01.440] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:01.440] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:33:01.962] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:33:01.962] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:33:03.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:33:03.522] Browser LOG     [Fetch] Found 1 history records via API.
+[09:33:04.810] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:33:05.095] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:33:11.209] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:33:11.876] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:33:11.877] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: true, postCall: false)
+[09:33:19.207] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:33:19.945] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:33:19.945] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:33:19.945] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:19.945] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:33:20.083] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:33:20.197] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:33:20.197] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:33:20.197] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:20.197] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:33:20.197] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:33:30.650] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:33:32.195] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:33:53.196] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:33:53.196] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:33:53.196] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:53.196] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:33:53.196] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:33:53.721] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:33:53.721] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:33:53.721] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:53.721] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:33:53.976] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:33:53.976] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:33:53.976] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:33:53.976] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:33:54.157] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:33:55.904] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:34:00.580] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:34:00.580] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:00.580] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:00.580] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:03.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:34:03.207] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:34:03.723] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:34:04.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:05.399] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[09:34:05.431] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:05.431] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:34:05.431] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = true (isCalling: false, postCall: true)
+[09:34:05.449] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:07.498] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[09:34:07.499] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[09:34:07.499] Browser LOG     [App] Logger and Interceptors initialized.
+[09:34:12.338] Browser LOG     [Session-Context] ⚡ Real-time update detected.
+[09:34:12.339] Browser LOG     [Session-Context] 🚀 Redirecting to: /portal/campaign/CAM-0013/2e695d8c-b509-4f37-b3fb-e8a9fd83336a
+[09:34:12.339] Browser LOG     [Busyness-Sync] Setting app_is_calling_active = false (isCalling: false, postCall: false)
+[09:34:14.193] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:34:14.193] Browser LOG     [Lead-Change] New lead detected, showing alert
+[09:34:14.193] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:14.193] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:34:15.204] Browser LOG     🚀 [Bridge] Requesting Device Info
+[09:34:15.204] Browser LOG     [Fetch] Found 1 history records via API.
+[09:34:16.301] Browser LOG     [Fetch-Session] Active session found for this lead: assigned
+[09:34:17.195] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_773925a7-f6f9-4ad2-8f6f-91dc32d75bd6
+[09:34:19.231] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:32.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:32.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:39.996] Server  LOG     Using date-holidays fallback
+[09:34:40.345] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[09:34:40.428] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:40.428] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:40.428] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:40.428] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[09:34:40.428] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:34:40.428] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:40.428] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:40.428] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:40.428] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:40.428] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:34:40.428] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[09:34:40.632] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[09:34:40.865] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[09:34:40.867] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[09:34:40.874] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[09:34:41.129] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:34:41.182] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[09:34:41.183] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 837ms
+[09:34:41.236] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 629ms
+[09:34:41.311] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[09:34:43.310] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2696ms
+[09:34:45.977] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:34:45.977] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:45.977] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:45.977] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:45.977] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:34:50.199] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:34:50.199] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:50.199] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:50.199] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:50.199] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:34:50.552] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:34:50.552] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:34:50.552] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:34:50.552] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:34:51.202] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:35:02.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:02.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:13.444] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:19.196] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:32.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:32.208] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:35:43.955] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:11.696] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:19.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:26.205] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:28.771] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:42.223] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:36:43.612] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[09:36:43.612] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory. API hit skipped.
+[09:36:43.612] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[09:36:43.612] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[09:36:43.612] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[09:36:43.836] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:02.228] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:13.266] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:21.198] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:22.454] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:32.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:37:53.606] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:38:19.193] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:38:20.206] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:38:20.761] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:38:20.868] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:39:19.203] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:39:20.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:39:21.130] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[09:39:21.231] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

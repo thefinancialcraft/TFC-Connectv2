@@ -20,6 +20,8 @@ export interface PendingUser {
   employee_id: string | null;
   created_at: string | null;
   user_type: string | null;
+  is_client: boolean | null;
+  is_caller: boolean | null;
 }
 
 export interface AllUser {
