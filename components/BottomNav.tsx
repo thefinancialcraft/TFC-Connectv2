@@ -190,6 +190,7 @@ const BottomNav = memo(function BottomNav({
       }`}
       style={{ width: "90%", maxWidth: "400px" }}
     >
+      
       {/* Blur background with rounded edges */}
       <div
         className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl"
