@@ -1,0 +1,11 @@
+#level 1 user
+isClient: false, role: 'superadmin', designation: 'ceo' 
+
+#level 2 user
+isClient: true, role: 'admin', designation: 'ceo' 
+
+#level 3 user
+isClient: true, role: 'user', designation: 'team_leader' 
+
+#level 4 user
+isClient: true, role: 'user', designation: 'agent' 

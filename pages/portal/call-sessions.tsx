@@ -23,6 +23,7 @@ export default function CallSessionsPage() {
   const [statusFilter, setStatusFilter] = useState("Status");
   const [orgFilter, setOrgFilter] = useState("Organization");
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [expandedSessions, setExpandedSessions] = useState<string[]>([]);
 
   const filteredItems = sessions.filter(s => {
     // 1. Search Query Filter
@@ -292,6 +293,13 @@ export default function CallSessionsPage() {
     );
   };
 
+  const toggleExpand = (uId: string, cId: string) => {
+    const key = `${uId}|${cId}`;
+    setExpandedSessions(prev => 
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-700 border-green-200';
@@ -328,16 +336,16 @@ export default function CallSessionsPage() {
   return (
     <div className="p-4 w-full h-full min-h-0 overflow-auto bg-[#fbfcfe]">
       {/* Search & Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3 flex-1 max-w-2xl">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 flex-1 w-full lg:max-w-4xl">
           <div className="relative flex-1">
             <i className="flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"></i>
             <input 
               type="text" 
-              placeholder="Search by agent, campaign, customer or status..." 
+              placeholder="Search agent, campaign, customer..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none"
+              className="w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none h-12"
             />
             {searchQuery && (
               <button 
@@ -350,17 +358,19 @@ export default function CallSessionsPage() {
             )}
           </div>
           
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar shrink-0">
+          
           {/* Filter Popover Trigger */}
           <div className="relative">
             <button 
                 onClick={() => setShowFilterModal(!showFilterModal)}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border shrink-0 ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
             >
                 <i className="flex fi fi-rr-filter text-[16px]"></i>
             </button>
 
             {showFilterModal && (
-                <div className="absolute top-full mt-2 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                <div className="absolute top-full mt-2 left-0 md:right-0 md:left-auto w-[280px] bg-white rounded-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-left md:origin-top-right">
                     <div className="flex items-center justify-between mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Filters</p>
                         <button 
@@ -378,7 +388,6 @@ export default function CallSessionsPage() {
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        {/* Agents Filter */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Agent</label>
                             <select 
@@ -391,7 +400,6 @@ export default function CallSessionsPage() {
                             </select>
                         </div>
 
-                        {/* Campaign Filter */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Campaign</label>
                             <select 
@@ -404,7 +412,6 @@ export default function CallSessionsPage() {
                             </select>
                         </div>
 
-                        {/* Status Filter */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Status</label>
                             <select 
@@ -417,7 +424,6 @@ export default function CallSessionsPage() {
                             </select>
                         </div>
 
-                        {/* Organization Filter */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Organization</label>
                             <select 
@@ -432,7 +438,7 @@ export default function CallSessionsPage() {
 
                         <button 
                             onClick={() => setShowFilterModal(false)}
-                            className="mt-2 w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                            className="mt-2 w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all"
                         >
                             Apply Filters
                         </button>
@@ -441,43 +447,48 @@ export default function CallSessionsPage() {
             )}
           </div>
 
-          <button className="flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0">
+          <button className="flex items-center justify-center gap-2 h-12 px-5 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none shrink-0">
             <i className="flex fi fi-rr-file-export text-[14px]"></i>
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
 
-          <div 
+          <button 
             onClick={() => fetchSessions(true)}
-            className="px-5 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap"
+            className="h-12 px-5 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest whitespace-nowrap shrink-0"
           >
             <i className={`flex fi fi-rr-refresh text-[10px] ${isRefetching ? 'animate-spin' : ''}`}></i>
-            Refresh Panel
-          </div>
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
 
           {selectedKeys.length > 0 && (
              <button 
                 onClick={handleBulkDelete}
-                className="px-5 py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap"
+                className="h-12 px-5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap shrink-0"
              >
                 <i className="flex fi fi-rr-trash text-[12px]"></i>
                 Delete ({selectedKeys.length})
              </button>
           )}
         </div>
+      </div>
 
-        <div className="flex flex-col items-end gap-1">
-          {isRefetching && (
-             <span className="text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest leading-none mb-1">Syncing Live...</span>
-          )}
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">Status: Monitoring Enabled</p>
-          <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest leading-none">
-             Last Refreshed: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : 'WAITING...'}
-          </p>
+        <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-2 w-full lg:w-auto mt-2 lg:mt-0 p-3 lg:p-0 bg-slate-50 lg:bg-transparent rounded-xl lg:rounded-none">
+          <div className="flex flex-col items-start lg:items-end gap-1">
+            {isRefetching && (
+               <span className="text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest leading-none">Syncing...</span>
+            )}
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Status: Active</p>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none">
+               Updated: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : '--:--'}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Main Table Container */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+      {/* Main Table Container - Hidden on Mobile */}
+      <div className="hidden lg:block bg-white rounded-xl border border-gray-100 overflow-hidden mb-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -618,22 +629,145 @@ export default function CallSessionsPage() {
         </div>
       </div>
 
-      {/* Pagination Footer */}
-      <div className="flex items-center justify-center gap-3 mt-8 pb-4">
-        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
-            <i className="flex fi fi-rr-arrow-small-left text-[14px]"></i>
-            Previous
-        </button>
-        
-        <div className="flex items-center gap-2">
-            <button className="w-9 h-9 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[11px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90">1</button>
-            <button className="w-9 h-9 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[11px] font-black hover:border-indigo-100 hover:text-indigo-600 transition-all active:scale-90">2</button>
-        </div>
+      {/* Mobile Card List - Shown only on Mobile */}
+      <div className="lg:hidden flex flex-col gap-4 mb-6">
+        {filteredItems.length === 0 ? (
+          <div className="px-6 py-24 text-center bg-white rounded-2xl border border-slate-100">
+            <div className="flex flex-col items-center gap-3 opacity-30">
+              <i className="flex fi fi-rr-search-heart text-5xl"></i>
+              <p className="text-[12px] font-black uppercase tracking-widest text-slate-400">
+                 No active sessions found
+              </p>
+            </div>
+          </div>
+        ) : (
+          filteredItems.map((session) => {
+            const key = `${session.user_id}|${session.campaign_id}`;
+            const isSelected = selectedKeys.includes(key);
+            return (
+              <div key={key} className={`bg-white rounded-xl border ${isSelected ? 'border-indigo-500' : 'border-gray-100'} overflow-hidden transition-all duration-300`}>
+                {/* Card Header: Agent & Select */}
+                <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer" 
+                      checked={isSelected}
+                      onChange={() => toggleSelectRow(session.user_id, session.campaign_id)}
+                    />
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black text-[12px]">
+                        {session.agentName.charAt(0)}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-black text-gray-900 leading-none">{session.agentName}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] font-bold text-indigo-500 leading-none uppercase tracking-wider">{session.employeeId}</span>
+                          <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest truncate max-w-[120px]">{session.orgName || 'No Org'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleDelete(session.user_id, session.campaign_id)}
+                    className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center"
+                  >
+                    <i className="flex fi fi-rr-trash text-[12px]"></i>
+                  </button>
+                </div>
 
-        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
-            Next
-            <i className="flex fi fi-rr-arrow-small-right text-[14px]"></i>
-        </button>
+                {/* Card Body - Details with Height Transition */}
+                <div className={`grid transition-all duration-300 ease-in-out ${expandedSessions.includes(key) ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                  <div className="overflow-hidden">
+                    <div className="p-4 flex flex-col gap-4 bg-white border-b border-slate-50">
+                      {/* Auto Session */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Auto Session</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-black border uppercase ${
+                            session.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
+                            session.status === 'assigned' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                            'bg-gray-50 text-gray-400 border-gray-100'
+                          }`}>
+                            {session.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100/50">
+                          <p className="text-[12px] font-black text-gray-800 leading-tight truncate">{session.campaignName}</p>
+                          <p className="text-[12px] font-bold text-indigo-600 leading-tight mt-1">{session.customerName}</p>
+                        </div>
+                      </div>
+
+                      {/* Manual Override (if any) */}
+                      {(session.manual_status || session.manual_campaign_id) && (
+                        <div className="flex flex-col gap-2">
+                           <div className="flex items-center justify-between">
+                            <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest">Manual Override</span>
+                            <span className="px-2 py-0.5 bg-purple-50 text-purple-600 border border-purple-100 rounded text-[9px] font-black uppercase">
+                              {session.manual_status?.replace('_', ' ') || 'MANUAL'}
+                            </span>
+                          </div>
+                          <div className="p-3 bg-purple-50/30 rounded-xl border border-purple-100/30">
+                            <p className="text-[12px] font-black text-gray-800 leading-tight truncate">{session.manualCampaignName}</p>
+                            <p className="text-[12px] font-bold text-purple-600 leading-tight mt-1">{session.manualCustomerName}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Details Footer - Always visible, sits under header when collapsed */}
+                <div className="px-4 py-3 flex items-center justify-between bg-white overflow-hidden">
+                  <div className="flex items-center gap-1.5">
+                    <button 
+                      onClick={() => toggleExpand(session.user_id, session.campaign_id)}
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${expandedSessions.includes(key) ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+                    >
+                      <i className={`flex fi fi-rr-angle-small-${expandedSessions.includes(key) ? 'up' : 'down'} text-[14px]`}></i>
+                    </button>
+
+                    <span className={`px-2 py-1 rounded-lg text-[8px] font-black border ${session.is_manual ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
+                      {session.is_manual ? 'MANUAL' : 'A-SYNC'}
+                    </span>
+                    {session.is_unassigned && (
+                      <span className="bg-red-50 text-red-500 px-2 py-1 rounded-lg text-[8px] font-black border border-red-100 uppercase">Unasgd</span>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] font-black text-indigo-700 flex items-center gap-1">
+                      <i className="fi fi-rr-bolt text-[10px]"></i> {formatTimeSafe(session.updated_at)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Pagination Footer */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 pb-8">
+        <div className="flex items-center gap-3 order-2 sm:order-1">
+          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
+              <i className="flex fi fi-rr-arrow-small-left text-[14px]"></i>
+              <span className="hidden xs:inline">Prev</span>
+          </button>
+          
+          <div className="flex items-center gap-2">
+              <button className="w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[11px] font-black transition-all active:scale-90">1</button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[11px] font-black hover:border-indigo-100 hover:text-indigo-600 transition-all active:scale-90">2</button>
+          </div>
+
+          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
+              <span className="hidden xs:inline">Next</span>
+              <i className="flex fi fi-rr-arrow-small-right text-[14px]"></i>
+          </button>
+        </div>
+        
+        <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest order-1 sm:order-2">
+           Showing {filteredItems.length} of {sessions.length} Sessions
+        </div>
       </div>
     </div>
   );

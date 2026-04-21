@@ -1878,3 +1878,308 @@ Debug info:
 [03:37:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [03:38:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [03:39:24.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:40:26.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:41:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:42:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:43:28.358] Browser LOG     ❌ [Status] Offline Event
+[03:43:28.358] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:2063:52)","hint":"","message":"TypeError: Failed to fetch"}
+[03:43:28.358] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:12109:41)","hint":"","message":"TypeError: Failed to fetch"}
+[03:43:28.358] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:3345:39)","hint":"","message":"TypeError: Failed to fetch"}
+[03:43:28.358] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:10173:41)","hint":"","message":"TypeError: Failed to fetch"}
+[03:44:24.352] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[03:44:24.352] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[03:44:24.352] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[03:44:24.352] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[03:45:23.378] Browser LOG     🌐 [Status] Online Event
+[03:45:23.378] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[03:45:23.378] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[03:45:23.378] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[03:45:23.378] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[03:45:46.356] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:2063:52)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser ERROR   ❌ [Presence] Portal heartbeat failed: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async UserProvider.useEffect.sendHeartbeat (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:2063:52)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:12109:41)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser ERROR   Error fetching primary device: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async HeaderComponent.useEffect.fetchPrimaryStatus (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:3345:39)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:10173:41)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser ERROR   [Reminder-Debug] Error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async CallReminderOverlay.useCallback[checkUpcomingCalls] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:10173:41)","hint":"","message":"TypeError: Failed to fetch"}
+[03:45:46.356] Browser LOG     ❌ [Status] Offline Event
+[03:45:46.356] Browser LOG     🌐 [Status] Online Event
+[03:46:46.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:47:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:48:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:49:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:50:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:51:25.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:52:24.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:53:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:54:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:55:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:56:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:57:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:58:25.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:59:26.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:00:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:01:25.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:05:10.542] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:05:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:06:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:07:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:08:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:09:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:10:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:11:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:12:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:13:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:14:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:15:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:16:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:16:46.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:17:11.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:17:41.357] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:18:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:19:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:20:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:21:24.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:22:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:23:08.447] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:23:08.699] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:23:12.022] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:23:12.022] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[04:23:12.233] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:23:12.986] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:23:12.986] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[04:23:12.986] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:23:13.123] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:23:40.651] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:24:10.472] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:24:40.470] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:25:10.478] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:25:40.465] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:26:10.488] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:26:40.474] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:27:11.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:27:41.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:28:24.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:29:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:30:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:31:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:32:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:32:52.501] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:32:52.730] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:32:53.309] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[04:32:53.309] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[04:32:53.309] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[04:33:11.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:33:41.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:34:24.346] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[04:34:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:35:24.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:36:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:37:24.355] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:38:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:42:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:43:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:44:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:45:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:46:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:47:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:51:22.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser LOG     ❌ [Status] Offline Event
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:49.583] Browser WARN    📶 [Network] Request paused - Browser is offline. Waiting for connection...
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.743] Browser LOG     🌐 [Status] Online Event
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.743] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[04:59:56.744] Browser LOG     🌐 [Network] Connection restored. Resuming paused request.
+[05:00:00.349] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:00:00.349] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:00:00.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:00:00.349] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:00:11.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:00:41.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:01:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:02:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:03:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:04:26.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:05:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:06:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:07:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:08:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:09:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:12:21.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:13:25.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:14:25.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:15:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:16:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:17:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:18:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:19:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:20:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:21:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:22:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:23:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:24:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:25:24.354] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:26:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:26:34.423] Server  LOG      ✓ Compiled in 5.4s
+[05:26:35.348] Browser ERROR   ./pages/portal/call-sessions.tsx:751:1
+Parsing ecmascript source code failed
+  749 |     </div>
+  750 |   );
+> 751 | }
+      | ^
+  752 |
+
+Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+[05:26:35.348] Browser ERROR   ./pages/portal/call-sessions.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/pages/portal/call-sessions.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/pages/portal/call-sessions.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+[05:26:45.761] Server  LOG      ✓ Compiled in 1179ms
+[05:27:03.295] Server  LOG      ✓ Compiled in 680ms
+[05:27:12.965] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:27:14.155] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:27:15.323] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:27:15.323] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:27:15.323] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:27:16.009] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:27:16.013] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:27:16.192] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:28:02.902] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:28:11.917] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:28:40.470] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:28:54.698] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:29:00.396] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:29:00.396] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:29:00.551] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:29:12.061] Server  LOG      ✓ Compiled in 1742ms
+[05:29:19.302] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:29:19.490] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:29:19.500] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:29:22.337] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:29:22.338] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:29:22.338] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:29:41.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:29:48.809] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:29:54.341] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:29:54.341] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:29:54.341] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:30:11.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:30:17.427] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:30:22.806] Server  LOG      ✓ Compiled in 6s
+[05:30:25.470] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:30:25.470] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:30:25.470] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:30:26.256] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:30:42.437] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:30:42.437] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:30:42.789] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:30:43.283] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:31:10.556] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:31:17.768] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:31:26.960] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:31:26.960] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:31:27.127] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:31:40.543] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:31:48.619] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:31:51.381] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:31:51.381] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:31:51.382] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:32:01.384] Server  LOG      ✓ Compiled in 2.4s
+[05:32:16.372] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:32:32.943] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:32:34.918] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:32:34.918] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:32:34.918] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:32:40.958] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:32:54.338] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[05:33:13.391] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:33:26.673] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:33:30.030] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:33:30.030] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:33:30.170] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:33:41.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:33:48.871] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:33:51.783] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:33:51.784] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:33:51.784] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:34:08.411] Browser LOG     Refreshing page data due to server-side change
+[05:34:10.397] Server  LOG      ✓ Compiled in 1936ms
+[05:34:25.244] Browser ERROR   ./pages/portal/call-sessions.tsx:742:16
+Parsing ecmascript source code failed
+  740 |                 </div>
+  741 |               </div>
+> 742 |               </div>
+      |                ^^^^^
+  743 |             );
+  744 |           })
+  745 |         )}
+
+Unterminated regexp literal
+[05:34:25.251] Browser ERROR   ./pages/portal/call-sessions.tsx
+Code generation for chunk item errored
+An error occurred while generating the chunk item [project]/pages/portal/call-sessions.tsx [ssr] (ecmascript)
+
+Caused by:
+- CJS module can't be async.
+
+Debug info:
+- An error occurred while generating the chunk item [project]/pages/portal/call-sessions.tsx [ssr] (ecmascript)
+- Execution of <ModuleChunkItem as EcmascriptChunkItem>::content_with_async_module_info failed
+- Execution of EcmascriptChunkItemContent::new failed
+- CJS module can't be async.
+[05:34:25.252] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:34:32.788] Browser LOG     Refreshing page data due to server-side change
+[05:34:33.487] Server  LOG      ✓ Compiled in 11.4s
+[05:34:33.551] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:34:33.551] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:34:34.495] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:34:34.944] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:34:34.944] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:34:34.944] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:34:50.938] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:35:11.359] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:35:11.574] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:35:17.018] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:35:17.018] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:35:17.196] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:35:33.972] Server  LOG      ✓ Compiled in 9.4s
+[05:35:55.970] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:35:56.450] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:35:56.450] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:35:56.450] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:35:56.450] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:36:10.908] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:36:41.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:36:50.957] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[05:36:54.772] Server  LOG      ✓ Compiled in 3.7s
+[05:37:12.360] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[05:37:12.360] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[05:37:12.360] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[05:37:12.360] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:37:41.356] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:38:24.422] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:39:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:40:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:41:24.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:42:25.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:43:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:44:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[05:45:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
