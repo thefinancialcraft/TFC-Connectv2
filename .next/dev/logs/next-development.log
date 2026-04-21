@@ -354,3 +354,162 @@ Debug info:
 [00:30:32.384] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [00:31:02.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [00:31:32.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:32:02.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:32:07.296] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:32:10.684] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:32:10.685] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:32:10.818] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:32:47.496] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:33:05.368] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:34:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:35:24.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:36:01.532] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:36:02.400] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:02.400] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:36:02.400] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:36:02.400] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:36:05.025] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:36:05.025] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:05.026] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:36:05.026] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:36:09.666] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:19.095] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:36:19.530] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:19.531] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:36:19.531] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:36:21.396] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:36:21.870] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:21.870] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:36:21.870] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:36:32.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:36:40.297] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:36:40.867] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:36:40.867] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:36:40.867] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:37:02.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:37:04.084] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:37:04.952] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:37:04.952] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:37:04.952] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:37:32.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:37:59.305] Server  LOG      ✓ Compiled in 4.9s
+[00:38:02.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:38:05.433] Server  LOG      ✓ Compiled in 2.7s
+[00:38:13.495] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:38:14.693] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:38:14.693] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:38:14.693] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:38:27.033] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:38:27.461] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:38:27.462] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:38:27.462] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:38:32.354] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:39:02.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:39:17.057] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:39:17.513] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:39:17.514] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:39:17.514] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:39:32.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:40:02.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:40:24.925] Server  LOG      ✓ Compiled in 1533ms
+[00:40:47.608] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:40:48.091] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:40:48.091] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:40:48.091] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:40:48.091] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:41:02.416] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:41:32.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:41:36.308] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:41:36.804] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:41:36.804] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:41:36.804] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:41:58.035] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:41:58.607] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:41:58.607] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:41:58.608] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:42:02.354] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:42:32.372] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:43:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:44:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:45:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:46:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:47:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:48:24.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:49:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:50:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:51:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:51:48.755] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:51:49.698] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:51:49.698] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:51:49.699] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:51:49.699] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:51:49.699] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:51:49.699] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:51:50.107] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:51:57.607] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[00:51:57.832] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:00.000] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[00:52:00.000] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[00:52:00.000] Browser LOG     [App] Logger and Interceptors initialized.
+[00:52:01.424] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[00:52:01.425] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[00:52:01.973] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:01.973] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:01.973] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:52:02.149] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_7badec09-ef03-47de-921d-718c432ab3e5
+[00:52:02.243] Server  LOG     Using date-holidays fallback
+[00:52:02.329] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:02.444] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:02.959] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:52:02.959] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:02.959] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:52:02.959] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:02.959] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:02.959] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:52:02.959] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:03.068] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:04.990] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:52:04.990] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:04.991] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:52:05.324] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:08.443] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[00:52:08.473] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:52:08.473] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:52:08.474] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:52:08.474] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:09.321] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[00:52:10.559] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[00:52:10.642] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[00:52:10.667] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[00:52:10.765] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[00:52:11.132] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1913ms
+[00:52:11.283] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[00:52:11.289] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 2845ms
+[00:52:11.911] Browser LOG     🚀 [Auth] Starting complete logout...
+[00:52:12.551] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3429ms
+[00:52:13.022] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[00:52:13.022] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[00:52:13.022] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[00:52:13.198] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:13.939] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:13.939] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:52:13.940] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:52:13.985] Server  LOG     Using date-holidays fallback
+[00:52:14.095] Server  LOG     Using date-holidays fallback
+[00:52:14.307] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:52:25.988] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[00:53:12.923] Server  LOG      ✓ Compiled in 1240ms
+[00:55:36.966] Server  LOG      ✓ Compiled in 3.4s
+[00:55:39.971] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[00:55:41.290] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[00:55:41.290] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[00:55:41.290] Browser LOG     [App] Logger and Interceptors initialized.
