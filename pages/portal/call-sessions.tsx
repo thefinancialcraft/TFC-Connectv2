@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useUser } from "@/context/UserContext";
 import { decryptPhone } from "@/lib/phoneUtils";
 import { getUserDashboardLevel, DashboardLevel } from "@/lib/dashboardUtils";
 
