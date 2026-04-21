@@ -195,7 +195,7 @@ const BottomNav = memo(function BottomNav({
         className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl"
         style={{ border: "1.5px solid white" }}
       >
-        <div className="px-6 py-2.5">
+        <div className="px-4 py-2.5">
           <div className="flex items-center justify-between">
             {navItems.map((item) => (
               <button
