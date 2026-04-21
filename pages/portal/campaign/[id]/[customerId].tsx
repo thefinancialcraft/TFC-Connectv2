@@ -1222,6 +1222,8 @@ export default function CallingPage() {
                     console.warn(`[Fetch] No session matches missing customer ${idToFetch}. Redirecting to safety.`);
                     const targetCampaignId = campaignId || campaign?.id;
                     if (targetCampaignId) {
+                        // CRITICAL FIX: Clear the session in DB to prevent SessionContext from looping back here
+                        await supabase.from('call_sessions').delete().eq('user_id', user.uid).eq('campaign_id', targetCampaignId);
                         router.push(`/portal/campaign/${targetCampaignId}`);
                     } else {
                         router.push('/portal/campaign');

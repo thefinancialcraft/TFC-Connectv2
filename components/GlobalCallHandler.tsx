@@ -168,7 +168,7 @@ export default function GlobalCallHandler() {
                             if (lastNavigatedCustomerId.current === customerId) return;
                             
                             const currentPath = router.asPath;
-                            const targetPath = `/campaign/${campaignId}/${customerId}`;
+                            const targetPath = `/portal/campaign/${campaignId}/${customerId}`;
                             
                             if (!currentPath.includes(customerId)) {
                                 console.log(`[Global-Call] 🚀 REDIRECTING to manual lead: ${targetPath}`);

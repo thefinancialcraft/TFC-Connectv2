@@ -771,7 +771,7 @@ export default function CampaignDetails() {
             if (allSessions && allSessions.length > 0) {
                 const activeSession = allSessions[0];
                 console.log('[Session] Found active session in cross-campaign check, redirecting...', activeSession);
-                router.push(`/campaign/${activeSession.campaign_id}/${activeSession.customer_id}`);
+                router.push(`/portal/campaign/${activeSession.campaign_id}/${activeSession.customer_id}`);
                 return;
             }
 
@@ -785,7 +785,7 @@ export default function CampaignDetails() {
 
             if (campaignSession && campaignSession.status === 'assigned') {
                 console.log('[Session] Found existing assigned session for this campaign, resuming...', campaignSession);
-                router.push(`/campaign/${campaignSession.campaign_id}/${campaignSession.customer_id}`);
+                router.push(`/portal/campaign/${campaignSession.campaign_id}/${campaignSession.customer_id}`);
                 return;
             }
             
@@ -816,7 +816,7 @@ export default function CampaignDetails() {
 
             // 3. Redirect to Lead Page
             if (id && leadId) {
-                router.push(`/campaign/${id}/${leadId}`);
+                router.push(`/portal/campaign/${id}/${leadId}`);
             } else {
                 throw new Error("Missing campaign ID or lead ID for redirection");
             }
@@ -910,7 +910,7 @@ export default function CampaignDetails() {
                     <h2 className="text-xl font-bold text-gray-800 mb-2">Error Occurred</h2>
                     <p className="text-gray-500 mb-6">{error}</p>
                     <button
-                        onClick={() => router.push('/campaign')}
+                        onClick={() => router.push('/portal/campaign')}
                         className="px-6 py-2 bg-[#4b33e8] text-white rounded-xl font-semibold shadow-md hover:opacity-90 transition-all"
                     >
                         Back to Campaigns
@@ -925,7 +925,7 @@ export default function CampaignDetails() {
             <div className="max-w-[1600px] mx-auto space-y-8 p-4 md:p-8">
                 {/* Breadcrumbs */}
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-8 px-1">
-                    <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push('/campaign')}>Campaigns</span>
+                    <span className="cursor-pointer hover:text-[#4b33e8] transition-colors" onClick={() => router.push('/portal/campaign')}>Campaigns</span>
                     <i className="fi flex fi-rr-angle-small-right text-[10px]"></i>
                     <span className="text-gray-600 font-bold">{campaign?.name}</span>
                 </div>
