@@ -370,7 +370,7 @@ export default function CallSessionsPage() {
               placeholder="Search agent, campaign, customer..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none h-12"
+              className="w-full pl-11 pr-14 py-3 bg-white border border-slate-200 rounded-xl text-[12px] font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400 shadow-sm h-12"
             />
             {searchQuery && (
               <button 
