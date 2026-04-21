@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useUser } from "@/context/UserContext";
 import { decryptPhone } from "@/lib/phoneUtils";
+import { getUserDashboardLevel, DashboardLevel } from "@/lib/dashboardUtils";
 
 // Module-level cache to persist data across page navigation in the same session
 let cachedSessions: any[] = [];
@@ -82,13 +82,17 @@ export default function CallSessionsPage() {
 
   useEffect(() => {
     if (mounted && user) {
-      // Check authorization: only NXUS-001
-      if (user.employeeId === 'NXUS-001') {
+      const level = getUserDashboardLevel(user);
+      
+      // Permission: Level 1, 2, or 3
+      if (level === DashboardLevel.LEVEL_1_ADMIN || 
+          level === DashboardLevel.LEVEL_2_CLIENT_CEO || 
+          level === DashboardLevel.LEVEL_3_TL_SALES) {
         setIsAuthorized(true);
         
         const now = Date.now();
         if (cachedSessions.length === 0 || (now - lastFetchTime > CACHE_DURATION)) {
-            fetchSessions(cachedSessions.length === 0); // Only show full loader if no cache
+            fetchSessions(cachedSessions.length === 0);
         }
       } else {
         setIsAuthorized(false);
@@ -105,11 +109,30 @@ export default function CallSessionsPage() {
       if (showFullLoader) setLoading(true);
       else setIsRefetching(true);
       
-      // 1. Fetch sessions
-      const { data: sessionData, error: sessionError } = await supabase
-        .from('call_sessions')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      // 1. Determine Access Level & Build Query
+      const level = getUserDashboardLevel(user);
+      let query = supabase.from('call_sessions').select('*');
+
+      if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
+        // Level 2: Filter by Organization
+        query = query.eq('organization_id', user.organization_id);
+      } else if (level === DashboardLevel.LEVEL_3_TL_SALES) {
+        // Level 3: Filter by Team
+        // First, get all teams led by this user
+        const { data: teamsData } = await supabase
+            .from('teams')
+            .select('members')
+            .eq('leader_id', user.uid);
+        
+        const memberIds = Array.from(new Set([
+            user.uid, // Always show leader's own session
+            ...(teamsData?.flatMap(t => t.members) || [])
+        ]));
+
+        query = query.in('user_id', memberIds);
+      }
+      
+      const { data: sessionData, error: sessionError } = await query.order('updated_at', { ascending: false });
 
       if (sessionError) throw sessionError;
 

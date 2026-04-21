@@ -140,11 +140,12 @@ const Sidebar = memo(function Sidebar({
         employeeId: currentUser.employeeId
       });
 
-      // Special Visibility for Call Sessions (Now for Admins, CEOs, and TLs)
+      // Special Visibility for Call Sessions (Now for Levels 1, 2, and 3)
       if (item.path === '/call-sessions') {
-        if (currentUser.employeeId === 'NXUS-001') return true;
-        if (level === DashboardLevel.LEVEL_4_AGENT_SALES || level === DashboardLevel.UNKNOWN) return false;
-        return true;
+        const canAccess = level === DashboardLevel.LEVEL_1_ADMIN || 
+                          level === DashboardLevel.LEVEL_2_CLIENT_CEO || 
+                          level === DashboardLevel.LEVEL_3_TL_SALES;
+        return canAccess;
       }
 
       // 1. Admin/Super Admin check
