@@ -2,7 +2,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useMemo, memo } from "react";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 // Removed unnecessary supabase import as we rely on props
-// backup test
+
+//backuptest1
+
 interface BottomNavProps {
   activeNav?: string;
   userRole?: string | null;
