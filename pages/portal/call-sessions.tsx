@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/context/UserContext";
 import { decryptPhone } from "@/lib/phoneUtils";
-import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 // Module-level cache to persist data across page navigation in the same session
 let cachedSessions: any[] = [];
@@ -82,25 +81,17 @@ export default function CallSessionsPage() {
 
   useEffect(() => {
     if (mounted && user) {
-      const level = getUserDashboardLevel(user);
-      
-      // Check authorization: All levels except 4 (Agent) can see this
-      if (level !== DashboardLevel.LEVEL_4_AGENT_SALES && level !== DashboardLevel.UNKNOWN) {
+      // Check authorization: only NXUS-001
+      if (user.employeeId === 'NXUS-001') {
         setIsAuthorized(true);
         
         const now = Date.now();
         if (cachedSessions.length === 0 || (now - lastFetchTime > CACHE_DURATION)) {
-            fetchSessions(cachedSessions.length === 0);
+            fetchSessions(cachedSessions.length === 0); // Only show full loader if no cache
         }
       } else {
-        // Special case for developers/admins who might not be Level 1 but are authorized (like NXUS-001)
-        if (user.employeeId === 'NXUS-001') {
-            setIsAuthorized(true);
-            fetchSessions(cachedSessions.length === 0);
-        } else {
-            setIsAuthorized(false);
-            setLoading(false);
-        }
+        setIsAuthorized(false);
+        setLoading(false);
       }
     } else if (mounted && !user) {
         setIsAuthorized(false);
@@ -109,48 +100,15 @@ export default function CallSessionsPage() {
   }, [user, mounted]);
 
   const fetchSessions = async (showFullLoader = true) => {
-    if (!user) return;
     try {
       if (showFullLoader) setLoading(true);
       else setIsRefetching(true);
       
-      // 1. Determine Filtering Constraints
-      const level = getUserDashboardLevel(user);
-      const currentUserId = user.uid || (user as any).id;
-      
-      let sessionQuery = supabase.from('call_sessions').select('*');
-
-      if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
-          // Client CEO: Filter by organization
-          if (user.organization_id) {
-              sessionQuery = sessionQuery.eq('organization_id', user.organization_id);
-          }
-      } else if (level === DashboardLevel.LEVEL_3_TL_SALES) {
-          // Team Leader: Filter by their team members
-          const { data: teamData } = await supabase
-              .from('teams')
-              .select('members')
-              .eq('leader_id', currentUserId)
-              .eq('is_active', true);
-          
-          const memberIds = new Set<string>();
-          memberIds.add(currentUserId);
-          if (teamData) {
-              teamData.forEach(t => {
-                  if (Array.isArray(t.members)) {
-                      t.members.forEach((m: string) => memberIds.add(m));
-                  }
-              });
-          }
-          sessionQuery = sessionQuery.in('user_id', Array.from(memberIds));
-      } else if (level === DashboardLevel.LEVEL_1_ADMIN || user.employeeId === 'NXUS-001') {
-          // Level 1 or Super Admin: No filter
-      } else {
-          // Others (fallback to own data if somehow authorized)
-          sessionQuery = sessionQuery.eq('user_id', currentUserId);
-      }
-
-      const { data: sessionData, error: sessionError } = await sessionQuery.order('updated_at', { ascending: false });
+      // 1. Fetch sessions
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('call_sessions')
+        .select('*')
+        .order('updated_at', { ascending: false });
 
       if (sessionError) throw sessionError;
 

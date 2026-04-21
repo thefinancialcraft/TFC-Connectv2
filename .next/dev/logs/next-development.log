@@ -513,3 +513,4 @@ Debug info:
 [00:55:41.290] Browser LOG     🚀 [Logger] Persistant logging initialized.
 [00:55:41.290] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
 [00:55:41.290] Browser LOG     [App] Logger and Interceptors initialized.
+[00:58:54.273] Server  LOG      ✓ Compiled in 1768ms
