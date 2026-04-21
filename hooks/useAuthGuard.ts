@@ -108,6 +108,26 @@ export function useAuthGuard(): UseAuthGuardReturn {
           // Store securely in Tab Memory
           if (typeof window !== 'undefined') {
               sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+              
+              // Also update localStorage for quick-start/ghost-loading
+              try {
+                  const { storeUserData, getStoredUserData } = require("../lib/localStorageUtils");
+                  const currentData = getStoredUserData();
+                  if (currentData) {
+                      storeUserData({
+                          ...currentData,
+                          user_name: result.user.displayName || currentData.user_name,
+                          displayName: result.user.displayName || currentData.displayName,
+                          profile_pic_url: result.user.profilePicUrl || currentData.profile_pic_url,
+                          employee_id: result.user.employeeId || currentData.employee_id,
+                          email: result.user.email || currentData.email,
+                          status: result.user.status || currentData.status,
+                          role: result.user.role || currentData.role,
+                          organization_id: result.user.organization_id || currentData.organization_id,
+                          designation: result.user.designation || currentData.designation,
+                      });
+                  }
+              } catch (e) { console.warn("Failed to sync to localStorage", e); }
           }
           
           // Logged in: if on login/root, move to dashboard or last path
@@ -233,6 +253,34 @@ export function useAuthGuard(): UseAuthGuardReturn {
       clearInterval(localHeartbeat);
     };
   }, [user, router.pathname, sessionExpired]);
+
+  // 1.5 Real-time Profile Synchronization
+  useEffect(() => {
+    if (!user?.uid || !mounted) return;
+
+    console.log("📡 [Auth Guard] Subscribing to profile updates for:", user.uid);
+    const channel = supabase
+      .channel(`profile-${user.uid}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_profiles',
+          filter: `user_id=eq.${user.uid}`,
+        },
+        (payload) => {
+          console.log("✨ [Auth Guard] Profile update detected!", payload);
+          // Force a silent refresh of the user profile from DB to ensure state consistency
+          fetchAuth(true);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.uid, mounted]);
 
   // 2. Production Pattern: Pure Route Protection on every navigation
   // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.

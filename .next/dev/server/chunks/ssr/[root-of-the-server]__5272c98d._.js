@@ -1115,6 +1115,27 @@ function useAuthGuard() {
         router.pathname,
         sessionExpired
     ]);
+    // 1.5 Real-time Profile Synchronization
+    (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
+        if (!user?.uid || !mounted) return;
+        console.log("📡 [Auth Guard] Subscribing to profile updates for:", user.uid);
+        const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].channel(`profile-${user.uid}`).on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'user_profiles',
+            filter: `user_id=eq.${user.uid}`
+        }, (payload)=>{
+            console.log("✨ [Auth Guard] Profile update detected!", payload);
+            // Force a silent refresh of the user profile from DB to ensure state consistency
+            fetchAuth(true);
+        }).subscribe();
+        return ()=>{
+            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
+        };
+    }, [
+        user?.uid,
+        mounted
+    ]);
     // 2. Production Pattern: Pure Route Protection on every navigation
     // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.
     (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useEffect"])(()=>{
@@ -1537,8 +1558,8 @@ const getUserDashboardLevel = (user)=>{
     // If we don't have enough data to determine level, return UNKNOWN
     if (!role) return "UNKNOWN";
     // --- Level 3: Team Leader ---
-    // Role is 'admin' and designation is 'team_leader'
-    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
+    // Designation is 'team_leader' (role may be 'admin' or 'user')
+    if (user.isClient === true && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl') || designation === 'manager')) {
         return "LEVEL_3";
     }
     // --- Level 4: Sales Agent ---

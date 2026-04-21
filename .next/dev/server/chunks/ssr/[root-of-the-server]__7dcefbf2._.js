@@ -540,7 +540,9 @@ function useUsersActions(refreshData) {
         designation: "agent",
         work_type: "on_site",
         user_type: "employee",
-        status: "active"
+        status: "active",
+        is_client: false,
+        is_caller: true
     });
     const [showHoldModal, setShowHoldModal] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(false);
     const [holdUserData, setHoldUserData] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])(null);
@@ -567,7 +569,9 @@ function useUsersActions(refreshData) {
                     designation: fullUserData.designation || "agent",
                     work_type: fullUserData.work_type || "on_site",
                     user_type: fullUserData.user_type || "employee",
-                    status: fullUserData.status || "active"
+                    status: fullUserData.status || "active",
+                    is_client: !!fullUserData.is_client,
+                    is_caller: fullUserData.is_caller !== false
                 });
                 setShowApprovalModal(true);
                 return;
@@ -757,6 +761,8 @@ function useUsersActions(refreshData) {
                 designation: approvalFormData.designation,
                 work_type: approvalFormData.work_type,
                 user_type: approvalFormData.user_type,
+                is_client: approvalFormData.is_client,
+                is_caller: approvalFormData.is_caller,
                 employee_id: employeeId,
                 updated_at: new Date().toISOString()
             }).eq("id", approvalUserData.id);
@@ -3594,11 +3600,22 @@ function UsersFilters({ searchQuery, setSearchQuery, filters, setFilters, showFi
 "[project]/components/UserMenuDropdown.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+
 __turbopack_context__.s([
     "default",
     ()=>UserMenuDropdown
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [ssr] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+;
+;
 ;
 // Helper functions
 const getApprovalStatusLabel = (status)=>{
@@ -3684,6 +3701,21 @@ const getDesignationLabel = (designation)=>{
     }
 };
 function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onApprovalStatusChange, onWorkTypeChange, onUserTypeChange, onRoleChange, onDepartmentChange, onDesignationChange, onIsClientChange, onIsCallerChange, onStatusChange, onDelete, openApprovalDropdown, openWorkTypeDropdown, openUserTypeDropdown, openRoleDropdown, openDepartmentDropdown, openDesignationDropdown, openIsClientDropdown, openIsCallerDropdown, setOpenApprovalDropdown, setOpenWorkTypeDropdown, setOpenUserTypeDropdown, setOpenRoleDropdown, setOpenDepartmentDropdown, setOpenDesignationDropdown, setOpenIsClientDropdown, setOpenIsCallerDropdown, menuRef, onClose, onMenuClose }) {
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useUser"])();
+    const currentLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
+    const canManageIsClient = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN;
+    const availableDesignations = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN ? [
+        'agent',
+        'manager',
+        'faculty_staff',
+        'team_leader',
+        'ceo',
+        'developer'
+    ] : [
+        'agent',
+        'team_leader',
+        'ceo'
+    ];
     const handleClose = ()=>{
         setOpenApprovalDropdown(null);
         setOpenWorkTypeDropdown(null);
@@ -3711,14 +3743,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                 children: "User Actions"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 175,
+                lineNumber: 184,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 176,
+                lineNumber: 185,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3756,7 +3788,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 195,
+                                                lineNumber: 204,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -3765,7 +3797,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 196,
+                                                lineNumber: 205,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -3775,7 +3807,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "14"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 197,
+                                                lineNumber: 206,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -3785,26 +3817,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "11"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 198,
+                                                lineNumber: 207,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 194,
+                                        lineNumber: 203,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getApprovalStatusLabel(user.approval_status)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 200,
+                                        lineNumber: 209,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 193,
+                                lineNumber: 202,
                                 columnNumber: 11
                             }, this),
                             openApprovalDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -3819,12 +3851,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 204,
+                                    lineNumber: 213,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 203,
+                                lineNumber: 212,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -3838,18 +3870,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 208,
+                                    lineNumber: 217,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 207,
+                                lineNumber: 216,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 180,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, this),
                     openApprovalDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -3907,20 +3939,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M22 11.08V12a10 10 0 1 1-5.93-9.14"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 245,
+                                                        lineNumber: 254,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("polyline", {
                                                         points: "22 4 12 14.01 9 11.01"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 246,
+                                                        lineNumber: 255,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 244,
+                                                lineNumber: 253,
                                                 columnNumber: 21
                                             }, this) : status === 'pending' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -3940,20 +3972,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 250,
+                                                        lineNumber: 259,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("polyline", {
                                                         points: "12 6 12 12 16 14"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 251,
+                                                        lineNumber: 260,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 249,
+                                                lineNumber: 258,
                                                 columnNumber: 21
                                             }, this) : status === 'hold' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -3973,7 +4005,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 264,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -3983,7 +4015,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "8"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 256,
+                                                        lineNumber: 265,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -3993,13 +4025,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "8"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 266,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 254,
+                                                lineNumber: 263,
                                                 columnNumber: 21
                                             }, this) : status === 'suspend' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -4019,7 +4051,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 261,
+                                                        lineNumber: 270,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4029,13 +4061,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "19.07"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 262,
+                                                        lineNumber: 271,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 260,
+                                                lineNumber: 269,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -4055,7 +4087,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "10"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 266,
+                                                        lineNumber: 275,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4065,7 +4097,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "15"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 267,
+                                                        lineNumber: 276,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4075,13 +4107,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "15"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 268,
+                                                        lineNumber: 277,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 265,
+                                                lineNumber: 274,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4089,13 +4121,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getApprovalStatusLabel(status)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 271,
+                                                lineNumber: 280,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 242,
+                                        lineNumber: 251,
                                         columnNumber: 17
                                     }, this),
                                     user.approval_status === status && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4108,29 +4140,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 275,
+                                            lineNumber: 284,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 274,
+                                        lineNumber: 283,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, status, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 231,
+                                lineNumber: 240,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 213,
+                        lineNumber: 222,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 179,
+                lineNumber: 188,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4168,20 +4200,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 302,
+                                                lineNumber: 311,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("polyline", {
                                                 points: "9 22 9 12 15 12 15 22"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 303,
+                                                lineNumber: 312,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 301,
+                                        lineNumber: 310,
                                         columnNumber: 15
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                         xmlns: "http://www.w3.org/2000/svg",
@@ -4204,33 +4236,33 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 ry: "2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 307,
+                                                lineNumber: 316,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 308,
+                                                lineNumber: 317,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 306,
+                                        lineNumber: 315,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getWorkTypeLabel(user.work_type)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 320,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 299,
+                                lineNumber: 308,
                                 columnNumber: 11
                             }, this),
                             openWorkTypeDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4245,12 +4277,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 315,
+                                    lineNumber: 324,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 314,
+                                lineNumber: 323,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -4264,18 +4296,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 319,
+                                    lineNumber: 328,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 318,
+                                lineNumber: 327,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 286,
+                        lineNumber: 295,
                         columnNumber: 9
                     }, this),
                     openWorkTypeDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4312,20 +4344,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 342,
+                                                        lineNumber: 351,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("polyline", {
                                                         points: "9 22 9 12 15 12 15 22"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 343,
+                                                        lineNumber: 352,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 350,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -4348,20 +4380,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 347,
+                                                        lineNumber: 356,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                         d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 348,
+                                                        lineNumber: 357,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 346,
+                                                lineNumber: 355,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4369,13 +4401,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getWorkTypeLabel(workType)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 351,
+                                                lineNumber: 360,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 339,
+                                        lineNumber: 348,
                                         columnNumber: 17
                                     }, this),
                                     user.work_type === workType && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4388,29 +4420,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 355,
+                                            lineNumber: 364,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 354,
+                                        lineNumber: 363,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, workType, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 326,
+                                lineNumber: 335,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 324,
+                        lineNumber: 333,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 285,
+                lineNumber: 294,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4448,7 +4480,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 382,
+                                                lineNumber: 391,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -4457,13 +4489,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 383,
+                                                lineNumber: 392,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 381,
+                                        lineNumber: 390,
                                         columnNumber: 15
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                         xmlns: "http://www.w3.org/2000/svg",
@@ -4481,14 +4513,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 387,
+                                                lineNumber: 396,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("polyline", {
                                                 points: "3.27 6.96 12 12.01 20.73 6.96"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 388,
+                                                lineNumber: 397,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4498,26 +4530,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "12"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 389,
+                                                lineNumber: 398,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 386,
+                                        lineNumber: 395,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getUserTypeLabel(user.user_type)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 392,
+                                        lineNumber: 401,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 379,
+                                lineNumber: 388,
                                 columnNumber: 11
                             }, this),
                             openUserTypeDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4532,12 +4564,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 396,
+                                    lineNumber: 405,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 395,
+                                lineNumber: 404,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -4551,18 +4583,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 400,
+                                    lineNumber: 409,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 399,
+                                lineNumber: 408,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 366,
+                        lineNumber: 375,
                         columnNumber: 9
                     }, this),
                     openUserTypeDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4599,7 +4631,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 423,
+                                                        lineNumber: 432,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -4608,13 +4640,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 424,
+                                                        lineNumber: 433,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 422,
+                                                lineNumber: 431,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
@@ -4637,20 +4669,20 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 428,
+                                                        lineNumber: 437,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                         d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 429,
+                                                        lineNumber: 438,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 427,
+                                                lineNumber: 436,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4658,13 +4690,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getUserTypeLabel(userType)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 432,
+                                                lineNumber: 441,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 420,
+                                        lineNumber: 429,
                                         columnNumber: 17
                                     }, this),
                                     user.user_type === userType && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4677,29 +4709,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 436,
+                                            lineNumber: 445,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 435,
+                                        lineNumber: 444,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, userType, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 407,
+                                lineNumber: 416,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 405,
+                        lineNumber: 414,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 365,
+                lineNumber: 374,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4736,7 +4768,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 461,
+                                                lineNumber: 470,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -4745,40 +4777,40 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 462,
+                                                lineNumber: 471,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M23 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 472,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 464,
+                                                lineNumber: 473,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 460,
+                                        lineNumber: 469,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getRoleLabel(user.role)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 466,
+                                        lineNumber: 475,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 459,
+                                lineNumber: 468,
                                 columnNumber: 11
                             }, this),
                             openRoleDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4793,12 +4825,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 470,
+                                    lineNumber: 479,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 469,
+                                lineNumber: 478,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -4812,18 +4844,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 474,
+                                    lineNumber: 483,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 473,
+                                lineNumber: 482,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 447,
+                        lineNumber: 456,
                         columnNumber: 9
                     }, this),
                     openRoleDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4861,7 +4893,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 496,
+                                                        lineNumber: 505,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -4870,13 +4902,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 497,
+                                                        lineNumber: 506,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 495,
+                                                lineNumber: 504,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -4884,13 +4916,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getRoleLabel(role)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 499,
+                                                lineNumber: 508,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 494,
+                                        lineNumber: 503,
                                         columnNumber: 17
                                     }, this),
                                     user.role === role && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -4903,29 +4935,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 503,
+                                            lineNumber: 512,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 502,
+                                        lineNumber: 511,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, role, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 481,
+                                lineNumber: 490,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 479,
+                        lineNumber: 488,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 446,
+                lineNumber: 455,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -4968,7 +5000,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 ry: "2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 529,
+                                                lineNumber: 538,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4978,7 +5010,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "9"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 530,
+                                                lineNumber: 539,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -4988,26 +5020,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 y2: "9"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 531,
+                                                lineNumber: 540,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 528,
+                                        lineNumber: 537,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getDepartmentLabel(user.department)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 533,
+                                        lineNumber: 542,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 527,
+                                lineNumber: 536,
                                 columnNumber: 11
                             }, this),
                             openDepartmentDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5022,12 +5054,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 537,
+                                    lineNumber: 546,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 536,
+                                lineNumber: 545,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -5041,18 +5073,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 541,
+                                    lineNumber: 550,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 540,
+                                lineNumber: 549,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 514,
+                        lineNumber: 523,
                         columnNumber: 9
                     }, this),
                     openDepartmentDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5097,7 +5129,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         ry: "2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 563,
+                                                        lineNumber: 572,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -5107,7 +5139,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "9"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 564,
+                                                        lineNumber: 573,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -5117,13 +5149,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         y2: "9"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 565,
+                                                        lineNumber: 574,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 562,
+                                                lineNumber: 571,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -5131,13 +5163,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getDepartmentLabel(department)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 567,
+                                                lineNumber: 576,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 561,
+                                        lineNumber: 570,
                                         columnNumber: 17
                                     }, this),
                                     user.department === department && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5150,29 +5182,29 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 571,
+                                            lineNumber: 580,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 570,
+                                        lineNumber: 579,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, department, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 548,
+                                lineNumber: 557,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 546,
+                        lineNumber: 555,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 513,
+                lineNumber: 522,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5212,7 +5244,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 599,
+                                                lineNumber: 608,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -5221,40 +5253,40 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 600,
+                                                lineNumber: 609,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 601,
+                                                lineNumber: 610,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 602,
+                                                lineNumber: 611,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 598,
+                                        lineNumber: 607,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: getDesignationLabel(user.designation)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 604,
+                                        lineNumber: 613,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 597,
+                                lineNumber: 606,
                                 columnNumber: 11
                             }, this),
                             openDesignationDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5269,12 +5301,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 608,
+                                    lineNumber: 617,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 607,
+                                lineNumber: 616,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -5288,30 +5320,23 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 612,
+                                    lineNumber: 621,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 611,
+                                lineNumber: 620,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 582,
+                        lineNumber: 591,
                         columnNumber: 9
                     }, this),
                     openDesignationDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]",
-                        children: [
-                            'agent',
-                            'manager',
-                            'faculty_staff',
-                            'team_leader',
-                            'ceo',
-                            'developer'
-                        ].map((designation)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                        children: availableDesignations.map((designation)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                 onClick: (e)=>{
                                     e.stopPropagation();
                                     onDesignationChange(user.id, designation);
@@ -5340,7 +5365,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 633,
+                                                        lineNumber: 642,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -5349,27 +5374,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                         r: "4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 634,
+                                                        lineNumber: 643,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                         d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 635,
+                                                        lineNumber: 644,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                         d: "M16 3.13a4 4 0 0 1 0 7.75"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                        lineNumber: 636,
+                                                        lineNumber: 645,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 632,
+                                                lineNumber: 641,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -5377,13 +5402,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 children: getDesignationLabel(designation)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 638,
+                                                lineNumber: 647,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 631,
+                                        lineNumber: 640,
                                         columnNumber: 17
                                     }, this),
                                     user.designation === designation && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5396,32 +5421,32 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 642,
+                                            lineNumber: 651,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 641,
+                                        lineNumber: 650,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, designation, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 619,
+                                lineNumber: 628,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 617,
+                        lineNumber: 626,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 581,
+                lineNumber: 590,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+            canManageIsClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "relative",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -5458,8 +5483,8 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 670,
-                                                columnNumber: 15
+                                                lineNumber: 680,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
                                                 cx: "9",
@@ -5467,28 +5492,28 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 671,
-                                                columnNumber: 15
+                                                lineNumber: 681,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 672,
-                                                columnNumber: 15
+                                                lineNumber: 682,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 673,
-                                                columnNumber: 15
+                                                lineNumber: 683,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 669,
-                                        columnNumber: 13
+                                        lineNumber: 679,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
                                         children: [
@@ -5497,14 +5522,14 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 675,
-                                        columnNumber: 13
+                                        lineNumber: 685,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 668,
-                                columnNumber: 11
+                                lineNumber: 678,
+                                columnNumber: 13
                             }, this),
                             openIsClientDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -5518,13 +5543,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 679,
-                                    columnNumber: 15
+                                    lineNumber: 689,
+                                    columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 678,
-                                columnNumber: 13
+                                lineNumber: 688,
+                                columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
                                 fill: "none",
@@ -5537,19 +5562,19 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 683,
-                                    columnNumber: 15
+                                    lineNumber: 693,
+                                    columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 682,
-                                columnNumber: 13
+                                lineNumber: 692,
+                                columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 653,
-                        columnNumber: 9
+                        lineNumber: 663,
+                        columnNumber: 11
                     }, this),
                     openIsClientDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                         className: "absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-[10000]",
@@ -5573,13 +5598,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             children: isClient ? 'Yes' : 'No'
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 703,
-                                            columnNumber: 19
+                                            lineNumber: 713,
+                                            columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 702,
-                                        columnNumber: 17
+                                        lineNumber: 712,
+                                        columnNumber: 19
                                     }, this),
                                     user.is_client === isClient && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                         className: "h-4 w-4 text-purple-600",
@@ -5591,30 +5616,30 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 707,
-                                            columnNumber: 21
+                                            lineNumber: 717,
+                                            columnNumber: 23
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 706,
-                                        columnNumber: 19
+                                        lineNumber: 716,
+                                        columnNumber: 21
                                     }, this)
                                 ]
                             }, isClient ? 'yes' : 'no', true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 690,
-                                columnNumber: 15
+                                lineNumber: 700,
+                                columnNumber: 17
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 688,
-                        columnNumber: 11
+                        lineNumber: 698,
+                        columnNumber: 13
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 652,
-                columnNumber: 7
+                lineNumber: 662,
+                columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "relative",
@@ -5653,7 +5678,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 735,
+                                                lineNumber: 746,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -5662,27 +5687,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                                 r: "4"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 736,
+                                                lineNumber: 747,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M22 21v-2a4 4 0 0 0-3-3.87"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 737,
+                                                lineNumber: 748,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                                 d: "M16 3.13a4 4 0 0 1 0 7.75"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                                lineNumber: 738,
+                                                lineNumber: 749,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 734,
+                                        lineNumber: 745,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -5692,13 +5717,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 740,
+                                        lineNumber: 751,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 733,
+                                lineNumber: 744,
                                 columnNumber: 11
                             }, this),
                             openIsCallerDropdown === user.id ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5713,12 +5738,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M5 15l7-7 7 7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 744,
+                                    lineNumber: 755,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 743,
+                                lineNumber: 754,
                                 columnNumber: 13
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
                                 className: "h-4 w-4 text-gray-400",
@@ -5732,18 +5757,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                     d: "M19 9l-7 7-7-7"
                                 }, void 0, false, {
                                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                                    lineNumber: 748,
+                                    lineNumber: 759,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 747,
+                                lineNumber: 758,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 718,
+                        lineNumber: 729,
                         columnNumber: 9
                     }, this),
                     openIsCallerDropdown === user.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5768,12 +5793,12 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             children: isCaller ? 'Yes' : 'No'
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 768,
+                                            lineNumber: 779,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 767,
+                                        lineNumber: 778,
                                         columnNumber: 17
                                     }, this),
                                     user.is_caller === isCaller && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("svg", {
@@ -5786,36 +5811,36 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                             clipRule: "evenodd"
                                         }, void 0, false, {
                                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                                            lineNumber: 772,
+                                            lineNumber: 783,
                                             columnNumber: 21
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                                        lineNumber: 771,
+                                        lineNumber: 782,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, isCaller ? 'yes' : 'no', true, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 755,
+                                lineNumber: 766,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 753,
+                        lineNumber: 764,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 717,
+                lineNumber: 728,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 781,
+                lineNumber: 792,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5843,27 +5868,27 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M12 2v10"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 794,
+                                lineNumber: 805,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "M18.4 6.6a9 9 0 1 1-12.77.04"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 795,
+                                lineNumber: 806,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 793,
+                        lineNumber: 804,
                         columnNumber: 9
                     }, this),
                     "Set Active"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 784,
+                lineNumber: 795,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5891,48 +5916,48 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M18.36 6.64A9 9 0 0 1 20.77 15"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 810,
+                                lineNumber: 821,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "M6.16 6.16a9 9 0 1 0 12.68 12.68"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 811,
+                                lineNumber: 822,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "M12 2v4"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 812,
+                                lineNumber: 823,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "m2 2 20 20"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 813,
+                                lineNumber: 824,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 809,
+                        lineNumber: 820,
                         columnNumber: 9
                     }, this),
                     "Set Inactive"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 800,
+                lineNumber: 811,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "-mx-1 my-1 h-px bg-gray-200"
             }, void 0, false, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 818,
+                lineNumber: 829,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -5962,21 +5987,21 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 d: "M3 6h18"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 832,
+                                lineNumber: 843,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 833,
+                                lineNumber: 844,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("path", {
                                 d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 834,
+                                lineNumber: 845,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -5986,7 +6011,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 y2: "17"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 835,
+                                lineNumber: 846,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("line", {
@@ -5996,26 +6021,26 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 y2: "17"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 836,
+                                lineNumber: 847,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 831,
+                        lineNumber: 842,
                         columnNumber: 9
                     }, this),
                     "Delete User"
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                lineNumber: 820,
+                lineNumber: 831,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/UserMenuDropdown.tsx",
-        lineNumber: 174,
+        lineNumber: 183,
         columnNumber: 5
     }, this);
     if (viewType === 'grid') {
@@ -6047,7 +6072,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 854,
+                                lineNumber: 865,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -6056,7 +6081,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 855,
+                                lineNumber: 866,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -6065,18 +6090,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 856,
+                                lineNumber: 867,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 853,
+                        lineNumber: 864,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                    lineNumber: 846,
+                    lineNumber: 857,
                     columnNumber: 9
                 }, this),
                 isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
@@ -6089,7 +6114,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             }
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 863,
+                            lineNumber: 874,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -6101,7 +6126,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             children: menuContent
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 872,
+                            lineNumber: 883,
                             columnNumber: 13
                         }, this)
                     ]
@@ -6109,7 +6134,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
             ]
         }, void 0, true, {
             fileName: "[project]/components/UserMenuDropdown.tsx",
-            lineNumber: 845,
+            lineNumber: 856,
             columnNumber: 7
         }, this);
     } else {
@@ -6142,7 +6167,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 895,
+                                lineNumber: 906,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -6151,7 +6176,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 896,
+                                lineNumber: 907,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("circle", {
@@ -6160,18 +6185,18 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                                 r: "1.5"
                             }, void 0, false, {
                                 fileName: "[project]/components/UserMenuDropdown.tsx",
-                                lineNumber: 897,
+                                lineNumber: 908,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/UserMenuDropdown.tsx",
-                        lineNumber: 894,
+                        lineNumber: 905,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/UserMenuDropdown.tsx",
-                    lineNumber: 887,
+                    lineNumber: 898,
                     columnNumber: 9
                 }, this),
                 isOpen && menuPosition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
@@ -6184,7 +6209,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             }
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 904,
+                            lineNumber: 915,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -6198,7 +6223,7 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
                             children: menuContent
                         }, void 0, false, {
                             fileName: "[project]/components/UserMenuDropdown.tsx",
-                            lineNumber: 913,
+                            lineNumber: 924,
                             columnNumber: 13
                         }, this)
                     ]
@@ -6206,12 +6231,13 @@ function UserMenuDropdown({ user, isOpen, onToggle, viewType, menuPosition, onAp
             ]
         }, void 0, true, {
             fileName: "[project]/components/UserMenuDropdown.tsx",
-            lineNumber: 886,
+            lineNumber: 897,
             columnNumber: 7
         }, this);
     }
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/components/users/UserStatusBadge.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -6543,6 +6569,8 @@ function ExpiryBadge({ expireDate }) {
 "[project]/components/users/UserCard.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+
 __turbopack_context__.s([
     "UserCard",
     ()=>UserCard
@@ -6553,6 +6581,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$utils
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/UserMenuDropdown.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserStatusBadge$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/users/UserStatusBadge.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ExpiryBadge$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ExpiryBadge.tsx [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -7160,9 +7192,12 @@ function UserCard({ user, selectedUsers, allUsers, onCheckboxChange, handlers, m
         columnNumber: 5
     }, this);
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/components/users/UserTableRow.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
+
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
 
 __turbopack_context__.s([
     "UserTableRow",
@@ -7174,6 +7209,10 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$utils
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/UserMenuDropdown.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserStatusBadge$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/users/UserStatusBadge.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ExpiryBadge$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ExpiryBadge.tsx [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserMenuDropdown$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -7524,7 +7563,8 @@ function UserTableRow({ user, selectedUsers, allUsers, onCheckboxChange, handler
         columnNumber: 5
     }, this);
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/components/users/UsersSkeleton.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -7678,6 +7718,8 @@ function UsersGridSkeleton() {
 "[project]/components/users/UsersList.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+return __turbopack_context__.a(async (__turbopack_handle_async_dependencies__, __turbopack_async_result__) => { try {
+
 __turbopack_context__.s([
     "UsersList",
     ()=>UsersList
@@ -7686,6 +7728,11 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$run
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserCard$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/users/UserCard.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserTableRow$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/users/UserTableRow.tsx [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersSkeleton$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/users/UsersSkeleton.tsx [ssr] (ecmascript)");
+var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserCard$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__,
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserTableRow$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
+]);
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserCard$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UserTableRow$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -7920,7 +7967,8 @@ function UsersList({ loading, viewType, filteredUsers, selectedUsers, allUsers, 
         columnNumber: 5
     }, this);
 }
-}),
+__turbopack_async_result__();
+} catch(e) { __turbopack_async_result__(e); } }, false);}),
 "[project]/components/users/UsersCategoryStats.tsx [ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -8236,16 +8284,26 @@ var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$run
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react [external] (react, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [ssr] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [ssr] (ecmascript)");
 var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
-    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__
+    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__,
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__
 ]);
-[__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+[__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+;
+;
 ;
 ;
 ;
 ;
 function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganizationId, isAuthorised = true, organizationId = null }) {
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useUser"])();
+    const dashboardLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
+    // Restriction: Only Level 1 Admins see the onboarding lifecycle
+    const showOnboardingLifecyle = fromAdminPanel && dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN;
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["useState"])({
         name: "",
         email: "",
@@ -8428,7 +8486,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                 children: "Create Account"
             }, void 0, false, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 210,
+                lineNumber: 217,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8442,7 +8500,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "User Type"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 225,
+                        lineNumber: 232,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8458,7 +8516,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 children: "Employee"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 232,
+                                lineNumber: 239,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -8471,19 +8529,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 children: "POSP Agent"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 244,
+                                lineNumber: 251,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 231,
+                        lineNumber: 238,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 224,
+                lineNumber: 231,
                 columnNumber: 7
             }, this),
             (fromAdminPanel || organizations.length > 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8497,7 +8555,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Assign Organization"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 262,
+                        lineNumber: 269,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8512,7 +8570,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 269,
+                                lineNumber: 276,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -8539,7 +8597,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Select Organization (Optional)"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 296,
+                                        lineNumber: 303,
                                         columnNumber: 15
                                     }, this),
                                     organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -8552,26 +8610,26 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                             ]
                                         }, org.id, true, {
                                             fileName: "[project]/components/SignupForm.tsx",
-                                            lineNumber: 298,
+                                            lineNumber: 305,
                                             columnNumber: 17
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 277,
+                                lineNumber: 284,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
                                 className: "fi flex fi-rr-angle-small-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 303,
+                                lineNumber: 310,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 268,
+                        lineNumber: 275,
                         columnNumber: 11
                     }, this),
                     loadingOrgs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -8579,16 +8637,16 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Loading organizations..."
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 305,
+                        lineNumber: 312,
                         columnNumber: 27
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 261,
+                lineNumber: 268,
                 columnNumber: 9
             }, this),
-            fromAdminPanel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+            showOnboardingLifecyle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                 className: "mb-6 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8601,7 +8659,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         className: "fi flex fi-rr-settings-sliders text-indigo-500 text-xs text-[10px]"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 314,
+                                        lineNumber: 321,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -8609,13 +8667,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Onboarding Lifecycle"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 315,
+                                        lineNumber: 322,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 313,
+                                lineNumber: 320,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8630,7 +8688,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: `fi flex ${isClient ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 327,
+                                                lineNumber: 334,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -8638,13 +8696,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: isClient ? 'Client' : 'Personnel'
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 328,
+                                                lineNumber: 335,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 318,
+                                        lineNumber: 325,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -8656,7 +8714,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: `fi flex ${isCaller ? 'fi-rr-check' : 'fi-rr-cross-small'} text-[10px]`
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 340,
+                                                lineNumber: 347,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("span", {
@@ -8664,25 +8722,25 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: isCaller ? 'Caller' : 'Non-Caller'
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 348,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 331,
+                                        lineNumber: 338,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 317,
+                                lineNumber: 324,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 312,
+                        lineNumber: 319,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8695,7 +8753,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                         children: "Engagement Date"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 348,
+                                        lineNumber: 355,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8705,7 +8763,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: "fi flex fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 350,
+                                                lineNumber: 357,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -8715,19 +8773,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 351,
+                                                lineNumber: 358,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 349,
+                                        lineNumber: 356,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 347,
+                                lineNumber: 354,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8740,7 +8798,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: "Next Renewal"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 361,
+                                                lineNumber: 368,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8750,7 +8808,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "fi flex fi-rr-refresh absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 363,
+                                                        lineNumber: 370,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -8760,19 +8818,19 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 364,
+                                                        lineNumber: 371,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 362,
+                                                lineNumber: 369,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 360,
+                                        lineNumber: 367,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8782,7 +8840,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                 children: "Expiration"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 373,
+                                                lineNumber: 380,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8792,7 +8850,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "fi flex fi-rr-alarm-clock absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 375,
+                                                        lineNumber: 382,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -8802,37 +8860,37 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                                         className: "w-full h-10 pl-9 pr-4 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-700 outline-none focus:border-indigo-500 transition-all"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/SignupForm.tsx",
-                                                        lineNumber: 376,
+                                                        lineNumber: 383,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/SignupForm.tsx",
-                                                lineNumber: 374,
+                                                lineNumber: 381,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/SignupForm.tsx",
-                                        lineNumber: 372,
+                                        lineNumber: 379,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 359,
+                                lineNumber: 366,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 346,
+                        lineNumber: 353,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 311,
+                lineNumber: 318,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8847,7 +8905,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Full Name"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 391,
+                        lineNumber: 398,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8861,7 +8919,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 399,
+                                lineNumber: 406,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -8889,13 +8947,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 406,
+                                lineNumber: 413,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 398,
+                        lineNumber: 405,
                         columnNumber: 9
                     }, this),
                     errors.name && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -8903,13 +8961,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.name
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 432,
+                        lineNumber: 439,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 390,
+                lineNumber: 397,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8924,7 +8982,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Email"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 438,
+                        lineNumber: 445,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -8938,7 +8996,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 446,
+                                lineNumber: 453,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -8966,13 +9024,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 453,
+                                lineNumber: 460,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 445,
+                        lineNumber: 452,
                         columnNumber: 9
                     }, this),
                     errors.email && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -8980,13 +9038,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.email
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 479,
+                        lineNumber: 486,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 437,
+                lineNumber: 444,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9001,7 +9059,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Contact Number"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 485,
+                        lineNumber: 492,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9015,7 +9073,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 493,
+                                lineNumber: 500,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -9044,13 +9102,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 500,
+                                lineNumber: 507,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 492,
+                        lineNumber: 499,
                         columnNumber: 9
                     }, this),
                     errors.contactNo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -9058,13 +9116,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.contactNo
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 527,
+                        lineNumber: 534,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 484,
+                lineNumber: 491,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9079,7 +9137,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Password"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 533,
+                        lineNumber: 540,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9093,7 +9151,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 541,
+                                lineNumber: 548,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -9121,13 +9179,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 548,
+                                lineNumber: 555,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 540,
+                        lineNumber: 547,
                         columnNumber: 9
                     }, this),
                     errors.password && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -9135,13 +9193,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.password
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 574,
+                        lineNumber: 581,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 532,
+                lineNumber: 539,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9156,7 +9214,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: "Confirm Password"
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 580,
+                        lineNumber: 587,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -9170,7 +9228,7 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 }
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 588,
+                                lineNumber: 595,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("input", {
@@ -9198,13 +9256,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                                 required: true
                             }, void 0, false, {
                                 fileName: "[project]/components/SignupForm.tsx",
-                                lineNumber: 595,
+                                lineNumber: 602,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 587,
+                        lineNumber: 594,
                         columnNumber: 9
                     }, this),
                     errors.confirmPassword && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
@@ -9212,13 +9270,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                         children: errors.confirmPassword
                     }, void 0, false, {
                         fileName: "[project]/components/SignupForm.tsx",
-                        lineNumber: 621,
+                        lineNumber: 628,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 579,
+                lineNumber: 586,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -9244,13 +9302,13 @@ function SignupForm({ onError, onSuccess, fromAdminPanel = false, defaultOrganiz
                 children: isLoading ? "Creating Account..." : "Sign Up"
             }, void 0, false, {
                 fileName: "[project]/components/SignupForm.tsx",
-                lineNumber: 627,
+                lineNumber: 634,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/SignupForm.tsx",
-        lineNumber: 209,
+        lineNumber: 216,
         columnNumber: 5
     }, this);
 }
@@ -10280,10 +10338,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     rows: rows || 3,
                     placeholder: placeholder,
                     disabled: isDisabled,
-                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -10302,10 +10360,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     value: fieldValue,
                     onChange: handleInputChange,
                     disabled: isDisabled,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -10336,10 +10394,10 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                     disabled: isDisabled,
                     placeholder: placeholder,
                     maxLength: maxLength,
-                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                    className: "flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed",
                     style: {
                         borderColor: "#E0E0E0",
-                        backgroundColor: isDisabled ? "#F5F5F5" : "#FFFFFF",
+                        backgroundColor: isDisabled ? "#FFFFFF" : "#FFFFFF",
                         color: "#000000",
                         fontFamily: "'Roboto', sans-serif"
                     },
@@ -10589,7 +10647,7 @@ function SettingsFormFields({ formData, handleInputChange, category, onFileUploa
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
                     className: "text-sm",
                     style: {
-                        color: "#787E9D",
+                        color: "#263238",
                         fontFamily: "'Roboto', sans-serif"
                     },
                     children: "Upload your documents. Maximum file size: 10MB. Accepted formats: Images (JPG, PNG, WEBP) and PDF."
@@ -10713,14 +10771,61 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/react/jsx-dev-runtime [external] (react/jsx-dev-runtime, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/SettingsFormFields.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [ssr] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [ssr] (ecmascript)");
 var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
-    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__,
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__
 ]);
-[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+;
+;
 ;
 ;
 function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfirm }) {
+    const { user: currentUser } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["useUser"])();
+    const currentLevel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(currentUser);
     if (!show || !userData) return null;
+    const availableDesignations = currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN ? [
+        {
+            value: 'agent',
+            label: 'Agent'
+        },
+        {
+            value: 'manager',
+            label: 'Manager'
+        },
+        {
+            value: 'team_leader',
+            label: 'Team Leader'
+        },
+        {
+            value: 'ceo',
+            label: 'CEO'
+        },
+        {
+            value: 'developer',
+            label: 'Developer'
+        },
+        {
+            value: 'faculty_staff',
+            label: 'Faculty Staff'
+        }
+    ] : [
+        {
+            value: 'agent',
+            label: 'Agent'
+        },
+        {
+            value: 'team_leader',
+            label: 'Team Leader'
+        },
+        {
+            value: 'ceo',
+            label: 'CEO'
+        }
+    ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
         className: "fixed inset-0 z-[10000] flex items-center justify-center p-4",
         style: {
@@ -10739,15 +10844,15 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                     onClick: onClose,
                     className: "absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-10",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("i", {
-                        className: "fi flex fi-rr-cross text-gray-500"
+                        className: "fi flex fi-rr-cross text-gray-900"
                     }, void 0, false, {
                         fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                        lineNumber: 43,
+                        lineNumber: 64,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                    lineNumber: 39,
+                    lineNumber: 60,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10765,24 +10870,24 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                     children: "Approve New User"
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 48,
+                                    lineNumber: 69,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("p", {
-                                    className: "text-sm text-gray-600",
+                                    className: "text-sm text-gray-900",
                                     style: {
                                         fontFamily: "'Roboto', sans-serif"
                                     },
                                     children: "Review and approve user registration. Set initial role and permissions."
                                 }, void 0, false, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 57,
+                                    lineNumber: 78,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                            lineNumber: 47,
+                            lineNumber: 68,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10800,7 +10905,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "Approval Settings"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 69,
+                                            lineNumber: 90,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10813,7 +10918,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Status"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 81,
+                                                            lineNumber: 102,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -10823,13 +10928,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     status: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
                                                                     value: "active",
                                                                     children: "Active"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 91,
+                                                                    lineNumber: 113,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10837,19 +10945,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Inactive"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 92,
+                                                                    lineNumber: 114,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 84,
+                                                            lineNumber: 105,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 80,
+                                                    lineNumber: 101,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10859,7 +10967,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Role"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 97,
+                                                            lineNumber: 119,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -10869,13 +10977,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     role: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
                                                                     value: "user",
                                                                     children: "User"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 107,
+                                                                    lineNumber: 130,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10883,7 +10994,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Admin"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 108,
+                                                                    lineNumber: 131,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10891,19 +11002,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Super Admin"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 109,
+                                                                    lineNumber: 132,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 100,
+                                                            lineNumber: 122,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 96,
+                                                    lineNumber: 118,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10913,7 +11024,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Department"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 114,
+                                                            lineNumber: 137,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -10923,13 +11034,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     department: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
                                                                     value: "sales",
                                                                     children: "Sales"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 124,
+                                                                    lineNumber: 148,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10937,7 +11051,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Renewal"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 125,
+                                                                    lineNumber: 149,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10945,7 +11059,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Backend"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 126,
+                                                                    lineNumber: 150,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10953,7 +11067,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Management"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 127,
+                                                                    lineNumber: 151,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10961,7 +11075,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Service"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 128,
+                                                                    lineNumber: 152,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10969,7 +11083,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "HR"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 129,
+                                                                    lineNumber: 153,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -10977,19 +11091,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "IT"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 130,
+                                                                    lineNumber: 154,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 117,
+                                                            lineNumber: 140,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 113,
+                                                    lineNumber: 136,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -10999,7 +11113,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Designation"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 135,
+                                                            lineNumber: 159,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -11009,67 +11123,130 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     designation: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "agent",
-                                                                    children: "Agent"
-                                                                }, void 0, false, {
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
+                                                            children: availableDesignations.map((d)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                    value: d.value,
+                                                                    children: d.label
+                                                                }, d.value, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 145,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "manager",
-                                                                    children: "Manager"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 146,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "team_leader",
-                                                                    children: "Team Leader"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 147,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "ceo",
-                                                                    children: "CEO"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 148,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "developer",
-                                                                    children: "Developer"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 149,
-                                                                    columnNumber: 21
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
-                                                                    value: "faculty_staff",
-                                                                    children: "Faculty Staff"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 150,
-                                                                    columnNumber: 21
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
+                                                                    lineNumber: 171,
+                                                                    columnNumber: 23
+                                                                }, this))
+                                                        }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 138,
+                                                            lineNumber: 162,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 134,
+                                                    lineNumber: 158,
                                                     columnNumber: 17
                                                 }, this),
+                                                currentLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["Fragment"], {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                    className: "block text-xs font-semibold text-gray-500 mb-1.5 uppercase",
+                                                                    children: "Client Status"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 179,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                    value: formData.is_client ? "true" : "false",
+                                                                    onChange: (e)=>setFormData({
+                                                                            ...formData,
+                                                                            is_client: e.target.value === "true"
+                                                                        }),
+                                                                    className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                                    style: {
+                                                                        color: "#000000"
+                                                                    },
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            value: "true",
+                                                                            children: "Client"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 190,
+                                                                            columnNumber: 25
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            value: "false",
+                                                                            children: "Personnel"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 191,
+                                                                            columnNumber: 25
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 182,
+                                                                    columnNumber: 23
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                            lineNumber: 178,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
+                                                            children: [
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
+                                                                    className: "block text-xs font-semibold text-gray-500 mb-1.5 uppercase",
+                                                                    children: "Caller Status"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 196,
+                                                                    columnNumber: 23
+                                                                }, this),
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
+                                                                    value: formData.is_caller ? "true" : "false",
+                                                                    onChange: (e)=>setFormData({
+                                                                            ...formData,
+                                                                            is_caller: e.target.value === "true"
+                                                                        }),
+                                                                    className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                                    style: {
+                                                                        color: "#000000"
+                                                                    },
+                                                                    children: [
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            value: "true",
+                                                                            children: "Caller"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 207,
+                                                                            columnNumber: 25
+                                                                        }, this),
+                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
+                                                                            value: "false",
+                                                                            children: "Non-Caller"
+                                                                        }, void 0, false, {
+                                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                            lineNumber: 208,
+                                                                            columnNumber: 25
+                                                                        }, this)
+                                                                    ]
+                                                                }, void 0, true, {
+                                                                    fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                                    lineNumber: 199,
+                                                                    columnNumber: 23
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/components/users/modals/ApprovalModal.tsx",
+                                                            lineNumber: 195,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("label", {
@@ -11077,7 +11254,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "Work Type"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 155,
+                                                            lineNumber: 215,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -11087,13 +11264,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     work_type: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
                                                                     value: "on_site",
                                                                     children: "On Site"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 165,
+                                                                    lineNumber: 226,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -11101,19 +11281,19 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "Remote"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 166,
+                                                                    lineNumber: 227,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 158,
+                                                            lineNumber: 218,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 154,
+                                                    lineNumber: 214,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -11123,7 +11303,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             children: "User Type"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 171,
+                                                            lineNumber: 232,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("select", {
@@ -11133,13 +11313,16 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     user_type: e.target.value
                                                                 }),
                                                             className: "w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4b33e8]",
+                                                            style: {
+                                                                color: "#000000"
+                                                            },
                                                             children: [
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
                                                                     value: "employee",
                                                                     children: "Employee"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 181,
+                                                                    lineNumber: 243,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("option", {
@@ -11147,31 +11330,31 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                                     children: "POSP Agent"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                                    lineNumber: 182,
+                                                                    lineNumber: 244,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 174,
+                                                            lineNumber: 235,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 170,
+                                                    lineNumber: 231,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 79,
+                                            lineNumber: 100,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 68,
+                                    lineNumber: 89,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -11186,7 +11369,7 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "User Application Details"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 190,
+                                            lineNumber: 252,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -11195,11 +11378,11 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Basic Details"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 202,
+                                                            lineNumber: 264,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11216,23 +11399,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 205,
+                                                            lineNumber: 267,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 201,
+                                                    lineNumber: 263,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Personal Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 222,
+                                                            lineNumber: 284,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11249,23 +11432,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 225,
+                                                            lineNumber: 287,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 221,
+                                                    lineNumber: 283,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Employment Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 242,
+                                                            lineNumber: 304,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11282,23 +11465,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 245,
+                                                            lineNumber: 307,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 241,
+                                                    lineNumber: 303,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Address Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 262,
+                                                            lineNumber: 324,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11311,23 +11494,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 265,
+                                                            lineNumber: 327,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 261,
+                                                    lineNumber: 323,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "KYC Information"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 278,
+                                                            lineNumber: 340,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11340,23 +11523,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 281,
+                                                            lineNumber: 343,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 339,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Bank Details"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 294,
+                                                            lineNumber: 356,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11374,23 +11557,23 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 297,
+                                                            lineNumber: 359,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 293,
+                                                    lineNumber: 355,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("h4", {
-                                                            className: "text-xs font-semibold mb-3 text-gray-700",
+                                                            className: "text-xs font-semibold mb-3 text-gray-900",
                                                             children: "Documents"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 316,
+                                                            lineNumber: 378,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SettingsFormFields$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -11407,25 +11590,25 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                                             readOnly: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                            lineNumber: 319,
+                                                            lineNumber: 381,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                                    lineNumber: 315,
+                                                    lineNumber: 377,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 199,
+                                            lineNumber: 261,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 189,
+                                    lineNumber: 251,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -11433,11 +11616,11 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
                                             onClick: onClose,
-                                            className: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors",
+                                            className: "px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors",
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 339,
+                                            lineNumber: 401,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("button", {
@@ -11446,36 +11629,36 @@ function ApprovalModal({ show, userData, formData, setFormData, onClose, onConfi
                                             children: "Approve User"
                                         }, void 0, false, {
                                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                            lineNumber: 345,
+                                            lineNumber: 407,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                                    lineNumber: 338,
+                                    lineNumber: 400,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                            lineNumber: 66,
+                            lineNumber: 87,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-                    lineNumber: 46,
+                    lineNumber: 67,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-            lineNumber: 34,
+            lineNumber: 55,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/users/modals/ApprovalModal.tsx",
-        lineNumber: 25,
+        lineNumber: 46,
         columnNumber: 5
     }, this);
 }
@@ -12912,11 +13095,12 @@ var __turbopack_async_dependencies__ = __turbopack_handle_async_dependencies__([
     __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersList$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersStats$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersActions$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__,
+    __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersList$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$AddUserModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ApprovalModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__,
     __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ImportModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__
 ]);
-[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersFilters$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersList$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersStats$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersActions$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$AddUserModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ApprovalModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ImportModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
+[__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersFilters$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersList$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersStats$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$users$2f$useUsersActions$2e$ts__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersList$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$AddUserModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ApprovalModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ImportModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__] = __turbopack_async_dependencies__.then ? (await __turbopack_async_dependencies__)() : __turbopack_async_dependencies__;
 ;
 ;
 ;
@@ -13008,12 +13192,14 @@ const Users = ()=>{
                 checkAndApproveExpiredHolds();
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         mounted,
-        user,
+        user?.uid,
+        user?.organization_id,
         userTypeToggle,
         isAuthorisedUser
-    ]); // Re-fetch when user or toggle changes
+    ]); // Re-fetch only when core identity or filters change
     // Filter Users Logic
     const filteredUsers = __TURBOPACK__imported__module__$5b$externals$5d2f$react__$5b$external$5d$__$28$react$2c$__cjs$29$__["default"].useMemo(()=>{
         let filtered = allUsers;
@@ -13087,12 +13273,12 @@ const Users = ()=>{
                     children: "Users | TFC Nexus"
                 }, void 0, false, {
                     fileName: "[project]/pages/portal/users.tsx",
-                    lineNumber: 266,
+                    lineNumber: 267,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 265,
+                lineNumber: 266,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -13105,7 +13291,7 @@ const Users = ()=>{
                             setUserTypeToggle: setUserTypeToggle
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/users.tsx",
-                            lineNumber: 272,
+                            lineNumber: 273,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersStats$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["UsersStats"], {
@@ -13119,7 +13305,7 @@ const Users = ()=>{
                             userTypeToggle: userTypeToggle
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/users.tsx",
-                            lineNumber: 278,
+                            lineNumber: 279,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$PendingUsers$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["PendingUsers"], {
@@ -13137,7 +13323,9 @@ const Users = ()=>{
                                             designation: "agent",
                                             work_type: "on_site",
                                             user_type: user.user_type === "posp_agent" ? "posp_agent" : "employee",
-                                            status: "active"
+                                            status: "active",
+                                            is_client: !!user.is_client,
+                                            is_caller: user.is_caller !== false
                                         });
                                         setShowApprovalModal(true);
                                     }
@@ -13149,7 +13337,7 @@ const Users = ()=>{
                             }
                         }, void 0, false, {
                             fileName: "[project]/pages/portal/users.tsx",
-                            lineNumber: 290,
+                            lineNumber: 291,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])("div", {
@@ -13179,7 +13367,7 @@ const Users = ()=>{
                                             userTypeToggle: userTypeToggle
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/users.tsx",
-                                            lineNumber: 324,
+                                            lineNumber: 327,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersList$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["UsersList"], {
@@ -13206,13 +13394,13 @@ const Users = ()=>{
                                             }
                                         }, void 0, false, {
                                             fileName: "[project]/pages/portal/users.tsx",
-                                            lineNumber: 346,
+                                            lineNumber: 349,
                                             columnNumber: 15
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/pages/portal/users.tsx",
-                                    lineNumber: 322,
+                                    lineNumber: 325,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$UsersCategoryStats$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["UsersCategoryStats"], {
@@ -13224,24 +13412,24 @@ const Users = ()=>{
                                     setFilters: setFilters
                                 }, void 0, false, {
                                     fileName: "[project]/pages/portal/users.tsx",
-                                    lineNumber: 372,
+                                    lineNumber: 375,
                                     columnNumber: 13
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/pages/portal/users.tsx",
-                            lineNumber: 321,
+                            lineNumber: 324,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/pages/portal/users.tsx",
-                    lineNumber: 270,
+                    lineNumber: 271,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 269,
+                lineNumber: 270,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$AddUserModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["AddUserModal"], {
@@ -13254,7 +13442,7 @@ const Users = ()=>{
                 organizationId: user?.organization_id
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 385,
+                lineNumber: 388,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$InviteModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["InviteModal"], {
@@ -13262,7 +13450,7 @@ const Users = ()=>{
                 onClose: ()=>setShowInviteModal(false)
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 395,
+                lineNumber: 398,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ImportModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["ImportModal"], {
@@ -13274,7 +13462,7 @@ const Users = ()=>{
                 organizations: organizations
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 400,
+                lineNumber: 403,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$ApprovalModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["ApprovalModal"], {
@@ -13289,7 +13477,7 @@ const Users = ()=>{
                 setFormData: setApprovalFormData
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 409,
+                lineNumber: 412,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$HoldModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["HoldModal"], {
@@ -13304,7 +13492,7 @@ const Users = ()=>{
                 setFormData: setHoldFormData
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 421,
+                lineNumber: 424,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals$5d2f$react$2f$jsx$2d$dev$2d$runtime__$5b$external$5d$__$28$react$2f$jsx$2d$dev$2d$runtime$2c$__cjs$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$users$2f$modals$2f$SuspendModal$2e$tsx__$5b$ssr$5d$__$28$ecmascript$29$__["SuspendModal"], {
@@ -13319,7 +13507,7 @@ const Users = ()=>{
                 setFormData: setSuspendFormData
             }, void 0, false, {
                 fileName: "[project]/pages/portal/users.tsx",
-                lineNumber: 433,
+                lineNumber: 436,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]

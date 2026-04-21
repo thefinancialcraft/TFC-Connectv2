@@ -33,11 +33,10 @@ export const getUserDashboardLevel = (user: any): DashboardLevel => {
   if (!role) return DashboardLevel.UNKNOWN;
 
   // --- Level 3: Team Leader ---
-  // Role is 'admin' and designation is 'team_leader'
+  // Designation is 'team_leader' (role may be 'admin' or 'user')
   if (
     user.isClient === true &&
-    role === 'admin' && 
-    (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))
+    (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl') || designation === 'manager')
   ) {
     return DashboardLevel.LEVEL_3_TL_SALES;
   }

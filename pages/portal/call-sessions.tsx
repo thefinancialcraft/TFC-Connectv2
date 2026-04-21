@@ -326,167 +326,158 @@ export default function CallSessionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfcfe]">
-      <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 max-w-[1600px]">
+    <div className="p-4 w-full h-full min-h-0 overflow-auto bg-[#fbfcfe]">
       {/* Search & Header */}
-        {/* Search & Header Section */}
-        <div className="flex flex-col gap-6 mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Call Sessions</h1>
-                    <p className="text-sm font-medium text-gray-400 mt-1">Real-time monitoring of active and manual lead sessions.</p>
-                </div>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 flex-1 max-w-2xl">
+          <div className="relative flex-1">
+            <i className="flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"></i>
+            <input 
+              type="text" 
+              placeholder="Search by agent, campaign, customer or status..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500 hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase transition-colors"
+                style={{ zIndex: 10 }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          
+          {/* Filter Popover Trigger */}
+          <div className="relative">
+            <button 
+                onClick={() => setShowFilterModal(!showFilterModal)}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
+            >
+                <i className="flex fi fi-rr-filter text-[16px]"></i>
+            </button>
 
-                <div className="flex items-center gap-2">
-                    <div 
-                        onClick={() => fetchSessions(true)}
-                        className="h-11 px-4 bg-indigo-600 text-white rounded-xl text-[11px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap shadow-lg shadow-indigo-100"
-                    >
-                        <i className={`flex fi fi-rr-refresh text-[12px] ${isRefetching ? 'animate-spin' : ''}`}></i>
-                        <span className="hidden sm:inline">Refresh Panel</span>
-                        <span className="sm:hidden">Refresh</span>
+            {showFilterModal && (
+                <div className="absolute top-full mt-2 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Filters</p>
+                        <button 
+                            onClick={() => {
+                                setAgentFilter("All Agents");
+                                setCampaignFilter("All Campaigns");
+                                setStatusFilter("Status");
+                                setOrgFilter("Organization");
+                                setSearchQuery("");
+                            }}
+                            className="text-[10px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-widest"
+                        >
+                            Reset
+                        </button>
                     </div>
 
-                    <button className="h-11 w-11 sm:w-auto sm:px-5 flex items-center justify-center gap-2 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0">
-                        <i className="flex fi fi-rr-file-export text-[16px]"></i>
-                        <span className="hidden sm:inline">Export</span>
-                    </button>
-                    
-                    {selectedKeys.length > 0 && (
-                        <button 
-                            onClick={handleBulkDelete}
-                            className="h-11 px-5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[11px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap"
-                        >
-                            <i className="flex fi fi-rr-trash text-[14px]"></i>
-                            <span>Delete ({selectedKeys.length})</span>
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1">
-                    <div className="relative flex-1">
-                        <i className="flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"></i>
-                        <input 
-                            type="text" 
-                            placeholder="Search agents, campaigns, customers..." 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-11 pr-14 py-3.5 bg-white border border-gray-100 rounded-2xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-gray-300 shadow-sm"
-                        />
-                        {searchQuery && (
-                            <button 
-                                onClick={() => setSearchQuery("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500 hover:text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg uppercase transition-colors"
+                    <div className="flex flex-col gap-4">
+                        {/* Agents Filter */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Agent</label>
+                            <select 
+                                value={agentFilter}
+                                onChange={(e) => setAgentFilter(e.target.value)}
+                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
                             >
-                                Clear
-                            </button>
-                        )}
-                    </div>
-                    
-                    {/* Filter Trigger */}
-                    <div className="relative">
+                                <option>All Agents</option>
+                                {availableAgents.map(a => <option key={a}>{a}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Campaign Filter */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Campaign</label>
+                            <select 
+                                value={campaignFilter}
+                                onChange={(e) => setCampaignFilter(e.target.value)}
+                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
+                            >
+                                <option>All Campaigns</option>
+                                {availableCampaigns.map(c => <option key={c}>{c}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Status Filter */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Status</label>
+                            <select 
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
+                            >
+                                <option>Status</option>
+                                {availableStatuses.map(s => <option key={s}>{s}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Organization Filter */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Organization</label>
+                            <select 
+                                value={orgFilter}
+                                onChange={(e) => setOrgFilter(e.target.value)}
+                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
+                            >
+                                <option>Organization</option>
+                                {availableOrgs.map(o => <option key={o}>{o}</option>)}
+                            </select>
+                        </div>
+
                         <button 
-                            onClick={() => setShowFilterModal(!showFilterModal)}
-                            className={`h-[52px] w-[52px] rounded-2xl flex items-center justify-center transition-all border shadow-sm ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
+                            onClick={() => setShowFilterModal(false)}
+                            className="mt-2 w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
                         >
-                            <i className="flex fi fi-rr-filter text-[18px]"></i>
+                            Apply Filters
                         </button>
-
-                        {showFilterModal && (
-                            <div className="absolute top-full mt-3 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                                <div className="flex items-center justify-between mb-4">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Filters</p>
-                                    <button 
-                                        onClick={() => {
-                                            setAgentFilter("All Agents");
-                                            setCampaignFilter("All Campaigns");
-                                            setStatusFilter("Status");
-                                            setOrgFilter("Organization");
-                                            setSearchQuery("");
-                                        }}
-                                        className="text-[10px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-widest"
-                                    >
-                                        Reset
-                                    </button>
-                                </div>
-
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Agent</label>
-                                        <select 
-                                            value={agentFilter}
-                                            onChange={(e) => setAgentFilter(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
-                                        >
-                                            <option>All Agents</option>
-                                            {availableAgents.map(a => <option key={a}>{a}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Campaign</label>
-                                        <select 
-                                            value={campaignFilter}
-                                            onChange={(e) => setCampaignFilter(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
-                                        >
-                                            <option>All Campaigns</option>
-                                            {availableCampaigns.map(c => <option key={c}>{c}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Status</label>
-                                        <select 
-                                            value={statusFilter}
-                                            onChange={(e) => setStatusFilter(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
-                                        >
-                                            <option>Status</option>
-                                            {availableStatuses.map(s => <option key={s}>{s}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Organization</label>
-                                        <select 
-                                            value={orgFilter}
-                                            onChange={(e) => setOrgFilter(e.target.value)}
-                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
-                                        >
-                                            <option>Organization</option>
-                                            {availableOrgs.map(o => <option key={o}>{o}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <button 
-                                        onClick={() => setShowFilterModal(false)}
-                                        className="mt-2 w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
-                                    >
-                                        Apply Filters
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
+            )}
+          </div>
 
-                <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-1 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100">
-                    <div className="flex items-center gap-2">
-                        {isRefetching && <span className="flex w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>}
-                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">Status: Monitoring Enabled</p>
-                    </div>
-                    <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest leading-none">
-                        Last Refreshed: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : 'WAITING...'}
-                    </p>
-                </div>
-            </div>
+          <button className="flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0">
+            <i className="flex fi fi-rr-file-export text-[14px]"></i>
+            Export
+          </button>
+
+          <div 
+            onClick={() => fetchSessions(true)}
+            className="px-5 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap"
+          >
+            <i className={`flex fi fi-rr-refresh text-[10px] ${isRefetching ? 'animate-spin' : ''}`}></i>
+            Refresh Panel
+          </div>
+
+          {selectedKeys.length > 0 && (
+             <button 
+                onClick={handleBulkDelete}
+                className="px-5 py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap"
+             >
+                <i className="flex fi fi-rr-trash text-[12px]"></i>
+                Delete ({selectedKeys.length})
+             </button>
+          )}
         </div>
 
-      {/* Main Table Container (Desktop Only) */}
-      <div className="hidden md:block bg-white rounded-3xl border border-gray-100 shadow-xl shadow-slate-200/40 overflow-hidden mb-6">
+        <div className="flex flex-col items-end gap-1">
+          {isRefetching && (
+             <span className="text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest leading-none mb-1">Syncing Live...</span>
+          )}
+          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">Status: Monitoring Enabled</p>
+          <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest leading-none">
+             Last Refreshed: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : 'WAITING...'}
+          </p>
+        </div>
+      </div>
+
+      {/* Main Table Container */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -627,119 +618,23 @@ export default function CallSessionsPage() {
         </div>
       </div>
 
-
-
-      {/* Mobile Card Layout */}
-      <div className="md:hidden flex flex-col gap-4 mb-8">
-        {filteredItems.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
-             <div className="flex flex-col items-center gap-4 opacity-30">
-                <i className="flex fi fi-rr-search-heart text-5xl text-indigo-600"></i>
-                <p className="text-[14px] font-black uppercase tracking-widest text-slate-800">
-                    No active sessions
-                </p>
-             </div>
-          </div>
-        ) : (
-          filteredItems.map((session) => {
-            const key = `${session.user_id}|${session.campaign_id}`;
-            const isSelected = selectedKeys.includes(key);
-            return (
-              <div key={key} className={`bg-white rounded-2xl border transition-all p-5 shadow-sm active:scale-[0.98] ${isSelected ? 'border-indigo-600 ring-4 ring-indigo-500/10' : 'border-gray-100'}`}>
-                <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-[16px] shadow-lg shadow-indigo-100">
-                          {session.agentName.charAt(0)}
-                        </div>
-                        <div className="flex flex-col">
-                            <h3 className="font-black text-gray-900 text-[15px] leading-tight">{session.agentName}</h3>
-                            <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mt-0.5">{session.employeeId}</span>
-                        </div>
-                    </div>
-                    <input 
-                        type="checkbox" 
-                        className="rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-500 w-6 h-6 cursor-pointer" 
-                        checked={isSelected}
-                        onChange={() => toggleSelectRow(session.user_id, session.campaign_id)}
-                    />
-                </div>
-
-                <div className="grid grid-cols-1 gap-3">
-                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Auto Session</span>
-                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black border uppercase ${
-                                session.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
-                                session.status === 'assigned' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                'bg-white text-gray-400 border-gray-100'
-                            }`}>
-                                {session.status.replace('_', ' ')}
-                            </span>
-                        </div>
-                        <p className="text-[13px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-indigo-400"></i> {session.campaignName}</p>
-                        <p className="text-[13px] font-bold text-indigo-600 leading-tight mt-1 flex items-center gap-2"><i className="fi fi-rr-user text-indigo-400 text-[10px]"></i> {session.customerName}</p>
-                    </div>
-
-                    {(session.manual_status || session.manual_campaign_id) ? (
-                        <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100/50">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest">Override / Manual</span>
-                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-[9px] font-black uppercase">
-                                    {session.manual_status || 'MANUAL'}
-                                </span>
-                            </div>
-                            <p className="text-[13px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-purple-400"></i> {session.manualCampaignName}</p>
-                            <p className="text-[13px] font-bold text-purple-600 leading-tight mt-1 flex items-center gap-2"><i className="fi fi-rr-user text-purple-400 text-[10px]"></i> {session.manualCustomerName}</p>
-                        </div>
-                    ) : (
-                        <div className="p-4 rounded-2xl border border-dashed border-gray-100 flex items-center justify-center">
-                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">No Manual Override</span>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex items-center justify-between mt-5 pt-5 border-t border-gray-50">
-                    <div className="flex flex-col gap-0.5">
-                        <p className="text-[11px] font-black text-indigo-600 flex items-center gap-1.5"><i className="fi fi-rr-bolt animate-pulse"></i> {formatTimeSafe(session.updated_at)}</p>
-                        <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">{formatDateSafe(session.updated_at)}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button 
-                            onClick={() => handleDelete(session.user_id, session.campaign_id)}
-                            className="h-10 px-4 rounded-xl bg-rose-50 text-rose-500 font-black text-[10px] uppercase tracking-widest"
-                        >
-                            Force End
-                        </button>
-                    </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
       {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-4 pb-10">
-        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Showing {filteredItems.length} active monitors</p>
+      <div className="flex items-center justify-center gap-3 mt-8 pb-4">
+        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
+            <i className="flex fi fi-rr-arrow-small-left text-[14px]"></i>
+            Previous
+        </button>
         
-        <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest shadow-sm">
-                <i className="flex fi fi-rr-arrow-small-left text-[16px]"></i>
-                Prev
-            </button>
-            
-            <div className="flex items-center gap-2">
-                <button className="w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[12px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90">1</button>
-                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[12px] font-black hover:border-indigo-100 hover:text-indigo-600 shadow-sm transition-all active:scale-90">2</button>
-            </div>
-
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest shadow-sm">
-                Next
-                <i className="flex fi fi-rr-arrow-small-right text-[16px]"></i>
-            </button>
+        <div className="flex items-center gap-2">
+            <button className="w-9 h-9 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[11px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90">1</button>
+            <button className="w-9 h-9 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[11px] font-black hover:border-indigo-100 hover:text-indigo-600 transition-all active:scale-90">2</button>
         </div>
+
+        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
+            Next
+            <i className="flex fi fi-rr-arrow-small-right text-[14px]"></i>
+        </button>
       </div>
     </div>
-  </div>
   );
 }

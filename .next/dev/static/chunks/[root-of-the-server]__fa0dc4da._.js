@@ -1599,8 +1599,8 @@ const getUserDashboardLevel = (user)=>{
     // If we don't have enough data to determine level, return UNKNOWN
     if (!role) return "UNKNOWN";
     // --- Level 3: Team Leader ---
-    // Role is 'admin' and designation is 'team_leader'
-    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
+    // Designation is 'team_leader' (role may be 'admin' or 'user')
+    if (user.isClient === true && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl') || designation === 'manager')) {
         return "LEVEL_3";
     }
     // --- Level 4: Sales Agent ---

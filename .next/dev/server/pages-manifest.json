@@ -11,5 +11,6 @@
   "/portal/call-sessions": "pages/portal/call-sessions.js",
   "/portal/customer": "pages/portal/customer.js",
   "/portal/dashboard": "pages/portal/dashboard.js",
-  "/portal/login": "pages/portal/login.js"
+  "/portal/login": "pages/portal/login.js",
+  "/portal/users": "pages/portal/users.js"
 }

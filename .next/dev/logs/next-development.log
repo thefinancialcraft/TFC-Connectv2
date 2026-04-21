@@ -514,3 +514,1367 @@ Debug info:
 [00:55:41.290] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
 [00:55:41.290] Browser LOG     [App] Logger and Interceptors initialized.
 [00:58:54.273] Server  LOG      ✓ Compiled in 1768ms
+[00:59:26.906] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:59:26.907] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:59:27.193] Server  LOG     Using date-holidays fallback
+[00:59:27.511] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:59:27.632] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:59:40.385] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[01:00:03.712] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[01:00:04.770] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[01:00:05.175] Browser ERROR   ❌ [Login] Supabase sign-in error: Invalid login credentials
+[01:00:05.175] Browser ERROR   🔴 [Login] Fatal error: Invalid login credentials
+[01:00:09.885] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[01:00:10.273] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[01:00:10.641] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:00:10.641] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:00:11.337] Browser ERROR   ⚠️ [Login] Profile re-fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:11.337] Browser LOG     📋 [Login] Profile status: {}
+[01:00:11.337] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[01:00:11.337] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:11.337] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:11.337] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:11.337] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[01:00:11.337] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:11.387] Server  LOG     Using date-holidays fallback
+[01:00:11.634] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:11.635] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:00:11.635] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[01:00:12.176] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:00:13.091] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[01:00:13.091] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:13.130] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:13.130] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:00:14.224] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:00:14.385] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:14.386] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:14.386] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:14.521] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:14.657] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[01:00:14.818] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[01:00:14.878] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[01:00:15.077] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[01:00:15.126] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:15.152] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 744ms
+[01:00:15.202] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[01:00:15.208] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 983ms
+[01:00:18.365] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:19.837] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4972ms
+[01:00:24.168] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:28.327] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:28.767] Server  LOG      ○ Compiling /portal/users ...
+[01:00:33.812] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:00:40.155] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[01:00:40.289] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:40.289] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:40.289] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:40.289] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:40.289] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:41.664] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[01:00:41.664] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[01:00:41.664] Browser LOG     [App] Logger and Interceptors initialized.
+[01:00:46.936] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:00:46.936] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:00:46.936] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:46.936] Browser WARN    Unauthorized access to users page, redirecting...
+[01:00:46.936] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:46.936] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:47.289] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:00:47.289] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:47.861] Browser WARN    Unauthorized access to users page, redirecting...
+[01:00:47.861] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:47.987] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:00:48.328] Server  LOG     Using date-holidays fallback
+[01:00:49.485] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:00:49.485] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:49.489] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:49.490] Browser WARN    Unauthorized access to users page, redirecting...
+[01:00:49.490] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:49.490] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:49.490] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:49.490] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:50.260] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[01:00:50.260] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:00:50.261] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:00:50.590] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:00:50.979] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:00:51.179] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:00:51.697] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[01:00:51.954] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[01:00:52.026] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[01:00:52.079] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[01:00:52.098] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:52.099] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:52.099] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:00:52.274] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[01:00:52.277] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1297ms
+[01:00:52.395] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 548ms
+[01:00:55.012] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3252ms
+[01:00:57.339] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:01.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:06.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:11.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:16.427] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:18.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:01:21.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:26.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:31.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:36.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:41.358] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:43.261] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:01:44.296] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:44.296] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:01:44.296] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:01:44.296] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:01:46.056] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:47.097] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:01:51.546] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:01:56.340] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:01.560] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:06.339] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:11.474] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:16.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:18.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:02:21.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:26.340] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:31.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:36.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:41.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:46.337] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:02:48.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:03:04.826] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:03:05.961] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:05.962] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:05.962] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:03:05.962] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:03:06.124] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:06.125] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:08.243] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[01:03:10.434] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[01:03:10.434] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[01:03:10.434] Browser LOG     [App] Logger and Interceptors initialized.
+[01:03:12.638] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:03:12.638] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:03:12.638] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:12.638] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:03:12.638] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:03:12.639] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:03:13.081] Server  LOG     Using date-holidays fallback
+[01:03:13.246] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:03:13.335] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:03:13.801] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[01:03:14.186] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[01:03:14.271] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:14.272] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:03:14.272] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:14.272] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:14.272] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:14.403] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[01:03:14.484] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[01:03:14.701] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[01:03:14.842] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1460ms
+[01:03:15.006] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:15.102] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 948ms
+[01:03:15.982] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:03:16.977] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:16.977] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:03:16.977] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:03:17.099] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:17.413] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:21.534] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 7393ms
+[01:03:26.123] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:03:26.124] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:26.124] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:26.125] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:03:26.144] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:03:26.145] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:32.605] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:35.171] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:36.198] Server  LOG      ✓ Compiled in 18.3s
+[01:03:37.148] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:03:37.427] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:03:38.227] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:03:40.016] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:03:41.129] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:49.570] Server  LOG      ✓ Compiled in 11.9s
+[01:03:53.262] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:53.262] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:53.263] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:03:56.338] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:03:59.361] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:05.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:09.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:04:10.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:16.364] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:20.360] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:25.107] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:25.646] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:04:31.577] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:31.577] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:04:31.577] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:04:32.460] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:04:32.460] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:35.373] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:38.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:04:40.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:45.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:50.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:04:55.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:00.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:05.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:08.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:05:10.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:15.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:20.338] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:25.340] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:30.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:05:38.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:06:08.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:06:24.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:06:38.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:07:24.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:07:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:08:24.351] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:08:24.351] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:08:24.582] Server  LOG      ✓ Compiled in 1204ms
+[01:08:24.718] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:08:28.340] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:08:28.340] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:08:28.340] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:08:28.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:08:28.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:08:28.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:08:28.341] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[01:08:28.341] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[01:08:28.341] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[01:08:28.341] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:08:28.341] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:08:28.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:08:31.376] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:08:59.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:09:24.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:09:29.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:09:59.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:10:15.318] Server  LOG      ✓ Compiled in 2.2s
+[01:10:19.993] Server  LOG     Using date-holidays fallback
+[01:10:20.152] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:10:22.440] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:10:22.440] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:10:22.440] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:10:22.440] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:10:22.440] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:10:22.440] Browser LOG     📡 [Auth Guard] Subscribing to profile updates for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:10:22.440] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:10:22.440] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:10:22.440] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:10:22.440] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:22.440] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:22.440] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:10:22.440] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:10:22.440] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:10:22.440] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[01:10:22.440] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[01:10:22.440] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[01:10:22.440] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:10:22.440] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:10:22.440] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:10:22.440] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:10:29.356] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:31.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:36.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:41.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:46.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:51.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:10:51.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:11:21.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:11:25.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:11:51.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:12:21.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:12:24.339] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:12:51.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:13:21.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:13:24.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:21.196] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:14:22.154] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:22.155] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:14:22.155] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:22.155] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:14:22.155] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:14:22.295] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:14:26.366] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:31.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:36.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:41.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:46.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:54.355] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:14:54.355] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:14:57.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:01.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:06.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:11.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:16.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:21.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:15:21.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:16:24.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:16:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:17:25.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:17:25.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:18:24.355] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:18:24.356] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:19:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:19:24.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:20:24.487] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:20:24.488] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:21:24.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:21:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:22:24.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:22:24.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:23:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:23:24.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:24:24.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:24:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:25:25.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:25:25.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:26:30.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:26:30.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:27:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:27:24.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:27:58.594] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:27:59.446] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:27:59.446] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:27:59.448] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:27:59.448] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:27:59.448] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:27:59.597] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:28:00.108] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:06.356] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:12.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:16.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:21.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:21.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:28:21.651] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:28:22.257] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:22.258] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:28:22.258] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:28:22.258] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:28:25.075] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:30.031] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[01:28:31.457] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:34.479] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[01:28:34.479] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[01:28:34.480] Browser LOG     [App] Logger and Interceptors initialized.
+[01:28:37.325] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:28:37.325] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:28:37.326] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:28:37.326] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:28:37.326] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:28:37.329] Browser LOG     📡 [Auth Guard] Subscribing to profile updates for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:28:37.329] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:28:38.312] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:28:38.312] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:28:38.312] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:28:38.312] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:28:39.804] Server  LOG     Using date-holidays fallback
+[01:28:40.486] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:28:40.856] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:28:41.897] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:28:43.706] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:28:43.706] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:43.707] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:43.707] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:28:43.707] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:28:43.710] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:28:44.050] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:45.188] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[01:28:45.188] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[01:28:45.189] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[01:28:46.601] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:51.207] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:28:57.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:02.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:07.339] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:08.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:29:12.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:17.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:22.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:27.545] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:29:32.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:33:11.843] Server  LOG      ✓ Compiled in 8.4s
+[01:33:35.335] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:33:35.540] Server  LOG     Using date-holidays fallback
+[01:42:53.054] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:42:53.464] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:42:53.569] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:42:53.600] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:42:53.601] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:42:53.601] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:42:53.609] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:42:53.612] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:42:53.615] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:42:53.615] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:42:53.621] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[01:42:53.621] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[01:42:53.621] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[01:42:53.621] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:42:53.621] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:42:53.621] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:42:53.639] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:42:53.639] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:42:53.639] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:42:53.640] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:42:53.641] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:42:58.046] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:42:58.047] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:42:58.047] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:42:58.047] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:42:58.047] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:42:58.183] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:42:58.183] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:11.111] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:43:11.111] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:11.116] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:19.962] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[01:43:20.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:20.355] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:24.111] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[01:43:24.111] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[01:43:24.111] Browser LOG     [App] Logger and Interceptors initialized.
+[01:43:27.421] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[01:43:27.421] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[01:43:27.422] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:43:27.422] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:43:27.422] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:43:27.422] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[01:43:27.838] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[01:43:27.838] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:43:28.286] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:43:29.203] Server  LOG     Using date-holidays fallback
+[01:43:38.821] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[01:43:39.394] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:43:39.397] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:43:39.397] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[01:43:39.400] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:43:39.400] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:39.400] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:39.400] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:39.400] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:43:39.401] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:43:39.405] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:43:39.406] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:43.869] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:43:46.310] Browser WARN    🔐 [Dashboard Stats] 401 Detected. Silently stopping.
+[01:51:43.908] Browser WARN    🔐 [Dashboard Charts] 401 Detected. Silently stopping.
+[01:51:44.294] Browser WARN    🔐 [Agent Performance] 401 Detected. Silently stopping.
+[01:51:44.660] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[01:51:44.709] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:44.850] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:44.850] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[01:51:44.912] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:44.913] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:45.163] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:45.163] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[01:51:45.163] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[01:51:45.164] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[01:51:48.010] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:51:52.823] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[01:51:52.996] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[01:52:04.225] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[01:52:04.225] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[01:52:04.225] Browser LOG     [App] Logger and Interceptors initialized.
+[02:01:12.636] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:01:15.776] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:01:15.789] Browser LOG     🚫 [Auth Guard] Detected expiry event. Showing UI.
+[02:01:15.833] Browser ERROR   {"__isAuthError":true,"code":"refresh_token_not_found","name":"AuthApiError","status":400}
+[02:01:15.834] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:01:15.834] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:01:16.820] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:01:38.954] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:01:46.923] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:01:46.924] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:01:46.924] Browser LOG     [App] Logger and Interceptors initialized.
+[02:01:50.547] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:01:50.547] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:01:51.366] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:01:52.211] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:01:53.396] Server  LOG     Using date-holidays fallback
+[02:02:04.270] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:02:04.274] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:02:13.031] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:02:15.779] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:02:15.779] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:02:18.842] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:18.842] Browser ERROR   ⚠️ [Login] Profile re-fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:18.842] Browser LOG     📋 [Login] Profile status: {}
+[02:02:18.842] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:02:18.842] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:02:18.842] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:02:18.842] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:02:18.842] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:02:20.053] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:02:20.053] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:02:20.053] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:02:20.053] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:02:20.053] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:02:20.309] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:02:20.938] Server  LOG     Using date-holidays fallback
+[02:02:21.097] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:02:21.098] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:02:21.098] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:02:22.673] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:02:22.676] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:22.857] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:02:23.694] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:25.887] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:02:26.470] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:02:26.561] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:02:26.579] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:02:27.804] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:27.995] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 2047ms
+[02:02:28.866] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:02:29.075] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 6073ms
+[02:02:32.569] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:37.208] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 10798ms
+[02:02:43.136] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:43.143] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:49.936] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:51.282] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:02:52.133] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:02:56.257] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:02.390] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:07.236] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:12.139] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:15.166] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:19.046] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:03:20.125] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:25.149] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:30.126] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:35.121] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:40.109] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:45.128] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:49.040] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:03:50.109] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:03:55.109] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:00.131] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:05.122] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:10.120] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:15.116] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:19.045] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:04:20.110] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:25.124] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:32.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:36.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:41.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:46.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:50.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:04:51.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:04:56.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:01.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:06.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:11.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:16.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:20.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:05:21.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:05:26.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:06:26.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:06:26.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:06:46.817] Server  LOG      ✓ Compiled in 2.2s
+[02:06:47.097] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:06:47.500] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:06:48.008] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:06:48.087] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:06:48.087] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:06:48.087] Browser LOG     [App] Logger and Interceptors initialized.
+[02:06:48.374] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:06:48.388] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:06:48.393] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:06:48.808] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:06:48.810] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1713ms
+[02:06:48.852] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 852ms
+[02:06:51.538] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3543ms
+[02:10:34.114] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:10:34.115] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:10:34.123] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:10:34.123] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:10:34.123] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:10:34.123] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:10:35.019] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:10:35.659] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:10:36.225] Server  LOG     Using date-holidays fallback
+[02:10:38.132] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:10:38.133] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:10:38.135] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:10:38.135] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:10:39.022] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:10:39.376] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:10:39.609] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:10:39.635] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:10:39.646] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:10:39.955] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:10:39.958] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 934ms
+[02:10:40.050] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 667ms
+[02:10:42.362] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:10:42.362] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:42.362] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:42.362] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:42.362] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:10:42.362] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:10:42.362] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:10:42.362] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:43.142] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3752ms
+[02:10:51.836] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:53.765] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:10:57.340] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:01.423] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:05.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:11:06.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:11.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:16.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:21.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:26.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:31.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:35.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:11:36.656] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:38.373] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:11:40.348] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:40.348] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:11:40.348] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:11:40.348] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:11:42.350] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:47.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:51.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:11:56.654] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:06.106] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:12:12.572] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:12:13.116] Server  LOG      ✓ Compiled in 7.5s
+[02:12:13.166] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:13.167] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:13.167] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:13.168] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:12:13.168] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:13.169] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:13.169] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:13.169] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:12:13.171] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:12:13.172] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:12:13.172] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:14.608] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:12:16.782] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:12:16.782] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:12:16.782] Browser LOG     [App] Logger and Interceptors initialized.
+[02:12:18.947] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:12:18.947] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:12:18.948] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:12:18.948] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:12:18.948] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:12:18.948] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:12:19.685] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:12:19.765] Server  LOG     Using date-holidays fallback
+[02:12:20.052] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:12:20.608] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:12:20.782] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:12:20.782] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:12:20.782] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:20.782] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:20.782] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:12:20.850] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:12:20.924] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:12:20.982] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:12:21.421] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:12:21.517] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1369ms
+[02:12:21.992] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:22.495] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1667ms
+[02:12:25.100] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4416ms
+[02:12:30.960] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:12:30.960] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:30.960] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:12:30.960] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:12:30.960] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:30.961] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:12:31.419] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:32.407] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:36.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:41.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:47.339] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:50.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:12:51.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:12:56.340] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:01.347] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:06.337] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:11.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:16.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:21.523] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:13:22.389] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:13:50.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:14:20.356] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:14:24.404] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:14:41.206] Server  LOG      ✓ Compiled in 3s
+[02:14:50.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:15:01.125] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:15:01.767] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:02.814] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:02.814] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:15:02.814] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:15:02.969] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:15:09.597] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:10.201] Server  LOG      ✓ Compiled in 2.1s
+[02:15:12.481] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:16.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:20.438] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:15:21.434] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:24.000] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:15:26.759] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:26.759] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:15:26.759] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:15:26.759] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:15:31.895] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:15:32.091] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:32.092] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:34.457] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:15:34.457] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:15:34.457] Browser LOG     [App] Logger and Interceptors initialized.
+[02:15:36.876] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:15:36.877] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:15:36.877] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:15:36.877] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:15:36.877] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:15:36.877] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:15:36.920] Server  LOG     Using date-holidays fallback
+[02:15:37.807] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:15:37.807] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:15:37.807] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:15:37.807] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:15:39.184] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:15:39.252] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:15:39.726] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:15:39.937] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:15:40.274] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:15:40.684] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:15:40.787] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:15:40.797] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1607ms
+[02:15:41.605] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:15:42.018] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 711ms
+[02:15:42.230] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:15:42.230] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:42.230] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:42.230] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:15:42.230] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:15:42.649] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:15:42.649] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:44.553] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4538ms
+[02:15:47.343] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:51.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:15:56.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:01.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:06.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:08.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:16:11.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:16.382] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:21.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:26.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:31.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:36.358] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:38.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:16:41.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:16:46.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:17:09.393] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:17:10.471] Server  LOG      ✓ Compiled in 2.1s
+[02:17:25.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:17:28.440] Server  LOG      ✓ Compiled in 2.9s
+[02:17:30.478] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:17:31.242] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:17:31.436] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:17:31.924] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:17:32.075] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:17:32.095] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:17:32.140] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:17:32.436] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 577ms
+[02:17:32.503] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:17:32.505] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1261ms
+[02:17:35.073] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:17:35.073] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:17:35.073] Browser LOG     [App] Logger and Interceptors initialized.
+[02:17:35.846] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3963ms
+[02:19:25.425] Server  LOG      ✓ Compiled in 2.9s
+[02:20:02.817] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:20:02.818] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:20:02.818] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:20:02.818] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:20:02.818] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:20:02.818] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:20:03.976] Server  LOG     Using date-holidays fallback
+[02:20:05.327] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:20:06.616] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:20:06.616] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:20:06.616] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:20:06.616] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:06.616] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:06.616] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:15.497] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:20:17.118] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:20:17.191] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:20:17.415] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:20:17.704] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 849ms
+[02:20:17.771] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:20:17.775] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 12447ms
+[02:20:18.549] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:20:18.550] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:20:18.550] Browser LOG     [App] Logger and Interceptors initialized.
+[02:20:20.911] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:20:20.911] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:20:20.911] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:20:20.911] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:20:20.911] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:20:20.911] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:20:22.177] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:20:22.468] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:22.468] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:22.468] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:20:22.469] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:20:22.572] Server  LOG     Using date-holidays fallback
+[02:20:22.872] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:20:23.202] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:20:23.593] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:20:23.827] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:20:23.940] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:20:23.983] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:20:24.105] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:24.106] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:20:24.106] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:20:24.128] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:20:24.132] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 927ms
+[02:20:24.449] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 747ms
+[02:20:25.942] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:25.943] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:20:25.943] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:20:26.074] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:20:26.763] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:28.356] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 6392ms
+[02:20:30.833] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 7139ms
+[02:20:31.809] Browser ERROR   Dashboard Charts Fetch Error: {}
+[02:20:31.809] Browser ERROR   [Session-Context] Fetch error: {"code":"","details":"TypeError: Failed to fetch\n    at n (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:12912)\n    at fetch (chrome-extension://mdnleldcmiljblolnjhpnblkcekpdkpa/page-scripts/ajaxRequestInterceptor.ps.js:1:13985)\n    at async SessionProvider.useCallback[fetchSessions] (http://localhost:3000/_next/static/chunks/%5Broot-of-the-server%5D__1f6347cd._.js:12109:41)","hint":"","message":"TypeError: Failed to fetch"}
+[02:20:34.943] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:40.534] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:50.412] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:51.795] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:20:52.363] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:20:55.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:01.653] Server  LOG      ✓ Compiled in 2.7s
+[02:21:03.894] Server  LOG     Using date-holidays fallback
+[02:21:04.699] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[02:21:04.699] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[02:21:04.699] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:21:04.699] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:04.700] Browser LOG     📡 [Auth Guard] Subscribing to profile updates for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:21:04.700] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:21:04.700] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:05.391] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:21:05.698] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:21:05.923] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:21:05.994] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:21:06.210] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:21:06.214] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 820ms
+[02:21:09.132] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3353ms
+[02:21:09.843] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:21:09.843] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:21:09.843] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:21:09.843] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:21:09.843] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:21:09.843] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:09.843] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:09.843] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:09.843] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:21:09.843] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:21:19.049] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:21:23.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:23.346] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:27.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:30.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:36.344] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:36.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:21:40.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:21:42.250] Server  LOG      ✓ Compiled in 1716ms
+[02:21:43.821] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:21:44.145] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 535ms
+[02:21:44.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:21:44.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:21:44.417] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:22:00.994] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:22:02.669] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:02.669] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:02.669] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:02.669] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:02.785] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:06.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:06.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:10.351] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:15.356] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:20.341] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:20.576] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:22:21.204] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:21.204] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:21.204] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:21.349] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:23.865] Browser LOG     🚀 [Auth] Starting complete logout...
+[02:22:25.008] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:25.008] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:22:25.008] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[02:22:25.008] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[02:22:25.017] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:25.734] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:22:25.734] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:26.360] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:26.360] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:26.360] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:26.436] Server  LOG     Using date-holidays fallback
+[02:22:26.514] Server  LOG     Using date-holidays fallback
+[02:22:34.824] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:22:35.169] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:22:35.500] Browser ERROR   ❌ [Login] Supabase sign-in error: Invalid login credentials
+[02:22:35.500] Browser ERROR   🔴 [Login] Fatal error: Invalid login credentials
+[02:22:38.013] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:22:39.224] Browser LOG     🔍 [Login] Starting login for ID: NXUS-001
+[02:22:39.572] Browser LOG     📧 [Login] Found email via API: Deepakkumar.official32@gmail.com
+[02:22:39.897] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:22:39.897] Browser LOG     ✅ [Login] Supabase Auth successful for user: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:40.328] Server  LOG     Using date-holidays fallback
+[02:22:40.402] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:40.402] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:40.402] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:40.402] Browser LOG     📡 [Auth Guard] Subscribing to profile updates for: ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:40.402] Browser ERROR   ⚠️ [Login] Profile re-fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:40.402] Browser LOG     📋 [Login] Profile status: {}
+[02:22:40.402] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:22:40.402] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:22:40.402] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:41.293] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:22:41.446] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:22:41.446] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:22:41.446] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[02:22:41.446] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:22:41.447] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:22:41.447] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:22:41.447] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:22:41.447] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:41.482] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:22:41.483] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:22:41.508] Server  LOG     [API Params] dateFilter: today, orgId: undefined, filterUserId: undefined
+[02:22:41.741] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:22:42.045] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:22:42.075] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:22:42.087] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 792ms
+[02:22:42.121] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:22:48.715] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 7007ms
+[02:22:50.008] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:07.373] Server  LOG      ✓ Compiled in 1330ms
+[02:23:08.746] Server  LOG      ✓ Compiled in 1518ms
+[02:23:31.586] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:33.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:33.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:33.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:33.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:37.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:41.326] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:23:42.006] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:23:43.087] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:43.088] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:23:43.088] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:23:43.088] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:43.088] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:23:46.239] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:50.981] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:23:57.348] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:00.408] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:24:01.747] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:01.747] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:24:01.747] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:24:01.896] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:24:02.941] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:05.986] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:10.482] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:10.993] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:14.284] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:24:15.767] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:15.767] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:24:15.767] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:24:15.896] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:24:16.395] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:22.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:27.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:32.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:37.354] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:41.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:24:42.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:45.157] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:24:48.616] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:48.627] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:24:48.629] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:24:48.881] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:24:49.465] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:51.271] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:24:56.126] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:02.349] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:07.352] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:11.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:25:12.342] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:17.353] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:17.832] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:25:19.365] Browser ERROR   Error fetching user profile: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:19.365] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:25:19.366] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:25:19.479] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:25:21.246] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:27.345] Browser ERROR   [Session-Context] Fetch error: {"code":"42P17","details":null,"hint":null,"message":"infinite recursion detected in policy for relation \"user_profiles\""}
+[02:25:41.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:26:02.413] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:26:04.464] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:26:04.465] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:26:04.626] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:26:10.512] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:26:41.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:26:49.227] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:26:50.079] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:26:50.079] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:26:50.079] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:27:04.943] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:27:05.616] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:27:05.616] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:27:05.782] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:27:11.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:27:13.235] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[02:27:15.962] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[02:27:15.962] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[02:27:15.962] Browser LOG     [App] Logger and Interceptors initialized.
+[02:27:16.969] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:27:16.969] Browser ERROR   {"__isAuthError":true,"code":"refresh_token_not_found","name":"AuthApiError","status":400}
+[02:27:16.969] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[02:27:17.536] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:27:18.239] Server  LOG     Using date-holidays fallback
+[02:27:18.431] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[02:27:18.431] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:27:18.432] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:27:18.527] Server  LOG     Using date-holidays fallback
+[02:27:18.594] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:27:18.594] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:27:30.482] Browser WARN    ⚠️ [Login] Session check timed out. Showing login form.
+[02:27:41.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:02.782] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:28:03.534] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:28:03.535] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:28:03.535] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:28:08.505] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:28:08.505] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:28:08.682] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:28:16.822] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:40.656] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:51.493] Browser LOG     🔍 [Login] Starting login for ID: TFC-046
+[02:28:51.999] Browser LOG     📧 [Login] Found email via API: N_Sayyad1799@outlook.com
+[02:28:52.444] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:28:52.444] Browser LOG     ✅ [Login] Supabase Auth successful for user: 7badec09-ef03-47de-921d-718c432ab3e5
+[02:28:52.987] Server  LOG     Using date-holidays fallback
+[02:28:53.223] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:28:53.223] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:28:53.223] Browser LOG     📡 [Auth Guard] Subscribing to profile updates for: 7badec09-ef03-47de-921d-718c432ab3e5
+[02:28:53.223] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[02:28:53.223] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[02:28:53.223] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[02:28:53.223] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:28:54.796] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:28:54.796] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:28:54.796] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_7badec09-ef03-47de-921d-718c432ab3e5
+[02:28:54.799] Browser LOG     [Dashboard] Filtering users for TL: 7badec09-ef03-47de-921d-718c432ab3e5
+[02:28:54.799] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:28:54.799] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[02:28:56.134] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:28:56.134] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:28:56.134] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[02:28:56.511] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:28:56.713] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:28:57.169] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[02:28:58.597] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:28:58.675] Browser LOG     [Dashboard] Restricting User Selection to 11 members
+[02:28:58.825] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:28:59.126] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:28:59.229] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:28:59.238] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 2522ms
+[02:28:59.653] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[02:28:59.766] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 2423ms
+[02:29:00.020] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[02:29:00.403] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[02:29:00.784] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3486ms
+[02:29:01.003] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[02:29:01.019] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[02:29:01.362] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1366ms
+[02:29:01.491] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[02:29:01.494] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 1832ms
+[02:29:02.016] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 2283ms
+[02:29:09.355] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:29:09.356] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:29:09.472] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:29:11.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:13.802] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:29:13.803] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:29:13.803] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:29:23.202] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:25.090] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:29:28.873] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:29:28.873] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:29:28.873] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:29:30.141] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:29:30.141] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:29:30.141] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:29:40.577] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:54.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:29:58.734] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:29:59.102] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:29:59.102] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:29:59.102] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:01.759] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:30:03.077] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:30:03.458] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:03.458] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:30:03.458] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:04.748] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:04.748] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:30:04.748] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:05.416] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:30:07.908] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:30:07.908] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:30:07.908] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:30:11.821] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:14.039] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[02:55:14.040] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:55:15.071] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:56:05.142] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[02:56:05.143] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[02:56:05.339] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[02:56:08.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:56:11.371] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:56:41.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:22.364] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:57:54.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:58:24.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:58:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:58:54.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:24.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[02:59:24.351] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:00:25.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:00:25.354] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:01:24.350] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:24.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:39.930] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:02:49.819] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:02:49.819] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:02:49.820] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:02:49.820] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:02:50.044] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:02:53.712] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:02:53.712] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:02:54.349] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:03:11.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:03:41.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:04:24.347] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:05:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:46.354] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:55.375] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[03:06:59.725] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:06:59.725] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[03:06:59.725] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[03:07:00.340] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[03:07:11.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:07:41.343] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:08:24.340] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:09:24.345] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:10:24.338] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:11:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:12:24.344] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:13:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:14:25.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:35:38.352] Browser LOG     🔐 [Auth Event] TOKEN_REFRESHED
+[03:35:39.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:36:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:37:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:38:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[03:39:24.339] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.

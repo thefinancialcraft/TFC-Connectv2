@@ -14,6 +14,9 @@ self.__BUILD_MANIFEST = {
   "/portal/login": [
     "static/chunks/pages/portal/login.js"
   ],
+  "/portal/users": [
+    "static/chunks/pages/portal/users.js"
+  ],
   "__rewrites": {
     "afterFiles": [
       {
