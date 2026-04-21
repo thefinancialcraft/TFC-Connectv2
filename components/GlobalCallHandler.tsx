@@ -133,7 +133,8 @@ export default function GlobalCallHandler() {
 
                 // 2. Search for the lead
                 try {
-                    const response = await fetch(`/api/customer/find-by-phone?phone=${normalizedPhone}`);
+                    const orgId = user?.organization_id || '';
+                    const response = await fetch(`/api/customer/find-by-phone?phone=${normalizedPhone}&organization_id=${orgId}`);
                     const result = await response.json();
 
                     if (result.success && result.lead) {

@@ -16,8 +16,8 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { phone } = req.query;
-  console.log(`[API-Search] Search Request Received. Query Phone: "${phone}"`);
+  const { phone, organization_id } = req.query;
+  console.log(`[API-Search] Search Request Received. Query Phone: "${phone}", Org: "${organization_id}"`);
 
   if (!phone) {
     return res.status(400).json({ error: 'Phone number is required' });
@@ -35,10 +35,16 @@ export default async function handler(
     // Search order: customers -> rejected_leads -> closed_deals
     
     // 1. Try customers
-    const { data: customer } = await client
+    let customerQuery = client
       .from('customers')
-      .select('id, campaign_id, customer_name, phone_no, assigned_to')
-      .eq('phone_search_hash', phoneHash)
+      .select('id, campaign_id, customer_name, phone_no, assigned_to, organization_id')
+      .eq('phone_search_hash', phoneHash);
+    
+    if (organization_id) {
+      customerQuery = customerQuery.eq('organization_id', organization_id);
+    }
+
+    const { data: customer } = await customerQuery
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -49,10 +55,16 @@ export default async function handler(
     }
 
     // 2. Try rejected_leads
-    const { data: rejected } = await client
+    let rejectedQuery = client
       .from('rejected_leads')
-      .select('id, campaign_id, customer_name, phone_no, agent_id')
-      .eq('phone_search_hash', phoneHash)
+      .select('id, campaign_id, customer_name, phone_no, agent_id, organization_id')
+      .eq('phone_search_hash', phoneHash);
+
+    if (organization_id) {
+      rejectedQuery = rejectedQuery.eq('organization_id', organization_id);
+    }
+
+    const { data: rejected } = await rejectedQuery
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -63,10 +75,16 @@ export default async function handler(
     }
 
     // 3. Try closed_deals
-    const { data: closed } = await client
+    let closedQuery = client
       .from('closed_deals')
-      .select('id, customer_id, campaign_id, customer_name, phone_no, agent_id')
-      .eq('phone_search_hash', phoneHash)
+      .select('id, customer_id, campaign_id, customer_name, phone_no, agent_id, organization_id')
+      .eq('phone_search_hash', phoneHash);
+
+    if (organization_id) {
+      closedQuery = closedQuery.eq('organization_id', organization_id);
+    }
+
+    const { data: closed } = await closedQuery
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -76,9 +94,9 @@ export default async function handler(
       return res.status(200).json({ 
         success: true, 
         lead: { 
-            ...closed, 
-            id: closed.id || (closed as any).customer_id, 
-            table: 'closed_deals' 
+          ...closed, 
+          id: closed.id || (closed as any).customer_id, 
+          table: 'closed_deals' 
         } 
       });
     }
