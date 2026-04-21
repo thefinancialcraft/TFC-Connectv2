@@ -3,7 +3,7 @@
     "id": "[project]/components/dashboard/HourlyAnalyticsTab.tsx [client] (ecmascript, next/dynamic entry)",
     "files": [
       "static/chunks/components_dashboard_HourlyAnalyticsTab_tsx_ef71dcfe._.js",
-      "static/chunks/components_dashboard_HourlyAnalyticsTab_tsx_a8e95ab3._.js"
+      "static/chunks/components_dashboard_HourlyAnalyticsTab_tsx_9ef5f74f._.js"
     ]
   },
   "[project]/components/dashboard/AgentPerformanceTab.tsx [client] (ecmascript, next/dynamic entry)": {
@@ -12,7 +12,7 @@
       "static/chunks/_77cfd1b9._.js",
       "static/chunks/node_modules_recharts_es6_5afee2a4._.js",
       "static/chunks/node_modules_80219642._.js",
-      "static/chunks/components_dashboard_AgentPerformanceTab_tsx_a8e95ab3._.js"
+      "static/chunks/components_dashboard_AgentPerformanceTab_tsx_9ef5f74f._.js"
     ]
   },
   "[project]/components/dashboard/ProspectTab.tsx [client] (ecmascript, next/dynamic entry)": {
@@ -25,14 +25,14 @@
       "static/chunks/node_modules_recharts_es6_d20fd649._.js",
       "static/chunks/node_modules_80219642._.js",
       "static/chunks/components_dashboard_ProspectTab_tsx_8c19e38a._.js",
-      "static/chunks/components_dashboard_ProspectTab_tsx_a8e95ab3._.js"
+      "static/chunks/components_dashboard_ProspectTab_tsx_9ef5f74f._.js"
     ]
   },
   "[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry)": {
     "id": "[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry)",
     "files": [
       "static/chunks/components_dashboard_TopStats_tsx_7057d9ce._.js",
-      "static/chunks/components_dashboard_TopStats_tsx_a8e95ab3._.js"
+      "static/chunks/components_dashboard_TopStats_tsx_9ef5f74f._.js"
     ]
   }
 }

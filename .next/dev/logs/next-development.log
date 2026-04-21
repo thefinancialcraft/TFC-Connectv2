@@ -185,3 +185,15 @@ Debug info:
 [00:15:24.342] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [00:16:24.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
 [00:16:40.192] Server  LOG      ✓ Compiled in 1014ms
+[00:17:25.358] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:18:24.346] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:19:24.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:20:24.353] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:21:24.349] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:22:24.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:22:29.530] Server  LOG      ✓ Compiled in 1777ms
+[00:22:48.417] Server  LOG      ✓ Compiled in 4.5s
+[00:22:55.054] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[00:22:58.514] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[00:22:58.514] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[00:22:58.514] Browser LOG     [App] Logger and Interceptors initialized.

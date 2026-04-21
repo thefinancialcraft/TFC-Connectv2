@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useMemo, memo } from "react";
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 // Removed unnecessary supabase import as we rely on props
 
 interface BottomNavProps {
@@ -94,45 +95,37 @@ const BottomNav = memo(function BottomNav({
 
   // Filter nav items based on admin status and client designation
   const navItems = useMemo(() => {
-    // Visibility logic for User and Org Pages (Strict: Hidden by default until mounted and verified)
-    const allowedDesignations = ['manager', 'team_leader', 'ceo', 'developer'];
-    const currentDesignation = designation?.toLowerCase() || '';
-
-    const isUserPageVisible = mounted && (
-      isClient === false || 
-      (isClient === true && ['ceo', 'developer'].includes(currentDesignation))
-    );
-
-    const isOrgVisible = mounted && (
-      isClient === false || 
-      (isClient === true && designation?.toLowerCase() === 'ceo')
-    );
-
-    const isTeamPageVisible = mounted && (
-      isClient === false || 
-      (isClient === true && ['manager', 'team_leader', 'ceo', 'developer'].includes(currentDesignation))
-    );
-
-    const isAdminState = mounted && isAdmin;
-    const isSpecialUser = employeeId === 'NXUS-001';
+    const level = getUserDashboardLevel({
+        role: userRole,
+        designation: designation,
+        isClient: isClient
+    });
 
     return allNavItems.filter((item) => {
-      // 0. Hard Rejection for Call Sessions if NOT global
-      if (item.id === 'call-sessions' && isClient !== false) return false;
+      // 0. Call Sessions visibility (Admin, CEO, TL)
+      if (item.id === 'call-sessions') {
+        if (employeeId === 'NXUS-001') return true;
+        if (level === DashboardLevel.LEVEL_4_AGENT_SALES || level === DashboardLevel.UNKNOWN) return false;
+        return true;
+      }
 
-      // Special override for Call Sessions for Global Users
-      if (item.id === 'call-sessions' && isClient === false) return true;
+      const currentDesignation = designation?.toLowerCase() || '';
 
-      // Admin check
-      if (item.adminOnly && !isAdminState) return false;
-      
-      // User page visibility check
+      const isUserPageVisible = mounted && (
+        isClient === false || 
+        (isClient === true && ['ceo', 'developer'].includes(currentDesignation))
+      );
+
+      const isTeamPageVisible = mounted && (
+        isClient === false || 
+        (isClient === true && ['manager', 'team_leader', 'ceo', 'developer'].includes(currentDesignation))
+      );
+
+      const isAdminState = mounted && isAdmin;
+
+      // Filter logic
+      if (item.adminOnly && !isAdminState && employeeId !== 'NXUS-001') return false;
       if (item.id === 'users' && !isUserPageVisible) return false;
-
-      // Org page visibility check
-      if (item.id === 'organization' && !isOrgVisible) return false;
-
-      // Team page visibility check
       if (item.id === 'team' && !isTeamPageVisible) return false;
       
       return true;

@@ -1,7 +1,7 @@
 __turbopack_load_page_chunks__("/portal/customer", [
   "static/chunks/components_21498089._.js",
   "static/chunks/pages_portal_customer_tsx_dc8978d9._.js",
-  "static/chunks/_827177ab._.js",
+  "static/chunks/_e354b91f._.js",
   "static/chunks/[root-of-the-server]__a7a127c0._.js",
   "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
   "static/chunks/node_modules_next_dist_shared_lib_50f15610._.js",
@@ -13,5 +13,5 @@ __turbopack_load_page_chunks__("/portal/customer", [
   "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
   "static/chunks/node_modules_e7468fdd._.js",
   "static/chunks/pages_portal_customer_tsx_2da965e7._.js",
-  "static/chunks/turbopack-pages_portal_customer_tsx_ab630f0f._.js"
+  "static/chunks/turbopack-pages_portal_customer_tsx_d49419ea._.js"
 ])

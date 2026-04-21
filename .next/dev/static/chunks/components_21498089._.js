@@ -1916,8 +1916,10 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
+;
 ;
 ;
 const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
@@ -1991,40 +1993,34 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
     // Filter nav items based on admin status and client designation
     const navItems = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "BottomNav.BottomNav.useMemo[navItems]": ()=>{
-            // Visibility logic for User and Org Pages (Strict: Hidden by default until mounted and verified)
-            const allowedDesignations = [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ];
-            const currentDesignation = designation?.toLowerCase() || '';
-            const isUserPageVisible = mounted && (isClient === false || isClient === true && [
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isOrgVisible = mounted && (isClient === false || isClient === true && designation?.toLowerCase() === 'ceo');
-            const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isAdminState = mounted && isAdmin;
-            const isSpecialUser = employeeId === 'NXUS-001';
+            const level = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])({
+                role: userRole,
+                designation: designation,
+                isClient: isClient
+            });
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
-                    // 0. Hard Rejection for Call Sessions if NOT global
-                    if (item.id === 'call-sessions' && isClient !== false) return false;
-                    // Special override for Call Sessions for Global Users
-                    if (item.id === 'call-sessions' && isClient === false) return true;
-                    // Admin check
-                    if (item.adminOnly && !isAdminState) return false;
-                    // User page visibility check
+                    // 0. Call Sessions visibility (Admin, CEO, TL)
+                    if (item.id === 'call-sessions') {
+                        if (employeeId === 'NXUS-001') return true;
+                        if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES || level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) return false;
+                        return true;
+                    }
+                    const currentDesignation = designation?.toLowerCase() || '';
+                    const isUserPageVisible = mounted && (isClient === false || isClient === true && [
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
+                        'manager',
+                        'team_leader',
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isAdminState = mounted && isAdmin;
+                    // Filter logic
+                    if (item.adminOnly && !isAdminState && employeeId !== 'NXUS-001') return false;
                     if (item.id === 'users' && !isUserPageVisible) return false;
-                    // Org page visibility check
-                    if (item.id === 'organization' && !isOrgVisible) return false;
-                    // Team page visibility check
                     if (item.id === 'team' && !isTeamPageVisible) return false;
                     return true;
                 }
@@ -2119,32 +2115,32 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 218,
+                                lineNumber: 211,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 208,
+                            lineNumber: 201,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 206,
+                    lineNumber: 199,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 205,
+                lineNumber: 198,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 201,
+            lineNumber: 194,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 194,
+        lineNumber: 187,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {

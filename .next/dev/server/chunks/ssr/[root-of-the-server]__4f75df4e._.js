@@ -3369,32 +3369,32 @@ const BottomNav = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$externals
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 218,
+                                lineNumber: 219,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 208,
+                            lineNumber: 209,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 206,
+                    lineNumber: 207,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 205,
+                lineNumber: 206,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 201,
+            lineNumber: 202,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 194,
+        lineNumber: 195,
         columnNumber: 5
     }, this);
 });

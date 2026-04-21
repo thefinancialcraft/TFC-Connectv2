@@ -462,205 +462,555 @@ function triggerUpdate(msg) {
     }
 }
 }),
-"[project]/components/dashboard/SecondaryStats.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/components/Dialog.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "default",
-    ()=>SecondaryStats
+    ()=>Dialog
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/styled-jsx/style.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
-function SecondaryStats({ stats, secondaryStats, loading = false }) {
+;
+function Dialog({ isOpen, title, message, type = 'info', onConfirm, onCancel, onClose, confirmText = 'OK', cancelText = 'Cancel', showCancel = false }) {
     _s();
-    const [isExpanded, setIsExpanded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const items = [
-        {
-            label: "Active Campaigns",
-            value: stats.activeCampaigns,
-            icon: "fi-rr-bullhorn",
-            color: "#6366f1",
-            bg: "#eef2ff"
-        },
-        {
-            label: "Team Members",
-            value: secondaryStats.assignedMembers,
-            icon: "fi-rr-users",
-            color: "#ec4899",
-            bg: "#fdf2f8"
-        },
-        {
-            label: "Total Records",
-            value: secondaryStats.newProspects,
-            icon: "fi-rr-user-add",
-            color: "#8b5cf6",
-            bg: "#f5f3ff"
-        },
-        {
-            label: "Fresh Prospects",
-            value: secondaryStats.freshProspects,
-            icon: "fi-rr-address-card",
-            color: "#10b981",
-            bg: "#ecfdf5"
-        },
-        {
-            label: "Total Followups",
-            value: secondaryStats.followupCalls,
-            icon: "fi-rr-phone-call",
-            color: "#f59e0b",
-            bg: "#fffbeb"
-        },
-        {
-            label: "Overdue",
-            value: secondaryStats.overdueFollowups,
-            icon: "fi-rr-calendar-exclamation",
-            color: "#ef4444",
-            bg: "#fef2f2"
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Dialog.useEffect": ()=>{
+            if (isOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'unset';
+            }
+            return ({
+                "Dialog.useEffect": ()=>{
+                    document.body.style.overflow = 'unset';
+                }
+            })["Dialog.useEffect"];
         }
-    ];
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "space-y-3",
+    }["Dialog.useEffect"], [
+        isOpen
+    ]);
+    if (!isOpen) return null;
+    const handleConfirm = ()=>{
+        onConfirm?.();
+        onClose();
+    };
+    const handleCancel = ()=>{
+        onCancel?.();
+        onClose();
+    };
+    const getTypeStyles = ()=>{
+        switch(type){
+            case 'success':
+                return {
+                    iconBg: '#10B981',
+                    iconColor: '#FFFFFF',
+                    borderColor: '#10B981',
+                    icon: '✓'
+                };
+            case 'error':
+                return {
+                    iconBg: '#EF4444',
+                    iconColor: '#FFFFFF',
+                    borderColor: '#EF4444',
+                    icon: '✕'
+                };
+            case 'warning':
+                return {
+                    iconBg: '#F59E0B',
+                    iconColor: '#FFFFFF',
+                    borderColor: '#F59E0B',
+                    icon: '⚠'
+                };
+            default:
+                return {
+                    iconBg: '#4b33e8',
+                    iconColor: '#FFFFFF',
+                    borderColor: '#4b33e8',
+                    icon: 'ℹ'
+                };
+        }
+    };
+    const typeStyles = getTypeStyles();
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: `transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? "max-h-[400px]" : "max-h-[105px] lg:max-h-none"}`,
+                style: {
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    zIndex: 9998,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    animation: 'fadeIn 0.2s ease-out'
+                },
+                onClick: onClose,
+                className: "jsx-f08951fac673695",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3",
-                    children: items.map((item, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-white rounded-[16px] p-3.5 border border-gray-50 flex flex-col gap-2.5 hover:shadow-md transition-all h-[100px]",
-                            children: loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "animate-pulse flex flex-col justify-between h-full",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-7 h-7 bg-gray-100 rounded-lg"
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 79,
-                                        columnNumber: 19
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "h-5 bg-gray-200 rounded w-1/2 mb-2"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 81,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "h-2 bg-gray-100 rounded w-3/4"
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 82,
-                                                columnNumber: 21
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 80,
-                                        columnNumber: 19
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                lineNumber: 78,
-                                columnNumber: 17
-                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-7 h-7 rounded-lg flex items-center justify-center",
-                                        style: {
-                                            backgroundColor: item.bg,
-                                            color: item.color
-                                        },
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: `fi ${item.icon} text-xs flex`
+                    style: {
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: '16px',
+                        padding: '24px',
+                        maxWidth: '90%',
+                        width: '420px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        zIndex: 9999,
+                        animation: 'slideUp 0.3s ease-out',
+                        position: 'relative'
+                    },
+                    onClick: (e)=>e.stopPropagation(),
+                    className: "jsx-f08951fac673695",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            style: {
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '16px',
+                                marginBottom: '20px'
+                            },
+                            className: "jsx-f08951fac673695",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    style: {
+                                        width: '48px',
+                                        height: '48px',
+                                        borderRadius: '50%',
+                                        backgroundColor: typeStyles.iconBg,
+                                        color: typeStyles.iconColor,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '24px',
+                                        fontWeight: 'bold',
+                                        flexShrink: 0
+                                    },
+                                    className: "jsx-f08951fac673695",
+                                    children: typeStyles.icon
+                                }, void 0, false, {
+                                    fileName: "[project]/components/Dialog.tsx",
+                                    lineNumber: 134,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    style: {
+                                        flex: 1,
+                                        minWidth: 0
+                                    },
+                                    className: "jsx-f08951fac673695",
+                                    children: [
+                                        title && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                            style: {
+                                                fontSize: '20px',
+                                                fontWeight: '700',
+                                                color: '#263238',
+                                                fontFamily: "'Poppins', sans-serif",
+                                                marginBottom: '8px',
+                                                marginTop: 0
+                                            },
+                                            className: "jsx-f08951fac673695",
+                                            children: title
                                         }, void 0, false, {
-                                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                            lineNumber: 91,
-                                            columnNumber: 21
+                                            fileName: "[project]/components/Dialog.tsx",
+                                            lineNumber: 155,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            style: {
+                                                fontSize: '14px',
+                                                color: '#787E9D',
+                                                fontFamily: "'Roboto', sans-serif",
+                                                lineHeight: '1.6',
+                                                margin: 0,
+                                                wordBreak: 'break-word'
+                                            },
+                                            className: "jsx-f08951fac673695",
+                                            children: message
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/Dialog.tsx",
+                                            lineNumber: 168,
+                                            columnNumber: 15
                                         }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 87,
-                                        columnNumber: 19
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                className: "text-base font-bold text-[#263238] leading-tight",
-                                                children: (item.value || 0).toLocaleString()
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 94,
-                                                columnNumber: 21
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-[9px] font-bold text-[#787E9D] uppercase tracking-wider",
-                                                children: item.label
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                                lineNumber: 97,
-                                                columnNumber: 21
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                                        lineNumber: 93,
-                                        columnNumber: 19
-                                    }, this)
-                                ]
-                            }, void 0, true)
-                        }, i, false, {
-                            fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                            lineNumber: 73,
-                            columnNumber: 13
-                        }, this))
-                }, void 0, false, {
-                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                    lineNumber: 71,
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/Dialog.tsx",
+                                    lineNumber: 153,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/Dialog.tsx",
+                            lineNumber: 125,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            style: {
+                                display: 'flex',
+                                gap: '12px',
+                                justifyContent: 'flex-end',
+                                marginTop: '24px'
+                            },
+                            className: "jsx-f08951fac673695",
+                            children: [
+                                showCancel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: handleCancel,
+                                    style: {
+                                        padding: '10px 20px',
+                                        borderRadius: '8px',
+                                        border: '2px solid #DCDEE3',
+                                        backgroundColor: '#FFFFFF',
+                                        color: '#263238',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        fontFamily: "'Poppins', sans-serif",
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s'
+                                    },
+                                    onMouseEnter: (e)=>{
+                                        e.currentTarget.style.backgroundColor = '#F5F5F5';
+                                        e.currentTarget.style.borderColor = '#787E9D';
+                                    },
+                                    onMouseLeave: (e)=>{
+                                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                                        e.currentTarget.style.borderColor = '#DCDEE3';
+                                    },
+                                    className: "jsx-f08951fac673695",
+                                    children: cancelText
+                                }, void 0, false, {
+                                    fileName: "[project]/components/Dialog.tsx",
+                                    lineNumber: 193,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: handleConfirm,
+                                    style: {
+                                        padding: '10px 20px',
+                                        borderRadius: '8px',
+                                        border: 'none',
+                                        backgroundColor: typeStyles.iconBg,
+                                        color: '#FFFFFF',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        fontFamily: "'Poppins', sans-serif",
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s'
+                                    },
+                                    onMouseEnter: (e)=>{
+                                        e.currentTarget.style.opacity = '0.9';
+                                    },
+                                    onMouseLeave: (e)=>{
+                                        e.currentTarget.style.opacity = '1';
+                                    },
+                                    className: "jsx-f08951fac673695",
+                                    children: confirmText
+                                }, void 0, false, {
+                                    fileName: "[project]/components/Dialog.tsx",
+                                    lineNumber: 219,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/Dialog.tsx",
+                            lineNumber: 184,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/Dialog.tsx",
+                    lineNumber: 110,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
-                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                lineNumber: 66,
+                fileName: "[project]/components/Dialog.tsx",
+                lineNumber: 93,
                 columnNumber: 7
             }, this),
-            !loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "lg:hidden flex justify-center pt-1",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    onClick: ()=>setIsExpanded(!isExpanded),
-                    className: "flex items-center justify-center w-8 h-8 rounded-full text-gray-400 active:scale-90 transition-all",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                        className: `fi ${isExpanded ? "fi-rr-angle-small-up" : "fi-rr-angle-small-down"} flex text-2xl transition-transform duration-300`
-                    }, void 0, false, {
-                        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                        lineNumber: 115,
-                        columnNumber: 13
-                    }, this)
-                }, void 0, false, {
-                    fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                    lineNumber: 111,
-                    columnNumber: 11
-                }, this)
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                id: "f08951fac673695",
+                children: "@keyframes fadeIn{0%{opacity:0}to{opacity:1}}@keyframes slideUp{0%{opacity:0;transform:translateY(20px)scale(.95)}to{opacity:1;transform:translateY(0)scale(1)}}"
+            }, void 0, false, void 0, this)
+        ]
+    }, void 0, true);
+}
+_s(Dialog, "OD7bBpZva5O2jO+Puf00hKivP7c=");
+_c = Dialog;
+var _c;
+__turbopack_context__.k.register(_c, "Dialog");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/dialogService.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "DialogProvider",
+    ()=>DialogProvider,
+    "dialogHelpers",
+    ()=>dialogHelpers,
+    "useDialog",
+    ()=>useDialog
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Dialog$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/Dialog.tsx [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature();
+;
+;
+const DialogContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])(undefined);
+function DialogProvider({ children }) {
+    _s();
+    const [dialogState, setDialogState] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
+        isOpen: false,
+        options: null
+    });
+    const showDialog = (options)=>{
+        setDialogState({
+            isOpen: true,
+            options
+        });
+    };
+    const hideDialog = ()=>{
+        setDialogState({
+            isOpen: false,
+            options: null
+        });
+    };
+    // Expose dialog functions globally for use outside React components
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "DialogProvider.useEffect": ()=>{
+            if ("TURBOPACK compile-time truthy", 1) {
+                window.showDialog = showDialog;
+                window.hideDialog = hideDialog;
+            }
+        }
+    }["DialogProvider.useEffect"], []);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(DialogContext.Provider, {
+        value: {
+            showDialog,
+            hideDialog
+        },
+        children: [
+            children,
+            dialogState.options && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Dialog$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                isOpen: dialogState.isOpen,
+                ...dialogState.options,
+                onClose: hideDialog
             }, void 0, false, {
-                fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-                lineNumber: 110,
+                fileName: "[project]/lib/dialogService.tsx",
+                lineNumber: 46,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
-        fileName: "[project]/components/dashboard/SecondaryStats.tsx",
-        lineNumber: 64,
+        fileName: "[project]/lib/dialogService.tsx",
+        lineNumber: 43,
         columnNumber: 5
     }, this);
 }
-_s(SecondaryStats, "FPNvbbHVlWWR4LKxxNntSxiIS38=");
-_c = SecondaryStats;
+_s(DialogProvider, "LG50xUhJDbZGWLG5rAnsNgTOaZI=");
+_c = DialogProvider;
+function useDialog() {
+    _s1();
+    const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(DialogContext);
+    if (context === undefined) {
+        throw new Error('useDialog must be used within a DialogProvider');
+    }
+    return context;
+}
+_s1(useDialog, "b9L3QQ+jgeyIrH0NfHrJ8nn7VMU=");
+const dialogHelpers = {
+    success: (message, title)=>{
+        if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.showDialog) {
+            window.showDialog({
+                message,
+                title: title || 'Success',
+                type: 'success'
+            });
+        }
+    },
+    error: (message, title)=>{
+        if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.showDialog) {
+            window.showDialog({
+                message,
+                title: title || 'Error',
+                type: 'error'
+            });
+        }
+    },
+    info: (message, title)=>{
+        if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.showDialog) {
+            window.showDialog({
+                message,
+                title: title || 'Information',
+                type: 'info'
+            });
+        }
+    },
+    warning: (message, title)=>{
+        if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.showDialog) {
+            window.showDialog({
+                message,
+                title: title || 'Warning',
+                type: 'warning'
+            });
+        }
+    }
+};
 var _c;
-__turbopack_context__.k.register(_c, "SecondaryStats");
+__turbopack_context__.k.register(_c, "DialogProvider");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/logger.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/**
+ * Global Logger System
+ * Intercepts console logs and stores them in localStorage for debugging on mobile devices.
+ */ __turbopack_context__.s([
+    "globalLogger",
+    ()=>globalLogger
+]);
+const LOG_STORAGE_KEY = 'tfc_console_logs';
+const MAX_LOGS = 500; // Keep last 500 logs to prevent storage bloat
+class Logger {
+    initialized = false;
+    originalConsole = {};
+    init() {
+        if (this.initialized || ("TURBOPACK compile-time value", "object") === 'undefined') return;
+        this.originalConsole = {
+            log: console.log,
+            info: console.log,
+            warn: console.warn,
+            error: console.error,
+            debug: console.debug
+        };
+        const levels = [
+            'log',
+            'info',
+            'warn',
+            'error',
+            'debug'
+        ];
+        levels.forEach((level)=>{
+            console[level] = (...args)=>{
+                // Call original console
+                this.originalConsole[level].apply(console, args);
+                // Filter out Recharts noise that causes render-cycle state updates
+                const message = args.join(' ');
+                if (message.includes('width(-1)') || message.includes('height(-1)')) {
+                    return;
+                }
+                // Save to storage
+                this.saveLog(level, args);
+            };
+        });
+        this.initialized = true;
+        console.log("🚀 [Logger] Persistant logging initialized.");
+    }
+    saveLog(level, args) {
+        try {
+            const message = args.map((arg)=>{
+                if (typeof arg === 'object') {
+                    try {
+                        return JSON.stringify(arg, null, 2);
+                    } catch (e) {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            }).join(' ');
+            const newEntry = {
+                id: Math.random().toString(36).substr(2, 9),
+                timestamp: new Date().toISOString(),
+                level,
+                message,
+                category: window.location.pathname
+            };
+            const existingLogs = this.getLogs();
+            const updatedLogs = [
+                newEntry,
+                ...existingLogs
+            ].slice(0, MAX_LOGS);
+            localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(updatedLogs));
+            // Trigger a custom event so the UI can update in real-time if open
+            window.dispatchEvent(new CustomEvent('tfc-new-log', {
+                detail: newEntry
+            }));
+        } catch (e) {
+            // Avoid infinite loop if saving fails
+            this.originalConsole.error("Failed to save log to localStorage", e);
+        }
+    }
+    getLogs() {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        try {
+            const logs = localStorage.getItem(LOG_STORAGE_KEY);
+            return logs ? JSON.parse(logs) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+    clearLogs() {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        localStorage.removeItem(LOG_STORAGE_KEY);
+        window.dispatchEvent(new CustomEvent('tfc-logs-cleared'));
+    }
+}
+const globalLogger = new Logger();
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/networkInterceptors.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/**
+ * Global Network Interceptor
+ * Halts all outgoing fetch requests when offline and resumes them automatically
+ * once the connection is restored.
+ */ __turbopack_context__.s([
+    "initNetworkInterceptors",
+    ()=>initNetworkInterceptors
+]);
+function initNetworkInterceptors() {
+    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+    ;
+    // Store the original fetch function
+    const originalFetch = window.fetch;
+    // Redefine window.fetch
+    window.fetch = async (...args)=>{
+        // If the browser is offline, pause execution until it's back online
+        if (!window.navigator.onLine) {
+            console.warn("📶 [Network] Request paused - Browser is offline. Waiting for connection...");
+            // Wait for the 'online' event
+            await new Promise((resolve)=>{
+                const handleOnline = ()=>{
+                    window.removeEventListener('online', handleOnline);
+                    console.log("🌐 [Network] Connection restored. Resuming paused request.");
+                    // Small buffer to let the OS fully establish connection before firing
+                    setTimeout(resolve, 300);
+                };
+                window.addEventListener('online', handleOnline);
+            });
+        }
+        // Call the original fetch
+        return originalFetch(...args);
+    };
+    console.log("🛠️ [System] Global Network Interceptors initialized.");
+}
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -693,599 +1043,1082 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/sessionManager.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/lib/bridgeLogger.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.s([
-    "ensureValidSession",
-    ()=>ensureValidSession,
-    "generateTokenId",
-    ()=>generateTokenId,
-    "getEnvDeviceInfo",
-    ()=>getEnvDeviceInfo,
-    "getStoredAccounts",
-    ()=>getStoredAccounts,
-    "removeAccount",
-    ()=>removeAccount,
-    "saveAccount",
-    ()=>saveAccount
+/**
+ * Bridge Logger System
+ * Manages logs for communication between Web and Native Flutter
+ */ __turbopack_context__.s([
+    "globalBridgeLogger",
+    ()=>globalBridgeLogger
+]);
+const BRIDGE_LOG_STORAGE_KEY = 'flutter_bridge_logs';
+const MAX_BRIDGE_LOGS = 200;
+class BridgeLogger {
+    addLog(direction, type, payload) {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        try {
+            const newEntry = {
+                id: Math.random().toString(36).substring(2, 11),
+                direction,
+                type,
+                payload,
+                timestamp: new Date().toISOString()
+            };
+            const existingLogs = this.getLogs();
+            const updatedLogs = [
+                newEntry,
+                ...existingLogs
+            ].slice(0, MAX_BRIDGE_LOGS);
+            localStorage.setItem(BRIDGE_LOG_STORAGE_KEY, JSON.stringify(updatedLogs));
+            // Trigger a custom event so the UI can update in real-time
+            window.dispatchEvent(new CustomEvent('tfc-new-bridge-log', {
+                detail: newEntry
+            }));
+        } catch (e) {
+            console.error("Failed to save bridge log", e);
+        }
+    }
+    getLogs() {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        try {
+            const logs = localStorage.getItem(BRIDGE_LOG_STORAGE_KEY);
+            if (!logs) return [];
+            const parsed = JSON.parse(logs);
+            // Ensure it's an array
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+            console.error("Failed to parse bridge logs", e);
+            return [];
+        }
+    }
+    clearLogs() {
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        localStorage.removeItem(BRIDGE_LOG_STORAGE_KEY);
+        window.dispatchEvent(new CustomEvent('tfc-bridge-logs-cleared'));
+    }
+}
+const globalBridgeLogger = new BridgeLogger();
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/flutterBridge.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/**
+ * Utility to communicate with Flutter InAppWebView bridge
+ */ __turbopack_context__.s([
+    "notifyFlutter",
+    ()=>notifyFlutter,
+    "notifyLoginToFlutter",
+    ()=>notifyLoginToFlutter,
+    "notifyLogoutToFlutter",
+    ()=>notifyLogoutToFlutter,
+    "requestDeviceInfoFromFlutter",
+    ()=>requestDeviceInfoFromFlutter,
+    "sendHeartbeat",
+    ()=>sendHeartbeat,
+    "syncUserInfoToFlutter",
+    ()=>syncUserInfoToFlutter,
+    "updateSyncMetaCallStatus",
+    ()=>updateSyncMetaCallStatus,
+    "updateSyncMetaCallingStatus",
+    ()=>updateSyncMetaCallingStatus
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/bridgeLogger.ts [client] (ecmascript)");
 ;
-const getEnvDeviceInfo = async (flutterDeviceInfo = null)=>{
-    // If we have flutter info, use it
-    if (flutterDeviceInfo) {
+;
+// Global receiver for Flutter messages to ensure they are logged and dispatched via events
+if ("TURBOPACK compile-time truthy", 1) {
+    const win = window;
+    if (!win.__bridge_initialized) {
+        win.fromFlutter = (data)=>{
+            // 1. Log the incoming message
+            const type = data?.type || 'unknown';
+            const value = data?.value;
+            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].addLog('in', type, value);
+            // 2. Dispatch as a CustomEvent so multiple components can listen without overwriting
+            window.dispatchEvent(new CustomEvent('tfc-bridge-message', {
+                detail: data
+            }));
+            console.log("🔔 [Bridge] Received & Dispatched:", data);
+        };
+        win.__bridge_initialized = true;
+    }
+}
+const notifyFlutter = (type, value)=>{
+    if ("TURBOPACK compile-time truthy", 1) {
+        const win = window;
+        // Keyed Deduplication: Store last message per type to prevent overwriting during rapid syncs
+        if (!win.__bridge_history) win.__bridge_history = {};
+        win.__bridge_history[type] = {
+            value,
+            time: Date.now()
+        };
+        // Log the outgoing message
+        __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].addLog('out', type, value);
+        if (win.flutter_inappwebview?.callHandler) {
+            console.log(`🚀 [Bridge] Sending ${type}:`, value);
+            win.flutter_inappwebview.callHandler('fromWebApp', {
+                type,
+                value
+            });
+            return true;
+        }
+    }
+    return false;
+};
+const notifyLoginToFlutter = ()=>{
+    console.log("🚀 [Bridge] Triggering Login Event");
+    return notifyFlutter('login', true);
+};
+const notifyLogoutToFlutter = ()=>{
+    console.log("🚀 [Bridge] Triggering Logout Event");
+    return notifyFlutter('logout', true);
+};
+const syncUserInfoToFlutter = (user)=>{
+    if (!user) return false;
+    // Only proceed if bridge is actually active in the window
+    const isBridgeActive = ("TURBOPACK compile-time value", "object") !== 'undefined' && !!window.flutter_inappwebview?.callHandler;
+    if (!isBridgeActive) return false;
+    // Normalize user data for bridge
+    const userInfoPayload = {
+        user_name: user.displayName || user.user_name || null,
+        employee_id: user.employeeId || user.employee_id || null,
+        email: user.email,
+        role: user.role,
+        designation: user.designation || user.role,
+        department: user.department || null,
+        createdAt: user.createdAt || user.created_at,
+        lastSignInAt: user.lastSignInAt || user.last_sign_in_at,
+        profilePicUrl: user.profilePicUrl || user.profile_pic_url
+    };
+    console.log("🚀 [Bridge] Syncing User Profile");
+    return notifyFlutter('sync_user_info', userInfoPayload);
+};
+const requestDeviceInfoFromFlutter = ()=>{
+    console.log("🚀 [Bridge] Requesting Device Info");
+    return notifyFlutter('request', 'device_info');
+};
+const updateSyncMetaCallStatus = async (employeeId, type, value)=>{
+    if (!employeeId) return;
+    // 0. Master Move: If we are on mobile (bridge active), DO NOT update type/value columns.
+    // These columns are reserved for remote commands from Desktop to Mobile.
+    // Mobile device should only be updated from here via calling_status or native sync.
+    if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.flutter_inappwebview) {
+        console.log("📱 [Bridge] Mobile context. Skipping command sync (type/value) to DB.");
+        return;
+    }
+    try {
+        // 1. Fetch current device status to check if it's online
+        const { data: device, error: fetchError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').select('last_seen, status').eq('employee_id', employeeId).eq('is_primary', true).maybeSingle();
+        if (fetchError || !device) {
+            console.warn("⚠️ [Bridge] Cannot sync status: Primary device not found");
+            return;
+        }
+        // 2. Check if device is actually online (15 second timeout like Header)
+        if (device.last_seen) {
+            const lastSeen = new Date(device.last_seen).getTime();
+            const diffSeconds = (Date.now() - lastSeen) / 1000;
+            if (diffSeconds >= 15) {
+                console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s ago). Skipping ${type} update.`);
+                return;
+            }
+        } else {
+            console.warn("⚠️ [Bridge] Device has never sent a heartbeat. Skipping update.");
+            return;
+        }
+        console.log(`📡 [Bridge] Device is online. Syncing ${type} to DB...`);
+        // 3. Perform the update
+        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
+            type: type,
+            value: value,
+            updated_at: new Date().toISOString()
+        }).eq('employee_id', employeeId).eq('is_primary', true).eq('status', 'connected');
+        if (error) {
+            console.error("❌ [Bridge] SyncMeta update error:", error);
+        }
+    } catch (err) {
+        console.error("❌ [Bridge] SyncMeta connection error:", err);
+    }
+};
+const updateSyncMetaCallingStatus = async (employeeId, callingStatus)=>{
+    if (!employeeId) return;
+    try {
+        console.log(`📡 [Bridge] Syncing calling_status: ${callingStatus} to DB...`);
+        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
+            calling_status: callingStatus,
+            updated_at: new Date().toISOString()
+        }).eq('employee_id', employeeId).eq('is_primary', true);
+        if (error) {
+            console.error("❌ [Bridge] SyncMeta calling_status update error:", error);
+        }
+    } catch (err) {
+        console.error("❌ [Bridge] SyncMeta calling_status connection error:", err);
+    }
+};
+const sendHeartbeat = async (employeeId)=>{
+    if (!employeeId) return;
+    // Retrieve android_id from localStorage (set by Header.tsx)
+    const androidId = typeof localStorage !== 'undefined' ? localStorage.getItem('android_id') : null;
+    if (!androidId) {
+        console.log("⚠️ [Heartbeat] No android_id found, skipping precise heartbeat.");
+        return;
+    }
+    const entryId = `${employeeId}_${androidId}`;
+    try {
+        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
+            last_seen: new Date().toISOString()
+        }).eq('entry_id', entryId).eq('is_primary', true).eq('status', 'connected');
+        if (error) console.error("❌ [Heartbeat] Update failed:", error);
+    } catch (err) {
+        console.error("❌ [Heartbeat] Error:", err);
+    }
+};
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/components/OfflineOverlay.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>__TURBOPACK__default__export__
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/styled-jsx/style.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
+;
+/**
+ * Global Offline Overlay component
+ * Shows a blurred background with an illustration when internet is lost.
+ */ const OfflineOverlay = ()=>{
+    _s();
+    const [isOffline, setIsOffline] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "OfflineOverlay.useEffect": ()=>{
+            let intervalId;
+            // Check initial state
+            if ("TURBOPACK compile-time truthy", 1) {
+                // 1. Initial Browser Check
+                setIsOffline(!window.navigator.onLine);
+                const handleOnline = {
+                    "OfflineOverlay.useEffect.handleOnline": ()=>{
+                        console.log("🌐 [Status] Online Event");
+                        setIsOffline(false);
+                    }
+                }["OfflineOverlay.useEffect.handleOnline"];
+                const handleOffline = {
+                    "OfflineOverlay.useEffect.handleOffline": ()=>{
+                        console.log("❌ [Status] Offline Event");
+                        setIsOffline(true);
+                    }
+                }["OfflineOverlay.useEffect.handleOffline"];
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+                // 2. Robust Polling (Heartbeat) - Fix for Flutter WebView
+                // Poll every 20 seconds (Increased from 5s to save egregious data usage)
+                const checkConnection = {
+                    "OfflineOverlay.useEffect.checkConnection": async ()=>{
+                        // Only ping if tab is active to save data egress
+                        if (document.visibilityState !== 'visible') return;
+                        try {
+                            // Fetch a tiny resource to verify connection
+                            await fetch('/favicon.ico?' + new Date().getTime(), {
+                                method: 'HEAD',
+                                mode: 'no-cors',
+                                cache: 'no-store'
+                            });
+                            if (isOffline) {
+                                console.log("🌐 [Status] Connection Restored (Ping Success)");
+                                setIsOffline(false);
+                            }
+                        } catch (err) {
+                            if (!isOffline) {
+                                console.log("❌ [Status] Connection Lost (Ping Failed)");
+                                setIsOffline(true);
+                            }
+                        }
+                    }
+                }["OfflineOverlay.useEffect.checkConnection"];
+                // Start polling
+                intervalId = setInterval(checkConnection, 20000);
+                return ({
+                    "OfflineOverlay.useEffect": ()=>{
+                        window.removeEventListener('online', handleOnline);
+                        window.removeEventListener('offline', handleOffline);
+                        clearInterval(intervalId);
+                    }
+                })["OfflineOverlay.useEffect"];
+            }
+        }
+    }["OfflineOverlay.useEffect"], [
+        isOffline
+    ]);
+    if (!isOffline) return null;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        style: {
+            fontFamily: "'Poppins', sans-serif"
+        },
+        className: "jsx-a5e4536a5fc82684" + " " + "fixed inset-0 z-[99999] flex items-center justify-center backdrop-blur-md bg-black/60 transition-all duration-500 p-4",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "jsx-a5e4536a5fc82684" + " " + "bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 w-full max-w-[400px] text-center shadow-2xl scale-in-center border border-white/20 mx-4",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "jsx-a5e4536a5fc82684" + " " + "mb-6 overflow-hidden rounded-xl md:rounded-2xl h-[160px] md:h-[200px] flex items-center justify-center bg-gray-50",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                            src: "/offline-illustration.png",
+                            alt: "Internet Disconnected",
+                            onError: (e)=>{
+                                // Fallback if image fails
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.parentElement.innerHTML = '<i class="fi fi-rr-wifi-slash text-6xl text-gray-300"></i>';
+                            },
+                            className: "jsx-a5e4536a5fc82684" + " " + "w-full h-full object-cover animate-pulse"
+                        }, void 0, false, {
+                            fileName: "[project]/components/OfflineOverlay.tsx",
+                            lineNumber: 77,
+                            columnNumber: 11
+                        }, ("TURBOPACK compile-time value", void 0))
+                    }, void 0, false, {
+                        fileName: "[project]/components/OfflineOverlay.tsx",
+                        lineNumber: 76,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                        className: "jsx-a5e4536a5fc82684" + " " + "text-xl md:text-2xl font-bold text-[#263238] mb-2",
+                        children: "Oops! Connection Lost"
+                    }, void 0, false, {
+                        fileName: "[project]/components/OfflineOverlay.tsx",
+                        lineNumber: 90,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "jsx-a5e4536a5fc82684" + " " + "text-[#787E9D] text-xs md:text-sm leading-relaxed mb-6",
+                        children: "It looks like your internet connection is currently unstable or disconnected. Please check your router or network settings."
+                    }, void 0, false, {
+                        fileName: "[project]/components/OfflineOverlay.tsx",
+                        lineNumber: 94,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "jsx-a5e4536a5fc82684" + " " + "flex items-center justify-center gap-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "jsx-a5e4536a5fc82684" + " " + "w-2 h-2 rounded-full bg-red-500 animate-ping"
+                            }, void 0, false, {
+                                fileName: "[project]/components/OfflineOverlay.tsx",
+                                lineNumber: 100,
+                                columnNumber: 12
+                            }, ("TURBOPACK compile-time value", void 0)),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "jsx-a5e4536a5fc82684" + " " + "text-[10px] md:text-xs font-semibold text-red-500 uppercase tracking-widest",
+                                children: "Waiting for network..."
+                            }, void 0, false, {
+                                fileName: "[project]/components/OfflineOverlay.tsx",
+                                lineNumber: 101,
+                                columnNumber: 12
+                            }, ("TURBOPACK compile-time value", void 0))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/OfflineOverlay.tsx",
+                        lineNumber: 99,
+                        columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0))
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/OfflineOverlay.tsx",
+                lineNumber: 75,
+                columnNumber: 7
+            }, ("TURBOPACK compile-time value", void 0)),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                id: "a5e4536a5fc82684",
+                children: ".scale-in-center.jsx-a5e4536a5fc82684{animation:.5s cubic-bezier(.25,.46,.45,.94) both scale-in-center}@keyframes scale-in-center{0%{opacity:1;transform:scale(0)}to{opacity:1;transform:scale(1)}}"
+            }, void 0, false, void 0, ("TURBOPACK compile-time value", void 0))
+        ]
+    }, void 0, true, {
+        fileName: "[project]/components/OfflineOverlay.tsx",
+        lineNumber: 71,
+        columnNumber: 5
+    }, ("TURBOPACK compile-time value", void 0));
+};
+_s(OfflineOverlay, "yIyCq6r2gljXAQnZsaC9iva1MCM=");
+_c = OfflineOverlay;
+const __TURBOPACK__default__export__ = OfflineOverlay;
+var _c;
+__turbopack_context__.k.register(_c, "OfflineOverlay");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/context/UserContext.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "UserContext",
+    ()=>UserContext,
+    "useUser",
+    ()=>useUser
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var _s = __turbopack_context__.k.signature();
+;
+const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])({
+    user: null,
+    mounted: false,
+    loading: true,
+    error: null,
+    statusMessage: "",
+    sessionExpired: false,
+    refetchUser: async ()=>{}
+});
+const useUser = ()=>{
+    _s();
+    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(UserContext);
+};
+_s(useUser, "gDsCjeeItUuvgOWf1v4qoK9RF6k=");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/monitoring.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+/**
+ * Sentinel Monitoring - DISABLED
+ * This file is kept as an empty shell to avoid breaking existing imports.
+ */ __turbopack_context__.s([
+    "estimateSize",
+    ()=>estimateSize,
+    "logSystemEvent",
+    ()=>logSystemEvent
+]);
+const logSystemEvent = async (_log)=>{
+    // Monitoring completely disabled by user request.
+    return;
+};
+const estimateSize = (_obj)=>{
+    return 0;
+};
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/authService.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "checkAuthAndFetchProfile",
+    ()=>checkAuthAndFetchProfile,
+    "handleLogout",
+    ()=>handleLogout
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/monitoring.ts [client] (ecmascript)");
+;
+;
+async function checkAuthAndFetchProfile() {
+    try {
+        const { data: { session }, error: sessionError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
+        const authUser = session?.user;
+        if (sessionError || !authUser) {
+            return {
+                user: null,
+                error: "No session found",
+                shouldRedirect: true
+            };
+        }
+        // Fetch profile from database
+        const { data: profileData, error: profileError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("user_profiles").select("*").eq("user_id", authUser.id).maybeSingle();
+        if (profileError) {
+            console.error("Error fetching user profile:", profileError);
+        }
+        const userData = {
+            uid: authUser.id,
+            displayName: profileData?.user_name || null,
+            email: authUser.email || "",
+            phone: profileData?.contact_no || null,
+            providers: [],
+            providerType: null,
+            createdAt: authUser.created_at,
+            lastSignInAt: authUser.last_sign_in_at || null,
+            employeeId: profileData?.employee_id || null,
+            role: profileData?.role || null,
+            approvalStatus: profileData?.approval_status || null,
+            accountStatus: profileData?.status || null,
+            status: profileData?.status || null,
+            updatedAt: profileData?.updated_at || null,
+            profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
+            googleCalendarConnected: profileData?.google_calendar_connected || false,
+            googleCalendarSkipped: profileData?.google_calendar_skipped || false,
+            isClient: profileData ? profileData.is_client ?? false : undefined,
+            isCaller: profileData?.is_caller || false,
+            designation: profileData?.designation || null,
+            department: profileData?.department || null,
+            activeCampaignId: profileData?.active_campaign_id || null,
+            activeCustomerId: profileData?.active_customer_id || null,
+            profile_complete: profileData?.profile_complete || false,
+            statusReason: profileData?.status_reason || null,
+            holdStartDate: profileData?.hold_start_date || null,
+            holdEndDate: profileData?.hold_end_date || null,
+            organization_id: profileData?.organization_id || null
+        };
         return {
-            device_name: `${flutterDeviceInfo.brand} ${flutterDeviceInfo.model}`,
-            browser: "Nexus App",
-            user_agent: flutterDeviceInfo.androidId || "Nexus-Android",
-            device_type: "mobile"
+            user: userData,
+            error: null,
+            shouldRedirect: false
+        };
+    } catch (error) {
+        console.error("Auth check error:", error);
+        return {
+            user: null,
+            error: error.message || "An error occurred",
+            shouldRedirect: true
         };
     }
-    // Otherwise detect from browser
-    const ua = ("TURBOPACK compile-time truthy", 1) ? navigator.userAgent : "TURBOPACK unreachable";
-    let browser = "Unknown Browser";
-    if (ua.includes("Chrome")) browser = "Chrome";
-    else if (ua.includes("Firefox")) browser = "Firefox";
-    else if (ua.includes("Safari")) browser = "Safari";
-    else if (ua.includes("Edge")) browser = "Edge";
-    let os = "Unknown OS";
-    if (ua.includes("Windows")) os = "Windows";
-    else if (ua.includes("Mac")) os = "MacOS";
-    else if (ua.includes("Linux")) os = "Linux";
-    else if (ua.includes("Android")) os = "Android";
-    else if (ua.includes("iPhone")) os = "iOS";
-    return {
-        device_name: os,
-        browser: browser,
-        user_agent: ua,
-        device_type: ua.includes("Mobi") ? "mobile" : "desktop"
-    };
-};
-const ensureValidSession = async ()=>{
-    const { data: { session } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
-    return session;
-};
-const getStoredAccounts = ()=>[];
-const saveAccount = (user)=>{};
-const removeAccount = (tokenId)=>{};
-const generateTokenId = ()=>`token_${Math.random().toString(36).substring(2, 12)}`;
+}
+async function handleLogout(router) {
+    try {
+        console.log("🚀 [Auth] Starting complete logout...");
+        // 1. Notify Flutter bridge of logout if available
+        if ("TURBOPACK compile-time truthy", 1) {
+            const win = window;
+            if (win.flutter_inappwebview?.callHandler) {
+                win.flutter_inappwebview.callHandler("fromWebApp", {
+                    type: "logout",
+                    value: true
+                });
+            }
+            // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
+            localStorage.setItem('manual_logout_intended', 'true');
+            // Clear specific caches instead of nuking everything immediately
+            localStorage.removeItem('cached_user_profile');
+            sessionStorage.removeItem('active_user_profile');
+        }
+        // 2. Clear Supabase session on server and client
+        const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
+        if (user) {
+            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["logSystemEvent"])({
+                event_type: 'AUTH',
+                description: `User Logout: ${user.email}`,
+                user_id: user.id,
+                metadata: {
+                    email: user.email
+                }
+            });
+        }
+        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.signOut();
+        console.log("👋 [Auth] Logout complete, redirecting to login...");
+        router.replace("/login");
+    } catch (err) {
+        console.error("❌ [Auth] Logout failure:", err);
+        router.replace("/login");
+    }
+}
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/hooks/useDashboardStats.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/hooks/useAuthGuard.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
-    "useDashboardStats",
-    ()=>useDashboardStats
+    "useAuthGuard",
+    ()=>useAuthGuard
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/authService.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
 var _s = __turbopack_context__.k.signature();
 ;
 ;
-const CACHE_TTL = 60 * 1000; // 60 seconds
-function useDashboardStats() {
-    _s();
-    const [stats, setStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        totalCustomers: 0,
-        totalPremium: 0,
-        totalConverted: 0,
-        conversionRate: 0,
-        totalDials: 0,
-        totalTalktime: 0,
-        activeCampaigns: 0,
-        teamSize: 0,
-        efficiencyScore: 75
-    });
-    const [secondaryStats, setSecondaryStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        todayCalls: 0,
-        freshProspects: 0,
-        followupCalls: 0,
-        overdueFollowups: 0,
-        newProspects: 0,
-        assignedMembers: 0
-    });
-    const [performanceMetrics, setPerformanceMetrics] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        avgDuration: "0m 0s",
-        connectedRate: "0%",
-        roi: "1.0x"
-    });
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const cacheRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])({});
-    // Clean up abort controller on unmount
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useDashboardStats.useEffect": ()=>{
-            return ({
-                "useDashboardStats.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                }
-            })["useDashboardStats.useEffect"];
-        }
-    }["useDashboardStats.useEffect"], []);
-    const fetchStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useDashboardStats.useCallback[fetchStats]": async (orgId, dateFilter = "this_month", userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            // Check cache
-            const cached = cacheRef.current[cacheKey];
-            if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setStats(cached.data.stats);
-                setSecondaryStats(cached.data.secondaryStats);
-                setPerformanceMetrics(cached.data.performanceMetrics);
-                loading && setLoading(false); // Ensure loading is false if cache hit
-                return;
-            }
-            // Cancel previous request
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session using the robust helper (handles hydration race conditions)
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return; // Graceful exit on session expiry
-                }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/dashboard_overview?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Dashboard Stats] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = {
-                    stats: result.data.stats,
-                    secondaryStats: result.data.secondaryStats,
-                    performanceMetrics: result.data.performanceMetrics
-                };
-                // Update State
-                setStats(data.stats);
-                setSecondaryStats(data.secondaryStats);
-                setPerformanceMetrics(data.performanceMetrics);
-                // Update Cache
-                cacheRef.current[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Dashboard Stats Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    setLoading(false);
-                    if (abortControllerRef.current === controller) {
-                        abortControllerRef.current = null;
-                    }
-                }
-            }
-        }
-    }["useDashboardStats.useCallback[fetchStats]"], []);
-    return {
-        stats,
-        secondaryStats,
-        performanceMetrics,
-        loading,
-        error,
-        fetchStats
-    };
-}
-_s(useDashboardStats, "9teW5F/JEP5xI72KjI6MQstnRXk=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useDashboardCharts.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useDashboardCharts",
-    ()=>useDashboardCharts
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
 ;
 ;
-const CACHE_TTL = 60 * 1000;
-function useDashboardCharts() {
+function useAuthGuard() {
     _s();
-    const [chartData, setChartData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [pieData, setPieData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [heatmapData, setHeatmapData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [campaignData, setCampaignData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [hourlyStats, setHourlyStats] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const cacheRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])({});
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useDashboardCharts.useEffect": ()=>{
-            return ({
-                "useDashboardCharts.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
-                }
-            })["useDashboardCharts.useEffect"];
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [mounted, setMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [statusMessage, setStatusMessage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("Checking session...");
+    const [sessionExpired, setSessionExpired] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const loadingRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(false);
+    const fetchAuth = async (force = false)=>{
+        // Production Pattern: If we already have a user and aren't forcing a refresh, skip the loading screen and call.
+        if (!force && user && !loadingRef.current) {
+            console.log("🚀 [Auth] User already in memory. Skipping redundant fetch.");
+            return;
         }
-    }["useDashboardCharts.useEffect"], []);
-    const fetchChartData = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useDashboardCharts.useCallback[fetchChartData]": async (orgId, dateFilter = "this_month", customRange, userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            const cached = cacheRef.current[cacheKey];
-            if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setChartData(cached.data.chartData);
-                setPieData(cached.data.pieData);
-                setHeatmapData(cached.data.heatmapData);
-                setCampaignData(cached.data.campaignData);
-                setHourlyStats(cached.data.hourlyStats);
-                loading && setLoading(false);
-                return;
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return;
-                }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...customRange && {
-                        startDate: customRange.start,
-                        endDate: customRange.end
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/dashboard_charts?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Dashboard Charts] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = result.data;
-                setChartData(data.chartData);
-                setPieData(data.pieData);
-                setHeatmapData(data.heatmapData);
-                setCampaignData(data.campaignData);
-                setHourlyStats(data.hourlyStats);
-                cacheRef.current[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Dashboard Charts Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    // Only turn off loading if THIS was the active request
-                    if (abortControllerRef.current === controller) {
+        if (loadingRef.current) return;
+        loadingRef.current = true;
+        if (!user) setLoading(true);
+        try {
+            const isLoginPage = router.pathname === "/login" || router.pathname === "/auth/login" || router.pathname === "/portal/login";
+            const isPublicLandingPage = router.pathname === "/home" || router.pathname === "/signup" || router.pathname === "/signup-success" || router.pathname === "/contact" || router.pathname === "/features" || router.pathname === "/pricing" || router.pathname === "/faq";
+            const isRootPath = router.pathname === "/";
+            setStatusMessage("Verifying active session...");
+            const { data: { session: authSession }, error: authError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
+            const authUser = authSession?.user;
+            if (authUser) {
+                setSessionExpired(false);
+                // --- ⚡ SESSION PROFILE CACHE (Ghostly Fetch Prevention) ---
+                // Keeps the profile in memory for the duration of the tab so we don't hit the DB/API every reload.
+                const sessionProfileStr = ("TURBOPACK compile-time truthy", 1) ? sessionStorage.getItem('active_user_profile') : "TURBOPACK unreachable";
+                if (sessionProfileStr && !force) {
+                    try {
+                        const cachedProfile = JSON.parse(sessionProfileStr);
+                        // CRITICAL: Even if cached, we must occasionally verify status from DB to catch suspensions
+                        // For now, let's allow the UI to show up but trigger a background check if status is important
+                        setUser(cachedProfile);
+                        console.log("⚡ [Auth] Restored User Profile from Session Tab Memory.");
+                        // If it's a critical page, we force a background verification
+                        if (router.pathname.includes('/portal')) {
+                            console.log("🔍 [Auth] Background Status Verification Triggered...");
+                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["checkAuthAndFetchProfile"])().then((result)=>{
+                                if (result.user) {
+                                    const dbStatus = result.user.status || result.user.accountStatus;
+                                    const dbApproval = result.user.approvalStatus;
+                                    // If status changed to something restricted, update user state to trigger redirection
+                                    if (dbStatus === 'suspend' || dbStatus === 'hold' || dbStatus === 'inactive' || dbApproval === 'pending' || dbApproval === 'rejected' || dbApproval === 'hold' || dbApproval === 'suspend') {
+                                        console.log(`🚨 [Auth] Restricted status detected (${dbStatus}/${dbApproval}). Redirecting...`);
+                                        setUser(result.user); // This will trigger the router useEffect
+                                        sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                                    } else {
+                                        // Status is active, just update memory if there's any difference
+                                        setUser(result.user);
+                                        sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                                    }
+                                }
+                            });
+                        }
+                        if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
+                            const lastPath = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('last_visited_path') : "TURBOPACK unreachable";
+                            router.push(lastPath || "/dashboard");
+                        }
                         setLoading(false);
-                        abortControllerRef.current = null;
+                        loadingRef.current = false;
+                        return;
+                    } catch (e) {
+                        console.warn("Failed to parse session profile cache", e);
+                    }
+                }
+                // Fetch/Refresh Profile from DB (Only happens on very first login or when tab is perfectly closed)
+                setStatusMessage("Fetching user profile...");
+                const result = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$authService$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["checkAuthAndFetchProfile"])();
+                if (result.user) {
+                    if (!user) setStatusMessage("Finalizing setup...");
+                    setUser(result.user);
+                    // Store securely in Tab Memory
+                    if ("TURBOPACK compile-time truthy", 1) {
+                        sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
+                    }
+                    // Logged in: if on login/root, move to dashboard or last path
+                    if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
+                        if (!user) setStatusMessage("Restoring your screen...");
+                        const lastPath = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('last_visited_path') : "TURBOPACK unreachable";
+                        router.push(lastPath || "/dashboard");
+                    }
+                } else if (result.shouldRedirect) {
+                    setUser(null);
+                    if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
+                        setStatusMessage("Auth failed. Redirecting...");
+                        router.push("/login");
+                    }
+                }
+            } else {
+                // Not logged in
+                setUser(null);
+                if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
+                    // If we had a user before, but now we don't, it might be an expiration
+                    if (user || ("TURBOPACK compile-time value", "object") !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
+                        setSessionExpired(true);
+                    } else {
+                        setStatusMessage("Access denied. Please login...");
+                        router.push("/login");
                     }
                 }
             }
+        } catch (err) {
+            console.error("Auth check failed:", err);
+            // Clear cache on fatal auth errors
+            if ("TURBOPACK compile-time truthy", 1) {
+                localStorage.removeItem("cached_user_profile");
+            }
+            setError(err.message || "Authentication error");
+        } finally{
+            setLoading(false);
+            loadingRef.current = false;
         }
-    }["useDashboardCharts.useCallback[fetchChartData]"], []);
-    return {
-        chartData,
-        pieData,
-        heatmapData,
-        campaignData,
-        hourlyStats,
-        loading,
-        error,
-        fetchChartData
     };
-}
-_s(useDashboardCharts, "RSDnzN47eVB0eqSCQG7L6UYHlmA=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useAgentPerformance.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useAgentPerformance",
-    ()=>useAgentPerformance
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/sessionManager.ts [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-;
-const CACHE_TTL = 60 * 1000;
-// Global cache to persist across remounts/tab switches
-const globalCache = {};
-function useAgentPerformance() {
-    _s();
-    const [agentData, setAgentData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [totalDials, setTotalDials] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
-    const [totalDuration, setTotalDuration] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
-    const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const abortControllerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // 1. Initial Auth Setup & Global Listener
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "useAgentPerformance.useEffect": ()=>{
+        "useAuthGuard.useEffect": ()=>{
+            setMounted(true);
+            fetchAuth(); // Initial Check
+            const { data: { subscription } } = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.onAuthStateChange({
+                "useAuthGuard.useEffect": (event, session)=>{
+                    console.log(`🔐 [Auth Event] ${event}`);
+                    if (event === 'SIGNED_IN') {
+                        setSessionExpired(false);
+                        fetchAuth(true); // Sync data only on explicit login
+                    } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED' && !session) {
+                        // Immediate check for session expiry UI
+                        const isManualLogout = ("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
+                        const hasSessionCache = ("TURBOPACK compile-time value", "object") !== 'undefined' && !!sessionStorage.getItem('active_user_profile');
+                        if (isManualLogout) {
+                            console.log("👋 [Auth Guard] Manual logout detected. Redirecting...");
+                            localStorage.removeItem('manual_logout_intended');
+                            setSessionExpired(false);
+                            setUser(null);
+                            router.push("/login");
+                            return;
+                        }
+                        if (user || hasSessionCache) {
+                            console.log("🚫 [Auth Guard] Detected expiry event. Showing UI.");
+                            if ("TURBOPACK compile-time truthy", 1) {
+                                localStorage.removeItem("cached_user_profile");
+                                sessionStorage.removeItem("active_user_profile");
+                            }
+                            setSessionExpired(true);
+                            setUser(null);
+                        } else {
+                            setUser(null);
+                            router.push("/login");
+                        }
+                    }
+                }
+            }["useAuthGuard.useEffect"]);
+            // ⚡ PROACTIVE LISTENERS
+            // 1. Cross-tab logout detection
+            const handleStorageChange = {
+                "useAuthGuard.useEffect.handleStorageChange": (e)=>{
+                    if (e.key && e.key.includes('auth-token') && !e.newValue && (user || sessionStorage.getItem('active_user_profile'))) {
+                        setSessionExpired(true);
+                        setUser(null);
+                    }
+                }
+            }["useAuthGuard.useEffect.handleStorageChange"];
+            // 2. Immediate check on tab focus
+            const handleVisibilityChange = {
+                "useAuthGuard.useEffect.handleVisibilityChange": ()=>{
+                    if (document.visibilityState === 'visible' && (user || sessionStorage.getItem('active_user_profile'))) {
+                        fetchAuth();
+                    }
+                }
+            }["useAuthGuard.useEffect.handleVisibilityChange"];
+            // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
+            // Every 2 seconds, we check if the Supabase token still exists. 
+            // This catches manual deletions or system-level expiries immediately without server round-trips.
+            const localHeartbeat = setInterval({
+                "useAuthGuard.useEffect.localHeartbeat": ()=>{
+                    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                    ;
+                    const hasToken = Object.keys(localStorage).some({
+                        "useAuthGuard.useEffect.localHeartbeat.hasToken": (key)=>key.includes('auth-token')
+                    }["useAuthGuard.useEffect.localHeartbeat.hasToken"]);
+                    const hasProfile = !!sessionStorage.getItem('active_user_profile');
+                    const isManualLogout = localStorage.getItem('manual_logout_intended') === 'true';
+                    if (!hasToken && (user || hasProfile) && !sessionExpired && !isManualLogout) {
+                        console.log("🚨 [Auth Guard] Local token missing. Locking system.");
+                        setSessionExpired(true);
+                        setUser(null);
+                        // Clean up
+                        sessionStorage.removeItem('active_user_profile');
+                        localStorage.removeItem('cached_user_profile');
+                    }
+                }
+            }["useAuthGuard.useEffect.localHeartbeat"], 2000);
             return ({
-                "useAgentPerformance.useEffect": ()=>{
-                    if (abortControllerRef.current) {
-                        abortControllerRef.current.abort();
-                    }
+                "useAuthGuard.useEffect": ()=>{
+                    subscription.unsubscribe();
+                    window.removeEventListener('storage', handleStorageChange);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    clearInterval(localHeartbeat);
                 }
-            })["useAgentPerformance.useEffect"];
+            })["useAuthGuard.useEffect"];
         }
-    }["useAgentPerformance.useEffect"], []);
-    const fetchAgentPerformance = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useAgentPerformance.useCallback[fetchAgentPerformance]": async (orgId, dateFilter = "this_month", customRange, force = false, userId, restrictedUserIds)=>{
-            const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
-            const cached = globalCache[cacheKey];
-            if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
-                setAgentData(cached.data.agentData);
-                setTotalDials(cached.data.totalDials);
-                setTotalDuration(cached.data.totalDuration);
-                if (loading) setLoading(false);
-                return;
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            const controller = new AbortController();
-            abortControllerRef.current = controller;
-            try {
-                setLoading(true);
-                setError(null);
-                // Wait for session
-                const session = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$sessionManager$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["ensureValidSession"])();
-                if (!session) {
-                    setLoading(false);
-                    return;
+    }["useAuthGuard.useEffect"], [
+        user,
+        router.pathname,
+        sessionExpired
+    ]);
+    // 2. Production Pattern: Pure Route Protection on every navigation
+    // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "useAuthGuard.useEffect": ()=>{
+            if (!mounted || loading || sessionExpired) return;
+            const isLoginPage = router.pathname === "/login" || router.pathname === "/portal/login";
+            const isPublicLandingPage = [
+                "/home",
+                "/signup",
+                "/signup-success",
+                "/contact",
+                "/features",
+                "/pricing",
+                "/faq"
+            ].includes(router.pathname);
+            const isRootPath = router.pathname === "/";
+            if (!user) {
+                // Not logged in and trying to access protected page
+                if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
+                    router.push("/login");
                 }
-                const params = new URLSearchParams({
-                    dateFilter,
-                    ...orgId && {
-                        orgId
-                    },
-                    ...customRange && {
-                        startDate: customRange.start,
-                        endDate: customRange.end
-                    },
-                    ...userId && {
-                        userId
-                    },
-                    ...restrictedUserIds && {
-                        restrictedUserIds: JSON.stringify(restrictedUserIds)
-                    }
-                });
-                const response = await fetch(`/api/agent_performance?${params}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`
-                    },
-                    signal: controller.signal
-                });
-                // ⚡ INSTANT AUTH CHECK (Before parsing JSON)
-                if (response.status === 401) {
-                    console.warn("🔐 [Agent Performance] 401 Detected. Silently stopping.");
-                    setLoading(false);
-                    return;
-                }
-                let result;
-                try {
-                    result = await response.json();
-                } catch (e) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-                if (!response.ok || !result.success || !result.data) {
-                    throw new Error(result.error || `API error: ${response.status}`);
-                }
-                const data = {
-                    agentData: result.data.agents,
-                    totalDials: result.data.totalDials || 0,
-                    totalDuration: result.data.totalDuration || 0
-                };
-                setAgentData(data.agentData);
-                setTotalDials(data.totalDials);
-                setTotalDuration(data.totalDuration);
-                globalCache[cacheKey] = {
-                    data,
-                    timestamp: Date.now()
-                };
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error("Agent Performance Fetch Error:", err);
-                setError(err.message || "Unknown error");
-            } finally{
-                if (controller.signal.aborted) {
-                // Do nothing
-                } else {
-                    setLoading(false);
-                    if (abortControllerRef.current === controller) {
-                        abortControllerRef.current = null;
+            } else {
+                // Logged in: Check status for specific redirects
+                // If user is on a protected page, enforce status-based routing
+                if (!isPublicLandingPage) {
+                    const status = user.status || user.accountStatus;
+                    const approvalStatus = user.approvalStatus;
+                    const isRestrictedPage = [
+                        '/portal/suspended',
+                        '/portal/hold',
+                        '/portal/pending',
+                        '/portal/rejected'
+                    ].includes(router.pathname);
+                    if (status === 'suspend' || approvalStatus === 'suspend') {
+                        if (router.pathname !== '/portal/suspended') {
+                            router.push("/portal/suspended");
+                        }
+                    } else if (status === 'hold' || approvalStatus === 'hold') {
+                        if (router.pathname !== '/portal/hold') {
+                            router.push("/portal/hold");
+                        }
+                    } else if (approvalStatus === 'pending') {
+                        if (router.pathname !== '/portal/pending') {
+                            router.push("/portal/pending");
+                        }
+                    } else if (approvalStatus === 'rejected') {
+                        if (router.pathname !== '/portal/rejected') {
+                            router.push("/portal/rejected");
+                        }
+                    } else if (status === 'active' || approvalStatus === 'approved') {
+                        // User is fully active/approved
+                        // If they are on a restricted page, send them back to dashboard
+                        if (isRestrictedPage || isLoginPage || isRootPath) {
+                            const lastPath = localStorage.getItem('last_visited_path');
+                            router.push(lastPath && !isRestrictedPage ? lastPath : "/dashboard");
+                        } else if (!isPublicLandingPage) {
+                            // Save the valid current path
+                            if ("TURBOPACK compile-time truthy", 1) {
+                                localStorage.setItem('last_visited_path', router.asPath);
+                            }
+                        }
                     }
                 }
             }
         }
-    }["useAgentPerformance.useCallback[fetchAgentPerformance]"], []);
+    }["useAuthGuard.useEffect"], [
+        router.pathname,
+        router.asPath,
+        user?.uid,
+        mounted,
+        loading,
+        sessionExpired
+    ]);
     return {
-        agentData,
-        totalDials,
-        totalDuration,
+        user,
         loading,
         error,
-        fetchAgentPerformance
+        mounted,
+        statusMessage,
+        refetchUser: fetchAuth,
+        sessionExpired
     };
 }
-_s(useAgentPerformance, "uFAMfuobmrryJKX8ZMsl9iIF0KE=");
+_s(useAuthGuard, "D84MmLKOg9CbRCYJVP2pABY9oN0=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/components/DashboardErrorBoundary.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/components/UserProvider.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
-    "DashboardErrorBoundary",
-    ()=>DashboardErrorBoundary
+    "UserProvider",
+    ()=>UserProvider
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useAuthGuard.ts [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
 ;
 ;
-class DashboardErrorBoundary extends __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Component"] {
-    state = {
-        hasError: false,
-        error: null
-    };
-    static getDerivedStateFromError(error) {
-        return {
-            hasError: true,
-            error
-        };
-    }
-    componentDidCatch(error, errorInfo) {
-        console.error("Uncaught error in Dashboard:", error, errorInfo);
-    }
-    render() {
-        if (this.state.hasError) {
-            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "w-full min-h-[400px] flex items-center justify-center bg-white rounded-2xl border border-red-100 p-8 text-center",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                className: "fi fi-rr-exclamation text-2xl text-red-500"
-                            }, void 0, false, {
-                                fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                                lineNumber: 32,
-                                columnNumber: 21
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 31,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                            className: "text-xl font-bold text-gray-900 mb-2",
-                            children: "Something went wrong"
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 34,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                            className: "text-gray-500 mb-6 max-w-md mx-auto",
-                            children: "We encountered an error while loading this section of the dashboard. Please try refreshing the page."
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 35,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "text-xs text-left bg-red-50 p-4 rounded-lg overflow-auto max-w-lg mx-auto mb-6 text-red-800 font-mono",
-                            children: this.state.error?.message
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 39,
-                            columnNumber: 17
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            onClick: ()=>window.location.reload(),
-                            className: "px-6 py-2 bg-[#4b33e8] text-white rounded-xl font-bold hover:bg-[#3b27b8] transition-colors",
-                            children: "Refresh Page"
-                        }, void 0, false, {
-                            fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                            lineNumber: 42,
-                            columnNumber: 17
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                    lineNumber: 30,
-                    columnNumber: 13
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/components/DashboardErrorBoundary.tsx",
-                lineNumber: 29,
-                columnNumber: 9
-            }, this);
+;
+function UserProvider({ children }) {
+    _s();
+    const { user, loading, error, mounted, statusMessage, refetchUser, sessionExpired } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAuthGuard"])();
+    const prevUserRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // Bridge Sync Logic (Reliability Pinger for refresh/cold-start)
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "UserProvider.useEffect": ()=>{
+            if (!mounted || ("TURBOPACK compile-time value", "object") === 'undefined') return;
+            let syncInterval;
+            const executeSync = {
+                "UserProvider.useEffect.executeSync": async ()=>{
+                    console.log("🔄 [UserProvider] Attempting Flutter Bridge sync...");
+                    // --- ADDITION: Only sync if online ---
+                    if (("TURBOPACK compile-time value", "object") !== 'undefined' && !window.navigator.onLine) {
+                        console.warn("🌐 [UserProvider] Device is offline. Skipping sync.");
+                        return false;
+                    }
+                    const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await __turbopack_context__.A("[project]/lib/flutterBridge.ts [client] (ecmascript, async loader)");
+                    const success = user ? syncUserInfoToFlutter(user) : true;
+                    if (success) {
+                        // Request device info if bridge is active
+                        requestDeviceInfoFromFlutter();
+                        // If it worked, we also send a login event if we just "detected" a session on load
+                        if (user && !prevUserRef.current) {
+                            notifyLoginToFlutter();
+                        }
+                        if (user) prevUserRef.current = user;
+                        else prevUserRef.current = null;
+                        return true;
+                    }
+                    return false;
+                }
+            }["UserProvider.useEffect.executeSync"];
+            // Initial attempt after a small delay
+            const timer = setTimeout({
+                "UserProvider.useEffect.timer": async ()=>{
+                    // Check if bridge exists before starting sync interval
+                    const isBridgeContext = ("TURBOPACK compile-time value", "object") !== 'undefined' && !!window.flutter_inappwebview?.callHandler;
+                    if (!isBridgeContext) {
+                        console.log("💻 [Bridge] Standard Browser detected. Skipping background sync.");
+                        return;
+                    }
+                    const success = await executeSync();
+                    if (!success && user) {
+                        // Bridge context exists but sync failed (maybe timing), retry every 2s
+                        syncInterval = setInterval({
+                            "UserProvider.useEffect.timer": async ()=>{
+                                if (await executeSync()) {
+                                    clearInterval(syncInterval);
+                                }
+                            }
+                        }["UserProvider.useEffect.timer"], 2000);
+                    }
+                }
+            }["UserProvider.useEffect.timer"], 1000);
+            return ({
+                "UserProvider.useEffect": ()=>{
+                    clearTimeout(timer);
+                    if (syncInterval) clearInterval(syncInterval);
+                }
+            })["UserProvider.useEffect"];
         }
-        return this.props.children;
-    }
+    }["UserProvider.useEffect"], [
+        user?.uid,
+        mounted
+    ]);
+    // Global Bridge Message Listener for Device Info
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "UserProvider.useEffect": ()=>{
+            if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+            ;
+            const handleMessage = {
+                "UserProvider.useEffect.handleMessage": (e)=>{
+                    const data = e.detail;
+                    if (data?.type === 'device_info' && data?.value) {
+                        console.log('📱 [Bridge] Received Device Info, saving to localStorage:', data.value);
+                        localStorage.setItem('flutter_device_info', JSON.stringify(data.value));
+                    }
+                }
+            }["UserProvider.useEffect.handleMessage"];
+            window.addEventListener('tfc-bridge-message', handleMessage);
+            return ({
+                "UserProvider.useEffect": ()=>{
+                    window.removeEventListener('tfc-bridge-message', handleMessage);
+                }
+            })["UserProvider.useEffect"];
+        }
+    }["UserProvider.useEffect"], []);
+    // Native Presence Heartbeat (Portal-side)
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "UserProvider.useEffect": ()=>{
+            if (!user || !mounted) return;
+            const sendHeartbeat = {
+                "UserProvider.useEffect.sendHeartbeat": async ()=>{
+                    try {
+                        const { supabase } = await __turbopack_context__.A("[project]/lib/supabase.ts [client] (ecmascript, async loader)");
+                        // We use RPC to update our presence in user_profiles
+                        const { error: hbError } = await supabase.rpc('update_user_presence', {
+                            p_on_call: false,
+                            p_is_personal: false
+                        });
+                        if (hbError) throw hbError;
+                        console.log("💓 [Presence] Portal heartbeat sent successfully.");
+                    } catch (err) {
+                        console.error("❌ [Presence] Portal heartbeat failed:", err);
+                    }
+                }
+            }["UserProvider.useEffect.sendHeartbeat"];
+            // Send immediately on mount/user change
+            sendHeartbeat();
+            // Repeat every 30 seconds to stay 'ONLINE'
+            const interval = setInterval(sendHeartbeat, 30000);
+            return ({
+                "UserProvider.useEffect": ()=>clearInterval(interval)
+            })["UserProvider.useEffect"];
+        }
+    }["UserProvider.useEffect"], [
+        user?.uid,
+        mounted
+    ]);
+    const contextValue = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
+        "UserProvider.useMemo[contextValue]": ()=>({
+                user,
+                loading,
+                error: error || null,
+                mounted,
+                statusMessage,
+                sessionExpired,
+                refetchUser
+            })
+    }["UserProvider.useMemo[contextValue]"], [
+        user,
+        loading,
+        error,
+        mounted,
+        statusMessage,
+        refetchUser,
+        sessionExpired
+    ]);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["UserContext"].Provider, {
+        value: contextValue,
+        children: children
+    }, void 0, false, {
+        fileName: "[project]/components/UserProvider.tsx",
+        lineNumber: 134,
+        columnNumber: 5
+    }, this);
 }
+_s(UserProvider, "gFq0OZBwIDvqmeCr+7djjWDfmos=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAuthGuard$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAuthGuard"]
+    ];
+});
+_c = UserProvider;
+var _c;
+__turbopack_context__.k.register(_c, "UserProvider");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -2170,248 +3003,6 @@ const __TURBOPACK__default__export__ = Sidebar;
 var _c, _c1;
 __turbopack_context__.k.register(_c, "Sidebar$memo");
 __turbopack_context__.k.register(_c1, "Sidebar");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/bridgeLogger.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-/**
- * Bridge Logger System
- * Manages logs for communication between Web and Native Flutter
- */ __turbopack_context__.s([
-    "globalBridgeLogger",
-    ()=>globalBridgeLogger
-]);
-const BRIDGE_LOG_STORAGE_KEY = 'flutter_bridge_logs';
-const MAX_BRIDGE_LOGS = 200;
-class BridgeLogger {
-    addLog(direction, type, payload) {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        try {
-            const newEntry = {
-                id: Math.random().toString(36).substring(2, 11),
-                direction,
-                type,
-                payload,
-                timestamp: new Date().toISOString()
-            };
-            const existingLogs = this.getLogs();
-            const updatedLogs = [
-                newEntry,
-                ...existingLogs
-            ].slice(0, MAX_BRIDGE_LOGS);
-            localStorage.setItem(BRIDGE_LOG_STORAGE_KEY, JSON.stringify(updatedLogs));
-            // Trigger a custom event so the UI can update in real-time
-            window.dispatchEvent(new CustomEvent('tfc-new-bridge-log', {
-                detail: newEntry
-            }));
-        } catch (e) {
-            console.error("Failed to save bridge log", e);
-        }
-    }
-    getLogs() {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        try {
-            const logs = localStorage.getItem(BRIDGE_LOG_STORAGE_KEY);
-            if (!logs) return [];
-            const parsed = JSON.parse(logs);
-            // Ensure it's an array
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            console.error("Failed to parse bridge logs", e);
-            return [];
-        }
-    }
-    clearLogs() {
-        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
-        ;
-        localStorage.removeItem(BRIDGE_LOG_STORAGE_KEY);
-        window.dispatchEvent(new CustomEvent('tfc-bridge-logs-cleared'));
-    }
-}
-const globalBridgeLogger = new BridgeLogger();
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/flutterBridge.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-/**
- * Utility to communicate with Flutter InAppWebView bridge
- */ __turbopack_context__.s([
-    "notifyFlutter",
-    ()=>notifyFlutter,
-    "notifyLoginToFlutter",
-    ()=>notifyLoginToFlutter,
-    "notifyLogoutToFlutter",
-    ()=>notifyLogoutToFlutter,
-    "requestDeviceInfoFromFlutter",
-    ()=>requestDeviceInfoFromFlutter,
-    "sendHeartbeat",
-    ()=>sendHeartbeat,
-    "syncUserInfoToFlutter",
-    ()=>syncUserInfoToFlutter,
-    "updateSyncMetaCallStatus",
-    ()=>updateSyncMetaCallStatus,
-    "updateSyncMetaCallingStatus",
-    ()=>updateSyncMetaCallingStatus
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/bridgeLogger.ts [client] (ecmascript)");
-;
-;
-// Global receiver for Flutter messages to ensure they are logged and dispatched via events
-if ("TURBOPACK compile-time truthy", 1) {
-    const win = window;
-    if (!win.__bridge_initialized) {
-        win.fromFlutter = (data)=>{
-            // 1. Log the incoming message
-            const type = data?.type || 'unknown';
-            const value = data?.value;
-            __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].addLog('in', type, value);
-            // 2. Dispatch as a CustomEvent so multiple components can listen without overwriting
-            window.dispatchEvent(new CustomEvent('tfc-bridge-message', {
-                detail: data
-            }));
-            console.log("🔔 [Bridge] Received & Dispatched:", data);
-        };
-        win.__bridge_initialized = true;
-    }
-}
-const notifyFlutter = (type, value)=>{
-    if ("TURBOPACK compile-time truthy", 1) {
-        const win = window;
-        // Keyed Deduplication: Store last message per type to prevent overwriting during rapid syncs
-        if (!win.__bridge_history) win.__bridge_history = {};
-        win.__bridge_history[type] = {
-            value,
-            time: Date.now()
-        };
-        // Log the outgoing message
-        __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].addLog('out', type, value);
-        if (win.flutter_inappwebview?.callHandler) {
-            console.log(`🚀 [Bridge] Sending ${type}:`, value);
-            win.flutter_inappwebview.callHandler('fromWebApp', {
-                type,
-                value
-            });
-            return true;
-        }
-    }
-    return false;
-};
-const notifyLoginToFlutter = ()=>{
-    console.log("🚀 [Bridge] Triggering Login Event");
-    return notifyFlutter('login', true);
-};
-const notifyLogoutToFlutter = ()=>{
-    console.log("🚀 [Bridge] Triggering Logout Event");
-    return notifyFlutter('logout', true);
-};
-const syncUserInfoToFlutter = (user)=>{
-    if (!user) return false;
-    // Only proceed if bridge is actually active in the window
-    const isBridgeActive = ("TURBOPACK compile-time value", "object") !== 'undefined' && !!window.flutter_inappwebview?.callHandler;
-    if (!isBridgeActive) return false;
-    // Normalize user data for bridge
-    const userInfoPayload = {
-        user_name: user.displayName || user.user_name || null,
-        employee_id: user.employeeId || user.employee_id || null,
-        email: user.email,
-        role: user.role,
-        designation: user.designation || user.role,
-        department: user.department || null,
-        createdAt: user.createdAt || user.created_at,
-        lastSignInAt: user.lastSignInAt || user.last_sign_in_at,
-        profilePicUrl: user.profilePicUrl || user.profile_pic_url
-    };
-    console.log("🚀 [Bridge] Syncing User Profile");
-    return notifyFlutter('sync_user_info', userInfoPayload);
-};
-const requestDeviceInfoFromFlutter = ()=>{
-    console.log("🚀 [Bridge] Requesting Device Info");
-    return notifyFlutter('request', 'device_info');
-};
-const updateSyncMetaCallStatus = async (employeeId, type, value)=>{
-    if (!employeeId) return;
-    // 0. Master Move: If we are on mobile (bridge active), DO NOT update type/value columns.
-    // These columns are reserved for remote commands from Desktop to Mobile.
-    // Mobile device should only be updated from here via calling_status or native sync.
-    if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.flutter_inappwebview) {
-        console.log("📱 [Bridge] Mobile context. Skipping command sync (type/value) to DB.");
-        return;
-    }
-    try {
-        // 1. Fetch current device status to check if it's online
-        const { data: device, error: fetchError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').select('last_seen, status').eq('employee_id', employeeId).eq('is_primary', true).maybeSingle();
-        if (fetchError || !device) {
-            console.warn("⚠️ [Bridge] Cannot sync status: Primary device not found");
-            return;
-        }
-        // 2. Check if device is actually online (15 second timeout like Header)
-        if (device.last_seen) {
-            const lastSeen = new Date(device.last_seen).getTime();
-            const diffSeconds = (Date.now() - lastSeen) / 1000;
-            if (diffSeconds >= 15) {
-                console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s ago). Skipping ${type} update.`);
-                return;
-            }
-        } else {
-            console.warn("⚠️ [Bridge] Device has never sent a heartbeat. Skipping update.");
-            return;
-        }
-        console.log(`📡 [Bridge] Device is online. Syncing ${type} to DB...`);
-        // 3. Perform the update
-        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
-            type: type,
-            value: value,
-            updated_at: new Date().toISOString()
-        }).eq('employee_id', employeeId).eq('is_primary', true).eq('status', 'connected');
-        if (error) {
-            console.error("❌ [Bridge] SyncMeta update error:", error);
-        }
-    } catch (err) {
-        console.error("❌ [Bridge] SyncMeta connection error:", err);
-    }
-};
-const updateSyncMetaCallingStatus = async (employeeId, callingStatus)=>{
-    if (!employeeId) return;
-    try {
-        console.log(`📡 [Bridge] Syncing calling_status: ${callingStatus} to DB...`);
-        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
-            calling_status: callingStatus,
-            updated_at: new Date().toISOString()
-        }).eq('employee_id', employeeId).eq('is_primary', true);
-        if (error) {
-            console.error("❌ [Bridge] SyncMeta calling_status update error:", error);
-        }
-    } catch (err) {
-        console.error("❌ [Bridge] SyncMeta calling_status connection error:", err);
-    }
-};
-const sendHeartbeat = async (employeeId)=>{
-    if (!employeeId) return;
-    // Retrieve android_id from localStorage (set by Header.tsx)
-    const androidId = typeof localStorage !== 'undefined' ? localStorage.getItem('android_id') : null;
-    if (!androidId) {
-        console.log("⚠️ [Heartbeat] No android_id found, skipping precise heartbeat.");
-        return;
-    }
-    const entryId = `${employeeId}_${androidId}`;
-    try {
-        const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('sync_meta').update({
-            last_seen: new Date().toISOString()
-        }).eq('entry_id', entryId).eq('is_primary', true).eq('status', 'connected');
-        if (error) console.error("❌ [Heartbeat] Update failed:", error);
-    } catch (err) {
-        console.error("❌ [Heartbeat] Error:", err);
-    }
-};
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -3685,6 +4276,50 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
+"[project]/lib/dashboardUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "DashboardLevel",
+    ()=>DashboardLevel,
+    "getUserDashboardLevel",
+    ()=>getUserDashboardLevel
+]);
+var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
+    DashboardLevel["LEVEL_1_ADMIN"] = "LEVEL_1";
+    DashboardLevel["LEVEL_2_CLIENT_CEO"] = "LEVEL_2";
+    DashboardLevel["LEVEL_3_TL_SALES"] = "LEVEL_3";
+    DashboardLevel["LEVEL_4_AGENT_SALES"] = "LEVEL_4";
+    DashboardLevel["UNKNOWN"] = "UNKNOWN";
+    return DashboardLevel;
+}({});
+const getUserDashboardLevel = (user)=>{
+    if (!user) return "UNKNOWN";
+    const role = (user.role || '').toLowerCase();
+    const designation = (user.designation || '').toLowerCase();
+    // --- Level 1: Super Admin / Management (TFC Internal) ---
+    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
+        return "LEVEL_1";
+    }
+    // --- Level 2: Client CEO / Org Owner / Developer ---
+    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
+        return "LEVEL_2";
+    }
+    // If we don't have enough data to determine level, return UNKNOWN
+    if (!role) return "UNKNOWN";
+    // --- Level 3: Team Leader ---
+    // Role is 'admin' and designation is 'team_leader'
+    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
+        return "LEVEL_3";
+    }
+    // --- Level 4: Sales Agent ---
+    // Default for normal users (role = 'user' or any other non-admin/non-owner)
+    return "LEVEL_4";
+};
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
 "[project]/components/BottomNav.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -3695,8 +4330,10 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
+;
 ;
 ;
 const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
@@ -3770,40 +4407,34 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
     // Filter nav items based on admin status and client designation
     const navItems = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "BottomNav.BottomNav.useMemo[navItems]": ()=>{
-            // Visibility logic for User and Org Pages (Strict: Hidden by default until mounted and verified)
-            const allowedDesignations = [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ];
-            const currentDesignation = designation?.toLowerCase() || '';
-            const isUserPageVisible = mounted && (isClient === false || isClient === true && [
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isOrgVisible = mounted && (isClient === false || isClient === true && designation?.toLowerCase() === 'ceo');
-            const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isAdminState = mounted && isAdmin;
-            const isSpecialUser = employeeId === 'NXUS-001';
+            const level = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])({
+                role: userRole,
+                designation: designation,
+                isClient: isClient
+            });
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
-                    // 0. Hard Rejection for Call Sessions if NOT global
-                    if (item.id === 'call-sessions' && isClient !== false) return false;
-                    // Special override for Call Sessions for Global Users
-                    if (item.id === 'call-sessions' && isClient === false) return true;
-                    // Admin check
-                    if (item.adminOnly && !isAdminState) return false;
-                    // User page visibility check
+                    // 0. Call Sessions visibility (Admin, CEO, TL)
+                    if (item.id === 'call-sessions') {
+                        if (employeeId === 'NXUS-001') return true;
+                        if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES || level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) return false;
+                        return true;
+                    }
+                    const currentDesignation = designation?.toLowerCase() || '';
+                    const isUserPageVisible = mounted && (isClient === false || isClient === true && [
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
+                        'manager',
+                        'team_leader',
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isAdminState = mounted && isAdmin;
+                    // Filter logic
+                    if (item.adminOnly && !isAdminState && employeeId !== 'NXUS-001') return false;
                     if (item.id === 'users' && !isUserPageVisible) return false;
-                    // Org page visibility check
-                    if (item.id === 'organization' && !isOrgVisible) return false;
-                    // Team page visibility check
                     if (item.id === 'team' && !isTeamPageVisible) return false;
                     return true;
                 }
@@ -3898,32 +4529,32 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 219,
+                                lineNumber: 211,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 209,
+                            lineNumber: 201,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 207,
+                    lineNumber: 199,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 206,
+                lineNumber: 198,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 202,
+            lineNumber: 194,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 195,
+        lineNumber: 187,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {
@@ -3940,174 +4571,6 @@ const __TURBOPACK__default__export__ = BottomNav;
 var _c, _c1;
 __turbopack_context__.k.register(_c, "BottomNav$memo");
 __turbopack_context__.k.register(_c1, "BottomNav");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/context/UserContext.tsx [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "UserContext",
-    ()=>UserContext,
-    "useUser",
-    ()=>useUser
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])({
-    user: null,
-    mounted: false,
-    loading: true,
-    error: null,
-    statusMessage: "",
-    sessionExpired: false,
-    refetchUser: async ()=>{}
-});
-const useUser = ()=>{
-    _s();
-    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(UserContext);
-};
-_s(useUser, "gDsCjeeItUuvgOWf1v4qoK9RF6k=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/monitoring.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-/**
- * Sentinel Monitoring - DISABLED
- * This file is kept as an empty shell to avoid breaking existing imports.
- */ __turbopack_context__.s([
-    "estimateSize",
-    ()=>estimateSize,
-    "logSystemEvent",
-    ()=>logSystemEvent
-]);
-const logSystemEvent = async (_log)=>{
-    // Monitoring completely disabled by user request.
-    return;
-};
-const estimateSize = (_obj)=>{
-    return 0;
-};
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/lib/authService.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "checkAuthAndFetchProfile",
-    ()=>checkAuthAndFetchProfile,
-    "handleLogout",
-    ()=>handleLogout
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/monitoring.ts [client] (ecmascript)");
-;
-;
-async function checkAuthAndFetchProfile() {
-    try {
-        const { data: { session }, error: sessionError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
-        const authUser = session?.user;
-        if (sessionError || !authUser) {
-            return {
-                user: null,
-                error: "No session found",
-                shouldRedirect: true
-            };
-        }
-        // Fetch profile from database
-        const { data: profileData, error: profileError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("user_profiles").select("*").eq("user_id", authUser.id).maybeSingle();
-        if (profileError) {
-            console.error("Error fetching user profile:", profileError);
-        }
-        const userData = {
-            uid: authUser.id,
-            displayName: profileData?.user_name || null,
-            email: authUser.email || "",
-            phone: profileData?.contact_no || null,
-            providers: [],
-            providerType: null,
-            createdAt: authUser.created_at,
-            lastSignInAt: authUser.last_sign_in_at || null,
-            employeeId: profileData?.employee_id || null,
-            role: profileData?.role || null,
-            approvalStatus: profileData?.approval_status || null,
-            accountStatus: profileData?.status || null,
-            status: profileData?.status || null,
-            updatedAt: profileData?.updated_at || null,
-            profilePicUrl: profileData?.profile_pic_url || profileData?.profile_image || null,
-            googleCalendarConnected: profileData?.google_calendar_connected || false,
-            googleCalendarSkipped: profileData?.google_calendar_skipped || false,
-            isClient: profileData ? profileData.is_client ?? false : undefined,
-            isCaller: profileData?.is_caller || false,
-            designation: profileData?.designation || null,
-            department: profileData?.department || null,
-            activeCampaignId: profileData?.active_campaign_id || null,
-            activeCustomerId: profileData?.active_customer_id || null,
-            profile_complete: profileData?.profile_complete || false,
-            statusReason: profileData?.status_reason || null,
-            holdStartDate: profileData?.hold_start_date || null,
-            holdEndDate: profileData?.hold_end_date || null,
-            organization_id: profileData?.organization_id || null
-        };
-        return {
-            user: userData,
-            error: null,
-            shouldRedirect: false
-        };
-    } catch (error) {
-        console.error("Auth check error:", error);
-        return {
-            user: null,
-            error: error.message || "An error occurred",
-            shouldRedirect: true
-        };
-    }
-}
-async function handleLogout(router) {
-    try {
-        console.log("🚀 [Auth] Starting complete logout...");
-        // 1. Notify Flutter bridge of logout if available
-        if ("TURBOPACK compile-time truthy", 1) {
-            const win = window;
-            if (win.flutter_inappwebview?.callHandler) {
-                win.flutter_inappwebview.callHandler("fromWebApp", {
-                    type: "logout",
-                    value: true
-                });
-            }
-            // IMPORTANT: Flag this as an INTENTIONAL logout so the UI doesn't show "Expired"
-            localStorage.setItem('manual_logout_intended', 'true');
-            // Clear specific caches instead of nuking everything immediately
-            localStorage.removeItem('cached_user_profile');
-            sessionStorage.removeItem('active_user_profile');
-        }
-        // 2. Clear Supabase session on server and client
-        const { data: { user } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getUser();
-        if (user) {
-            (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$monitoring$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["logSystemEvent"])({
-                event_type: 'AUTH',
-                description: `User Logout: ${user.email}`,
-                user_id: user.id,
-                metadata: {
-                    email: user.email
-                }
-            });
-        }
-        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.signOut();
-        console.log("👋 [Auth] Logout complete, redirecting to login...");
-        router.replace("/login");
-    } catch (err) {
-        console.error("❌ [Auth] Logout failure:", err);
-        router.replace("/login");
-    }
-}
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -9276,140 +9739,2481 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/dashboardUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "DashboardLevel",
-    ()=>DashboardLevel,
-    "getUserDashboardLevel",
-    ()=>getUserDashboardLevel
-]);
-var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
-    DashboardLevel["LEVEL_1_ADMIN"] = "LEVEL_1";
-    DashboardLevel["LEVEL_2_CLIENT_CEO"] = "LEVEL_2";
-    DashboardLevel["LEVEL_3_TL_SALES"] = "LEVEL_3";
-    DashboardLevel["LEVEL_4_AGENT_SALES"] = "LEVEL_4";
-    DashboardLevel["UNKNOWN"] = "UNKNOWN";
-    return DashboardLevel;
-}({});
-const getUserDashboardLevel = (user)=>{
-    if (!user) return "UNKNOWN";
-    const role = (user.role || '').toLowerCase();
-    const designation = (user.designation || '').toLowerCase();
-    // --- Level 1: Super Admin / Management (TFC Internal) ---
-    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
-        return "LEVEL_1";
-    }
-    // --- Level 2: Client CEO / Org Owner / Developer ---
-    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
-        return "LEVEL_2";
-    }
-    // If we don't have enough data to determine level, return UNKNOWN
-    if (!role) return "UNKNOWN";
-    // --- Level 3: Team Leader ---
-    // Role is 'admin' and designation is 'team_leader'
-    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
-        return "LEVEL_3";
-    }
-    // --- Level 4: Sales Agent ---
-    // Default for normal users (role = 'user' or any other non-admin/non-owner)
-    return "LEVEL_4";
-};
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/hooks/useSessionState.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "useSessionState",
-    ()=>useSessionState
-]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
-var _s = __turbopack_context__.k.signature();
-;
-function useSessionState(key, initialValue) {
-    _s();
-    const [state, setState] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
-        "useSessionState.useState": ()=>{
-            if ("TURBOPACK compile-time truthy", 1) {
-                try {
-                    const item = window.sessionStorage.getItem(key);
-                    if (item) {
-                        const parsed = JSON.parse(item);
-                        // Expire after 60 minutes
-                        if (Date.now() - parsed.timestamp < 60 * 60 * 1000) {
-                            return parsed.value;
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`Error reading sessionStorage key "${key}":`, error);
-                }
-            }
-            return initialValue;
-        }
-    }["useSessionState.useState"]);
-    const setValue = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useSessionState.useCallback[setValue]": (value)=>{
-            try {
-                setState({
-                    "useSessionState.useCallback[setValue]": (prevState)=>{
-                        const valueToStore = value instanceof Function ? value(prevState) : value;
-                        if ("TURBOPACK compile-time truthy", 1) {
-                            window.sessionStorage.setItem(key, JSON.stringify({
-                                timestamp: Date.now(),
-                                value: valueToStore
-                            }));
-                        }
-                        return valueToStore;
-                    }
-                }["useSessionState.useCallback[setValue]"]);
-            } catch (error) {
-                console.warn(`Error setting sessionStorage key "${key}":`, error);
-            }
-        }
-    }["useSessionState.useCallback[setValue]"], [
-        key
-    ]);
-    return [
-        state,
-        setValue
-    ];
-}
-_s(useSessionState, "CpcrUWv600SgspIsaBDrFgCYljA=");
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
-"[project]/pages/portal/dashboard.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"[project]/components/GlobalCallHandler.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "default",
-    ()=>Dashboard
+    ()=>GlobalCallHandler
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/bridgeLogger.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var _s = __turbopack_context__.k.signature();
+;
+;
+;
+;
+;
+function GlobalCallHandler() {
+    _s();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const { user } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const lastNavigatedCustomerId = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "GlobalCallHandler.useEffect": ()=>{
+            if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+            ;
+            console.log("[Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.");
+            const updateSessionInBackground = {
+                "GlobalCallHandler.useEffect.updateSessionInBackground": async (campaignId, customerId, status = 'active', isUnassigned = false)=>{
+                    try {
+                        const { data: { session: authSession } } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession();
+                        if (authSession) {
+                            await fetch("/api/auth/update-call-session", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${authSession.access_token}`
+                                },
+                                body: JSON.stringify({
+                                    campaign_id: campaignId,
+                                    customer_id: customerId,
+                                    status: status,
+                                    is_manual_event: true,
+                                    is_unassigned: isUnassigned
+                                })
+                            });
+                            console.log(`[Global-Call] Session updated to ${status} (MANUAL, Unassigned=${isUnassigned}) in background for ${customerId}`);
+                        }
+                    } catch (err) {
+                        console.error("[Global-Call] Failed to update manual session:", err);
+                    }
+                }
+            }["GlobalCallHandler.useEffect.updateSessionInBackground"];
+            const notifyLeadOwner = {
+                "GlobalCallHandler.useEffect.notifyLeadOwner": async (ownerId, customerName)=>{
+                    if (!user) return;
+                    console.log(`[Global-Call] 🔔 Saving notification for owner ${ownerId} about reach attempt to ${customerName}`);
+                    // 1. Persist to Database - Notification listener in Header.tsx will pick this up via Realtime DB Changes
+                    try {
+                        await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('notifications').insert({
+                            user_id: ownerId,
+                            type: 'lead_access',
+                            message: `${user.displayName || user.employeeId} is trying to reach ${customerName}`,
+                            actor_id: user.uid,
+                            metadata: {
+                                customer_name: customerName,
+                                actor_name: user.displayName,
+                                employee_id: user.employeeId
+                            }
+                        });
+                        console.log(`[Global-Call] ✅ Notification saved to DB for ${ownerId}`);
+                    } catch (err) {
+                        console.error("[Global-Call] Failed to save notification:", err);
+                    }
+                }
+            }["GlobalCallHandler.useEffect.notifyLeadOwner"];
+            const updateCallState = {
+                "GlobalCallHandler.useEffect.updateCallState": (isActive)=>{
+                    if ("TURBOPACK compile-time truthy", 1) {
+                        localStorage.setItem('app_is_calling_active', isActive ? 'true' : 'false');
+                        window.dispatchEvent(new CustomEvent('app_call_state_change', {
+                            detail: {
+                                active: isActive
+                            }
+                        }));
+                        console.log(`[Global-Call] 📱 Call state updated: ${isActive ? 'ACTIVE' : 'IDLE'}`);
+                    }
+                }
+            }["GlobalCallHandler.useEffect.updateCallState"];
+            const handleBridgeMessage = {
+                "GlobalCallHandler.useEffect.handleBridgeMessage": async (e)=>{
+                    const data = e.detail;
+                    const eventType = data?.type;
+                    const phoneNo = data?.value || data?.payload;
+                    // Log to internal Bridge Logger for Settings > Bridge Tab visibility
+                    if (eventType) {
+                        __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].addLog('in', `global_${eventType}`, phoneNo);
+                    }
+                    // Verbose logging for ALL bridge messages to confirm bridge is working
+                    console.log(`[Bridge-Debug] Message received: type="${eventType}", value="${phoneNo}"`);
+                    const isDialEvent = eventType === 'connecting' || eventType === 'connected' || eventType === 'call_to' || eventType === 'dial';
+                    const isEndEvent = eventType === 'disconnected' || eventType === 'call_disconnected' || eventType === 'call_disconected' || eventType === 'call_disconnect';
+                    // Update global calling flag for Reminder Overlay and others
+                    if (isDialEvent) {
+                        updateCallState(true);
+                    } else if (isEndEvent) {
+                        updateCallState(false);
+                    }
+                    // STRICT CRM FLOW TOGGLE
+                    if (eventType === 'call_to') {
+                        console.log(`[Global-Call] 🛡️ CRM Call Initiated (call_to). Locking global handler.`);
+                        if ("TURBOPACK compile-time truthy", 1) window.isCrmCallActive = true;
+                        return; // Strictly Inactive
+                    }
+                    if (eventType === 'call_disconnect' || eventType === 'call_disconnected') {
+                        console.log(`[Global-Call] 🛡️ CRM Call Ended. Re-activating global handler.`);
+                        if ("TURBOPACK compile-time truthy", 1) window.isCrmCallActive = false;
+                        return; // Strictly Skip this end event for manual logic
+                    }
+                    // HARD BYPASS: if flag is true, ignore ALL other bridge events (connecting, connected, dial, etc.)
+                    if (("TURBOPACK compile-time value", "object") !== 'undefined' && window.isCrmCallActive) {
+                        console.log(`[Global-Call] 🛡️ Handler Bypassed: CRM call in progress (${eventType})`);
+                        return;
+                    }
+                    if ((isDialEvent || isEndEvent) && phoneNo) {
+                        // 1. Clean phone number
+                        const cleanPhone = String(phoneNo).replace(/\D/g, '');
+                        if (!cleanPhone) return;
+                        // Normalize: If number is 10 digits or more (like 919876543210), 
+                        // we take the last 10 digits to ensure matching across different dial formats.
+                        const normalizedPhone = cleanPhone.length >= 10 ? cleanPhone.slice(-10) : cleanPhone;
+                        console.log(`[Global-Call] 🎯 Detect ${isDialEvent ? 'Dial' : 'End'} Event: ${eventType} for ${normalizedPhone} (Raw: ${cleanPhone})`);
+                        // 2. Search for the lead
+                        try {
+                            const response = await fetch(`/api/customer/find-by-phone?phone=${normalizedPhone}`);
+                            const result = await response.json();
+                            if (result.success && result.lead) {
+                                const { id: customerId, campaign_id: campaignId, assigned_to: ownerId, customer_name: customerName } = result.lead;
+                                if (isDialEvent) {
+                                    // --- START CALL LOGIC ---
+                                    // 3. Ownership Check
+                                    if (user) {
+                                        const currentUserId = user.uid || user.id;
+                                        if (ownerId && ownerId !== currentUserId) {
+                                            notifyLeadOwner(ownerId, customerName);
+                                        }
+                                    }
+                                    // 4. Permission Check before navigation/session update
+                                    let isAuthorized = false;
+                                    try {
+                                        const { data: campData } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('campaigns').select('users').eq('id', campaignId).single();
+                                        if (campData?.users && user) {
+                                            const assigned = Array.isArray(campData.users) ? campData.users : [];
+                                            const uid = user.uid || user.id;
+                                            isAuthorized = assigned.some({
+                                                "GlobalCallHandler.useEffect.handleBridgeMessage": (u)=>String(u.user_id) === String(uid)
+                                            }["GlobalCallHandler.useEffect.handleBridgeMessage"]);
+                                        }
+                                        if (user && !user.isClient) isAuthorized = true;
+                                    } catch (e) {
+                                        console.error("[Global-Call] Permission check failed:", e);
+                                    }
+                                    // 5. Navigate and Update (Now allowing unassigned but marking them)
+                                    if (lastNavigatedCustomerId.current === customerId) return;
+                                    const currentPath = router.asPath;
+                                    const targetPath = `/campaign/${campaignId}/${customerId}`;
+                                    if (!currentPath.includes(customerId)) {
+                                        console.log(`[Global-Call] 🚀 REDIRECTING to manual lead: ${targetPath}`);
+                                        lastNavigatedCustomerId.current = customerId;
+                                        router.push(targetPath);
+                                        // 6. Update Manual Session State to 'active'
+                                        // Mark as unassigned if user is not authorized for THIS campaign
+                                        await updateSessionInBackground(campaignId, customerId, 'active', !isAuthorized);
+                                        setTimeout({
+                                            "GlobalCallHandler.useEffect.handleBridgeMessage": ()=>{
+                                                lastNavigatedCustomerId.current = null;
+                                            }
+                                        }["GlobalCallHandler.useEffect.handleBridgeMessage"], 5000);
+                                    }
+                                } else {
+                                    // --- END CALL LOGIC ---
+                                    console.log(`[Global-Call] 🛑 Updating manual session to DISPOSITION_PENDING for ${customerId}`);
+                                    // Update session through API to trigger real-time sync on the page
+                                    await updateSessionInBackground(campaignId, customerId, 'disposition_pending');
+                                }
+                            }
+                        } catch (err) {
+                            console.error("[Global-Call] Error searching/updating session:", err);
+                        }
+                    }
+                }
+            }["GlobalCallHandler.useEffect.handleBridgeMessage"];
+            window.addEventListener('tfc-bridge-message', handleBridgeMessage);
+            // CLEANUP: Reset activity flag on unmount just in case
+            return ({
+                "GlobalCallHandler.useEffect": ()=>{
+                    window.removeEventListener('tfc-bridge-message', handleBridgeMessage);
+                    if ("TURBOPACK compile-time truthy", 1) {
+                        localStorage.setItem('app_is_calling_active', 'false');
+                    }
+                }
+            })["GlobalCallHandler.useEffect"];
+        }
+    }["GlobalCallHandler.useEffect"], [
+        router,
+        user
+    ]);
+    return null;
+}
+_s(GlobalCallHandler, "8LYoRSY+NieMNoYrycOkvGfCukE=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"]
+    ];
+});
+_c = GlobalCallHandler;
+var _c;
+__turbopack_context__.k.register(_c, "GlobalCallHandler");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/components/CallReminderOverlay.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>CallReminderOverlay
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
+;
+;
+;
+function CallReminderOverlay() {
+    _s();
+    const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [upcomingCall, setUpcomingCall] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [interactedKeys, setInteractedKeys] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(new Set());
+    const [conflictInfo, setConflictInfo] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [debugForce, setDebugForce] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [lastPlayedId, setLastPlayedId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [isExiting, setIsExiting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Auto-dismiss timer ref
+    const [storageLoaded, setStorageLoaded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Auto-dismiss timer ref
+    const dismissTimerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // active call flag state
+    const [isCallingActive, setIsCallingActive] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if ("TURBOPACK compile-time truthy", 1) {
+                const checkActive = {
+                    "CallReminderOverlay.useEffect.checkActive": ()=>{
+                        const active = localStorage.getItem('app_is_calling_active') === 'true';
+                        setIsCallingActive(active);
+                    }
+                }["CallReminderOverlay.useEffect.checkActive"];
+                checkActive();
+                window.addEventListener('app_call_state_change', checkActive);
+                window.addEventListener('storage', checkActive);
+                return ({
+                    "CallReminderOverlay.useEffect": ()=>{
+                        window.removeEventListener('app_call_state_change', checkActive);
+                        window.removeEventListener('storage', checkActive);
+                    }
+                })["CallReminderOverlay.useEffect"];
+            }
+        }
+    }["CallReminderOverlay.useEffect"], []);
+    // Initial position to right side (below header)
+    const [position, setPosition] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
+        x: 2000,
+        y: 85
+    }); // Start far right
+    const [isDragging, setIsDragging] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const dragRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // Load interacted keys from localStorage on mount
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (("TURBOPACK compile-time value", "object") !== "undefined" && mounted) {
+                try {
+                    const stored = localStorage.getItem('tfc_interacted_reminders');
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        const now = Date.now();
+                        const filtered = Object.keys(parsed).reduce({
+                            "CallReminderOverlay.useEffect.filtered": (acc, key)=>{
+                                if (now - parsed[key] < 24 * 60 * 60 * 1000) {
+                                    acc[key] = parsed[key];
+                                }
+                                return acc;
+                            }
+                        }["CallReminderOverlay.useEffect.filtered"], {});
+                        localStorage.setItem('tfc_interacted_reminders', JSON.stringify(filtered));
+                        setInteractedKeys(new Set(Object.keys(filtered)));
+                    }
+                } catch (e) {
+                    console.error("Error loading reminders from localStorage", e);
+                } finally{
+                    setStorageLoaded(true);
+                }
+            }
+        }
+    }["CallReminderOverlay.useEffect"], [
+        mounted
+    ]);
+    const saveInteractedKey = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "CallReminderOverlay.useCallback[saveInteractedKey]": (callId, timestamp)=>{
+            const key = `${callId}_${timestamp}`;
+            setInteractedKeys({
+                "CallReminderOverlay.useCallback[saveInteractedKey]": (prev)=>{
+                    const next = new Set(prev).add(key);
+                    try {
+                        const stored = localStorage.getItem('tfc_interacted_reminders');
+                        const parsed = stored ? JSON.parse(stored) : {};
+                        parsed[key] = Date.now();
+                        localStorage.setItem('tfc_interacted_reminders', JSON.stringify(parsed));
+                    } catch (e) {
+                        console.error("Error saving to localStorage", e);
+                    }
+                    return next;
+                }
+            }["CallReminderOverlay.useCallback[saveInteractedKey]"]);
+        }
+    }["CallReminderOverlay.useCallback[saveInteractedKey]"], []);
+    // Check for debug force param on mount
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if ("TURBOPACK compile-time truthy", 1) {
+                if (window.location.search.includes('show_reminder_debug=true')) {
+                    console.log("🛠️ [Reminder-Debug] Manual debug force enabled via URL.");
+                    setDebugForce(true);
+                }
+            }
+        }
+    }["CallReminderOverlay.useEffect"], []);
+    // Set real initial position on mount
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (("TURBOPACK compile-time value", "object") !== "undefined" && mounted) {
+                const startX = window.innerWidth - 280;
+                setPosition({
+                    x: startX,
+                    y: 85
+                });
+            }
+        }
+    }["CallReminderOverlay.useEffect"], [
+        mounted
+    ]);
+    // Ref to ignore recently acted-upon calls immediately (prevents flicker return)
+    const ignoreRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(new Set());
+    const handleDismiss = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "CallReminderOverlay.useCallback[handleDismiss]": ()=>{
+            if (!upcomingCall?.id) return;
+            // Immediate ignore
+            ignoreRef.current.add(upcomingCall.id);
+            setIsExiting(true);
+            saveInteractedKey(upcomingCall.id, upcomingCall.next_called_at);
+            if (audioInstanceRef.current) {
+                audioInstanceRef.current.pause();
+                audioInstanceRef.current.currentTime = 0;
+            }
+            setTimeout({
+                "CallReminderOverlay.useCallback[handleDismiss]": ()=>{
+                    setUpcomingCall(null);
+                    setIsExiting(false);
+                }
+            }["CallReminderOverlay.useCallback[handleDismiss]"], 700);
+        }
+    }["CallReminderOverlay.useCallback[handleDismiss]"], [
+        upcomingCall?.id,
+        saveInteractedKey
+    ]);
+    // Display timer ref for 3-minute logic
+    const displayStartedAtRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const skipReminder = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "CallReminderOverlay.useCallback[skipReminder]": async (call, reason)=>{
+            saveInteractedKey(call.id, call.next_called_at);
+            // Insert into notifications
+            const userId = user?.uid || user?.user_id;
+            if (!userId) return;
+            try {
+                await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('notifications').insert({
+                    user_id: userId,
+                    type: 'skipped_reminder',
+                    message: `Missed call reminder for ${call.customer_name} (${new Date(call.next_called_at).toLocaleTimeString()})`,
+                    created_at: new Date().toISOString(),
+                    is_seen: false,
+                    metadata: {
+                        customer_id: call.id,
+                        campaign_id: call.campaign_id,
+                        reason: reason
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to insert notification", e);
+            }
+        }
+    }["CallReminderOverlay.useCallback[skipReminder]"], [
+        saveInteractedKey,
+        user
+    ]);
+    const checkUpcomingCalls = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "CallReminderOverlay.useCallback[checkUpcomingCalls]": async ()=>{
+            if (!storageLoaded) return;
+            const userId = user?.uid || user?.user_id;
+            if (!userId) return;
+            const now = new Date();
+            const windowStart = new Date(now.getTime() - 60 * 60 * 1000); // Check past 1 hour for missed
+            const windowEnd = new Date(now.getTime() + 2 * 60000); // Check 2 mins future
+            try {
+                const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').select(`
+                    id, 
+                    customer_name, 
+                    phone_no, 
+                    next_called_at, 
+                    campaign_id, 
+                    disposition, 
+                    sub_disposition, 
+                    notes, 
+                    outcome,
+                    expiry_date
+                `).or(`managed_by.eq.${userId},assigned_to.eq.${userId}`).eq('disposition', 'Call Back') // Changed ilike to eq for performance if schema matches
+                .gte('next_called_at', windowStart.toISOString()).lte('next_called_at', windowEnd.toISOString()).order('next_called_at', {
+                    ascending: true
+                }).limit(10); // Fetch more to analyze queue
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    const nowMs = Date.now();
+                    let nextToDisplay = null;
+                    // Process Queue
+                    for (const call of data){
+                        const callTime = new Date(call.next_called_at).getTime();
+                        const compositeKey = `${call.id}_${call.next_called_at}`;
+                        // 1. Skip if already handled OR in ignore ref
+                        if (interactedKeys.has(compositeKey) || ignoreRef.current.has(call.id)) continue;
+                        // 2. Check for Missed/Expired (Older than 2 mins ago)
+                        // We allow a small buffer (e.g., if it was due 1 min ago, it's still "Active" and Urgent)
+                        // But if it was due > 5 mins ago and we just opened the app, we probably want to skip it?
+                        // User said: "check kro... agr time nikal chuka hai to unhe skip kro"
+                        // Let's define "Expired" as > 1 minute past due AND not currently shown.
+                        // Actually, let's stick to the prompt: "3 min badh check... if time passed, skip"
+                        // Simple Rule:
+                        // If (callTime < now - 30 seconds) -> Missed -> Skip
+                        // This aggressively clears backlog so only future/current calls show up.
+                        if (callTime < nowMs - 30 * 1000) {
+                            // It's too old (Wait time over)
+                            // Only skip if it's NOT the current one (prevent auto-closing active one instantly if simple lag)
+                            if (upcomingCall?.id !== call.id) {
+                                skipReminder(call, 'missed'); // Log as missed notification
+                                continue; // Don't show in popup
+                            }
+                        }
+                        // This is a valid candidate
+                        if (!nextToDisplay) nextToDisplay = call;
+                    }
+                    if (!nextToDisplay) {
+                        // No valid calls left
+                        if (upcomingCall && !isExiting) {
+                        // Keep current or let it expire naturally by 5 min timer
+                        } else {
+                            setUpcomingCall(null);
+                        }
+                        return;
+                    }
+                    // LOGIC: Should we switch?
+                    // Case A: No current call -> Show Next
+                    if (!upcomingCall) {
+                        let campaignName = "Active Campaign"; // Fetch logic simplified for brevity or could fetch below
+                        if (nextToDisplay.campaign_id) {
+                            const { data: campData } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('campaigns').select('name').eq('id', nextToDisplay.campaign_id).maybeSingle();
+                            if (campData?.name) campaignName = campData.name;
+                        }
+                        const enriched = {
+                            ...nextToDisplay,
+                            campaign_name: campaignName
+                        };
+                        setUpcomingCall(enriched);
+                        displayStartedAtRef.current = Date.now();
+                        return;
+                    }
+                    // Case B: Current call exists...
+                    if (upcomingCall.id === nextToDisplay.id) {
+                        // Update current data if needed, or just do nothing
+                        return;
+                    }
+                    // Case C: Current call is different from Next Candidate
+                    // This means Next Candidate is MORE URGENT or Current is finished/skipped
+                    // Check 3-Minute Rule
+                    if (displayStartedAtRef.current && nowMs - displayStartedAtRef.current > 3 * 60 * 1000) {
+                        // 3 Minutes have passed!
+                        // Is "nextToDisplay" urgent? (Due within next 2 mins)
+                        const nextTime = new Date(nextToDisplay.next_called_at).getTime();
+                        // We already filtered query by lte(now + 2 min), so it IS urgent.
+                        // SWAP!
+                        console.log("Create Swap: 3 mins passed, swapping for urgent call", nextToDisplay.customer_name);
+                        // 1. Mark current as skipped/timeout
+                        skipReminder(upcomingCall, 'timeout');
+                        ignoreRef.current.add(upcomingCall.id); // Add current to ignore list so it doesn't bounce back
+                        // 2. Exit current
+                        setIsExiting(true);
+                        // 3. Prep next
+                        let campaignName = "Active Campaign";
+                        if (nextToDisplay.campaign_id) {
+                            const { data: campData } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('campaigns').select('name').eq('id', nextToDisplay.campaign_id).maybeSingle();
+                            if (campData?.name) campaignName = campData.name;
+                        }
+                        const enriched = {
+                            ...nextToDisplay,
+                            campaign_name: campaignName
+                        };
+                        setTimeout({
+                            "CallReminderOverlay.useCallback[checkUpcomingCalls]": ()=>{
+                                setUpcomingCall(enriched);
+                                displayStartedAtRef.current = Date.now();
+                                setIsExiting(false);
+                            }
+                        }["CallReminderOverlay.useCallback[checkUpcomingCalls]"], 700);
+                    } else {
+                    // Less than 3 minutes passed.
+                    // Keep current one.
+                    // The "nextToDisplay" will wait in queue until 3 mins pass OR user dismisses current.
+                    }
+                } else {
+                    // No data found
+                    if (upcomingCall && !data?.find({
+                        "CallReminderOverlay.useCallback[checkUpcomingCalls]": (c)=>c.id === upcomingCall.id
+                    }["CallReminderOverlay.useCallback[checkUpcomingCalls]"])) {
+                    // Current call is no longer in valid list (e.g. date changed elsewhere), dismiss?
+                    // Or just let it stay until timeout. Let's let it stay.
+                    }
+                }
+            } catch (err) {
+                console.error("[Reminder-Debug] Error:", err);
+            }
+        }
+    }["CallReminderOverlay.useCallback[checkUpcomingCalls]"], [
+        user,
+        interactedKeys,
+        upcomingCall,
+        isExiting,
+        saveInteractedKey,
+        storageLoaded,
+        skipReminder
+    ]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (!mounted || !storageLoaded) return;
+            // Initial check and immediate check when call ends
+            if (!isCallingActive) {
+                checkUpcomingCalls();
+            }
+            const interval = setInterval({
+                "CallReminderOverlay.useEffect.interval": ()=>{
+                    if (!isCallingActive) {
+                        checkUpcomingCalls();
+                    }
+                }
+            }["CallReminderOverlay.useEffect.interval"], 30000); // Increased to 30s to save egress/requests
+            return ({
+                "CallReminderOverlay.useEffect": ()=>clearInterval(interval)
+            })["CallReminderOverlay.useEffect"];
+        }
+    }["CallReminderOverlay.useEffect"], [
+        mounted,
+        checkUpcomingCalls,
+        storageLoaded,
+        isCallingActive
+    ]);
+    // Auto-dismiss after 5 minutes
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (upcomingCall?.id) {
+                if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
+                dismissTimerRef.current = setTimeout({
+                    "CallReminderOverlay.useEffect": ()=>{
+                        handleDismiss();
+                    }
+                }["CallReminderOverlay.useEffect"], 5 * 60 * 1000); // 5 minutes
+            }
+            return ({
+                "CallReminderOverlay.useEffect": ()=>{
+                    if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
+                }
+            })["CallReminderOverlay.useEffect"];
+        }
+    }["CallReminderOverlay.useEffect"], [
+        upcomingCall?.id,
+        handleDismiss
+    ]);
+    // Persistent Audio Management
+    const audioInstanceRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const lastRungIdRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const playTimeoutRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    // Initialize audio once
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (("TURBOPACK compile-time value", "object") !== "undefined" && !audioInstanceRef.current) {
+                audioInstanceRef.current = new Audio();
+                audioInstanceRef.current.volume = 0.6;
+                audioInstanceRef.current.loop = true; // Loop sound until dismissed
+            }
+        }
+    }["CallReminderOverlay.useEffect"], []);
+    // Master Audio Sync Logic
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (!audioInstanceRef.current) return;
+            // Clear any existing timeout on every effect run
+            if (playTimeoutRef.current) clearTimeout(playTimeoutRef.current);
+            const activeId = upcomingCall?.id;
+            // STOP condition: No call active or popup is sliding out
+            if (!activeId || isExiting) {
+                audioInstanceRef.current.pause();
+                audioInstanceRef.current.currentTime = 0;
+                audioInstanceRef.current.src = ""; // Clear source
+                return;
+            }
+            // PLAY condition: New ID arrives
+            if (activeId !== lastRungIdRef.current) {
+                audioInstanceRef.current.src = `https://assets.mixkit.co/active_storage/sfx/1354/1354-preview.mp3?v=${activeId}`;
+                audioInstanceRef.current.loop = true; // Re-enforce loop on new source
+                // Fallback: Manually restart if loop fails
+                audioInstanceRef.current.onended = ({
+                    "CallReminderOverlay.useEffect": ()=>{
+                        if (audioInstanceRef.current && upcomingCall?.id === activeId && !isExiting) {
+                            audioInstanceRef.current.play().catch({
+                                "CallReminderOverlay.useEffect": ()=>{}
+                            }["CallReminderOverlay.useEffect"]);
+                        }
+                    }
+                })["CallReminderOverlay.useEffect"];
+                // Auto-trigger sound 1 second after popup shows
+                playTimeoutRef.current = setTimeout({
+                    "CallReminderOverlay.useEffect": ()=>{
+                        // Final safety check: Popup must still be visible and NOT exiting
+                        if (upcomingCall?.id === activeId && !isExiting && audioInstanceRef.current) {
+                            audioInstanceRef.current.play().then({
+                                "CallReminderOverlay.useEffect": ()=>{
+                                    lastRungIdRef.current = activeId;
+                                }
+                            }["CallReminderOverlay.useEffect"]).catch({
+                                "CallReminderOverlay.useEffect": (err)=>{
+                                    console.log("[Reminder-Audio] Playback attempt:", err.name);
+                                }
+                            }["CallReminderOverlay.useEffect"]);
+                        }
+                    }
+                }["CallReminderOverlay.useEffect"], 1000);
+            }
+            return ({
+                "CallReminderOverlay.useEffect": ()=>{
+                    if (playTimeoutRef.current) clearTimeout(playTimeoutRef.current);
+                }
+            })["CallReminderOverlay.useEffect"];
+        }
+    }["CallReminderOverlay.useEffect"], [
+        upcomingCall?.id,
+        isExiting
+    ]);
+    // Drag handlers
+    const onMouseDown = (e)=>{
+        if (e.target.closest('button')) return;
+        setIsDragging(true);
+        dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            initialX: position.x,
+            initialY: position.y
+        };
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            const onMouseMove = {
+                "CallReminderOverlay.useEffect.onMouseMove": (e)=>{
+                    if (!isDragging || !dragRef.current) return;
+                    const dx = e.clientX - dragRef.current.startX;
+                    const dy = e.clientY - dragRef.current.startY;
+                    setPosition({
+                        x: dragRef.current.initialX + dx,
+                        y: dragRef.current.initialY + dy
+                    });
+                }
+            }["CallReminderOverlay.useEffect.onMouseMove"];
+            const onMouseUp = {
+                "CallReminderOverlay.useEffect.onMouseUp": ()=>{
+                    setIsDragging(false);
+                    dragRef.current = null;
+                }
+            }["CallReminderOverlay.useEffect.onMouseUp"];
+            if (isDragging) {
+                window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
+            }
+            return ({
+                "CallReminderOverlay.useEffect": ()=>{
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseup', onMouseUp);
+                }
+            })["CallReminderOverlay.useEffect"];
+        }
+    }["CallReminderOverlay.useEffect"], [
+        isDragging,
+        position
+    ]);
+    const handleCallNow = ()=>{
+        if (!upcomingCall) return;
+        // Immediate ignore
+        ignoreRef.current.add(upcomingCall.id);
+        if (audioInstanceRef.current) {
+            audioInstanceRef.current.pause();
+            audioInstanceRef.current.currentTime = 0;
+        }
+        setUpcomingCall(null);
+        // Just navigate to profile, do not auto-dial here.
+        // User said: "call open krne pr call place nahi krni sirf profile show krna hai"
+        router.push(`/campaign/${upcomingCall.campaign_id}/${upcomingCall.id}`);
+    };
+    const handleSnooze = async (minutes)=>{
+        if (!upcomingCall) return;
+        const newTimeDate = new Date(new Date().getTime() + minutes * 60000);
+        const newTimeIso = newTimeDate.toISOString();
+        try {
+            const startOfMinute = new Date(newTimeDate);
+            startOfMinute.setSeconds(0, 0);
+            const endOfMinute = new Date(newTimeDate);
+            endOfMinute.setSeconds(59, 999);
+            const { data: conflicts } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').select('id, customer_name, next_called_at').or(`managed_by.eq.${user?.uid},assigned_to.eq.${user?.uid}`).eq('disposition', 'Call Back').gte('next_called_at', startOfMinute.toISOString()).lte('next_called_at', endOfMinute.toISOString()).neq('id', upcomingCall.id);
+            if (conflicts && conflicts.length > 0) {
+                setConflictInfo({
+                    time: newTimeDate.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }),
+                    customer: conflicts[0].customer_name,
+                    minutes: minutes
+                });
+                return;
+            }
+            await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('customers').update({
+                next_called_at: newTimeIso
+            }).eq('id', upcomingCall.id);
+            // Exit animation and Mark as seen
+            setIsExiting(true);
+            saveInteractedKey(upcomingCall.id, upcomingCall.next_called_at);
+            setConflictInfo(null);
+            if (audioInstanceRef.current) {
+                audioInstanceRef.current.pause();
+                audioInstanceRef.current.currentTime = 0;
+            }
+            setTimeout(()=>{
+                setUpcomingCall(null);
+                setIsExiting(false);
+            }, 700);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    // Mobile Swipe Logic
+    const [swipeX, setSwipeX] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
+    const swipeXRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(0); // Ref to track latest value for event listeners
+    const [isMobile, setIsMobile] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if ("TURBOPACK compile-time truthy", 1) {
+                const checkMobile = {
+                    "CallReminderOverlay.useEffect.checkMobile": ()=>setIsMobile(window.innerWidth < 768)
+                }["CallReminderOverlay.useEffect.checkMobile"];
+                checkMobile();
+                window.addEventListener('resize', checkMobile);
+                return ({
+                    "CallReminderOverlay.useEffect": ()=>window.removeEventListener('resize', checkMobile)
+                })["CallReminderOverlay.useEffect"];
+            }
+        }
+    }["CallReminderOverlay.useEffect"], []);
+    const onSwipeStart = (e)=>{
+        // Only allow swipe on the thumb
+        setIsDragging(true);
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        dragRef.current = {
+            startX: clientX,
+            startY: 0,
+            initialX: 0,
+            initialY: 0
+        };
+        console.log('🎯 Swipe Start at X:', clientX);
+    };
+    const onSwipeMove = (e)=>{
+        if (!isDragging || !dragRef.current) return;
+        // Prevent default touch behavior (scrolling)
+        if ('touches' in e) {
+            e.preventDefault();
+        }
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        const diff = clientX - dragRef.current.startX;
+        console.log('👆 Swipe Move - Current X:', clientX, 'Diff:', diff);
+        // Limit swipe range
+        if (diff > -140 && diff < 140) {
+            setSwipeX(diff);
+            swipeXRef.current = diff; // Update ref for listeners
+        }
+    };
+    const onSwipeEnd = ()=>{
+        setIsDragging(false);
+        const currentX = swipeXRef.current; // Read from ref
+        console.log('🏁 Swipe End at X:', currentX);
+        if (currentX > 80) {
+            // Right Swipe - Open Profile (Call)
+            handleCallNow();
+        } else if (currentX < -80) {
+            // Left Swipe - Dismiss
+            handleDismiss();
+        }
+        // Reset
+        setSwipeX(0);
+        swipeXRef.current = 0;
+        dragRef.current = null;
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "CallReminderOverlay.useEffect": ()=>{
+            if (isDragging && isMobile) {
+                // Use passive: false to allow preventDefault in touchmove
+                window.addEventListener('touchmove', onSwipeMove, {
+                    passive: false
+                });
+                window.addEventListener('touchend', onSwipeEnd);
+                window.addEventListener('mousemove', onSwipeMove);
+                window.addEventListener('mouseup', onSwipeEnd);
+            }
+            return ({
+                "CallReminderOverlay.useEffect": ()=>{
+                    window.removeEventListener('touchmove', onSwipeMove);
+                    window.removeEventListener('touchend', onSwipeEnd);
+                    window.removeEventListener('mousemove', onSwipeMove);
+                    window.removeEventListener('mouseup', onSwipeEnd);
+                }
+            })["CallReminderOverlay.useEffect"];
+        }
+    }["CallReminderOverlay.useEffect"], [
+        isDragging,
+        isMobile
+    ]); // Removed swipeX from dependencies
+    if (!upcomingCall && !debugForce) return null;
+    // Use dummy data if debugForce is on but no real call exists
+    const displayCall = upcomingCall || {
+        id: "debug-id",
+        customer_name: "John Doe (Debug)",
+        campaign_name: "Sample Campaign",
+        disposition: "Call Back",
+        sub_disposition: "Interested",
+        outcome: "Success",
+        next_called_at: new Date().toISOString(),
+        notes: "This is a debug overlay for visual testing.",
+        campaigns: {
+            name: "Sample Campaign"
+        }
+    };
+    // We only use isCallingActive now (from localStorage), not route-based busy detection
+    console.log('🔍 Call Status Debug:', {
+        isCallingActive,
+        displayCallId: displayCall.id,
+        debugForce,
+        routerPath: router.pathname,
+        swipeXCurrent: swipeX
+    });
+    // --- MOBILE VIEW ---
+    if (isMobile) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "fixed inset-0 z-[99999] bg-slate-900 text-white flex flex-col animate-in fade-in duration-300",
+            children: [
+                conflictInfo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "absolute inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-6 text-center animate-in zoom-in-95",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-6",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                className: "fi flex fi-rr-warning text-amber-500 text-3xl"
+                            }, void 0, false, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 626,
+                                columnNumber: 29
+                            }, this)
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 625,
+                            columnNumber: 26
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                            className: "text-xl font-bold mb-2",
+                            children: "Slot Conflict"
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 628,
+                            columnNumber: 25
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-slate-400 mb-8",
+                            children: [
+                                "Already booked: ",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-white font-bold",
+                                    children: conflictInfo.customer
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 630,
+                                    columnNumber: 45
+                                }, this),
+                                " at ",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-white font-bold",
+                                    children: conflictInfo.time
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 630,
+                                    columnNumber: 118
+                                }, this),
+                                "."
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 629,
+                            columnNumber: 26
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setConflictInfo(null),
+                            className: "w-full py-4 rounded-2xl bg-white/10 text-white font-bold uppercase tracking-widest hover:bg-white/20",
+                            children: "Try Another Time"
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 632,
+                            columnNumber: 26
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                    lineNumber: 624,
+                    columnNumber: 22
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex-1 flex flex-col items-center justify-center p-6 text-center space-y-6 relative overflow-hidden",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 mb-2",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "fi flex fi-rr-calendar-clock text-xs text-slate-400"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 643,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[10px] font-bold text-slate-300 uppercase tracking-widest",
+                                    children: [
+                                        "Exp: ",
+                                        displayCall.expiry_date ? new Date(displayCall.expiry_date).toLocaleDateString() : 'N/A'
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 644,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 642,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "relative z-10 my-4",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "w-32 h-32 rounded-full border-4 border-slate-700 bg-slate-800 flex items-center justify-center shadow-2xl relative z-20",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-5xl font-bold text-white/90",
+                                        children: displayCall.customer_name.charAt(0).toUpperCase()
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 652,
+                                        columnNumber: 30
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 651,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute top-0 left-0 w-full h-full rounded-full border border-blue-500/30 animate-[ping_2s_infinite]"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 657,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute top-0 left-0 w-full h-full rounded-full border border-blue-500/20 animate-[ping_2s_infinite_0.5s]"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 658,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute -inset-4 rounded-full bg-blue-500/5 animate-pulse z-0"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 659,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 650,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "z-10 w-full flex flex-col items-center gap-1",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                    className: "text-2xl font-bold tracking-tight leading-tight px-4",
+                                    children: displayCall.customer_name
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 664,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-2 text-blue-400 font-bold uppercase tracking-widest text-[10px]",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                            className: "fi flex fi-rr-hashtag"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 668,
+                                            columnNumber: 30
+                                        }, this),
+                                        displayCall.campaign_name || 'Active Campaign'
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 667,
+                                    columnNumber: 26
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 663,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex flex-wrap justify-center gap-2 w-full px-4",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "px-2 py-1 bg-blue-500/20 text-blue-300 text-[10px] font-bold uppercase rounded border border-blue-500/20",
+                                    children: displayCall.disposition
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 675,
+                                    columnNumber: 25
+                                }, this),
+                                displayCall.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "px-2 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase rounded border border-indigo-500/20",
+                                    children: displayCall.sub_disposition
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 676,
+                                    columnNumber: 57
+                                }, this),
+                                displayCall.outcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "px-2 py-1 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase rounded border border-emerald-500/20",
+                                    children: displayCall.outcome
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 677,
+                                    columnNumber: 49
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 674,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "w-full max-w-sm space-y-3",
+                            children: [
+                                displayCall.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "bg-slate-800/50 p-3 rounded-xl border border-white/5 text-center",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-slate-300 text-sm font-medium italic line-clamp-3",
+                                        children: [
+                                            '"',
+                                            displayCall.notes,
+                                            '"'
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 684,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 683,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center justify-center gap-2 text-slate-400",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                            className: "fi flex fi-rr-clock text-sm"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 691,
+                                            columnNumber: 30
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-sm font-bold",
+                                            children: new Date(displayCall.next_called_at).toLocaleString([], {
+                                                dateStyle: 'medium',
+                                                timeStyle: 'short'
+                                            })
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 692,
+                                            columnNumber: 30
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 690,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 681,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                    lineNumber: 639,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "p-6 pb-24 space-y-10 z-20 bg-slate-900",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
+                            dangerouslySetInnerHTML: {
+                                __html: `
+                        @keyframes ring {
+                            0% { transform: rotate(0); }
+                            5% { transform: rotate(15deg); }
+                            10% { transform: rotate(-15deg); }
+                            15% { transform: rotate(12deg); }
+                            20% { transform: rotate(-12deg); }
+                            25% { transform: rotate(0); }
+                            100% { transform: rotate(0); }
+                        }
+                    `
+                            }
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 702,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex justify-center gap-3",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-xs font-bold text-slate-500 uppercase tracking-widest self-center mr-2",
+                                    children: "Snooze"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 716,
+                                    columnNumber: 26
+                                }, this),
+                                [
+                                    5,
+                                    10,
+                                    15
+                                ].map((m)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>handleSnooze(m),
+                                        className: "px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-white text-xs font-bold hover:bg-slate-700 active:scale-95 transition-all",
+                                        children: [
+                                            "+",
+                                            m,
+                                            "m"
+                                        ]
+                                    }, m, true, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 718,
+                                        columnNumber: 29
+                                    }, this))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 715,
+                            columnNumber: 21
+                        }, this),
+                        isCallingActive ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: handleDismiss,
+                            className: "w-full h-16 rounded-full bg-slate-800 border border-red-500/50 text-red-500 font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "fi flex fi-rr-cross-circle text-xl"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 734,
+                                    columnNumber: 29
+                                }, this),
+                                "Dismiss Reminder"
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 730,
+                            columnNumber: 25
+                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "relative w-full max-w-[340px] mx-auto h-16 rounded-full bg-slate-800/80 border border-slate-700/50 shadow-xl flex items-center justify-between px-6",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "absolute inset-0 rounded-full overflow-hidden pointer-events-none",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: `absolute left-6 top-1/2 -translate-y-1/2 transition-opacity duration-300 ${swipeX < -40 ? 'opacity-100' : 'opacity-30'}`
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 743,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: `absolute right-6 top-1/2 -translate-y-1/2 transition-opacity duration-300 ${swipeX > 40 ? 'opacity-100' : 'opacity-30'}`
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 747,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "absolute inset-0 flex items-center justify-between px-14 opacity-40 text-[10px] font-bold uppercase tracking-widest",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: swipeX < 0 ? 'text-red-400' : 'text-slate-400',
+                                                    children: "Dismiss"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                                    lineNumber: 753,
+                                                    columnNumber: 37
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: swipeX > 0 ? 'text-emerald-400' : 'text-slate-400',
+                                                    children: "Open"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                                    lineNumber: 754,
+                                                    columnNumber: 37
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 752,
+                                            columnNumber: 33
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "absolute inset-0 z-0 transition-opacity duration-300",
+                                            style: {
+                                                background: swipeX > 0 ? `linear-gradient(90deg, transparent 50%, rgba(16, 185, 129, ${Math.min(0.3, swipeX / 150)}) 100%)` : swipeX < 0 ? `linear-gradient(-90deg, transparent 50%, rgba(239, 68, 68, ${Math.min(0.3, Math.abs(swipeX) / 150)}) 100%)` : 'transparent'
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 758,
+                                            columnNumber: 33
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 741,
+                                    columnNumber: 29
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: `absolute top-1/2 -mt-10 w-20 h-20 left-1/2 -ml-10 rounded-full shadow-2xl flex items-center justify-center cursor-grab active:cursor-grabbing z-30 touch-none border-4 transition-[background-color,border-color,box-shadow] duration-300
+                                    ${!isDragging ? 'transition-transform' : ''}
+                                    ${swipeX > 30 ? 'bg-emerald-500 border-emerald-400 shadow-emerald-500/50' : swipeX < -30 ? 'bg-red-500 border-red-400 shadow-red-500/50' : 'bg-white border-slate-900/10'}`,
+                                    style: {
+                                        transform: `translateX(${swipeX}px)`
+                                    },
+                                    onMouseDown: onSwipeStart,
+                                    onTouchStart: (e)=>{
+                                        console.log('📱 Thumb Touch Start - swipeX:', swipeX);
+                                        onSwipeStart(e);
+                                    },
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                        className: `fi flex fi-sr-bell text-2xl transition-all origin-top 
+                                    ${swipeX === 0 ? 'animate-[ring_2s_infinite]' : ''} 
+                                    ${swipeX > 30 || swipeX < -30 ? 'text-white scale-110' : 'text-slate-900'}`
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 786,
+                                        columnNumber: 33
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 771,
+                                    columnNumber: 29
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 738,
+                            columnNumber: 25
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                    lineNumber: 701,
+                    columnNumber: 17
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/components/CallReminderOverlay.tsx",
+            lineNumber: 621,
+            columnNumber: 13
+        }, this);
+    }
+    // --- DESKTOP VIEW (Original) ---
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        style: {
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            width: '260px'
+        },
+        onMouseDown: onMouseDown,
+        className: `fixed z-[99999] bg-[#1a1f24] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden select-none border border-white/10 transition-transform 
+                animate-in fade-in slide-in-from-right-full duration-700 ease-out 
+                ${isExiting ? 'animate-out fade-out slide-out-to-right-full duration-700 ease-in' : ''}
+                ${isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'}`,
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "p-4 pb-1 relative",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: (e)=>{
+                            e.stopPropagation();
+                            handleDismiss();
+                        },
+                        className: "absolute top-2 right-2 w-6 h-6 rounded-md flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors z-[60]",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                            className: "fi flex fi-rr-cross-small text-[14px]"
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 817,
+                            columnNumber: 21
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 810,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex items-center gap-3",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "relative",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "w-11 h-11 rounded-xl border border-blue-500/20 bg-blue-500/10 flex items-center justify-center shadow-inner",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                            className: "fi flex fi-sr-bell text-blue-400 text-xl animate-[ring_2s_infinite] origin-top"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                                            lineNumber: 822,
+                                            columnNumber: 29
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 821,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("style", {
+                                        dangerouslySetInnerHTML: {
+                                            __html: `
+                            @keyframes ring {
+                                0% { transform: rotate(0); }
+                                5% { transform: rotate(15deg); }
+                                10% { transform: rotate(-15deg); }
+                                15% { transform: rotate(12deg); }
+                                20% { transform: rotate(-12deg); }
+                                25% { transform: rotate(0); }
+                                100% { transform: rotate(0); }
+                            }
+                        `
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 824,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 820,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex-1 min-w-0",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                        className: "text-white font-bold text-[14px] truncate leading-tight",
+                                        children: displayCall.customer_name
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 837,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[#00c985] text-[9px] font-bold uppercase tracking-wider mt-0.5",
+                                        children: [
+                                            "CAMPAIGN : ",
+                                            displayCall.campaign_name || 'ACTIVE CAMPAIGN'
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 840,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 836,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 819,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/CallReminderOverlay.tsx",
+                lineNumber: 809,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "px-4 space-y-2.5",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "bg-white/5 rounded-lg p-2.5 border border-white/5",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex flex-wrap gap-1",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[8px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded-sm uppercase border border-blue-400/10",
+                                    children: displayCall.disposition
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 851,
+                                    columnNumber: 25
+                                }, this),
+                                displayCall.sub_disposition && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[8px] font-bold text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded-sm uppercase border border-indigo-400/10",
+                                    children: displayCall.sub_disposition
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 852,
+                                    columnNumber: 57
+                                }, this),
+                                displayCall.outcome && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[8px] font-bold text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded-sm uppercase border border-emerald-400/10",
+                                    children: displayCall.outcome
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CallReminderOverlay.tsx",
+                                    lineNumber: 853,
+                                    columnNumber: 49
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 850,
+                            columnNumber: 21
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 849,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "space-y-1.5",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-2 text-slate-400",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                        className: "fi flex fi-rr-clock text-[10px]"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 859,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-[10px] font-medium",
+                                        children: new Date(displayCall.next_called_at).toLocaleString([], {
+                                            dateStyle: 'short',
+                                            timeStyle: 'short'
+                                        })
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 860,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 858,
+                                columnNumber: 21
+                            }, this),
+                            displayCall.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-start gap-2 text-slate-500",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                        className: "fi flex fi-rr-document text-[10px] mt-0.5"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 866,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "text-[10px] font-medium leading-tight italic truncate opacity-70",
+                                        children: displayCall.notes
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                                        lineNumber: 867,
+                                        columnNumber: 29
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 865,
+                                columnNumber: 25
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 857,
+                        columnNumber: 18
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/CallReminderOverlay.tsx",
+                lineNumber: 848,
+                columnNumber: 13
+            }, this),
+            conflictInfo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "absolute inset-0 bg-[#1a1f24]/98 z-50 flex flex-col items-center justify-center p-4 text-center animate-in fade-in zoom-in-95",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center mb-3",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                            className: "fi flex fi-rr-warning text-amber-500 text-lg"
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 879,
+                            columnNumber: 25
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 878,
+                        columnNumber: 22
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                        className: "text-white font-bold text-[12px] mb-1 uppercase tracking-wider",
+                        children: "Conflict"
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 881,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-slate-400 text-[10px] leading-tight mb-4 px-1",
+                        children: [
+                            "Already have ",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "text-white font-bold",
+                                children: conflictInfo.customer
+                            }, void 0, false, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 883,
+                                columnNumber: 38
+                            }, this),
+                            " at ",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "text-white font-bold",
+                                children: conflictInfo.time
+                            }, void 0, false, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 883,
+                                columnNumber: 111
+                            }, this),
+                            "."
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 882,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex flex-col w-full gap-1.5",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>setConflictInfo(null),
+                            className: "h-9 rounded-lg bg-white/5 text-white font-bold text-[11px] uppercase border border-white/10 hover:bg-white/10 transition-all",
+                            children: "Try Another Time"
+                        }, void 0, false, {
+                            fileName: "[project]/components/CallReminderOverlay.tsx",
+                            lineNumber: 886,
+                            columnNumber: 25
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 885,
+                        columnNumber: 21
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/CallReminderOverlay.tsx",
+                lineNumber: 877,
+                columnNumber: 17
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "p-4 pt-3 space-y-2.5",
+                children: [
+                    isCallingActive ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: handleDismiss,
+                        className: "w-full h-11 rounded-lg bg-slate-800 border border-red-500/50 text-red-500 font-bold text-[12px] uppercase tracking-wider transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                className: "fi flex fi-rr-cross-circle text-xs"
+                            }, void 0, false, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 899,
+                                columnNumber: 25
+                            }, this),
+                            "Dismiss Reminder"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 895,
+                        columnNumber: 21
+                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>{
+                            setIsExiting(true);
+                            saveInteractedKey(displayCall.id, displayCall.next_called_at);
+                            if (audioInstanceRef.current) {
+                                audioInstanceRef.current.pause();
+                                audioInstanceRef.current.currentTime = 0;
+                            }
+                            setTimeout(()=>{
+                                router.push(`/campaign/${displayCall.campaign_id}/${displayCall.id}`);
+                            }, 600);
+                        },
+                        className: "w-full h-11 rounded-lg bg-[#00c985] hover:bg-[#00ad73] text-white font-bold text-[12px] uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-emerald-500/5 flex items-center justify-center gap-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                className: "fi flex fi-rr-phone-call text-xs"
+                            }, void 0, false, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 917,
+                                columnNumber: 25
+                            }, this),
+                            "Call Now"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 903,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "grid grid-cols-3 gap-2",
+                        children: [
+                            5,
+                            10,
+                            15
+                        ].map((m)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>handleSnooze(m),
+                                className: "h-9 rounded-full bg-slate-800/80 border border-slate-700/50 hover:bg-slate-700 text-white font-bold text-[10px] transition-all active:scale-95 shadow-lg shadow-black/20",
+                                children: [
+                                    "+",
+                                    m,
+                                    "M"
+                                ]
+                            }, m, true, {
+                                fileName: "[project]/components/CallReminderOverlay.tsx",
+                                lineNumber: 924,
+                                columnNumber: 25
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/components/CallReminderOverlay.tsx",
+                        lineNumber: 922,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/CallReminderOverlay.tsx",
+                lineNumber: 893,
+                columnNumber: 13
+            }, this)
+        ]
+    }, displayCall.id, true, {
+        fileName: "[project]/components/CallReminderOverlay.tsx",
+        lineNumber: 799,
+        columnNumber: 9
+    }, this);
+}
+_s(CallReminderOverlay, "uEPNaQxEw3hKJE79oJbeLmBD+Is=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
+_c = CallReminderOverlay;
+var _c;
+__turbopack_context__.k.register(_c, "CallReminderOverlay");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/components/LogPip.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>LogPip
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/logger.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/bridgeLogger.ts [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
+;
+;
+function LogPip() {
+    _s();
+    const [isOpen, setIsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('system');
+    const [logs, setLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [bridgeLogs, setBridgeLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [catFilter, setCatFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])('all');
+    const [position, setPosition] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({
+        x: 20,
+        y: 70
+    });
+    const [isDragging, setIsDragging] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const dragRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const containerRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "LogPip.useEffect": ()=>{
+            const savedState = localStorage.getItem('tfc_log_pip_open');
+            if (savedState === 'true') setIsOpen(true);
+            const savedPos = localStorage.getItem('tfc_log_pip_pos');
+            if (savedPos) setPosition(JSON.parse(savedPos));
+            const savedTab = localStorage.getItem('tfc_log_pip_tab');
+            if (savedTab === 'bridge' || savedTab === 'system') setActiveTab(savedTab);
+            setLogs(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalLogger"].getLogs().slice(0, 100));
+            setBridgeLogs(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].getLogs().slice(0, 100));
+            const handleNewLog = {
+                "LogPip.useEffect.handleNewLog": ()=>{
+                    requestAnimationFrame({
+                        "LogPip.useEffect.handleNewLog": ()=>{
+                            setLogs(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalLogger"].getLogs().slice(0, 100));
+                        }
+                    }["LogPip.useEffect.handleNewLog"]);
+                }
+            }["LogPip.useEffect.handleNewLog"];
+            const handleNewBridgeLog = {
+                "LogPip.useEffect.handleNewBridgeLog": ()=>{
+                    requestAnimationFrame({
+                        "LogPip.useEffect.handleNewBridgeLog": ()=>{
+                            setBridgeLogs(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].getLogs().slice(0, 100));
+                        }
+                    }["LogPip.useEffect.handleNewBridgeLog"]);
+                }
+            }["LogPip.useEffect.handleNewBridgeLog"];
+            const handleCleared = {
+                "LogPip.useEffect.handleCleared": ()=>{
+                    requestAnimationFrame({
+                        "LogPip.useEffect.handleCleared": ()=>{
+                            setLogs([]);
+                        }
+                    }["LogPip.useEffect.handleCleared"]);
+                }
+            }["LogPip.useEffect.handleCleared"];
+            const handleBridgeCleared = {
+                "LogPip.useEffect.handleBridgeCleared": ()=>{
+                    requestAnimationFrame({
+                        "LogPip.useEffect.handleBridgeCleared": ()=>{
+                            setBridgeLogs([]);
+                        }
+                    }["LogPip.useEffect.handleBridgeCleared"]);
+                }
+            }["LogPip.useEffect.handleBridgeCleared"];
+            const handleToggle = {
+                "LogPip.useEffect.handleToggle": (e)=>{
+                    const newState = e.detail;
+                    setIsOpen(newState);
+                    localStorage.setItem('tfc_log_pip_open', String(newState));
+                }
+            }["LogPip.useEffect.handleToggle"];
+            window.addEventListener('tfc-new-log', handleNewLog);
+            window.addEventListener('tfc-new-bridge-log', handleNewBridgeLog);
+            window.addEventListener('tfc-logs-cleared', handleCleared);
+            window.addEventListener('tfc-bridge-logs-cleared', handleBridgeCleared);
+            window.addEventListener('tfc-toggle-log-pip', handleToggle);
+            return ({
+                "LogPip.useEffect": ()=>{
+                    window.removeEventListener('tfc-new-log', handleNewLog);
+                    window.removeEventListener('tfc-new-bridge-log', handleNewBridgeLog);
+                    window.removeEventListener('tfc-logs-cleared', handleCleared);
+                    window.removeEventListener('tfc-bridge-logs-cleared', handleBridgeCleared);
+                    window.removeEventListener('tfc-toggle-log-pip', handleToggle);
+                }
+            })["LogPip.useEffect"];
+        }
+    }["LogPip.useEffect"], []);
+    // Save tab preference
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "LogPip.useEffect": ()=>{
+            localStorage.setItem('tfc_log_pip_tab', activeTab);
+        }
+    }["LogPip.useEffect"], [
+        activeTab
+    ]);
+    // Get unique categories for system logs filtering
+    const categories = Array.from(new Set(logs.map((l)=>l.category || 'Global')));
+    const filteredLogs = logs.filter((l)=>catFilter === 'all' || (l.category || 'Global') === catFilter);
+    const handleMouseDown = (e)=>{
+        if (!containerRef.current) return;
+        setIsDragging(true);
+        dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            startPosX: position.x,
+            startPosY: position.y
+        };
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "LogPip.useEffect": ()=>{
+            const handleMouseMove = {
+                "LogPip.useEffect.handleMouseMove": (e)=>{
+                    if (!isDragging || !dragRef.current) return;
+                    const deltaX = e.clientX - dragRef.current.startX;
+                    const deltaY = e.clientY - dragRef.current.startY;
+                    const newX = Math.max(0, Math.min(window.innerWidth - 320, dragRef.current.startPosX + deltaX));
+                    const newY = Math.max(0, Math.min(window.innerHeight - 400, dragRef.current.startPosY + deltaY));
+                    setPosition({
+                        x: newX,
+                        y: newY
+                    });
+                }
+            }["LogPip.useEffect.handleMouseMove"];
+            const handleMouseUp = {
+                "LogPip.useEffect.handleMouseUp": ()=>{
+                    if (isDragging) localStorage.setItem('tfc_log_pip_pos', JSON.stringify(position));
+                    setIsDragging(false);
+                    dragRef.current = null;
+                }
+            }["LogPip.useEffect.handleMouseUp"];
+            if (isDragging) {
+                window.addEventListener('mousemove', handleMouseMove);
+                window.addEventListener('mouseup', handleMouseUp);
+            }
+            return ({
+                "LogPip.useEffect": ()=>{
+                    window.removeEventListener('mousemove', handleMouseMove);
+                    window.removeEventListener('mouseup', handleMouseUp);
+                }
+            })["LogPip.useEffect"];
+        }
+    }["LogPip.useEffect"], [
+        isDragging,
+        position
+    ]);
+    if (!isOpen) return null;
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        ref: containerRef,
+        style: {
+            position: 'fixed',
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+            width: '320px',
+            height: '400px',
+            zIndex: 9999,
+            cursor: isDragging ? 'grabbing' : 'auto'
+        },
+        className: "bg-[#0d1117] border border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "bg-gray-800 border-b border-gray-700 flex flex-col",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "p-2 flex items-center justify-between cursor-grab active:cursor-grabbing",
+                        onMouseDown: handleMouseDown,
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-2",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex gap-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "w-2 h-2 rounded-full bg-red-500"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/LogPip.tsx",
+                                                lineNumber: 139,
+                                                columnNumber: 29
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "w-2 h-2 rounded-full bg-amber-500"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/LogPip.tsx",
+                                                lineNumber: 140,
+                                                columnNumber: 29
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "w-2 h-2 rounded-full bg-emerald-500"
+                                            }, void 0, false, {
+                                                fileName: "[project]/components/LogPip.tsx",
+                                                lineNumber: 141,
+                                                columnNumber: 29
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/components/LogPip.tsx",
+                                        lineNumber: 138,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "text-[10px] font-black text-white/40 uppercase tracking-widest",
+                                        children: "Debug Console"
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/LogPip.tsx",
+                                        lineNumber: 143,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 137,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>{
+                                    setIsOpen(false);
+                                    localStorage.setItem('tfc_log_pip_open', 'false');
+                                },
+                                className: "w-5 h-5 flex items-center justify-center rounded hover:bg-white/10 text-gray-400",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
+                                    className: "fi fi-rr-cross-small"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 149,
+                                    columnNumber: 25
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 145,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/LogPip.tsx",
+                        lineNumber: 136,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex border-t border-gray-700/50",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setActiveTab('system'),
+                                className: `flex-1 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all ${activeTab === 'system' ? 'text-[#4b33e8] bg-white/5 border-b-2 border-[#4b33e8]' : 'text-gray-500 hover:text-gray-300'}`,
+                                children: "System Logs"
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 154,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>setActiveTab('bridge'),
+                                className: `flex-1 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all ${activeTab === 'bridge' ? 'text-[#4b33e8] bg-white/5 border-b-2 border-[#4b33e8]' : 'text-gray-500 hover:text-gray-300'}`,
+                                children: "Bridge Logs"
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 160,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/LogPip.tsx",
+                        lineNumber: 153,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/LogPip.tsx",
+                lineNumber: 135,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "flex-1 overflow-auto p-2 bg-black/50",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "min-w-full inline-block font-mono text-[9px] space-y-1",
+                    children: activeTab === 'system' ? filteredLogs.map((log)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex gap-2 hover:bg-white/5 p-0.5 rounded group",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: `shrink-0 font-bold ${log.level === 'error' ? 'text-red-500' : log.level === 'warn' ? 'text-amber-500' : log.level === 'info' ? 'text-blue-500' : 'text-gray-500'}`,
+                                    children: [
+                                        "[",
+                                        log.level[0].toUpperCase(),
+                                        "]"
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 175,
+                                    columnNumber: 33
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[8px] text-gray-600 font-bold shrink-0",
+                                    children: !log.category || log.category === '/' ? 'HOME' : log.category.split('/').pop()?.toUpperCase() || 'GLOBAL'
+                                }, void 0, false, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 182,
+                                    columnNumber: 33
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-gray-400 whitespace-pre-wrap",
+                                    children: log.message
+                                }, void 0, false, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 185,
+                                    columnNumber: 33
+                                }, this)
+                            ]
+                        }, log.id, true, {
+                            fileName: "[project]/components/LogPip.tsx",
+                            lineNumber: 174,
+                            columnNumber: 29
+                        }, this)) : bridgeLogs.map((msg)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex flex-col gap-1 border-b border-white/5 pb-1 mb-1 last:border-0",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex items-center gap-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: `px-1 rounded-[2px] text-[7px] font-black uppercase ${msg.direction === 'out' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`,
+                                            children: msg.direction === 'out' ? 'OUT' : 'IN'
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/LogPip.tsx",
+                                            lineNumber: 192,
+                                            columnNumber: 37
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-white font-black uppercase text-[8px] truncate",
+                                            children: msg.type
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/LogPip.tsx",
+                                            lineNumber: 195,
+                                            columnNumber: 37
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "text-[7px] text-gray-600 ml-auto",
+                                            children: new Date(msg.timestamp).toLocaleTimeString([], {
+                                                hour12: false,
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit'
+                                            })
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/LogPip.tsx",
+                                            lineNumber: 196,
+                                            columnNumber: 37
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 191,
+                                    columnNumber: 33
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "text-[8px] text-gray-400 bg-white/5 p-1 rounded overflow-x-auto whitespace-pre font-mono",
+                                    children: typeof msg.payload === 'object' ? JSON.stringify(msg.payload) : String(msg.payload)
+                                }, void 0, false, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 198,
+                                    columnNumber: 33
+                                }, this)
+                            ]
+                        }, msg.id, true, {
+                            fileName: "[project]/components/LogPip.tsx",
+                            lineNumber: 190,
+                            columnNumber: 29
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/components/LogPip.tsx",
+                    lineNumber: 171,
+                    columnNumber: 17
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/components/LogPip.tsx",
+                lineNumber: 170,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "p-1 px-2 border-t border-gray-800 bg-gray-900 flex justify-between items-center gap-2",
+                children: [
+                    activeTab === 'system' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                        value: catFilter,
+                        onChange: (e)=>setCatFilter(e.target.value),
+                        className: "flex-1 bg-transparent border-none text-[8px] text-gray-400 font-bold outline-none uppercase cursor-pointer",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                value: "all",
+                                className: "bg-gray-900",
+                                children: "ALL PAGES"
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 215,
+                                columnNumber: 25
+                            }, this),
+                            categories.map((cat)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: cat,
+                                    className: "bg-gray-900",
+                                    children: (cat === '/' ? 'HOME' : cat.split('/').pop()?.toUpperCase()) || 'GLOBAL'
+                                }, cat, false, {
+                                    fileName: "[project]/components/LogPip.tsx",
+                                    lineNumber: 217,
+                                    columnNumber: 29
+                                }, this))
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/LogPip.tsx",
+                        lineNumber: 210,
+                        columnNumber: 21
+                    }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex-1 text-[8px] text-gray-600 font-bold uppercase",
+                        children: [
+                            bridgeLogs.length,
+                            " MESSAGES"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/LogPip.tsx",
+                        lineNumber: 223,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex gap-2 items-center",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>{
+                                    const data = activeTab === 'system' ? logs : bridgeLogs;
+                                    const text = data.map((l)=>activeTab === 'system' ? `[${new Date(l.timestamp).toLocaleString()}] [${l.level.toUpperCase()}] [${l.category}] ${l.message}` : `[${new Date(l.timestamp).toLocaleString()}] [${l.direction.toUpperCase()}] [${l.type}] ${JSON.stringify(l.payload)}`).join('\n');
+                                    const blob = new Blob([
+                                        text
+                                    ], {
+                                        type: 'text/plain'
+                                    });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `tfc_pip_${activeTab}_logs_${new Date().getTime()}.txt`;
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                },
+                                className: "text-[8px] text-blue-500 font-black hover:underline uppercase",
+                                children: "DL"
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 229,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>activeTab === 'system' ? __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalLogger"].clearLogs() : __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$bridgeLogger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalBridgeLogger"].clearLogs(),
+                                className: "text-[8px] text-red-500 font-black hover:underline uppercase",
+                                children: "CLEAR"
+                            }, void 0, false, {
+                                fileName: "[project]/components/LogPip.tsx",
+                                lineNumber: 249,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/components/LogPip.tsx",
+                        lineNumber: 228,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/components/LogPip.tsx",
+                lineNumber: 208,
+                columnNumber: 13
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/components/LogPip.tsx",
+        lineNumber: 125,
+        columnNumber: 9
+    }, this);
+}
+_s(LogPip, "wg/Oi9vCA7c5etn1ItBG8yWDlo4=");
+_c = LogPip;
+var _c;
+__turbopack_context__.k.register(_c, "LogPip");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/context/SessionContext.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "SessionProvider",
+    ()=>SessionProvider,
+    "useSession",
+    ()=>useSession
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
-// TopStats is now dynamically imported below with other chart components
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$dashboard$2f$SecondaryStats$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/dashboard/SecondaryStats.tsx [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/supabase.ts [client] (ecmascript)");
-// Hooks
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useDashboardStats.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useDashboardCharts.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useAgentPerformance.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DashboardErrorBoundary$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/DashboardErrorBoundary.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/UserContext.tsx [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/useSessionState.ts [client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dynamic.js [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature();
 ;
 ;
 ;
 ;
+const SessionContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])(undefined);
+const SessionProvider = ({ children })=>{
+    _s();
+    const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [currentSession, setCurrentSession] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [allSessions, setAllSessions] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const [isLocked, setIsLocked] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const lastRedirectPath = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const lastRedirectTime = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(0);
+    // --- REDIRECTION LOGIC ---
+    const handleRedirection = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "SessionProvider.useCallback[handleRedirection]": (sessions)=>{
+            if (!router.isReady || router.pathname.includes('/login')) return;
+            // 1. Find the Absolute Master (Active or Disposition Pending in ANY campaign)
+            const masterSession = [
+                ...sessions
+            ].sort({
+                "SessionProvider.useCallback[handleRedirection].masterSession": (a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            }["SessionProvider.useCallback[handleRedirection].masterSession"]).find({
+                "SessionProvider.useCallback[handleRedirection].masterSession": (s)=>s.manual_status === 'active' || s.manual_status === 'disposition_pending' || s.status === 'active' || s.status === 'disposition_pending'
+            }["SessionProvider.useCallback[handleRedirection].masterSession"]);
+            // 2. If no Master, look for the latest Assigned Lead matching CURRENT context
+            let targetSession = masterSession;
+            if (!targetSession) {
+                const currentCampaignId = router.query.id;
+                const currentCustomerId = router.query.customerId;
+                const contextualAssigned = [
+                    ...sessions
+                ].sort({
+                    "SessionProvider.useCallback[handleRedirection].contextualAssigned": (a, b)=>new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+                }["SessionProvider.useCallback[handleRedirection].contextualAssigned"]).find({
+                    "SessionProvider.useCallback[handleRedirection].contextualAssigned": (s)=>s.status === 'assigned' && String(s.campaign_id) === String(currentCampaignId)
+                }["SessionProvider.useCallback[handleRedirection].contextualAssigned"]);
+                if (contextualAssigned && !!currentCustomerId) {
+                    targetSession = contextualAssigned;
+                }
+            }
+            if (!targetSession) {
+                if (("TURBOPACK compile-time value", "object") !== 'undefined' && localStorage.getItem('manual_inspection_snapshot')) {
+                    localStorage.removeItem('manual_inspection_snapshot');
+                    setIsLocked(false);
+                }
+                setCurrentSession(null);
+                return;
+            }
+            const hot = targetSession;
+            setCurrentSession(hot);
+            // NEW: URL-based Manual Mode Handling
+            const isManualInUrl = router.query.isManual === 'true';
+            if (isManualInUrl) {
+                const status = hot.manual_status || hot.status;
+                const isGenuinelyHot = status === 'active' || status === 'disposition_pending';
+                const currentCustomerId = router.query.customerId;
+                // If we are on a different CUSTOMER than the server's 'hot' session
+                // AND that server session is NOT active/pending, we STAY on the manual lead.
+                if (String(hot.customer_id) !== String(currentCustomerId) && !isGenuinelyHot) {
+                    setIsLocked(true);
+                    console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session:", hot.id);
+                    return;
+                }
+            }
+            // FALLBACK: Heritage Manual Lock (LocalStorage)
+            const snapshotStr = ("TURBOPACK compile-time truthy", 1) ? localStorage.getItem('manual_inspection_snapshot') : "TURBOPACK unreachable";
+            if (snapshotStr) {
+                try {
+                    const snapshot = JSON.parse(snapshotStr);
+                    const currentCampaignId = router.query.id;
+                    const currentCustomerId = router.query.customerId;
+                    if (String(currentCampaignId) === String(snapshot.campaign_id) && String(currentCustomerId) === String(snapshot.customer_id)) {
+                        // Re-verify if server session has overtaken this lead with higher priority
+                        const hotStatus = hot.manual_status || hot.status;
+                        const isServerOvertaken = (hotStatus === 'active' || hotStatus === 'disposition_pending') && String(hot.customer_id) !== String(currentCustomerId);
+                        if (!isServerOvertaken) {
+                            setIsLocked(true);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem('manual_inspection_snapshot');
+                }
+            }
+            // Perform Redirection logic
+            const status = hot.manual_status || hot.status;
+            const isActuallyHot = status === 'active' || status === 'disposition_pending';
+            // Redirect for 'assigned' ONLY if we are already on a customer page of the SAME campaign
+            const currentCampaignId = router.query.id;
+            const isSequentialAssignment = status === 'assigned' && !!router.query.customerId && String(hot.campaign_id) === String(currentCampaignId);
+            if (!isActuallyHot && !isSequentialAssignment) return;
+            const targetCamp = hot.is_manual ? hot.manual_campaign_id || hot.campaign_id : hot.campaign_id;
+            const targetCust = hot.is_manual ? hot.manual_customer_id : hot.customer_id;
+            if (!targetCamp || !targetCust) return;
+            const targetPath = `/portal/campaign/${targetCamp}/${targetCust}`;
+            const maskPath = `/campaign/${targetCamp}/${targetCust}`;
+            const currentPath = router.asPath.split('?')[0].replace(/\/$/, "");
+            const normalizedTarget = targetPath.replace(/\/$/, "");
+            const normalizedMask = maskPath.replace(/\/$/, "");
+            const isAlreadyThere = currentPath === normalizedTarget || currentPath === normalizedMask;
+            const now = Date.now();
+            if (!isAlreadyThere && (lastRedirectPath.current !== normalizedTarget || now - lastRedirectTime.current > 3000)) {
+                console.log(`[Session-Context] 🚀 Redirecting to: ${normalizedTarget}`);
+                lastRedirectPath.current = normalizedTarget;
+                lastRedirectTime.current = now;
+                router.push(targetPath);
+            }
+        }
+    }["SessionProvider.useCallback[handleRedirection]"], [
+        router
+    ]);
+    const fetchSessions = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useCallback"])({
+        "SessionProvider.useCallback[fetchSessions]": async ()=>{
+            if (!user?.uid) return;
+            try {
+                const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('call_sessions').select('*').eq('user_id', user.uid).order('updated_at', {
+                    ascending: false
+                }).limit(10);
+                if (error) throw error;
+                const latestSessions = data || [];
+                setAllSessions(latestSessions);
+                handleRedirection(latestSessions);
+            } catch (e) {
+                console.error("[Session-Context] Fetch error:", e);
+            } finally{
+                setIsLoading(false);
+            }
+        }
+    }["SessionProvider.useCallback[fetchSessions]"], [
+        user?.uid,
+        handleRedirection
+    ]);
+    // Initial and Polling
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "SessionProvider.useEffect": ()=>{
+            if (!mounted || !user?.uid) return;
+            fetchSessions();
+            const interval = setInterval(fetchSessions, 5000);
+            return ({
+                "SessionProvider.useEffect": ()=>clearInterval(interval)
+            })["SessionProvider.useEffect"];
+        }
+    }["SessionProvider.useEffect"], [
+        user?.uid,
+        mounted,
+        fetchSessions
+    ]);
+    // Real-time
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "SessionProvider.useEffect": ()=>{
+            if (!user?.uid) return;
+            const channel = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].channel(`session_updates_${user.uid}`).on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'call_sessions',
+                filter: `user_id=eq.${user.uid}`
+            }, {
+                "SessionProvider.useEffect.channel": ()=>{
+                    console.log("[Session-Context] ⚡ Real-time update detected.");
+                    fetchSessions();
+                }
+            }["SessionProvider.useEffect.channel"]).subscribe();
+            return ({
+                "SessionProvider.useEffect": ()=>{
+                    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].removeChannel(channel);
+                }
+            })["SessionProvider.useEffect"];
+        }
+    }["SessionProvider.useEffect"], [
+        user?.uid,
+        fetchSessions
+    ]);
+    const startManualLock = (session)=>{
+        localStorage.setItem('manual_inspection_snapshot', JSON.stringify(session));
+        setIsLocked(true);
+    };
+    const clearManualLock = ()=>{
+        localStorage.removeItem('manual_inspection_snapshot');
+        setIsLocked(false);
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SessionContext.Provider, {
+        value: {
+            currentSession,
+            allSessions,
+            isLoading,
+            isLocked,
+            startManualLock,
+            clearManualLock
+        },
+        children: children
+    }, void 0, false, {
+        fileName: "[project]/context/SessionContext.tsx",
+        lineNumber: 228,
+        columnNumber: 5
+    }, ("TURBOPACK compile-time value", void 0));
+};
+_s(SessionProvider, "V5NQ9NFLUwi9ULXFWbZ81b1lRqA=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
+_c = SessionProvider;
+const useSession = ()=>{
+    _s1();
+    const context = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(SessionContext);
+    if (context === undefined) {
+        throw new Error('useSession must be used within a SessionProvider');
+    }
+    return context;
+};
+_s1(useSession, "b9L3QQ+jgeyIrH0NfHrJ8nn7VMU=");
+var _c;
+__turbopack_context__.k.register(_c, "SessionProvider");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/components/PortalContainer.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>PortalContainer
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserProvider$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/UserProvider.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/components/AppLayout.tsx [client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$GlobalCallHandler$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/GlobalCallHandler.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CallReminderOverlay$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/CallReminderOverlay.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$LogPip$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/LogPip.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$SessionContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/context/SessionContext.tsx [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 ;
@@ -9419,1084 +12223,160 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
-;
-;
-;
-;
-;
-// Dynamically import dashboard tabs to prevent Recharts SSR sizing issues
-const TopStats = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/TopStats.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c = TopStats;
-const ProspectTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/ProspectTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/ProspectTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c1 = ProspectTab;
-const AgentPerformanceTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/AgentPerformanceTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/AgentPerformanceTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c2 = AgentPerformanceTab;
-const HourlyAnalyticsTab = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dynamic$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"])(()=>__turbopack_context__.A("[project]/components/dashboard/HourlyAnalyticsTab.tsx [client] (ecmascript, next/dynamic entry, async loader)"), {
-    loadableGenerated: {
-        modules: [
-            "[project]/components/dashboard/HourlyAnalyticsTab.tsx [client] (ecmascript, next/dynamic entry)"
-        ]
-    },
-    ssr: false
-});
-_c3 = HourlyAnalyticsTab;
-function Dashboard() {
+function PortalContainer({ children }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
-    const { user, mounted } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"])();
-    // Organization filter
-    const [organizations, setOrganizations] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [selectedOrgId, setSelectedOrgId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_selectedOrgId", "all");
-    // User filter
-    const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
-    const [selectedUserId, setSelectedUserId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_selectedUserId", "all");
-    // Filters Dropdown state
-    const [showFilters, setShowFilters] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const filterRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(null);
-    const [syncedTotals, setSyncedTotals] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_activeTab", "prospect");
-    // Security Restrictions
-    const [restrictedUserIds, setRestrictedUserIds] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    // Close filters when clicking outside
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            const handleClickOutside = {
-                "Dashboard.useEffect.handleClickOutside": (event)=>{
-                    if (filterRef.current && !filterRef.current.contains(event.target)) {
-                        setShowFilters(false);
-                    }
-                }
-            }["Dashboard.useEffect.handleClickOutside"];
-            document.addEventListener("mousedown", handleClickOutside);
-            return ({
-                "Dashboard.useEffect": ()=>document.removeEventListener("mousedown", handleClickOutside)
-            })["Dashboard.useEffect"];
-        }
-    }["Dashboard.useEffect"], []);
-    // Data hooks
-    const { stats, secondaryStats, performanceMetrics, loading: statsLoading, fetchStats } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardStats"])();
-    const { chartData, pieData, heatmapData, campaignData, hourlyStats, loading: chartsLoading, fetchChartData } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardCharts"])();
-    const { agentData, loading: agentLoading, fetchAgentPerformance } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"])();
-    // Dashboard Level State
-    const [dashboardLevel, setDashboardLevel] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN);
-    const [isOrgLocked, setIsOrgLocked] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [isUserLocked, setIsUserLocked] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const hasInitialized = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRef"])(false);
-    const [isInitialLoad, setIsInitialLoad] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(true);
-    // Initialize Dashboard Level Logic & Constraints
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (!mounted || !user) return;
-            const level = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])(user);
-            const currentId = user.uid || user.id || user.user_id;
-            setDashboardLevel(level);
-            // Apply Constraints based on level
-            // Apply Constraints based on level
-            if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_1_ADMIN) {
-                // Level 1: Full Access, default to ALL stats
-                setIsOrgLocked(false);
-                setIsUserLocked(false);
-                setSelectedOrgId("all");
-                setSelectedUserId("all");
-                setRestrictedUserIds(null);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_2_CLIENT_CEO) {
-                setIsOrgLocked(true);
-                setIsUserLocked(false);
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                setRestrictedUserIds(null);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES) {
-                setIsOrgLocked(true);
-                setIsUserLocked(false);
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                // Fail secure: Default to self only until team members are fetched
-                setRestrictedUserIds([
-                    currentId
-                ]);
-            } else if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                setIsOrgLocked(true);
-                setIsUserLocked(true);
-                // FORCE selections immediately for Level 4
-                if (user.organization_id) setSelectedOrgId(user.organization_id);
-                if (currentId) {
-                    setSelectedUserId(currentId);
-                    setRestrictedUserIds([
-                        currentId
-                    ]);
-                }
-            }
-            hasInitialized.current = true;
-        }
-    }["Dashboard.useEffect"], [
-        mounted,
-        user?.uid,
-        user?.organization_id
-    ]); // Trigger when key user info changes
-    // Fetch organizations
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            const fetchOrgs = {
-                "Dashboard.useEffect.fetchOrgs": async ()=>{
-                    const { data } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("organizations").select("id, company_name").order("company_name");
-                    if (data) setOrganizations(data);
-                }
-            }["Dashboard.useEffect.fetchOrgs"];
-            fetchOrgs();
-        }
-    }["Dashboard.useEffect"], []);
-    // Fetch users when org changes
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            // Skip if level isn't determined yet
-            if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) return;
-            // Skip if user is locked to self (Level 4)
-            if (isUserLocked) return;
-            const fetchUsers = {
-                "Dashboard.useEffect.fetchUsers": async ()=>{
-                    // Basic query for profiles
-                    const queryBase = __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from("user_profiles").select("user_id, user_name, role").neq("approval_status", "rejected");
-                    let finalQuery;
-                    // Stage for Level 3: Strictly Fetch Team Members
-                    if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES && user?.uid) {
-                        console.log(`[Dashboard] Filtering users for TL:`, user.uid);
-                        // Fetch teams where current user is leader
-                        const { data: teamData, error: teamError } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["supabase"].from('teams').select('members').eq('leader_id', user.uid).eq('is_active', true);
-                        if (teamError) {
-                            console.error("[Dashboard] Error fetching TL teams:", teamError);
-                        }
-                        const memberIds = new Set();
-                        memberIds.add(user.uid); // Always include the TL themself
-                        if (teamData && teamData.length > 0) {
-                            teamData.forEach({
-                                "Dashboard.useEffect.fetchUsers": (team)=>{
-                                    if (Array.isArray(team.members)) {
-                                        team.members.forEach({
-                                            "Dashboard.useEffect.fetchUsers": (id)=>{
-                                                if (id && typeof id === 'string') memberIds.add(id);
-                                            }
-                                        }["Dashboard.useEffect.fetchUsers"]);
-                                    }
-                                }
-                            }["Dashboard.useEffect.fetchUsers"]);
-                        }
-                        const finalIds = Array.from(memberIds);
-                        console.log(`[Dashboard] Restricting User Selection to ${finalIds.length} members`);
-                        setRestrictedUserIds(finalIds);
-                        // Apply membership filter
-                        finalQuery = queryBase.in("user_id", finalIds);
-                    } else if (selectedOrgId !== "all") {
-                        // Fallback for CEO (Level 2) or Admin (Level 1) selecting an org
-                        finalQuery = queryBase.eq("organization_id", selectedOrgId);
-                    } else {
-                        // Global view for Admin (Level 1)
-                        finalQuery = queryBase;
-                        setRestrictedUserIds(null);
-                    }
-                    const { data, error: userError } = await finalQuery.order("user_name");
-                    if (userError) {
-                        console.error("[Dashboard] Error fetching users:", userError);
-                    }
-                    if (data) {
-                        setUsers(data);
-                    } else {
-                        setUsers([]);
-                    }
-                }
-            }["Dashboard.useEffect.fetchUsers"];
-            if (mounted) {
-                // For Level 4, we don't fetch users list, stay locked to self
-                if (dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    fetchUsers();
-                    // Only reset to "all" if NOT locked
-                    if (!isUserLocked) {
-                        setSelectedUserId("all");
-                    }
-                }
-            }
-        }
-    }["Dashboard.useEffect"], [
-        selectedOrgId,
-        isUserLocked,
-        dashboardLevel,
-        mounted,
-        user?.uid
-    ]);
-    // Date filter state
-    const [dateFilter, setDateFilter] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"])("dash_dateFilter", "today");
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (mounted && user && dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) {
-                if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    setRestrictedUserIds([
-                        user.uid
-                    ]);
-                }
-            }
-        }
-    }["Dashboard.useEffect"], [
-        mounted,
-        user,
-        dashboardLevel
-    ]);
-    // Fetch all dashboard data when filters change
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (mounted && user) {
-                const currentId = user.uid || user.id || user.user_id;
-                let orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
-                let userFilter = selectedUserId === "all" ? undefined : selectedUserId;
-                // --- CRITICAL OVERRIDE FOR LEVEL 4 (AGENT) ---
-                // This ensures that even if UI state is in transition, the data fetched is always their own.
-                if (dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES) {
-                    orgFilter = user.organization_id || undefined;
-                    userFilter = currentId || undefined;
-                }
-                // Fetch all data in parallel
-                Promise.all([
-                    fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds),
-                    fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds),
-                    fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds)
-                ]);
-            }
-        }
-    }["Dashboard.useEffect"], [
-        selectedOrgId,
-        selectedUserId,
-        dateFilter,
-        user?.uid,
-        user?.organization_id,
-        mounted,
-        dashboardLevel,
-        fetchStats,
-        fetchChartData,
-        fetchAgentPerformance,
-        restrictedUserIds
-    ]);
-    const loading = statsLoading || chartsLoading || agentLoading;
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "Dashboard.useEffect": ()=>{
-            if (!loading) {
-                setIsInitialLoad(false);
-            }
-        }
-    }["Dashboard.useEffect"], [
-        loading
-    ]);
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["Fragment"], {
-        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$DashboardErrorBoundary$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["DashboardErrorBoundary"], {
-            children: isInitialLoad && statsLoading && chartsLoading && agentLoading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-col min-h-[80vh] items-center justify-center animate-in fade-in duration-300",
+    // Minimal Layout Pages (No Sidebar/Header)
+    const minimalPages = [
+        '/portal/login',
+        '/portal/signup',
+        '/portal/signup-success',
+        '/portal/hold',
+        '/portal/pending',
+        '/portal/suspended',
+        '/portal/rejected',
+        '/portal/profile-completion'
+    ];
+    const isMinimal = minimalPages.includes(router.pathname);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$UserProvider$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["UserProvider"], {
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$context$2f$SessionContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["SessionProvider"], {
+            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AppLayout$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["default"], {
+                hideSidebar: isMinimal,
+                hideHeader: isMinimal,
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 263,
-                        columnNumber: 13
+                    children,
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$GlobalCallHandler$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/components/PortalContainer.tsx",
+                        lineNumber: 32,
+                        columnNumber: 11
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "mt-4 text-[#263238] font-bold text-lg animate-pulse",
-                        style: {
-                            fontFamily: "'Poppins', sans-serif"
-                        },
-                        children: "Loading Dashboard..."
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 264,
-                        columnNumber: 13
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CallReminderOverlay$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/components/PortalContainer.tsx",
+                        lineNumber: 33,
+                        columnNumber: 11
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "text-[#787E9D] text-sm font-medium mt-1",
-                        children: "Please wait while we gather your statistics"
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 267,
-                        columnNumber: 13
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$LogPip$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                        fileName: "[project]/components/PortalContainer.tsx",
+                        lineNumber: 34,
+                        columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
-                fileName: "[project]/pages/portal/dashboard.tsx",
-                lineNumber: 262,
-                columnNumber: 11
-            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]",
-                children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex-1",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                        className: "text-2xl sm:text-3xl font-bold text-[#263238]",
-                                        style: {
-                                            fontFamily: "'Poppins', sans-serif"
-                                        },
-                                        children: "Dashboard Overview"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 274,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "text-sm text-[#787E9D] mt-1 line-clamp-1 sm:line-clamp-none",
-                                        children: [
-                                            "Welcome back,",
-                                            " ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "font-semibold text-[#4b33e8]",
-                                                children: mounted ? user?.displayName || "User" : "User"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 282,
-                                                columnNumber: 17
-                                            }, this),
-                                            ". Here's what's happening today."
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 280,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 273,
-                                columnNumber: 13
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-3",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "relative",
-                                        ref: filterRef,
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>setShowFilters(!showFilters),
-                                                className: `h-10 px-4 rounded-xl border flex items-center gap-2 transition-all  font-bold text-sm ${showFilters ? "border-[#4b33e8] bg-[#4b33e8] text-white" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"}`,
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                        className: "fi flex fi-rr-filter"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 300,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "hidden sm:inline",
-                                                        children: "Filters"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 301,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    (selectedOrgId !== "all" || selectedUserId !== "all" || dateFilter !== "today") && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: `flex items-center justify-center w-2 h-2 rounded-full ${showFilters ? 'bg-white' : 'bg-[#4b33e8]'}`
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 303,
-                                                        columnNumber: 21
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 292,
-                                                columnNumber: 17
-                                            }, this),
-                                            showFilters && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "absolute top-full right-0 mt-2 w-[240px] sm:w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-[100] animate-in fade-in zoom-in duration-200",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "space-y-4",
-                                                    children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "Organization"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 312,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: selectedOrgId,
-                                                                            onChange: (e)=>setSelectedOrgId(e.target.value),
-                                                                            className: `w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isOrgLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`,
-                                                                            disabled: isOrgLocked,
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all",
-                                                                                    disabled: isOrgLocked,
-                                                                                    children: "Global (All Orgs)"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 320,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                organizations.map((org)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                        value: org.id,
-                                                                                        disabled: isOrgLocked && selectedOrgId !== org.id,
-                                                                                        children: org.company_name
-                                                                                    }, org.id, false, {
-                                                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                        lineNumber: 322,
-                                                                                        columnNumber: 31
-                                                                                    }, this))
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 314,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 327,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: `fi ${isOrgLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 328,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 313,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 311,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "User Selection"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 334,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: selectedUserId,
-                                                                            onChange: (e)=>setSelectedUserId(e.target.value),
-                                                                            className: `w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isUserLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`,
-                                                                            disabled: isUserLocked,
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all",
-                                                                                    disabled: isUserLocked,
-                                                                                    children: dashboardLevel === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_3_TL_SALES ? "All Team Members" : "All Users"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 342,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                isUserLocked ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: user?.uid,
-                                                                                    children: user?.displayName || 'Me'
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 346,
-                                                                                    columnNumber: 33
-                                                                                }, this) : users.map((u)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                        value: u.user_id,
-                                                                                        children: u.user_name || "Unknown User"
-                                                                                    }, u.user_id, false, {
-                                                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                        lineNumber: 349,
-                                                                                        columnNumber: 35
-                                                                                    }, this))
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 336,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 355,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: `fi ${isUserLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 356,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 335,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 333,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "space-y-1.5",
-                                                            children: [
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                                    className: "text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1",
-                                                                    children: "Time Period"
-                                                                }, void 0, false, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 362,
-                                                                    columnNumber: 25
-                                                                }, this),
-                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                    className: "relative",
-                                                                    children: [
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                                            value: dateFilter,
-                                                                            onChange: (e)=>setDateFilter(e.target.value),
-                                                                            className: "w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all cursor-pointer",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "today",
-                                                                                    children: "Today"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 369,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "yesterday",
-                                                                                    children: "Yesterday"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 370,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_week",
-                                                                                    children: "This Week"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 371,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "last_7_days",
-                                                                                    children: "Last 7 Days"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 372,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_month",
-                                                                                    children: "This Month"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 373,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "last_month",
-                                                                                    children: "Last Month"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 374,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "this_year",
-                                                                                    children: "1 Year"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 375,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "multi_year",
-                                                                                    children: "Multi-Year"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 376,
-                                                                                    columnNumber: 29
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                                    value: "all_time",
-                                                                                    children: "All Time"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                                    lineNumber: 377,
-                                                                                    columnNumber: 29
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 364,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 379,
-                                                                            columnNumber: 27
-                                                                        }, this),
-                                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                                            className: "fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                            lineNumber: 380,
-                                                                            columnNumber: 27
-                                                                        }, this)
-                                                                    ]
-                                                                }, void 0, true, {
-                                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                    lineNumber: 363,
-                                                                    columnNumber: 25
-                                                                }, this)
-                                                            ]
-                                                        }, void 0, true, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 361,
-                                                            columnNumber: 23
-                                                        }, this),
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "pt-2",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                                onClick: ()=>{
-                                                                    setSelectedOrgId(isOrgLocked ? selectedOrgId : "all");
-                                                                    setSelectedUserId(isUserLocked ? selectedUserId : "all");
-                                                                    setDateFilter("all_time");
-                                                                    setShowFilters(false);
-                                                                },
-                                                                className: "w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-xs font-bold transition-all",
-                                                                children: "Reset Filters"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                                lineNumber: 385,
-                                                                columnNumber: 25
-                                                            }, this)
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                                            lineNumber: 384,
-                                                            columnNumber: 23
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                    lineNumber: 309,
-                                                    columnNumber: 21
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 308,
-                                                columnNumber: 19
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 291,
-                                        columnNumber: 15
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center gap-2",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "px-3 h-10 bg-[#4b33e8] rounded-xl text-xs font-bold text-white cursor-default flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: `w-1.5 h-1.5 rounded-full bg-white ${statsLoading || chartsLoading || agentLoading ? '' : 'animate-pulse'}`
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 404,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "hidden sm:inline",
-                                                        children: statsLoading || chartsLoading || agentLoading ? "Updating..." : "Live Updates"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 405,
-                                                        columnNumber: 19
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        className: "sm:hidden",
-                                                        children: statsLoading || chartsLoading || agentLoading ? "..." : "Live"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                                        lineNumber: 406,
-                                                        columnNumber: 19
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 403,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>{
-                                                    const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
-                                                    const uid = selectedUserId === "all" ? "all" : selectedUserId;
-                                                    const dFilter = dateFilter;
-                                                    window.open(`/dashboard_report?orgId=${oid}&userId=${uid}&dateFilter=${dFilter}`, '_blank');
-                                                },
-                                                className: "w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all",
-                                                title: "Generate Report",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                                    className: "fi flex fi-rr-print"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                                    lineNumber: 419,
-                                                    columnNumber: 21
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 409,
-                                                columnNumber: 17
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 402,
-                                        columnNumber: 15
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 289,
-                                columnNumber: 13
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 272,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(TopStats, {
-                        stats: {
-                            ...stats,
-                            totalDials: syncedTotals ? syncedTotals.totalDials : stats.totalDials,
-                            totalTalktime: syncedTotals ? syncedTotals.totalDuration : stats.totalTalktime
-                        },
-                        chartData: chartData,
-                        loading: statsLoading || chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 426,
-                        columnNumber: 11
-                    }, this),
-                    dashboardLevel !== __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "md:hidden relative overflow-hidden bg-gradient-to-r from-[#4b33e8] via-[#6366f1] to-[#8b5cf6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-indigo-100/20 group",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "absolute inset-0 overflow-hidden pointer-events-none z-0",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute inset-[-100%] opacity-[0.7] rotate-[-12deg]",
-                                        style: {
-                                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-                                            backgroundRepeat: 'repeat'
-                                        }
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 442,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/20 rounded-full blur-[60px] animate-pulse"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 449,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "absolute -bottom-12 -left-12 w-48 h-48 bg-black/10 rounded-full blur-[50px]"
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 450,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 440,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "relative z-10 flex items-center gap-4",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 hidden md:flex shrink-0",
-                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("i", {
-                                            className: "fi fi-rr-users-alt text-white text-lg"
-                                        }, void 0, false, {
-                                            fileName: "[project]/pages/portal/dashboard.tsx",
-                                            lineNumber: 455,
-                                            columnNumber: 19
-                                        }, this)
-                                    }, void 0, false, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 454,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-center sm:text-left",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: "text-base sm:text-lg font-bold text-white leading-tight",
-                                                style: {
-                                                    fontFamily: "'Poppins', sans-serif"
-                                                },
-                                                children: "Empower Your Team’s Performance"
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 458,
-                                                columnNumber: 19
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-white/70 text-[10px] font-medium hidden lg:block tracking-wide",
-                                                children: "Real-time monitoring and workforce optimization simplified."
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 461,
-                                                columnNumber: 19
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 457,
-                                        columnNumber: 17
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 453,
-                                columnNumber: 15
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                onClick: ()=>router.push("/portal/team"),
-                                className: "relative z-10 flex items-center gap-2.5 px-6 py-2.5 bg-white text-[#4b33e8] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all hover:shadow-lg hover:shadow-white/20 active:scale-95 shrink-0",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    children: "Manage Team"
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                    lineNumber: 471,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                lineNumber: 467,
-                                columnNumber: 15
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 438,
-                        columnNumber: 13
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$dashboard$2f$SecondaryStats$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                        stats: stats,
-                        secondaryStats: secondaryStats,
-                        loading: statsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 477,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex justify-start",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "bg-white border border-gray-100 p-1 rounded-xl inline-flex w-full sm:w-auto relative overflow-hidden",
-                            children: [
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "absolute top-1 bottom-1 transition-all duration-300 ease-out bg-[#4b33e8] rounded-lg z-0",
-                                    style: {
-                                        width: 'calc((100% - 8px) / 3)',
-                                        left: `calc(4px + (${[
-                                            "prospect",
-                                            "callDetails",
-                                            "agentPerf"
-                                        ].indexOf(activeTab)} * (100% - 8px) / 3))`
-                                    }
-                                }, void 0, false, {
-                                    fileName: "[project]/pages/portal/dashboard.tsx",
-                                    lineNumber: 483,
-                                    columnNumber: 15
-                                }, this),
-                                [
-                                    {
-                                        id: "prospect",
-                                        label: "Prospect Wise ",
-                                        short: "Prospects"
-                                    },
-                                    {
-                                        id: "callDetails",
-                                        label: "Call Hourly Analytics",
-                                        short: "Hours"
-                                    },
-                                    {
-                                        id: "agentPerf",
-                                        label: "Agent Performance",
-                                        short: "Agents"
-                                    }
-                                ].map((tab)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>setActiveTab(tab.id),
-                                        className: `flex-1 sm:w-56 px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${activeTab === tab.id ? "text-white" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"}`,
-                                        style: {
-                                            fontFamily: "'Poppins', sans-serif"
-                                        },
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "hidden sm:inline",
-                                                children: tab.label
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 506,
-                                                columnNumber: 19
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "sm:hidden",
-                                                children: tab.short
-                                            }, void 0, false, {
-                                                fileName: "[project]/pages/portal/dashboard.tsx",
-                                                lineNumber: 507,
-                                                columnNumber: 19
-                                            }, this)
-                                        ]
-                                    }, tab.id, true, {
-                                        fileName: "[project]/pages/portal/dashboard.tsx",
-                                        lineNumber: 496,
-                                        columnNumber: 17
-                                    }, this))
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/pages/portal/dashboard.tsx",
-                            lineNumber: 481,
-                            columnNumber: 13
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 480,
-                        columnNumber: 11
-                    }, this),
-                    activeTab === "prospect" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ProspectTab, {
-                        stats: stats,
-                        performanceMetrics: performanceMetrics,
-                        campaignData: campaignData,
-                        pieData: pieData,
-                        loading: statsLoading || chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 515,
-                        columnNumber: 13
-                    }, this),
-                    activeTab === "agentPerf" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(AgentPerformanceTab, {
-                        agentData: agentData,
-                        totalDials: stats.totalDials,
-                        selectedOrgId: selectedOrgId,
-                        selectedUserId: selectedUserId,
-                        dateFilter: dateFilter,
-                        restrictedUserIds: restrictedUserIds,
-                        loading: agentLoading,
-                        onTotalsChange: setSyncedTotals
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 525,
-                        columnNumber: 13
-                    }, this),
-                    activeTab === "callDetails" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HourlyAnalyticsTab, {
-                        heatmapData: heatmapData,
-                        hourlyStats: hourlyStats,
-                        selectedOrgId: selectedOrgId,
-                        selectedUserId: selectedUserId,
-                        dateFilter: dateFilter,
-                        loading: chartsLoading
-                    }, void 0, false, {
-                        fileName: "[project]/pages/portal/dashboard.tsx",
-                        lineNumber: 538,
-                        columnNumber: 13
-                    }, this)
-                ]
-            }, void 0, true, {
-                fileName: "[project]/pages/portal/dashboard.tsx",
-                lineNumber: 270,
-                columnNumber: 11
+                fileName: "[project]/components/PortalContainer.tsx",
+                lineNumber: 30,
+                columnNumber: 9
             }, this)
         }, void 0, false, {
-            fileName: "[project]/pages/portal/dashboard.tsx",
-            lineNumber: 260,
+            fileName: "[project]/components/PortalContainer.tsx",
+            lineNumber: 29,
             columnNumber: 7
         }, this)
-    }, void 0, false);
+    }, void 0, false, {
+        fileName: "[project]/components/PortalContainer.tsx",
+        lineNumber: 28,
+        columnNumber: 5
+    }, this);
 }
-_s(Dashboard, "LGqf40HBlVQgXR3GpEWIIgQGGXo=", false, function() {
+_s(PortalContainer, "fN7XvhJ+p5oE6+Xlo0NJmXpxjC8=", false, function() {
     return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$context$2f$UserContext$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["useUser"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardStats$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardStats"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useDashboardCharts$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useDashboardCharts"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useAgentPerformance$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useAgentPerformance"],
-        __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$useSessionState$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["useSessionState"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];
 });
-_c4 = Dashboard;
-var _c, _c1, _c2, _c3, _c4;
-__turbopack_context__.k.register(_c, "TopStats");
-__turbopack_context__.k.register(_c1, "ProspectTab");
-__turbopack_context__.k.register(_c2, "AgentPerformanceTab");
-__turbopack_context__.k.register(_c3, "HourlyAnalyticsTab");
-__turbopack_context__.k.register(_c4, "Dashboard");
+_c = PortalContainer;
+var _c;
+__turbopack_context__.k.register(_c, "PortalContainer");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/dashboard.tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+"[project]/pages/_app.tsx [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
 
-const PAGE_PATH = "/portal/dashboard";
+__turbopack_context__.s([
+    "default",
+    ()=>App
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dialogService$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dialogService.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/logger.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$networkInterceptors$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/networkInterceptors.ts [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$flutterBridge$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/flutterBridge.ts [client] (ecmascript)"); // Initialize bridge listeners
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$OfflineOverlay$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/OfflineOverlay.tsx [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$PortalContainer$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/PortalContainer.tsx [client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
+;
+;
+;
+;
+;
+;
+if ("TURBOPACK compile-time truthy", 1) {
+    __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$logger$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["globalLogger"].init();
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$networkInterceptors$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["initNetworkInterceptors"])();
+    console.log("[App] Logger and Interceptors initialized.");
+}
+;
+;
+function App({ Component, pageProps }) {
+    _s();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    // Decide if this is a portal page or a marketing page
+    // Since we moved app files to /portal directory, their actual pathname will start with /portal
+    const isPortalPage = router.pathname.startsWith('/portal');
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dialogService$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["DialogProvider"], {
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$OfflineOverlay$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                fileName: "[project]/pages/_app.tsx",
+                lineNumber: 30,
+                columnNumber: 7
+            }, this),
+            isPortalPage ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$PortalContainer$2e$tsx__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Component, {
+                    ...pageProps
+                }, void 0, false, {
+                    fileName: "[project]/pages/_app.tsx",
+                    lineNumber: 33,
+                    columnNumber: 11
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/pages/_app.tsx",
+                lineNumber: 32,
+                columnNumber: 9
+            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Component, {
+                ...pageProps
+            }, void 0, false, {
+                fileName: "[project]/pages/_app.tsx",
+                lineNumber: 36,
+                columnNumber: 9
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/pages/_app.tsx",
+        lineNumber: 29,
+        columnNumber: 5
+    }, this);
+}
+_s(App, "fN7XvhJ+p5oE6+Xlo0NJmXpxjC8=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
+_c = App;
+var _c;
+__turbopack_context__.k.register(_c, "App");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[next]/entry/page-loader.ts { PAGE => \"[project]/pages/_app.tsx [client] (ecmascript)\" } [client] (ecmascript)", ((__turbopack_context__, module, exports) => {
+
+const PAGE_PATH = "/_app";
 (window.__NEXT_P = window.__NEXT_P || []).push([
     PAGE_PATH,
     ()=>{
-        return __turbopack_context__.r("[project]/pages/portal/dashboard.tsx [client] (ecmascript)");
+        return __turbopack_context__.r("[project]/pages/_app.tsx [client] (ecmascript)");
     }
 ]);
 // @ts-expect-error module.hot exists
@@ -10509,11 +12389,11 @@ if (module.hot) {
     });
 }
 }),
-"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/portal/dashboard.tsx\" }", ((__turbopack_context__) => {
+"[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/pages/_app\" }", ((__turbopack_context__) => {
 "use strict";
 
-__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/portal/dashboard.tsx [client] (ecmascript)\" } [client] (ecmascript)");
+__turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages/_app.tsx [client] (ecmascript)\" } [client] (ecmascript)");
 }),
 ]);
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__b1a68bc2._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__15eb9139._.js.map

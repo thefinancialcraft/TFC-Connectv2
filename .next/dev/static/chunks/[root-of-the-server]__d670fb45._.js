@@ -3685,6 +3685,50 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
+"[project]/lib/dashboardUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "DashboardLevel",
+    ()=>DashboardLevel,
+    "getUserDashboardLevel",
+    ()=>getUserDashboardLevel
+]);
+var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
+    DashboardLevel["LEVEL_1_ADMIN"] = "LEVEL_1";
+    DashboardLevel["LEVEL_2_CLIENT_CEO"] = "LEVEL_2";
+    DashboardLevel["LEVEL_3_TL_SALES"] = "LEVEL_3";
+    DashboardLevel["LEVEL_4_AGENT_SALES"] = "LEVEL_4";
+    DashboardLevel["UNKNOWN"] = "UNKNOWN";
+    return DashboardLevel;
+}({});
+const getUserDashboardLevel = (user)=>{
+    if (!user) return "UNKNOWN";
+    const role = (user.role || '').toLowerCase();
+    const designation = (user.designation || '').toLowerCase();
+    // --- Level 1: Super Admin / Management (TFC Internal) ---
+    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
+        return "LEVEL_1";
+    }
+    // --- Level 2: Client CEO / Org Owner / Developer ---
+    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
+        return "LEVEL_2";
+    }
+    // If we don't have enough data to determine level, return UNKNOWN
+    if (!role) return "UNKNOWN";
+    // --- Level 3: Team Leader ---
+    // Role is 'admin' and designation is 'team_leader'
+    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
+        return "LEVEL_3";
+    }
+    // --- Level 4: Sales Agent ---
+    // Default for normal users (role = 'user' or any other non-admin/non-owner)
+    return "LEVEL_4";
+};
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
 "[project]/components/BottomNav.tsx [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -3695,8 +3739,10 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/jsx-dev-runtime.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/router.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/react/index.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/dashboardUtils.ts [client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
+;
 ;
 ;
 const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["memo"])(_c = _s(function BottomNav({ activeNav, userRole, isSuperAdmin, isClient, designation, employeeId }) {
@@ -3770,40 +3816,34 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
     // Filter nav items based on admin status and client designation
     const navItems = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "BottomNav.BottomNav.useMemo[navItems]": ()=>{
-            // Visibility logic for User and Org Pages (Strict: Hidden by default until mounted and verified)
-            const allowedDesignations = [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ];
-            const currentDesignation = designation?.toLowerCase() || '';
-            const isUserPageVisible = mounted && (isClient === false || isClient === true && [
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isOrgVisible = mounted && (isClient === false || isClient === true && designation?.toLowerCase() === 'ceo');
-            const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
-                'manager',
-                'team_leader',
-                'ceo',
-                'developer'
-            ].includes(currentDesignation));
-            const isAdminState = mounted && isAdmin;
-            const isSpecialUser = employeeId === 'NXUS-001';
+            const level = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["getUserDashboardLevel"])({
+                role: userRole,
+                designation: designation,
+                isClient: isClient
+            });
             return allNavItems.filter({
                 "BottomNav.BottomNav.useMemo[navItems]": (item)=>{
-                    // 0. Hard Rejection for Call Sessions if NOT global
-                    if (item.id === 'call-sessions' && isClient !== false) return false;
-                    // Special override for Call Sessions for Global Users
-                    if (item.id === 'call-sessions' && isClient === false) return true;
-                    // Admin check
-                    if (item.adminOnly && !isAdminState) return false;
-                    // User page visibility check
+                    // 0. Call Sessions visibility (Admin, CEO, TL)
+                    if (item.id === 'call-sessions') {
+                        if (employeeId === 'NXUS-001') return true;
+                        if (level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].LEVEL_4_AGENT_SALES || level === __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$dashboardUtils$2e$ts__$5b$client$5d$__$28$ecmascript$29$__["DashboardLevel"].UNKNOWN) return false;
+                        return true;
+                    }
+                    const currentDesignation = designation?.toLowerCase() || '';
+                    const isUserPageVisible = mounted && (isClient === false || isClient === true && [
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isTeamPageVisible = mounted && (isClient === false || isClient === true && [
+                        'manager',
+                        'team_leader',
+                        'ceo',
+                        'developer'
+                    ].includes(currentDesignation));
+                    const isAdminState = mounted && isAdmin;
+                    // Filter logic
+                    if (item.adminOnly && !isAdminState && employeeId !== 'NXUS-001') return false;
                     if (item.id === 'users' && !isUserPageVisible) return false;
-                    // Org page visibility check
-                    if (item.id === 'organization' && !isOrgVisible) return false;
-                    // Team page visibility check
                     if (item.id === 'team' && !isTeamPageVisible) return false;
                     return true;
                 }
@@ -3898,32 +3938,32 @@ const BottomNav = /*#__PURE__*/ _s((0, __TURBOPACK__imported__module__$5b$projec
                                 className: `fi flex ${item.icon} text-xl transition-colors ${activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path ? "text-[#4b33e8]" : "text-gray-600"}`
                             }, void 0, false, {
                                 fileName: "[project]/components/BottomNav.tsx",
-                                lineNumber: 219,
+                                lineNumber: 211,
                                 columnNumber: 17
                             }, this)
                         }, item.id, false, {
                             fileName: "[project]/components/BottomNav.tsx",
-                            lineNumber: 209,
+                            lineNumber: 201,
                             columnNumber: 15
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/components/BottomNav.tsx",
-                    lineNumber: 207,
+                    lineNumber: 199,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/BottomNav.tsx",
-                lineNumber: 206,
+                lineNumber: 198,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/BottomNav.tsx",
-            lineNumber: 202,
+            lineNumber: 194,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/components/BottomNav.tsx",
-        lineNumber: 195,
+        lineNumber: 187,
         columnNumber: 5
     }, this);
 }, "1WB7qiLzD+alFVr2EMGYAzlKDk4=", false, function() {
@@ -9276,50 +9316,6 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/dashboardUtils.ts [client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "DashboardLevel",
-    ()=>DashboardLevel,
-    "getUserDashboardLevel",
-    ()=>getUserDashboardLevel
-]);
-var DashboardLevel = /*#__PURE__*/ function(DashboardLevel) {
-    DashboardLevel["LEVEL_1_ADMIN"] = "LEVEL_1";
-    DashboardLevel["LEVEL_2_CLIENT_CEO"] = "LEVEL_2";
-    DashboardLevel["LEVEL_3_TL_SALES"] = "LEVEL_3";
-    DashboardLevel["LEVEL_4_AGENT_SALES"] = "LEVEL_4";
-    DashboardLevel["UNKNOWN"] = "UNKNOWN";
-    return DashboardLevel;
-}({});
-const getUserDashboardLevel = (user)=>{
-    if (!user) return "UNKNOWN";
-    const role = (user.role || '').toLowerCase();
-    const designation = (user.designation || '').toLowerCase();
-    // --- Level 1: Super Admin / Management (TFC Internal) ---
-    if (user.isClient === false && (role === 'superadmin' || role === 'super_admin') && (designation === 'ceo' || designation === 'developer')) {
-        return "LEVEL_1";
-    }
-    // --- Level 2: Client CEO / Org Owner / Developer ---
-    if (user.isClient === true && (role === 'super_admin' || role === 'superadmin' || designation === 'ceo' || designation === 'developer' || designation === 'owner')) {
-        return "LEVEL_2";
-    }
-    // If we don't have enough data to determine level, return UNKNOWN
-    if (!role) return "UNKNOWN";
-    // --- Level 3: Team Leader ---
-    // Role is 'admin' and designation is 'team_leader'
-    if (user.isClient === true && role === 'admin' && (designation === 'team_leader' || designation === 'teamleader' || designation.includes('tl'))) {
-        return "LEVEL_3";
-    }
-    // --- Level 4: Sales Agent ---
-    // Default for normal users (role = 'user' or any other non-admin/non-owner)
-    return "LEVEL_4";
-};
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
 "[project]/hooks/useSessionState.ts [client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -10516,4 +10512,4 @@ __turbopack_context__.r("[next]/entry/page-loader.ts { PAGE => \"[project]/pages
 }),
 ]);
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__b1a68bc2._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__d670fb45._.js.map
