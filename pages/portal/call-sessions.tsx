@@ -106,6 +106,7 @@ export default function CallSessionsPage() {
   }, [user, mounted]);
 
   const fetchSessions = async (showFullLoader = true) => {
+    if (!user) return;
     try {
       if (showFullLoader) setLoading(true);
       else setIsRefetching(true);
