@@ -3,18 +3,8 @@ import React, { memo, useState, useEffect, useRef, useMemo } from "react";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 import { supabase } from "@/lib/supabase";
 
-// {!hideSidebar && (
-//   <BottomNav
-//     activeNav={activeNav}
-//     userId={user?.id}
-//     organizationId={user?.organization_id}
-//     userRole={user?.role}
-//     isSuperAdmin={user?.is_superadmin}
-//     isClient={user?.is_client}
-//     designation={user?.designation}
-//     employeeId={user?.employee_id}
-//   />
-// )}
+
+
 
 interface BottomNavProps {
   activeNav?: string;
