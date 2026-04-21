@@ -1,9 +1,0 @@
-﻿pages/portal/campaign/[id].tsx(83,11): error TS2451: Cannot redeclare block-scoped variable 'isLevel1User'.
-pages/portal/campaign/[id].tsx(84,11): error TS2451: Cannot redeclare block-scoped variable 'isLevel2User'.
-pages/portal/campaign/[id].tsx(541,11): error TS2451: Cannot redeclare block-scoped variable 'isLevel1User'.
-pages/portal/campaign/[id].tsx(542,11): error TS2451: Cannot redeclare block-scoped variable 'isLevel2User'.
-pages/portal/campaign/[id]/[customerId].tsx(1130,34): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
-pages/portal/campaign/[id]/[customerId].tsx(1326,9): error TS2552: Cannot find name 'fetchMobileLogs'. Did you mean 'setMobileLogs'?
-pages/portal/campaign/[id]/[customerId].tsx(2801,69): error TS2304: Cannot find name 'handleUpdateExpiry'.
-pages/portal/campaign/[id]/[customerId].tsx(3243,108): error TS2304: Cannot find name 'handleUpdateManagedBy'.
-pages/portal/users/[userId].tsx(766,33): error TS2769: No overload matches this call.
