@@ -156,6 +156,8 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       {!hideSidebar && (
         <BottomNav 
           activeNav={router.pathname.replace('/portal', '').replace('/', '') || 'dashboard'} 
+          userId={user?.uid}
+          organizationId={user?.organization_id}
           userRole={userRole} 
           isClient={user?.isClient}
           designation={user?.designation}

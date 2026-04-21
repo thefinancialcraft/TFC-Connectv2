@@ -1,11 +1,12 @@
 import { useRouter } from "next/router";
-import { useEffect, useState, useMemo, memo } from "react";
+import React, { memo, useState, useEffect, useRef, useMemo } from "react";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
-// Removed unnecessary supabase import as we rely on props
-
+import { supabase } from "@/lib/supabase";
 
 interface BottomNavProps {
   activeNav?: string;
+  userId?: string | null;
+  organizationId?: string | null;
   userRole?: string | null;
   isSuperAdmin?: boolean;
   isClient?: boolean;
@@ -15,6 +16,8 @@ interface BottomNavProps {
 
 const BottomNav = memo(function BottomNav({
   activeNav,
+  userId,
+  organizationId,
   userRole,
   isSuperAdmin,
   isClient,
@@ -27,13 +30,47 @@ const BottomNav = memo(function BottomNav({
   const [scrollTimer, setScrollTimer] = useState<NodeJS.Timeout | null>(null);
   const [hideTimer, setHideTimer] = useState<NodeJS.Timeout | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [latestSession, setLatestSession] = useState<{ campaign_id: string; customer_id: string } | null>(null);
+  const [showCampaignModal, setShowCampaignModal] = useState(false);
+  const [assignedCampaigns, setAssignedCampaigns] = useState<any[]>([]);
+  const [isStartingSession, setIsStartingSession] = useState(false);
   
-  // Directly use props - AppLayout guarantees them
-  // We don't need local state for role since it's passed down
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [isLongPressActive, setIsLongPressActive] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
   
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (userId) {
+      fetchLatestSession();
+    }
+  }, [userId]);
+
+  // Close modal on route change and RE-FETCH latest session data
+  useEffect(() => {
+    setShowCampaignModal(false);
+    if (userId) {
+      fetchLatestSession();
+    }
+  }, [router.asPath, userId]);
+
+  const fetchLatestSession = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('call_sessions')
+        .select('campaign_id, customer_id')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data && !error) {
+        setLatestSession(data);
+      }
+    } catch (err) {
+      console.error("Error fetching latest session:", err);
+    }
+  };
 
   // Check if user is admin or super_admin
   const isAdmin =
@@ -184,44 +221,283 @@ const BottomNav = memo(function BottomNav({
     router.push(path);
   };
 
-  return (
-    <div
-      className={`lg:hidden fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${
-        isVisible ? "bottom-8" : "-bottom-24"
-      }`}
-      style={{ width: "90%", maxWidth: "400px" }}
-    >
+  const handleLongPressStart = () => {
+    setIsLongPressActive(false);
+    setIsPressing(true);
+    longPressTimer.current = setTimeout(async () => {
+      setIsLongPressActive(true);
+      await fetchAssignedCampaigns();
+      setShowCampaignModal(true);
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      setIsPressing(false);
+    }, 600); // 600ms hold time
+  };
 
-      {/* Blur background with rounded edges */}
+  const handleLongPressEnd = () => {
+    setIsPressing(false);
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
+
+  const handleCallRedirect = async () => {
+    if (!userId || isStartingSession) return;
+    setIsStartingSession(true);
+    
+    try {
+      // 1. Dhoondhiye sabse recent session (chahe closed ho ya active)
+      const { data: latestEntry, error: fetchErr } = await supabase
+        .from('call_sessions')
+        .select('campaign_id, customer_id, status')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!fetchErr && latestEntry) {
+        // Agar session abhi bhi active/pending hai, toh wahan bhejिये
+        if (latestEntry.status !== 'closed') {
+          router.push(`/portal/campaign/${latestEntry.campaign_id}/${latestEntry.customer_id}`);
+          setIsStartingSession(false);
+          return;
+        }
+
+        // Agar session closed tha, toh usi campaign ke liye naya lead pull kijiye
+        const { data: nextLeadId, error: rpcErr } = await supabase.rpc('assign_next_lead', {
+          p_user_id: userId,
+          p_campaign_id: latestEntry.campaign_id
+        });
+
+        if (nextLeadId && !rpcErr) {
+          router.push(`/portal/campaign/${latestEntry.campaign_id}/${nextLeadId}`);
+          setIsStartingSession(false);
+          return;
+        }
+      }
+
+      // 2. Agar koi purana session nahi mila (New User), tab campaigns check kijiye
+      const campaigns = await fetchAssignedCampaigns();
+      
+      if (campaigns && campaigns.length === 1) {
+        // Direct start if only one
+        const { data: leadId, error: directErr } = await supabase.rpc('assign_next_lead', {
+          p_user_id: userId,
+          p_campaign_id: campaigns[0].id
+        });
+
+        if (leadId && !directErr) {
+          router.push(`/portal/campaign/${campaigns[0].id}/${leadId}`);
+        } else {
+          alert("No leads available in your assigned campaign.");
+        }
+      } else if (campaigns && campaigns.length > 1) {
+        setShowCampaignModal(true);
+      } else {
+        alert("No active campaigns assigned to you.");
+      }
+    } catch (err) {
+      console.error("Error in Call Button workflow:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsStartingSession(false);
+    }
+  };
+
+  const fetchAssignedCampaigns = async () => {
+    if (!organizationId) return [];
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('id, name, users')
+        .eq('organization_id', organizationId)
+        .eq('status', 'active');
+      
+      if (data && !error) {
+        const filtered = data.filter(c => {
+            if (!c.users || !Array.isArray(c.users)) return false;
+            return c.users.some((u: any) => u.user_id === userId);
+        });
+        setAssignedCampaigns(filtered);
+        return filtered;
+      }
+      return [];
+    } catch (err) {
+      console.error("Error fetching assigned campaigns:", err);
+      return [];
+    }
+  };
+
+  const startNewSession = async (campaignId: string) => {
+    if (!userId || isStartingSession) return;
+    setIsStartingSession(true);
+    
+    try {
+      const { data: leadId, error } = await supabase.rpc('assign_next_lead', {
+        p_user_id: userId,
+        p_campaign_id: campaignId
+      });
+
+      if (leadId && !error) {
+        router.push(`/portal/campaign/${campaignId}/${leadId}`);
+        setShowCampaignModal(false);
+      } else {
+        alert("No leads available in this campaign.");
+      }
+    } catch (error) {
+      console.error("Error starting session:", error);
+      alert("Failed to start session. Please try again.");
+    } finally {
+      setIsStartingSession(false);
+    }
+  };
+
+  const isCallingPage = router.pathname.includes('/campaign/') && 
+                       (router.pathname.includes('[id]') || router.pathname.includes('profile'));
+
+  return (
+    <div className="lg:hidden">
+      {/* Floating Call Button - Independent Fixed Positioning */}
+      {!isCallingPage && (
+        <button
+          onClick={() => {
+            if (!isLongPressActive) handleCallRedirect();
+          }}
+          onMouseDown={handleLongPressStart}
+          onMouseUp={handleLongPressEnd}
+          onMouseLeave={handleLongPressEnd}
+          onTouchStart={handleLongPressStart}
+          onTouchEnd={handleLongPressEnd}
+          disabled={isStartingSession}
+          className={`fixed right-4 z-[60] w-14 h-14 bg-[#4b33e8] text-white rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 ease-in-out active:scale-90 group overflow-hidden border-[1.5px] border-indigo-300/50 ${
+            isVisible ? "bottom-28 scale-100 opacity-100 translate-x-0" : "bottom-28 scale-50 opacity-0 translate-x-20"
+          } ${isStartingSession ? 'cursor-not-allowed' : 'cursor-pointer'} ${
+            isPressing ? "scale-110 ring-[6px] ring-indigo-400/20 shadow-indigo-500/40 rotate-12" : ""
+          }`}
+        >
+          {/* Animated Background Pulse */}
+          <span className={`absolute inset-0 bg-white/20 transition-transform duration-[600ms] ease-linear rounded-full ${
+            isPressing ? "scale-100" : "scale-0"
+          }`}></span>
+          
+          <span className="absolute inset-0 bg-white/20 scale-0 group-hover:scale-150 transition-transform duration-500 rounded-full"></span>
+          
+          {isStartingSession ? (
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <i className="fi fi-rr-phone-call text-2xl flex relative z-10"></i>
+          )}
+        </button>
+      )}
+
+      {/* Centered Navigation Bar */}
       <div
-        className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl"
-        style={{ border: "1.5px solid white" }}
+        className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-out transform-gpu ${
+          isVisible ? "bottom-8 translate-y-0" : "bottom-8 translate-y-40"
+        }`}
+        style={{ width: "94%", maxWidth: "420px", backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
       >
-        <div className="px-4 py-2.5">
-          <div className="flex items-center justify-between">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.path)}
-                className={`flex items-center justify-center p-3 rounded-xl transition-all ${
-                  activeNav === item.id || router.pathname === item.path
-                    ? "scale-110"
-                    : "hover:bg-gray-100"
-                }`}
-                style={{ fontFamily: "'Poppins', sans-serif" }}
-              >
-                <i
-                  className={`fi flex ${item.icon} text-xl transition-colors ${
-                    activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path
-                      ? "text-[#4b33e8]"
-                      : "text-gray-600"
+        <div
+          className="backdrop-blur-xl bg-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-2xl border border-white/60 overflow-hidden"
+        >
+          <div className="px-4 py-2.5">
+            <div className="flex items-center justify-between">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.path)}
+                  className={`flex items-center justify-center p-3 rounded-xl transition-all ${
+                    activeNav === item.id || router.pathname === item.path
+                      ? "scale-110"
+                      : "hover:bg-gray-100"
                   }`}
-                ></i>
-              </button>
-            ))}
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  <i
+                    className={`fi flex ${item.icon} text-xl transition-colors ${
+                      activeNav === item.id || router.pathname === item.path || router.pathname === '/portal' + item.path
+                        ? "text-[#4b33e8]"
+                        : "text-gray-600"
+                    }`}
+                  ></i>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Campaign Selection Modal */}
+      {showCampaignModal && !isCallingPage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300"
+            onClick={() => setShowCampaignModal(false)}
+          ></div>
+          
+          <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-300">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-[18px] font-black text-slate-800 leading-tight">Start Calling</h3>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Select Active Campaign</p>
+                </div>
+                <button 
+                  onClick={() => setShowCampaignModal(false)}
+                  className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all"
+                >
+                  <i className="fi fi-rr-cross-small text-xl flex"></i>
+                </button>
+              </div>
+
+              {assignedCampaigns.length === 0 ? (
+                <div className="py-8 text-center">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fi fi-rr-bullhorn text-slate-300 text-2xl flex"></i>
+                  </div>
+                  <p className="text-[13px] font-bold text-slate-500">No campaigns assigned to you</p>
+                  <button 
+                    onClick={() => setShowCampaignModal(false)}
+                    className="mt-4 px-6 py-2 bg-slate-100 text-slate-600 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                  {assignedCampaigns.map((camp) => (
+                    <button
+                      key={camp.id}
+                      disabled={isStartingSession}
+                      onClick={() => startNewSession(camp.id)}
+                      className="group w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-2xl transition-all text-left disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                          <i className="fi fi-rr-bullhorn text-lg flex"></i>
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-black text-slate-800 leading-none">{camp.name}</p>
+                          <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1.5">Action: Pull Lead</p>
+                        </div>
+                      </div>
+                      <i className="fi fi-rr-angle-small-right text-slate-300 group-hover:translate-x-1 group-hover:text-indigo-400 transition-all flex text-lg"></i>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {isStartingSession && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-4 z-10 animate-in fade-in duration-200">
+                <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-[12px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Initializing Session...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 });
