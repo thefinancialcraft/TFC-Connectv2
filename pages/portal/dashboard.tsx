@@ -39,6 +39,7 @@ export default function Dashboard() {
   // Filters Dropdown state
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+  const [syncedTotals, setSyncedTotals] = useState<{ totalDials: number; totalDuration: number } | null>(null);
   const [activeTab, setActiveTab] = useSessionState<string>("dash_activeTab", "prospect");
   
   // Security Restrictions
@@ -422,7 +423,15 @@ export default function Dashboard() {
           </div>
 
           {/* Top Stats Row (Only depends on stats and charts) */}
-          <TopStats stats={stats} chartData={chartData} loading={statsLoading || chartsLoading} />
+          <TopStats 
+            stats={{
+              ...stats,
+              totalDials: syncedTotals ? syncedTotals.totalDials : stats.totalDials,
+              totalTalktime: syncedTotals ? syncedTotals.totalDuration : stats.totalTalktime,
+            }} 
+            chartData={chartData} 
+            loading={statsLoading || chartsLoading} 
+          />
 
           {/* Team Management CTA (Compact Modern Look - Mobile Only) */}
           {dashboardLevel !== DashboardLevel.LEVEL_4_AGENT_SALES && (
@@ -521,6 +530,7 @@ export default function Dashboard() {
               dateFilter={dateFilter}
               restrictedUserIds={restrictedUserIds}
               loading={agentLoading}
+              onTotalsChange={setSyncedTotals}
             />
           )}
 

@@ -8,6 +8,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { getISTDateRange } from "@/lib/dateUtils";
+import MemberPerformanceTable from '@/components/shared/MemberPerformanceTable';
 
 /**
  * TeamDetails Page Refactor
@@ -760,163 +761,14 @@ export default function TeamDetails() {
                </div>
             </div>
 
-            {/* Detailed Member Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden text-left">
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <h3 className="font-bold text-gray-800 text-lg">Member Performance</h3>
-                    <div className="flex items-center gap-4">
-                        <button 
-                            onClick={() => fetchTeamData()}
-                            disabled={loading}
-                            className="group flex items-center gap-2 px-2.5 py-1 bg-indigo-50 text-[#4b33e8] hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all border border-indigo-100"
-                        >
-                            <i className={`fi flex fi-rr-refresh ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}></i>
-                            <span>Refresh</span>
-                        </button>
-                        <div className="flex gap-2 text-xs font-medium">
-                            <span className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-md"><span className="w-2 h-2 rounded-full bg-green-500"></span> Online</span>
-                            <span className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 text-gray-500 rounded-md"><span className="w-2 h-2 rounded-full bg-gray-400"></span> Idle</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50/50 text-[10px] text-gray-400 uppercase tracking-widest">
-                                <th className="px-4 py-3 font-bold">Agent</th>
-                                <th className="px-2 py-3 font-bold text-center">Last Active</th>
-                                <th className="px-2 py-3 font-bold text-center">Status</th>
-                                <th className="px-2 py-3 font-bold text-center text-indigo-500/80">Follow Ups</th>
-                                <th className="px-2 py-3 font-bold text-center">Talk Time</th>
-                                <th className="px-2 py-3 font-bold text-center">Connected</th>
-                                <th className="px-2 py-3 font-bold text-center">Avg Talk</th>
-                                <th className="px-2 py-3 font-bold text-center">Streak/Gap</th>
-                                <th className="px-2 py-3 font-bold text-center text-rose-600">Utilization</th>
-                                <th className="px-4 py-3 font-bold text-right">Last Call</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {members.length === 0 ? (
-                                <tr>
-                                    <td colSpan={9} className="px-6 py-8 text-center text-gray-500 text-sm">No members in this team</td>
-                                </tr>
-                            ) : members.map(member => {
-                                const mId = member.user_id as string;
-                                const statsMap = processedData.memberStats as Record<string, any>;
-                                const mStats = statsMap[mId] || { totalCalls: 0, connected: 0, connectedRate: 0, avgDuration: '0m 0s', deals: 0, followUps: 0, lastActive: null, idleTime: 'N/A', status: 'Idle' };
-                                const isOnline = mStats.status === 'Online';
-                                
-                                return (
-                                    <tr key={member.user_id} className="hover:bg-gray-50/80 transition-colors group">
-                                        <td className="px-4 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gray-100 border border-white shadow-sm overflow-hidden flex items-center justify-center text-gray-500 font-bold text-xs">
-                                                    {member.profile_pic_url ? (
-                                                        <img src={member.profile_pic_url} alt="" className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <i className="fi flex fi-rr-user text-lg text-gray-400"></i>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-gray-800">{member.user_name || 'Unknown'}</p>
-                                                    <p className="text-xs text-gray-400">ID: {member.employee_id || '--'}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            {mStats.lastOnline ? (() => {
-                                                const diff = Date.now() - new Date(mStats.lastOnline).getTime();
-                                                const diffMins = diff / 60000;
-                                                let dotColor = "bg-gray-400";
-                                                let textColor = "text-gray-500";
-                                                let bgColor = "bg-gray-50";
-                                                let borderColor = "border-gray-100";
-                                                let statusText = "Offline";
-
-                                                if (diffMins <= 1) {
-                                                    dotColor = "bg-green-500 animate-pulse";
-                                                    textColor = "text-green-700";
-                                                    bgColor = "bg-green-50";
-                                                    borderColor = "border-green-100";
-                                                    statusText = "Online";
-                                                } else if (diffMins <= 3) {
-                                                    dotColor = "bg-orange-500";
-                                                    textColor = "text-orange-700";
-                                                    bgColor = "bg-orange-50";
-                                                    borderColor = "border-orange-100";
-                                                    statusText = "Away";
-                                                }
-
-                                                return (
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <p className="text-[10px] font-bold text-gray-500">{formatTime(mStats.lastOnline)}</p>
-                                                        <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] uppercase font-bold border ${bgColor} ${textColor} ${borderColor}`}>
-                                                            <span className={`w-1 h-1 rounded-full ${dotColor}`}></span>
-                                                            {statusText}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })() : (
-                                                <span className="text-gray-300">-</span>
-                                            )}
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            {mStats.onCall ? (
-                                              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${mStats.isPersonal ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`}>
-                                                  <i className={`fi flex ${mStats.isPersonal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`}></i>
-                                                  {mStats.isPersonal ? 'Personal Call' : 'On Call'}
-                                              </div>
-                                            ) : (
-                                              <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isOnline ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-50 text-gray-500 border-gray-100'}`}>
-                                                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></span>
-                                                  {isOnline ? 'Active' : `Idle ${mStats.idleTime !== 'N/A' ? mStats.idleTime : ''}`}
-                                              </div>
-                                            )}
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-600 text-[10px] font-bold border border-gray-200">
-                                                {mStats.totalCalls} CALLS
-                                            </span>
-                                        </td>
-                                        <td className="px-2 py-4 text-center text-xs text-gray-600 font-bold">
-                                            {mStats.totalTalkTime}
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            <p className="text-xs font-bold text-gray-800">{mStats.connected}</p>
-                                            <p className="text-[9px] text-indigo-500 font-bold">{mStats.connectedRate}%</p>
-                                        </td>
-                                        <td className="px-2 py-4 text-center text-xs text-gray-600 font-bold">
-                                            {mStats.avgDuration}
-                                        </td>
-                                        <td className="px-2 py-4 text-center text-xs text-amber-600 font-bold">
-                                            {mStats.streakGap}
-                                        </td>
-                                        <td className="px-2 py-4 text-center">
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-xs font-bold text-rose-600">
-                                                    {mStats.utilization}
-                                                </span>
-                                                <div className="w-12 h-1 bg-gray-100 rounded-full mt-1 overflow-hidden">
-                                                    <div 
-                                                        className="h-full bg-rose-500" 
-                                                        style={{ width: `${Math.min(100, mStats.utilizationRaw)}%` }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-4 text-right">
-                                            <p className="text-xs font-bold text-gray-800">{formatTime(mStats.lastActive)}</p>
-                                            <p className="text-[9px] text-gray-400 font-medium">
-                                                {mStats.lastActive ? new Date(mStats.lastActive).toLocaleDateString() : 'N/A'}
-                                            </p>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+            {/* Detailed Member Table (Shared Component) */}
+            <div className="mb-8">
+                <MemberPerformanceTable 
+                    members={members}
+                    memberStats={processedData.memberStats}
+                    loading={loading}
+                    onRefresh={fetchTeamData}
+                />
             </div>
 
           </div>

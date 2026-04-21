@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/context/UserContext";
 import { decryptPhone } from "@/lib/phoneUtils";
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 // Module-level cache to persist data across page navigation in the same session
 let cachedSessions: any[] = [];
@@ -81,17 +82,25 @@ export default function CallSessionsPage() {
 
   useEffect(() => {
     if (mounted && user) {
-      // Check authorization: only NXUS-001
-      if (user.employeeId === 'NXUS-001') {
+      const level = getUserDashboardLevel(user);
+      
+      // Check authorization: All levels except 4 (Agent) can see this
+      if (level !== DashboardLevel.LEVEL_4_AGENT_SALES && level !== DashboardLevel.UNKNOWN) {
         setIsAuthorized(true);
         
         const now = Date.now();
         if (cachedSessions.length === 0 || (now - lastFetchTime > CACHE_DURATION)) {
-            fetchSessions(cachedSessions.length === 0); // Only show full loader if no cache
+            fetchSessions(cachedSessions.length === 0);
         }
       } else {
-        setIsAuthorized(false);
-        setLoading(false);
+        // Special case for developers/admins who might not be Level 1 but are authorized (like NXUS-001)
+        if (user.employeeId === 'NXUS-001') {
+            setIsAuthorized(true);
+            fetchSessions(cachedSessions.length === 0);
+        } else {
+            setIsAuthorized(false);
+            setLoading(false);
+        }
       }
     } else if (mounted && !user) {
         setIsAuthorized(false);
@@ -100,15 +109,48 @@ export default function CallSessionsPage() {
   }, [user, mounted]);
 
   const fetchSessions = async (showFullLoader = true) => {
+    if (!user) return;
     try {
       if (showFullLoader) setLoading(true);
       else setIsRefetching(true);
       
-      // 1. Fetch sessions
-      const { data: sessionData, error: sessionError } = await supabase
-        .from('call_sessions')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      // 1. Determine Filtering Constraints
+      const level = getUserDashboardLevel(user);
+      const currentUserId = user.uid || (user as any).id;
+      
+      let sessionQuery = supabase.from('call_sessions').select('*');
+
+      if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
+          // Client CEO: Filter by organization
+          if (user.organization_id) {
+              sessionQuery = sessionQuery.eq('organization_id', user.organization_id);
+          }
+      } else if (level === DashboardLevel.LEVEL_3_TL_SALES) {
+          // Team Leader: Filter by their team members
+          const { data: teamData } = await supabase
+              .from('teams')
+              .select('members')
+              .eq('leader_id', currentUserId)
+              .eq('is_active', true);
+          
+          const memberIds = new Set<string>();
+          memberIds.add(currentUserId);
+          if (teamData) {
+              teamData.forEach(t => {
+                  if (Array.isArray(t.members)) {
+                      t.members.forEach((m: string) => memberIds.add(m));
+                  }
+              });
+          }
+          sessionQuery = sessionQuery.in('user_id', Array.from(memberIds));
+      } else if (level === DashboardLevel.LEVEL_1_ADMIN || user.employeeId === 'NXUS-001') {
+          // Level 1 or Super Admin: No filter
+      } else {
+          // Others (fallback to own data if somehow authorized)
+          sessionQuery = sessionQuery.eq('user_id', currentUserId);
+      }
+
+      const { data: sessionData, error: sessionError } = await sessionQuery.order('updated_at', { ascending: false });
 
       if (sessionError) throw sessionError;
 
@@ -119,48 +161,90 @@ export default function CallSessionsPage() {
       }
 
       // 2. Collect ALL IDs for enrichment (both auto and manual)
+      const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
       const userIds = Array.from(new Set(sessionData.map(s => s.user_id)));
       const campaignIds = Array.from(new Set([
         ...sessionData.map(s => s.campaign_id),
         ...sessionData.map(s => s.manual_campaign_id).filter(id => !!id)
       ]));
       const customerIds = Array.from(new Set([
-        ...sessionData.map(s => s.customer_id).filter(id => !!id),
-        ...sessionData.map(s => s.manual_customer_id).filter(id => !!id)
+        ...sessionData.map(s => s.customer_id).filter(id => !!id && isUUID(id)),
+        ...sessionData.map(s => s.manual_customer_id).filter(id => !!id && isUUID(id))
       ]));
 
-      // 3. Fetch related data in parallel
+      // 3. Fetch related data in stages to avoid circular dependency
       const organizationIds = Array.from(new Set(sessionData.map(s => s.organization_id).filter(id => !!id)));
       
-      const [usersRes, campaignsRes, customersRes, orgsRes] = await Promise.all([
-        supabase.from('user_profiles').select('user_id, user_name, employee_id').in('user_id', userIds),
+      const { data: userData, error: userDataError } = await supabase
+        .from('user_profiles')
+        .select('user_id, user_name, employee_id')
+        .in('user_id', userIds);
+      
+      if (userDataError) throw userDataError;
+
+      const employeeIds = (userData || []).map(u => u.employee_id).filter(id => !!id);
+
+      const [campaignsRes, customersRes, orgsRes, syncMetaRes, logsRes, historyRes] = await Promise.all([
         supabase.from('campaigns').select('id, name').in('id', campaignIds),
-        supabase.from('customers').select('id, customer_name, phone_no').in('id', customerIds),
-        supabase.from('organizations').select('id, company_name').in('id', organizationIds)
+        supabase.from('customers').select('id, customer_name, phone_no, customer_details').in('id', customerIds),
+        supabase.from('organizations').select('id, company_name').in('id', organizationIds),
+        supabase.from('sync_meta').select('employee_id, customer_name, dialed_no').in('employee_id', employeeIds),
+        supabase.from('call_logs').select('customer_id, customer_name').in('customer_id', customerIds),
+        supabase.from('call_history').select('id, name, number').in('id', customerIds)
       ]);
 
       // 4. Map names
-      const userMap = Object.fromEntries((usersRes.data || []).map(u => [u.user_id, u]));
+      const userMap = Object.fromEntries((userData || []).map(u => [u.user_id, u]));
       const campaignMap = Object.fromEntries((campaignsRes.data || []).map(c => [c.id, c.name]));
       const customerMap = Object.fromEntries((customersRes.data || []).map(c => [c.id, c]));
       const orgMap = Object.fromEntries((orgsRes.data || []).map(o => [o.id, o.company_name]));
+      const syncMap = Object.fromEntries((syncMetaRes.data || []).map(s => [s.employee_id?.trim(), s]));
+      const logMap = Object.fromEntries((logsRes.data || []).reverse().map(l => [l.customer_id, l.customer_name])); // Use latest log name
+      const historyMap = Object.fromEntries((historyRes.data || []).map(h => [h.id, h]));
 
       // 5. Enrich sessions
       const enriched = sessionData.map(s => {
+        const uProfile = userMap[s.user_id];
+        const empId = uProfile?.employee_id?.trim();
         const cust = customerMap[s.customer_id];
         const manualCust = customerMap[s.manual_customer_id];
+        const liveSync = empId ? syncMap[empId] : null;
+
+        // Status-based formatting
+        const isActuallyManual = s.is_manual && (s.manual_customer_id || s.manual_status);
+
+        // Fallback names
+        const manualLogName = logMap[s.manual_customer_id];
+        const manualHist = historyMap[s.manual_customer_id];
+        const resolvedManualName = manualCust?.customer_name || manualLogName || manualHist?.name || (isActuallyManual ? liveSync?.customer_name : null);
+        
+        // Priority for Manual Phone: Live Sync > DB Record > History
+        const resolvedManualPhone = (isActuallyManual ? liveSync?.dialed_no : null) || 
+                                    (manualCust?.phone_no ? decryptPhone(manualCust.phone_no) : null) || 
+                                    manualHist?.number;
+
+        // Auto fallback
+        const autoLogName = logMap[s.customer_id];
+        const autoHist = historyMap[s.customer_id];
+        const resolvedAutoName = cust?.customer_name || s.customer_name || autoLogName || autoHist?.name || (!s.is_manual ? liveSync?.customer_name : '') || 'N/A';
+        const resolvedAutoPhone = (cust?.phone_no ? decryptPhone(cust.phone_no) : null) || autoHist?.number || (!s.is_manual ? liveSync?.dialed_no : '');
+
         return {
           ...s,
-          agentName: userMap[s.user_id]?.user_name || 'Unknown',
-          employeeId: userMap[s.user_id]?.employee_id || '--',
+          agentName: uProfile?.user_name || 'Unknown',
+          employeeId: uProfile?.employee_id || '--',
           campaignName: campaignMap[s.campaign_id] || s.campaign_id,
-          customerName: cust?.customer_name || 'N/A',
-          customerPhone: cust?.phone_no ? decryptPhone(cust.phone_no) : '',
+          // Primary Customer Logic
+          customerName: resolvedAutoName,
+          customerPhone: resolvedAutoPhone,
+          customerDetails: cust?.customer_details || '',
           orgName: orgMap[s.organization_id] || 'NO_ORG',
-          // Override details
+          // Manual/Override Logic
           manualCampaignName: campaignMap[s.manual_campaign_id] || s.manual_campaign_id || '---',
-          manualCustomerName: manualCust?.customer_name || 'N/A',
-          manualCustomerPhone: manualCust?.phone_no ? decryptPhone(manualCust.phone_no) : ''
+          manualCustomerName: resolvedManualName || 'Manual Entry',
+          manualCustomerPhone: resolvedManualPhone || '',
+          manualCustomerDetails: manualCust?.customer_details || ''
         };
       });
 
@@ -284,158 +368,167 @@ export default function CallSessionsPage() {
   }
 
   return (
-    <div className="p-4 w-full h-full min-h-0 overflow-auto bg-[#fbfcfe]">
+    <div className="min-h-screen bg-[#fbfcfe]">
+      <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 max-w-[1600px]">
       {/* Search & Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3 flex-1 max-w-2xl">
-          <div className="relative flex-1">
-            <i className="flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"></i>
-            <input 
-              type="text" 
-              placeholder="Search by agent, campaign, customer or status..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-14 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-300 shadow-none"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500 hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase transition-colors"
-                style={{ zIndex: 10 }}
-              >
-                Clear
-              </button>
-            )}
-          </div>
-          
-          {/* Filter Popover Trigger */}
-          <div className="relative">
-            <button 
-                onClick={() => setShowFilterModal(!showFilterModal)}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
-            >
-                <i className="flex fi fi-rr-filter text-[16px]"></i>
-            </button>
+        {/* Search & Header Section */}
+        <div className="flex flex-col gap-6 mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Call Sessions</h1>
+                    <p className="text-sm font-medium text-gray-400 mt-1">Real-time monitoring of active and manual lead sessions.</p>
+                </div>
 
-            {showFilterModal && (
-                <div className="absolute top-full mt-2 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                    <div className="flex items-center justify-between mb-4">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Filters</p>
-                        <button 
-                            onClick={() => {
-                                setAgentFilter("All Agents");
-                                setCampaignFilter("All Campaigns");
-                                setStatusFilter("Status");
-                                setOrgFilter("Organization");
-                                setSearchQuery("");
-                            }}
-                            className="text-[10px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-widest"
-                        >
-                            Reset
-                        </button>
+                <div className="flex items-center gap-2">
+                    <div 
+                        onClick={() => fetchSessions(true)}
+                        className="h-11 px-4 bg-indigo-600 text-white rounded-xl text-[11px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap shadow-lg shadow-indigo-100"
+                    >
+                        <i className={`flex fi fi-rr-refresh text-[12px] ${isRefetching ? 'animate-spin' : ''}`}></i>
+                        <span className="hidden sm:inline">Refresh Panel</span>
+                        <span className="sm:hidden">Refresh</span>
                     </div>
 
-                    <div className="flex flex-col gap-4">
-                        {/* Agents Filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Agent</label>
-                            <select 
-                                value={agentFilter}
-                                onChange={(e) => setAgentFilter(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
-                            >
-                                <option>All Agents</option>
-                                {availableAgents.map(a => <option key={a}>{a}</option>)}
-                            </select>
-                        </div>
-
-                        {/* Campaign Filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Campaign</label>
-                            <select 
-                                value={campaignFilter}
-                                onChange={(e) => setCampaignFilter(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
-                            >
-                                <option>All Campaigns</option>
-                                {availableCampaigns.map(c => <option key={c}>{c}</option>)}
-                            </select>
-                        </div>
-
-                        {/* Status Filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Status</label>
-                            <select 
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
-                            >
-                                <option>Status</option>
-                                {availableStatuses.map(s => <option key={s}>{s}</option>)}
-                            </select>
-                        </div>
-
-                        {/* Organization Filter */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Organization</label>
-                            <select 
-                                value={orgFilter}
-                                onChange={(e) => setOrgFilter(e.target.value)}
-                                className="w-full px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-bold text-slate-700 hover:border-indigo-200 cursor-pointer transition-all outline-none"
-                            >
-                                <option>Organization</option>
-                                {availableOrgs.map(o => <option key={o}>{o}</option>)}
-                            </select>
-                        </div>
-
+                    <button className="h-11 w-11 sm:w-auto sm:px-5 flex items-center justify-center gap-2 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0">
+                        <i className="flex fi fi-rr-file-export text-[16px]"></i>
+                        <span className="hidden sm:inline">Export</span>
+                    </button>
+                    
+                    {selectedKeys.length > 0 && (
                         <button 
-                            onClick={() => setShowFilterModal(false)}
-                            className="mt-2 w-full py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                            onClick={handleBulkDelete}
+                            className="h-11 px-5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[11px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap"
                         >
-                            Apply Filters
+                            <i className="flex fi fi-rr-trash text-[14px]"></i>
+                            <span>Delete ({selectedKeys.length})</span>
                         </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1">
+                    <div className="relative flex-1">
+                        <i className="flex fi fi-rr-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[14px]"></i>
+                        <input 
+                            type="text" 
+                            placeholder="Search agents, campaigns, customers..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-11 pr-14 py-3.5 bg-white border border-gray-100 rounded-2xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-gray-300 shadow-sm"
+                        />
+                        {searchQuery && (
+                            <button 
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500 hover:text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg uppercase transition-colors"
+                            >
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                    
+                    {/* Filter Trigger */}
+                    <div className="relative">
+                        <button 
+                            onClick={() => setShowFilterModal(!showFilterModal)}
+                            className={`h-[52px] w-[52px] rounded-2xl flex items-center justify-center transition-all border shadow-sm ${showFilterModal ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-200'}`}
+                        >
+                            <i className="flex fi fi-rr-filter text-[18px]"></i>
+                        </button>
+
+                        {showFilterModal && (
+                            <div className="absolute top-full mt-3 right-0 w-[280px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 z-[100] animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                <div className="flex items-center justify-between mb-4">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Global Filters</p>
+                                    <button 
+                                        onClick={() => {
+                                            setAgentFilter("All Agents");
+                                            setCampaignFilter("All Campaigns");
+                                            setStatusFilter("Status");
+                                            setOrgFilter("Organization");
+                                            setSearchQuery("");
+                                        }}
+                                        className="text-[10px] font-black text-rose-500 hover:text-rose-700 uppercase tracking-widest"
+                                    >
+                                        Reset
+                                    </button>
+                                </div>
+
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Agent</label>
+                                        <select 
+                                            value={agentFilter}
+                                            onChange={(e) => setAgentFilter(e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
+                                        >
+                                            <option>All Agents</option>
+                                            {availableAgents.map(a => <option key={a}>{a}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Campaign</label>
+                                        <select 
+                                            value={campaignFilter}
+                                            onChange={(e) => setCampaignFilter(e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
+                                        >
+                                            <option>All Campaigns</option>
+                                            {availableCampaigns.map(c => <option key={c}>{c}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Status</label>
+                                        <select 
+                                            value={statusFilter}
+                                            onChange={(e) => setStatusFilter(e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
+                                        >
+                                            <option>Status</option>
+                                            {availableStatuses.map(s => <option key={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Organization</label>
+                                        <select 
+                                            value={orgFilter}
+                                            onChange={(e) => setOrgFilter(e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-700 outline-none transition-all focus:border-indigo-200"
+                                        >
+                                            <option>Organization</option>
+                                            {availableOrgs.map(o => <option key={o}>{o}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <button 
+                                        onClick={() => setShowFilterModal(false)}
+                                        className="mt-2 w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                                    >
+                                        Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
-          </div>
 
-          <button className="flex items-center gap-2 px-5 py-3 bg-white border border-gray-100 rounded-xl text-[12px] font-black text-gray-700 hover:bg-gray-50 transition-all uppercase tracking-tight shadow-none flex-shrink-0">
-            <i className="flex fi fi-rr-file-export text-[14px]"></i>
-            Export
-          </button>
-
-          <div 
-            onClick={() => fetchSessions(true)}
-            className="px-5 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black cursor-pointer hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest whitespace-nowrap"
-          >
-            <i className={`flex fi fi-rr-refresh text-[10px] ${isRefetching ? 'animate-spin' : ''}`}></i>
-            Refresh Panel
-          </div>
-
-          {selectedKeys.length > 0 && (
-             <button 
-                onClick={handleBulkDelete}
-                className="px-5 py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest animate-in fade-in slide-in-from-right-2 whitespace-nowrap"
-             >
-                <i className="flex fi fi-rr-trash text-[12px]"></i>
-                Delete ({selectedKeys.length})
-             </button>
-          )}
+                <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-1 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100">
+                    <div className="flex items-center gap-2">
+                        {isRefetching && <span className="flex w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>}
+                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">Status: Monitoring Enabled</p>
+                    </div>
+                    <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest leading-none">
+                        Last Refreshed: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : 'WAITING...'}
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <div className="flex flex-col items-end gap-1">
-          {isRefetching && (
-             <span className="text-[10px] font-black text-indigo-400 animate-pulse uppercase tracking-widest leading-none mb-1">Syncing Live...</span>
-          )}
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">Status: Monitoring Enabled</p>
-          <p className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest leading-none">
-             Last Refreshed: {lastFetchTime > 0 ? formatTimeSafe(new Date(lastFetchTime)) : 'WAITING...'}
-          </p>
-        </div>
-      </div>
-
-      {/* Main Table Container */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+      {/* Main Table Container (Desktop Only) */}
+      <div className="hidden md:block bg-white rounded-3xl border border-gray-100 shadow-xl shadow-slate-200/40 overflow-hidden mb-6">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -450,8 +543,7 @@ export default function CallSessionsPage() {
                 </th>
                 <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Agent & Org</th>
                 <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Auto Session</th>
-                <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">Status</th>
-                <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">Overrides</th>
+                <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Overrides / Manual</th>
                 <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">Flags</th>
                 <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-right pr-8">Heartbeat</th>
                 <th className="px-4 py-4 border-b border-gray-100 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">Actions</th>
@@ -497,44 +589,51 @@ export default function CallSessionsPage() {
                           <span className="text-[10px] font-black text-gray-400 pl-2 uppercase tracking-widest">{session.orgName || 'NO_ORGANIZATION'}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col gap-1.5">
-                            <p className="text-[13px] font-black text-gray-800 leading-none flex items-center gap-2"><i className="fi fi-rr-bullhorn text-[12px] text-gray-400 flex"></i> {session.campaignName}</p>
-                            <p className="text-[12px] font-semibold text-indigo-600 leading-none flex items-center gap-2"><i className="fi fi-rr-user-md text-[12px] flex"></i> {session.customerName !== 'N/A' ? `${session.customerName}` : 'IDLE'}</p>
+                      <td className="px-4 py-4 min-w-[180px]">
+                        <div className="flex flex-col gap-1.5 p-3 rounded-2xl bg-slate-50/50 border border-slate-100/50">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black border uppercase ${
+                                  session.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
+                                  session.status === 'assigned' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                  session.status === 'disposition_pending' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                  'bg-white text-gray-400 border-gray-100'
+                                }`}>
+                                  {session.status.replace('_', ' ')}
+                                </span>
+                            </div>
+                            <p className="text-[12px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-[11px] text-gray-400 flex"></i> {session.campaignName}</p>
+                            <p className="text-[12px] font-bold text-indigo-600 leading-tight flex items-center gap-2 mt-0.5"><i className="fi fi-rr-user-md text-[11px] flex"></i> {session.customerName}</p>
                             {session.customerPhone && (
-                              <p className="text-[11px] font-bold text-gray-400 pl-5 flex items-center gap-2 italic">{session.customerPhone}</p>
+                              <p className="text-[10px] font-bold text-gray-400 pl-4 flex items-center gap-1 italic opacity-70 leading-none">{session.customerPhone}</p>
                             )}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-center">
-                        <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-[11px] font-black leading-none border uppercase ${
-                          session.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
-                          session.status === 'assigned' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                          session.status === 'disposition_pending' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                          'bg-slate-50 text-gray-500 border-gray-100'
-                        }`}>
-                          {session.status.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col gap-1.5">
-                            {session.manual_status || session.manual_campaign_id ? (
-                              <>
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-[10px] font-black text-purple-600 border border-purple-100 bg-purple-50 px-2.5 py-0.5 rounded-lg uppercase tracking-widest whitespace-nowrap">{session.manual_status || 'MANUAL'}</span>
-                                </div>
-                                <p className="text-[13px] font-black text-gray-800 leading-none flex items-center gap-2"><i className="fi fi-rr-bullhorn text-[12px] text-purple-400 flex"></i> {session.manualCampaignName}</p>
-                                <p className="text-[12px] font-semibold text-purple-600 leading-none flex items-center gap-2"><i className="fi fi-rr-user-md text-[12px] flex"></i> {session.manualCustomerName}</p>
-                                {session.manualCustomerPhone && (
-                                  <p className="text-[11px] font-bold text-gray-400 pl-5 flex items-center gap-2 italic">{session.manualCustomerPhone}</p>
-                                )}
-                              </>
-                            ) : (
-                              <div className="text-center w-full">
-                                <span className="text-[12px] font-bold text-gray-200">NO OVERRIDE</span>
+                      <td className="px-4 py-4 min-w-[180px]">
+                        {session.manual_status || session.manual_campaign_id ? (
+                          <div className="flex flex-col gap-1.5 p-3 rounded-2xl bg-purple-50/30 border border-purple-100/30">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black border uppercase ${
+                                  session.manual_status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
+                                  session.manual_status === 'disposition_pending' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                  'bg-purple-100 text-purple-700 border-purple-200'
+                                }`}>
+                                  {session.manual_status?.replace('_', ' ') || 'MANUAL'}
+                                </span>
                               </div>
-                            )}
-                        </div>
+                              <p className="text-[12px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-[11px] text-purple-400 flex"></i> {session.manualCampaignName}</p>
+                              <p className="text-[12px] font-bold text-purple-600 leading-tight flex items-center gap-2 mt-0.5"><i className="fi fi-rr-user-md text-[11px] flex"></i> {session.manualCustomerName}</p>
+                              {session.manualCustomerPhone && (
+                                <p className="text-[10px] font-bold text-gray-400 pl-4 flex items-center gap-1 italic opacity-70 leading-none">{session.manualCustomerPhone}</p>
+                              )}
+                              {session.manualCustomerDetails && (
+                                <p className="text-[9px] font-bold text-gray-300 pl-4 mt-0.5 truncate max-w-[140px] leading-none">{session.manualCustomerDetails}</p>
+                              )}
+                          </div>
+                        ) : (
+                          <div className="text-center w-full py-4 bg-gray-50/30 rounded-2xl border border-dashed border-gray-100">
+                             <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">--- No Override ---</span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
@@ -570,23 +669,119 @@ export default function CallSessionsPage() {
         </div>
       </div>
 
-      {/* Pagination Footer */}
-      <div className="flex items-center justify-center gap-3 mt-8 pb-4">
-        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
-            <i className="flex fi fi-rr-arrow-small-left text-[14px]"></i>
-            Previous
-        </button>
-        
-        <div className="flex items-center gap-2">
-            <button className="w-9 h-9 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[11px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90">1</button>
-            <button className="w-9 h-9 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[11px] font-black hover:border-indigo-100 hover:text-indigo-600 transition-all active:scale-90">2</button>
-        </div>
 
-        <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest">
-            Next
-            <i className="flex fi fi-rr-arrow-small-right text-[14px]"></i>
-        </button>
+
+      {/* Mobile Card Layout */}
+      <div className="md:hidden flex flex-col gap-4 mb-8">
+        {filteredItems.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
+             <div className="flex flex-col items-center gap-4 opacity-30">
+                <i className="flex fi fi-rr-search-heart text-5xl text-indigo-600"></i>
+                <p className="text-[14px] font-black uppercase tracking-widest text-slate-800">
+                    No active sessions
+                </p>
+             </div>
+          </div>
+        ) : (
+          filteredItems.map((session) => {
+            const key = `${session.user_id}|${session.campaign_id}`;
+            const isSelected = selectedKeys.includes(key);
+            return (
+              <div key={key} className={`bg-white rounded-2xl border transition-all p-5 shadow-sm active:scale-[0.98] ${isSelected ? 'border-indigo-600 ring-4 ring-indigo-500/10' : 'border-gray-100'}`}>
+                <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-[16px] shadow-lg shadow-indigo-100">
+                          {session.agentName.charAt(0)}
+                        </div>
+                        <div className="flex flex-col">
+                            <h3 className="font-black text-gray-900 text-[15px] leading-tight">{session.agentName}</h3>
+                            <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mt-0.5">{session.employeeId}</span>
+                        </div>
+                    </div>
+                    <input 
+                        type="checkbox" 
+                        className="rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-500 w-6 h-6 cursor-pointer" 
+                        checked={isSelected}
+                        onChange={() => toggleSelectRow(session.user_id, session.campaign_id)}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Auto Session</span>
+                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black border uppercase ${
+                                session.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 
+                                session.status === 'assigned' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                'bg-white text-gray-400 border-gray-100'
+                            }`}>
+                                {session.status.replace('_', ' ')}
+                            </span>
+                        </div>
+                        <p className="text-[13px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-indigo-400"></i> {session.campaignName}</p>
+                        <p className="text-[13px] font-bold text-indigo-600 leading-tight mt-1 flex items-center gap-2"><i className="fi fi-rr-user text-indigo-400 text-[10px]"></i> {session.customerName}</p>
+                    </div>
+
+                    {(session.manual_status || session.manual_campaign_id) ? (
+                        <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100/50">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest">Override / Manual</span>
+                                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-[9px] font-black uppercase">
+                                    {session.manual_status || 'MANUAL'}
+                                </span>
+                            </div>
+                            <p className="text-[13px] font-black text-gray-800 leading-tight flex items-center gap-2"><i className="fi fi-rr-bullhorn text-purple-400"></i> {session.manualCampaignName}</p>
+                            <p className="text-[13px] font-bold text-purple-600 leading-tight mt-1 flex items-center gap-2"><i className="fi fi-rr-user text-purple-400 text-[10px]"></i> {session.manualCustomerName}</p>
+                        </div>
+                    ) : (
+                        <div className="p-4 rounded-2xl border border-dashed border-gray-100 flex items-center justify-center">
+                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">No Manual Override</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex items-center justify-between mt-5 pt-5 border-t border-gray-50">
+                    <div className="flex flex-col gap-0.5">
+                        <p className="text-[11px] font-black text-indigo-600 flex items-center gap-1.5"><i className="fi fi-rr-bolt animate-pulse"></i> {formatTimeSafe(session.updated_at)}</p>
+                        <p className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">{formatDateSafe(session.updated_at)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => handleDelete(session.user_id, session.campaign_id)}
+                            className="h-10 px-4 rounded-xl bg-rose-50 text-rose-500 font-black text-[10px] uppercase tracking-widest"
+                        >
+                            Force End
+                        </button>
+                    </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Pagination Footer */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-4 pb-10">
+        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Showing {filteredItems.length} active monitors</p>
+        
+        <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest shadow-sm">
+                <i className="flex fi fi-rr-arrow-small-left text-[16px]"></i>
+                Prev
+            </button>
+            
+            <div className="flex items-center gap-2">
+                <button className="w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-xl text-[12px] font-black shadow-lg shadow-indigo-100 transition-all active:scale-90">1</button>
+                <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-xl text-[12px] font-black hover:border-indigo-100 hover:text-indigo-600 shadow-sm transition-all active:scale-90">2</button>
+            </div>
+
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 transition-all hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest shadow-sm">
+                Next
+                <i className="flex fi fi-rr-arrow-small-right text-[16px]"></i>
+            </button>
+        </div>
       </div>
     </div>
+  </div>
   );
 }
